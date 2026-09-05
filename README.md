@@ -432,7 +432,7 @@ rasta leta hai. Cartoon suspense content ke liye ye actually **behtar** hai
 Maine test kiya — `WordBoundary` event ab khaali aata hai. Isliye har line ki
 alag MP3 banti hai aur uski **exact duration measure** hoti hai; words ko
 syllable-weight se distribute karte hain. Line boundaries **exact**, word
-timing **±80ms**. Karaoke ke liye kaafi hai; frame-perfect chahiye to Whisper.
+timing **±80ms**. Karaoke ke liye kaafi hai; frame-perfect chahiye to `pip install faster-whisper` (system auto-detect kar lega).
 </details>
 
 <details>

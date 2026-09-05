@@ -3546,6 +3546,17 @@ def _():
         core.quota.ZoneInfo = orig_zoneinfo
 
 
+@test("voice: faster-whisper missing hone pe gracefully syllable-weight pe fallback kare")
+def _():
+    from agents.voice import _align_words_whisper, _distribute_words
+    res = _align_words_whisper("non_existent_audio.mp3", "test sentence", 0.0, 2.0)
+    assert res is None
+    words = _distribute_words("test sentence", 0.0, 2.0)
+    assert len(words) == 2
+    assert words[0]["w"] == "test"
+
+
+
 # =====================================================================
 # REPORT
 # =====================================================================

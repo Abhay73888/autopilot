@@ -288,10 +288,12 @@ class Voice:
                 gap = PAUSE_DEFAULT_MS / 1000
             start = t + gap
             end = start + c["dur"]
+            whisper_words = _align_words_whisper(c["path"], c["text"], start, end)
+            words = whisper_words if whisper_words else _distribute_words(c["text"], start, end)
             out.append({
                 "i": c["i"], "text": c["text"], "start": round(start, 3), "end": round(end, 3),
                 "pause_before": round(gap, 3),
-                "words": _distribute_words(c["text"], start, end),
+                "words": words,
             })
             t = end
         return out
@@ -387,6 +389,36 @@ def _distribute_words(text: str, start: float, end: float) -> list[dict]:
         t += d
     out[-1]["end"] = round(end, 3)   # rounding drift theek karo
     return out
+
+
+def _align_words_whisper(audio_path: str | Path, text: str, start: float, end: float) -> list[dict] | None:
+    """
+    Optional faster-whisper word timing.
+    Agar faster-whisper installed hai to use karo, warna None (fallback to syllable-weight).
+    """
+    p = Path(audio_path)
+    if not p.exists() or p.stat().st_size == 0:
+        return None
+    try:
+        from faster_whisper import WhisperModel  # optional dep — standard try/except
+        model = WhisperModel("base", device="cpu", compute_type="int8")
+        segments, _ = model.transcribe(str(p), word_timestamps=True, language="hi")
+        words_out = []
+        for segment in segments:
+            for word in segment.words:
+                w_text = word.word.strip()
+                if w_text:
+                    words_out.append({
+                        "w": w_text,
+                        "start": round(start + word.start, 3),
+                        "end": round(start + word.end, 3),
+                    })
+        if words_out:
+            return words_out
+    except Exception as e:
+        log.debug(f"faster-whisper word alignment skip ({str(e)[:80]}) — syllable-weight use kar rahe hain")
+    return None
+
 
 
 if __name__ == "__main__":

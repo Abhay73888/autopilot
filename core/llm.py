@@ -148,18 +148,31 @@ class GeminiLLM:
 
         url = f"{API_BASE}/{self.model}:generateContent?key={self.api_key}"
 
-        def _call():
+        def _call_model(model_name: str):
+            req_url = f"{API_BASE}/{model_name}:generateContent?key={self.api_key}"
             req = urllib.request.Request(
-                url, data=json.dumps(body).encode("utf-8"),
+                req_url, data=json.dumps(body).encode("utf-8"),
                 headers={"Content-Type": "application/json"}, method="POST")
             try:
                 with urllib.request.urlopen(req, timeout=60) as resp:
                     return json.loads(resp.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
                 detail = e.read().decode("utf-8", "replace")[:400]
+                if e.code == 429 and ("quota" in detail.lower() or "limit" in detail.lower()):
+                    raise QuotaExceeded(f"Gemini API rate/quota limit: {detail}") from e
                 raise RuntimeError(f"{e.code} {e.reason} :: {detail}") from e
 
-        data = retry(_call, tries=4, base_delay=2.0, log=log, what="Gemini generateContent")
+        try:
+            data = retry(lambda: _call_model(self.model), tries=3, base_delay=1.5, log=log,
+                         what=f"Gemini {self.model} generateContent")
+        except (QuotaExceeded, RuntimeError) as e:
+            if self.model != "gemini-3.6-flash":
+                log.warn(f"Model '{self.model}' unavailable or quota limit — falling back to gemini-3.6-flash",
+                         reason=str(e)[:120])
+                data = retry(lambda: _call_model("gemini-3.6-flash"), tries=3, base_delay=1.5,
+                             log=log, what="Gemini gemini-3.6-flash fallback")
+            else:
+                raise
 
         try:
             return data["candidates"][0]["content"]["parts"][0]["text"]

@@ -105,11 +105,11 @@ def run(args: list[str], *, what: str = "ffmpeg", timeout: int = 900,
     ffmpeg chalao. Fail ho to asli stderr + Hinglish hint ke saath exception.
     `args` mein 'ffmpeg' shabd mat daalna — wo khud lag jaata hai.
     """
-    cmd = [ffmpeg_bin(), "-y", "-hide_banner",
+    cmd = [ffmpeg_bin(), "-y", "-nostdin", "-hide_banner",
            "-loglevel", "error" if quiet else "info", *args]
     log.debug(f"RUN {what}", cmd=" ".join(cmd[:14]) + (" ..." if len(cmd) > 14 else ""))
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        proc = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired as e:
         raise RuntimeError(
             f"{what}: ffmpeg {timeout}s mein khatam nahi hua. "

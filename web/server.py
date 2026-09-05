@@ -294,6 +294,18 @@ def do_action(action: str, video_id: int, payload: dict) -> dict:
 
             return run_bg_task("Chief Tick", _tick_fn)
 
+        if action == "clear_logs":
+            log_dir = (ROOT / CONFIG.get("log_dir", "logs")).resolve()
+            cleared = 0
+            if log_dir.exists():
+                for lf in log_dir.glob("*.jsonl"):
+                    try:
+                        lf.unlink()
+                        cleared += 1
+                    except Exception:
+                        pass
+            return {"ok": True, "msg": f"{cleared} log file(s) clear ho gayi. Diagnostics radar clean ho gaya!"}
+
         if action == "exp_conclude":
             from agents.scientist import Scientist
             r = Scientist(db).conclude(force=bool(payload.get("force")))
@@ -1404,6 +1416,7 @@ tr:hover td { background: rgba(255, 255, 255, 0.02); }
     <div class="section-head">
       <h2 class="section-title" style="color:#f87171"><span class="glow-icon">⚠️</span> System Diagnostics &amp; Error Hub</h2>
       <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="clearDiagnostics()">🧹 Clear Logs</button>
         <button class="btn btn-ghost" onclick="copyDiagnosticsReport()">📋 Copy Report</button>
         <button class="btn btn-ghost" onclick="load()">🔄 Refresh</button>
       </div>
@@ -1899,6 +1912,13 @@ function copyDiagnosticsReport() {
     toast('Diagnostics report copied to clipboard! 📋');
     snd.success();
   }).catch(() => toast('Clipboard permission denied', true));
+}
+
+async function clearDiagnostics() {
+  if (!confirm('Kya aap saare purane test logs aur diagnostic warnings clear karna chahte hain?')) return;
+  await act('clear_logs', 0);
+  snd.success();
+  load();
 }
 
 function renderAnalyst() {

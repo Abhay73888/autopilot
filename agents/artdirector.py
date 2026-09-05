@@ -102,13 +102,42 @@ class ArtDirector:
         return tpl
 
     # ------------------------------------------------------------------
+    def pick_pacing(self) -> str:
+        """
+        Scientist experiment ya Analyst drop-off recommendation ke mutabiq pacing chuno.
+        Return: 'standard' | 'dynamic_fast'
+        """
+        try:
+            from agents.scientist import Scientist
+            sci = Scientist(self.db)
+            forced = sci.forced_value("scene_pacing")
+            if forced:
+                log.info(f"Experiment chal raha hai — scene_pacing forced: {forced}")
+                return forced
+        except Exception as e:
+            log.debug(f"Scientist pacing check skip: {e}")
+
+        try:
+            from agents.analyst import Analyst
+            an = Analyst(self.db)
+            rec = an.detect_pacing_dropoff()
+            if rec.get("recommended_pacing") == "dynamic_fast":
+                log.info("Analyst drop-off alert: mid-story dropoff detect hua — dynamic_fast pacing chuni")
+                return "dynamic_fast"
+        except Exception as e:
+            log.debug(f"Analyst pacing dropoff check skip: {e}")
+
+        return "standard"
+
+    # ------------------------------------------------------------------
     def direct(self, script: dict, template_id: str | None = None,
-               n_scenes: int | None = None) -> dict:
+               n_scenes: int | None = None, pacing: str | None = None) -> dict:
         """
         Script -> scene list.
         Har scene mein: image prompt, motion, aur wo spoken line jo us par chalegi.
         """
         template_id = template_id or self.pick_template()
+        pacing = pacing or self.pick_pacing()
         tpl = TEMPLATES[template_id]
 
         lines = _script_lines(script)
@@ -150,11 +179,11 @@ Sirf JSON return karo:
 }}"""
 
         data = self.llm.json(prompt)
-        return self._build(data, script, template_id, n_scenes, lines)
+        return self._build(data, script, template_id, n_scenes, lines, pacing=pacing)
 
     # ------------------------------------------------------------------
     def _build(self, data: dict, script: dict, template_id: str,
-               n_scenes: int, lines: list[str]) -> dict:
+               n_scenes: int, lines: list[str], pacing: str = "standard") -> dict:
         tpl = TEMPLATES[template_id]
         character = str(data.get("character") or
                         "a 30-year-old Indian man in a worn grey jacket, tired eyes, "
@@ -200,15 +229,21 @@ Sirf JSON return karo:
         scenes[-1]["beat"] = (scenes[-1]["beat"] or "") + " [loop frame — scene 1 ka echo]"
         scenes[-1]["motion"] = "zoom_out"   # scene 1 zoom_in tha -> perfect loop
 
+        if pacing == "dynamic_fast" and len(scenes) >= 5:
+            scenes[3]["beat"] = (scenes[3]["beat"] or "") + " [mini-reveal — fast twist to prevent drop-off]"
+            scenes[3]["pacing"] = "fast"
+            scenes[4]["pacing"] = "fast"
+
         out = {
             "template_id": template_id,
             "template_name": tpl["name"],
+            "pacing": pacing,
             "character": character,
             "setting": setting,
             "scenes": scenes,
             "n_scenes": len(scenes),
         }
-        log.ok(f"{len(scenes)} scenes ready", template=tpl["name"],
+        log.ok(f"{len(scenes)} scenes ready ({pacing} pacing)", template=tpl["name"],
                character=character[:50] + "...")
         return out
 

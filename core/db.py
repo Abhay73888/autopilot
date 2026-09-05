@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS videos (
     length_sec    REAL,
     series_name   TEXT,
     series_index  INTEGER,
+    scene_pacing  TEXT DEFAULT 'standard', -- standard | dynamic_fast (retention-adaptive)
     experiment_id INTEGER,           -- kis experiment ka hissa hai
     variant       TEXT,              -- 'A' | 'B'
     -- ==== files ====
@@ -152,6 +153,10 @@ class DB:
         self.conn = sqlite3.connect(str(self.path), timeout=15, isolation_level=None)
         self.conn.row_factory = sqlite3.Row  # rows ko dict jaisa padh sako
         self.conn.executescript(SCHEMA)
+        try:
+            self.conn.execute("ALTER TABLE videos ADD COLUMN scene_pacing TEXT DEFAULT 'standard'")
+        except sqlite3.OperationalError:
+            pass  # column already exists
 
     # ---------- plumbing ----------
     def __enter__(self): return self

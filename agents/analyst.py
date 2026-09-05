@@ -377,6 +377,7 @@ class Analyst:
         # ---- 6. VARIABLES (Scientist ke liye) ----
         variables = {"hook_type": row["hook_type"], "voice_id": row["voice_id"],
                      "template_id": row["template_id"],
+                     "scene_pacing": row["scene_pacing"] if "scene_pacing" in row.keys() else "standard",
                      "length_bucket": _bucket(length),
                      "publish_hour": (row["published_ts"] or "")[11:13]}
 
@@ -432,15 +433,58 @@ class Analyst:
                 "at_sec": round(curve[worst_i][0] * length, 1),
                 "drop_pct": round(worst * 100, 1)}
 
+    def detect_pacing_dropoff(self, last_n: int = 10) -> dict:
+        """
+        Pichhle N videos mein drop-off pattern analyze karo.
+        Agar mid-story (scenes 4-5, approx 35%-70% of video) mein consistent drop-off ho
+        (>= 30% of videos), to pacing recommendation return karo (shorten by 20% + mini reveal).
+        """
+        rows = self.db.q("""
+            SELECT v.id, v.length_sec, m.raw_json
+            FROM videos v JOIN metrics m ON m.video_id = v.id
+            WHERE m.window='2h' AND m.raw_json IS NOT NULL
+            ORDER BY v.id DESC LIMIT ?
+        """, (last_n,))
+
+        mid_drops = 0
+        total_analyzed = 0
+        for r in rows:
+            try:
+                raw = json.loads(r["raw_json"]) if isinstance(r["raw_json"], str) else (r["raw_json"] or {})
+                curve = raw.get("retention_curve") or []
+                if not curve or len(curve) < 2:
+                    continue
+                total_analyzed += 1
+                worst_drop, worst_ratio = 0.0, 0.0
+                for i in range(1, len(curve)):
+                    d = curve[i - 1][1] - curve[i][1]
+                    if d > worst_drop:
+                        worst_drop, worst_ratio = d, curve[i][0]
+                # Scenes 4-5 is mid-story (ratio between 0.35 and 0.70)
+                if 0.35 <= worst_ratio <= 0.70 and worst_drop >= 0.03:
+                    mid_drops += 1
+            except Exception:
+                continue
+
+        need_shorten = total_analyzed >= 3 and (mid_drops / total_analyzed >= 0.30)
+        return {
+            "analyzed": total_analyzed,
+            "mid_drops": mid_drops,
+            "recommended_pacing": "dynamic_fast" if need_shorten else "standard",
+            "shorten_pct": 0.20 if need_shorten else 0.0,
+            "target_scenes": [4, 5] if need_shorten else [],
+            "add_mini_reveal": need_shorten,
+        }
+
     # ==================================================================
     def variable_report(self, window: str = "2h", min_n: int = 3) -> dict:
         """
-        Har variable (hook_type, voice, template) ka average performance.
+        Har variable (hook_type, voice, template, scene_pacing) ka average performance.
         Ye Scientist (Phase 8) ka raw material hai — par ye CORRELATION hai,
         causation nahi. Proper A/B Scientist karega.
         """
         out = {}
-        for var in ("hook_type", "voice_id", "template_id"):
+        for var in ("hook_type", "voice_id", "template_id", "scene_pacing"):
             rows = self.db.q(f"""
                 SELECT v.{var} AS val, COUNT(*) n,
                        AVG(m.views) avg_views, AVG(m.avg_pct) avg_ret,

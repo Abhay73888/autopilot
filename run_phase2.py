@@ -105,8 +105,9 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
     log.info("🎨 ArtDirector scenes bana raha hai...")
     ad = ArtDirector(db, llm)
     art = ad.direct(script)
-    db.update_video(vid, template_id=art["template_id"])
-    log.ok(f"{art['n_scenes']} scenes, template = {art['template_name']}")
+    pacing = art.get("pacing", "standard")
+    db.update_video(vid, template_id=art["template_id"], scene_pacing=pacing)
+    log.ok(f"{art['n_scenes']} scenes, template = {art['template_name']}, pacing = {pacing}")
 
     # ---------- 3. VOICE ----------
     log.info("🎙️  Voice narration bana rahi hai...")
@@ -125,7 +126,7 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
         log.warn("--no-images: images skip ki gayi")
 
     # ---------- 5. SCENE TIMING (image ko audio se match karo) ----------
-    scenes = assign_scene_timing(scenes, narration)
+    scenes = assign_scene_timing(scenes, narration, pacing=pacing)
 
     # ---------- THUMBNAIL (1280x720 16:9 YouTube cover) ----------
     thumb_path = out_dir / "thumbnail.jpg"
@@ -165,7 +166,7 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
     return manifest
 
 
-def assign_scene_timing(scenes: list[dict], narration: dict) -> list[dict]:
+def assign_scene_timing(scenes: list[dict], narration: dict, pacing: str = "standard") -> list[dict]:
     """
     Har scene ko ek time window do.
 
@@ -177,6 +178,10 @@ def assign_scene_timing(scenes: list[dict], narration: dict) -> list[dict]:
       B) lines <  scenes  -> (aksar yahi hota hai: 5 lines, 7 scenes)
          lambi lines ko beech se todo taaki har scene ko time mile.
          Bina iske aakhri scenes ko 0 second milta tha aur wo video mein dikhte hi nahi the.
+
+    Retention Pacing:
+      agar pacing == 'dynamic_fast' hai, to mid-story drop-off rokne ke liye
+      scenes 4 & 5 ko 20% chhota karte hain aur samay baaki scenes ko dete hain.
     """
     lines = narration.get("lines") or []
     total = float(narration.get("duration_sec") or 0)
@@ -227,6 +232,26 @@ def assign_scene_timing(scenes: list[dict], narration: dict) -> list[dict]:
         start, end = bounds[i], bounds[i + 1]
         out.append({**sc, "start": round(start, 3), "end": round(end, 3),
                     "dur": round(end - start, 3)})
+
+    # ---- RETENTION-BASED SCENE PACING: shorten scenes 4 & 5 by 20% ----
+    if pacing == "dynamic_fast" and len(out) >= 5:
+        s3_short = out[3]["dur"] * 0.20
+        s4_short = out[4]["dur"] * 0.20
+        saved = s3_short + s4_short
+        out[3]["dur"] = round(out[3]["dur"] - s3_short, 3)
+        out[4]["dur"] = round(out[4]["dur"] - s4_short, 3)
+        rem_count = len(out) - 2
+        redist = saved / rem_count
+        for idx in range(len(out)):
+            if idx not in (3, 4):
+                out[idx]["dur"] = round(out[idx]["dur"] + redist, 3)
+        curr = 0.0
+        for sc in out:
+            sc["start"] = round(curr, 3)
+            curr = round(curr + sc["dur"], 3)
+            sc["end"] = curr
+        out[-1]["end"] = round(total, 3)
+        out[-1]["dur"] = round(out[-1]["end"] - out[-1]["start"], 3)
 
     # sanity: koi bhi scene 0 second ka nahi hona chahiye
     bad = [s["n"] for s in out if s["dur"] < 0.5]

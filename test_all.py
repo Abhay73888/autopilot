@@ -3681,6 +3681,55 @@ def _():
         urllib.request.urlopen = orig_urlopen
 
 
+@test("analyst: detect_pacing_dropoff mid-story drop pe dynamic_fast recommend kare")
+def _():
+    d = fresh_db()
+    from agents.analyst import Analyst
+    # Add 4 videos with retention drop at ratio 0.50
+    for i in range(4):
+        vid = d.create_video(f"test_drop_{i}", length_sec=30)
+        curve = [[0.0, 1.0], [0.2, 0.9], [0.4, 0.85], [0.5, 0.70], [0.6, 0.65], [1.0, 0.50]]
+        d.save_metrics(vid, "youtube", "2h", views=500, avg_pct=0.60, raw_json={"retention_curve": curve})
+    an = Analyst(d)
+    res = an.detect_pacing_dropoff(10)
+    assert res["recommended_pacing"] == "dynamic_fast"
+    assert res["shorten_pct"] == 0.20
+    assert res["add_mini_reveal"] is True
+    d.close()
+
+
+@test("artdirector & render: assign_scene_timing dynamic_fast pe scenes 4 & 5 ko 20% chhota kare")
+def _():
+    from run_phase2 import assign_scene_timing
+    scenes = [{"n": i + 1, "beat": f"beat {i+1}"} for i in range(7)]
+    narration = {
+        "duration_sec": 28.0,
+        "lines": [{"end": 4.0}, {"end": 8.0}, {"end": 12.0}, {"end": 16.0}, {"end": 20.0}, {"end": 24.0}, {"end": 28.0}]
+    }
+    std = assign_scene_timing(scenes, narration, pacing="standard")
+    fast = assign_scene_timing(scenes, narration, pacing="dynamic_fast")
+    assert len(fast) == 7
+    # Scenes 4 & 5 (indices 3 and 4) should be ~20% shorter in fast than in std
+    assert fast[3]["dur"] < std[3]["dur"]
+    assert fast[4]["dur"] < std[4]["dur"]
+    assert abs(fast[3]["dur"] - std[3]["dur"] * 0.80) < 0.05
+    # Total length should match exactly
+    assert abs(fast[-1]["end"] - 28.0) < 0.01
+
+
+@test("scientist: scene_pacing testable arms mein shamil hai aur DB mein track hota hai")
+def _():
+    from agents.scientist import _arms
+    d = fresh_db()
+    arms = _arms()
+    assert "scene_pacing" in arms
+    assert "dynamic_fast" in arms["scene_pacing"]
+    vid = d.create_video("test_pacing_col", scene_pacing="dynamic_fast")
+    row = d.get_video(vid)
+    assert row["scene_pacing"] == "dynamic_fast"
+    d.close()
+
+
 # =====================================================================
 # REPORT
 # =====================================================================

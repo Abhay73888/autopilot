@@ -50,6 +50,7 @@ def _arms():
         "template_id": list(TEMPLATES),
         "length_bucket": ["22-30s", "30-45s"],
         "publish_hour": ["14", "17", "20"],   # IST peak windows (UTC mein convert hota hai)
+        "scene_pacing": ["standard", "dynamic_fast"],
     }
 
 

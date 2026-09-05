@@ -1,0 +1,40 @@
+# =====================================================================
+# AUTOPILOT — SECTION 0 CONFIG
+# Ye file poore system ka "control panel" hai.
+# Sirf yahi file badlo, code haath mat lagao.
+# (Format: simple YAML — key: value. Nested block 2 space indent se.)
+# =====================================================================
+
+# ============ CHANNEL IDENTITY ============
+niche:            "unsolved mysteries + true suspense stories"
+language:         "Hindi"                 # Hindi | English | Hinglish
+target_audience:  "India, 18-34, mobile-first"
+visual_style:     "flat 2D cartoon, noir shadows, muted teal-orange palette"
+brand_name:       "AUTOPILOT"             # TODO: apna channel naam daalo
+
+# ============ OUTPUT TARGETS ============
+video_length_sec:  32                     # 22-45s sweet spot
+videos_per_day:    2
+aspect_ratio:      "9:16"
+resolution:        "1080x1920"
+
+# ============ ACCOUNTS ============
+instagram_handle:  "@your_handle"         # TODO: Business/Creator account hona chahiye
+youtube_channel:   "https://youtube.com/@your_channel"   # TODO
+
+# ============ BUDGET ============
+monthly_budget_inr: 0                     # ZERO — sirf free tiers
+
+# ============ AUTONOMY ============
+autonomy: "review_first"                  # review_first | auto_publish
+review_first_count: 20                    # pehle 20 video manually approve honge
+
+# ============ RUNTIME ============
+mock_mode: false                          # false = real Gemini API use karega (GEMINI_API_KEY .env mein honi chahiye)
+timezone: "Asia/Kolkata"
+db_path: "data/autopilot.db"
+log_dir: "logs"
+
+# ============ PHASE 5: AI PUBLISHING ============
+default_playlist: ""                      # naam do to har upload isme jayega (banegi agar nahi hai)
+seo_min_score: 60                         # isse kam SEO score pe warning milegi

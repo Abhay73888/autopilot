@@ -1,0 +1,118 @@
+# =====================================================================
+# AUTOPILOT — dependencies
+# Rule (hard constraint #2): stdlib prefer karo. Har package ke saath
+# ek line justification honi chahiye — warna wo package yahan nahi aayega.
+#
+# Install karo:  pip install -r requirements.txt
+# =====================================================================
+
+# ---------- PHASE 1: KUCH BHI NAHI CHAHIYE ----------
+# db.py      -> sqlite3 (stdlib)      logbook.py -> json/traceback (stdlib)
+# quota.py   -> datetime/zoneinfo     config.py  -> apna mini-YAML parser
+# llm.py     -> urllib.request (stdlib)
+#   ^ google-generativeai SDK jaan-boojh kar NAHI liya: 20+ transitive deps
+#     sirf ek HTTP POST ke liye.
+# mp3.py     -> khud frame headers padhta hai
+#   ^ mutagen ya ffprobe ki jagah 40 line ka parser. Phase 2 mein ffmpeg
+#     optional rakhne ke liye ye zaroori tha.
+
+tzdata>=2024.1; sys_platform == "win32"
+# ^ SIRF Windows pe. quota.py Pacific timezone use karta hai (YouTube quota
+#   reset midnight PT pe hota hai) — Linux/Mac pe IANA data OS ke saath aata
+#   hai, Windows pe nahi. Iske bina zoneinfo crash karta hai.
+
+
+# ---------- PHASE 2: ye 2 chahiye ----------
+edge-tts>=6.1.0
+# ^ Microsoft Edge ki free TTS. Hindi ki sabse acchi awaaz, koi API key nahi,
+#   koi paisa nahi. Iska koi stdlib alternative hai hi nahi (neural TTS chahiye).
+#   ⚠️ Iski Hindi mein sirf 2 base voices hain — hum rate/pitch se 6 profiles
+#      banate hain (agents/voice.py mein VOICE_PROFILES dekho).
+
+Pillow>=10.0.0
+# ^ local_placeholder image provider ke liye (gradient + text card), jab
+#   pollinations aur gemini dono fail ho jayein. Iske bina pipeline image
+#   ke bina ruk jaati — aur hard constraint #1 kehta hai "graceful degrade karo".
+
+
+# ---------- PHASE 3: ffmpeg ke liye ----------
+imageio-ffmpeg>=0.5.0
+# ^ SIRF TAB chahiye jab system pe ffmpeg install na kar sako (admin rights nahi).
+#   Ye ffmpeg ka static binary pip ke through le aata hai — koi sudo nahi chahiye.
+#   Agar tumne `brew install ffmpeg` / `apt install ffmpeg` kar liya hai to
+#   ise SKIP kar sakte ho (system wala hamesha behtar hota hai — usme drawtext,
+#   ffprobe waghairah sab hote hain).
+#   ⚠️ Iske bundled build mein ffprobe NAHI hota — core/ffmpeg.py isliye
+#      ffmpeg ke stderr se parse karne wala fallback rakhta hai.
+
+
+# ---------- OPTIONAL (fallback, na ho to bhi chalega) ----------
+# gTTS>=2.5.0
+#   ^ edge-tts fail ho to TTS fallback. Chhota package. Quality kam hai.
+#     `pip install gTTS` — recommended but zaroori nahi.
+
+
+# ---------- PHASE 4: KUCH NAHI CHAHIYE ----------
+# validate.py  -> ffmpeg (loudnorm measure mode, blackdetect, signalstats)
+# web/server.py -> http.server (stdlib)
+#   ^ Flask/FastAPI jaan-boojh kar NAHI liya. Dashboard local hai, ek hi user hai,
+#     aur stdlib ka ThreadingHTTPServer ye kaam bilkul theek karta hai
+#     (Range requests bhi, taaki video seek ho sake).
+
+
+# ---------- PHASE 5: KUCH NAHI CHAHIYE ----------
+# core/oauth.py       -> urllib + http.server (stdlib)
+# agents/publisher.py -> urllib (stdlib)
+#
+# Pehle plan tha google-auth-oauthlib + google-api-python-client lene ka.
+# NAHI liya — wo 8+ transitive deps laate hain (google-auth, oauthlib, requests,
+# requests-oauthlib, cachetools, pyasn1, pyasn1-modules, rsa) sirf iske liye ki:
+#   1. browser kholna         -> webbrowser (stdlib)
+#   2. localhost redirect     -> http.server (stdlib)
+#   3. refresh token exchange -> ek HTTP POST
+#   4. resumable upload       -> Content-Range headers + 308 handling
+# Ye sab 400 line mein ho gaya aur code transparent hai.
+#
+# ⚠️ Security note: hum khud koi crypto NAHI likh rahe. Google ka standard
+#    "authorization code" flow use kar rahe hain — saara crypto Google ke
+#    HTTPS endpoint pe hota hai. Hum sirf HTTP requests bhejte hain.
+
+
+# ---------- PHASE 6: KUCH NAHI CHAHIYE ----------
+# core/hosting.py         -> urllib (multipart form-data khud banate hain)
+# agents/ig_publisher.py  -> urllib
+#   ^ `requests` bhi nahi chahiye — urllib se multipart upload ho jaata hai.
+#   ^ boto3 (R2 ke liye) NAHI liya: 50 MB ka package sirf ek file upload ke liye.
+#     R2 ke liye `wrangler` CLI use karo (Cloudflare ka apna, free).
+
+
+# ---------- PHASE 7: KUCH NAHI CHAHIYE ----------
+# agents/analyst.py -> urllib + statistics (dono stdlib)
+#   ^ numpy/pandas NAHI liye. Hum jo kar rahe hain (mean, interpolation,
+#     grouping) wo `statistics` module aur SQL GROUP BY se ho jaata hai.
+#     pandas 50 MB ka hai — 30 rows ke liye wo bekaar hai.
+
+
+# ---------- PHASE 8: KUCH NAHI CHAHIYE ----------
+# core/stats.py -> math (stdlib)
+#   ^ scipy NAHI liya (60 MB) sirf t-distribution ke liye. Incomplete beta
+#     function khud implement kiya — ~50 line textbook math (Numerical Recipes
+#     ka standard continued-fraction algorithm).
+#     ✅ Numerical integration (Simpson's rule) se verify kiya: 8 decimal
+#        places tak same jawab.
+# agents/scientist.py -> core.stats + sqlite
+
+
+# ---------- TRENDSCOUT: KUCH NAHI CHAHIYE ----------
+# agents/trendscout.py -> re + urllib (stdlib)
+#   ^ Koi "trending topics API" use nahi ki — sab paid hain ya scraping hai
+#     (aur scraping ToS violation + ban risk hai). Topics apne data ke
+#     patterns + LLM se aate hain.
+
+
+# ---------- SYSTEM DEPENDENCY (pip se nahi) ----------
+# ffmpeg  — Phase 3 ka dil. Free aur open-source.
+#           Phase 2 mein OPTIONAL, Phase 3 se COMPULSORY.
+#           Install: SETUP.md STEP 5. Bina admin ke: `pip install imageio-ffmpeg`
+#           ⚠️ Build mein libx264 + AAC + libass hone chahiye. Check:
+#              `python core/ffmpeg.py`

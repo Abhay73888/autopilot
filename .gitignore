@@ -1,0 +1,11 @@
+.env
+token.json
+client_secret.json
+data/*.db
+data/*.db-wal
+data/*.db-shm
+logs/
+output/
+__pycache__/
+*.pyc
+*.ass

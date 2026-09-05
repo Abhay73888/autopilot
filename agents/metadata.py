@@ -535,6 +535,110 @@ JSON: {{"category": "exact option text"}}""")
         return "\n".join(lines)
 
 
+def generate_thumbnail(
+    out_path: Path | str,
+    title_text: str,
+    subtitle_text: str = "",
+    base_image_path: Path | str | None = None,
+    colors: list[str] | None = None,
+) -> Path:
+    """
+    1280x720 (16:9) high-CTR YouTube thumbnail banata hai.
+    Pillow + Devanagari bold font overlay with high contrast.
+    """
+    out_p = Path(out_path)
+    out_p.parent.mkdir(parents=True, exist_ok=True)
+
+    target_w, target_h = 1280, 720
+    canvas = None
+
+    if base_image_path and Path(base_image_path).exists():
+        try:
+            from PIL import Image
+            img = Image.open(base_image_path).convert("RGB")
+            bw, bh = img.size
+            scale = max(target_w / bw, target_h / bh)
+            nw, nh = int(bw * scale), int(bh * scale)
+            resized = img.resize((nw, nh), Image.Resampling.LANCZOS)
+            left = (nw - target_w) // 2
+            top = (nh - target_h) // 2
+            canvas = resized.crop((left, top, left + target_w, top + target_h))
+        except Exception as e:
+            log.warn(f"Base image load fail: {e}")
+            canvas = None
+
+    if canvas is None:
+        from PIL import Image, ImageDraw
+        bg_col = (13, 17, 23)
+        canvas = Image.new("RGB", (target_w, target_h), color=bg_col)
+        draw_temp = ImageDraw.Draw(canvas)
+        draw_temp.rectangle([0, 0, target_w, 8], fill="#e05d2d")
+        draw_temp.rectangle([0, target_h - 8, target_w, target_h], fill="#2da3a8")
+
+    # Dark gradient banner on lower portion for text readability
+    from PIL import Image, ImageDraw, ImageFont
+    banner = Image.new("RGBA", (target_w, target_h), (0, 0, 0, 0))
+    bdraw = ImageDraw.Draw(banner)
+    for y in range(360, target_h):
+        alpha = int(220 * ((y - 360) / (target_h - 360)))
+        bdraw.line([(0, y), (target_w, y)], fill=(0, 0, 0, alpha))
+    canvas.paste(banner, (0, 0), banner)
+
+    # Devanagari bold font
+    font_file = Path(CONFIG.get("_root", ".")) / "assets" / "fonts" / "NotoSansDevanagari-Bold.ttf"
+    title_font = None
+    sub_font = None
+    if font_file.exists():
+        try:
+            title_font = ImageFont.truetype(str(font_file), 58)
+            sub_font = ImageFont.truetype(str(font_file), 36)
+        except Exception:
+            pass
+    if title_font is None:
+        title_font = ImageFont.load_default()
+        sub_font = ImageFont.load_default()
+
+    draw = ImageDraw.Draw(canvas)
+    text = (title_text or "AUTOPILOT").strip()
+    words = text.split()
+    lines = []
+    if len(words) > 6:
+        lines.append(" ".join(words[:5]))
+        lines.append(" ".join(words[5:10]))
+    else:
+        lines.append(text)
+
+    start_y = target_h - 180 - (len(lines) * 65)
+    if start_y < 350:
+        start_y = 350
+
+    curr_y = start_y
+    for line in lines:
+        draw.text(
+            (60, curr_y),
+            line,
+            font=title_font,
+            fill="#FFE500",
+            stroke_width=5,
+            stroke_fill="#000000"
+        )
+        curr_y += 65
+
+    if subtitle_text:
+        sub_line = subtitle_text[:45]
+        draw.text(
+            (62, curr_y + 10),
+            sub_line,
+            font=sub_font,
+            fill="#FFFFFF",
+            stroke_width=3,
+            stroke_fill="#000000"
+        )
+
+    canvas.save(out_p, format="JPEG", quality=88, optimize=True)
+    return out_p
+
+
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser(description="AI metadata package banao (Phase 5)")

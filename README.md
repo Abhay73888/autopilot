@@ -302,6 +302,10 @@ Undisclosed AI content = reduced reach ya removal.
 **Instagram ka password nahi. YouTube ka password nahi.** Sirf OAuth tokens —
 limited-permission, jab chaaho cancel. Details: [`DEPLOY.md`](DEPLOY.md)
 
+### 🖼️ Thumbnails (YouTube Shorts desktop feed)
+
+Shorts mobile app player mein auto-frame use hota hai, lekin **desktop feed, search results aur channel page** par custom thumbnail (1280x720 16:9) dikhta hai jo CTR ke liye bohot zaroori hai. Autopilot Pillow + NotoSansDevanagari-Bold se automatic thumbnail generate karta hai aur Publisher `thumbnails.set` (50 units) se upload karta hai.
+
 ---
 
 ## 🖥️ Dashboard

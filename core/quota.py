@@ -69,6 +69,7 @@ YT_COST = {
     "search.list": 100,        # MEHNGA — bacho
     "commentThreads.insert": 50,
     "videos.update": 50,
+    "thumbnails.set": 50,      # Phase 5: custom thumbnail upload
     "playlists.list": 1,       # Phase 5: playlist dhoondhna
     "playlists.insert": 50,    # Phase 5: nayi playlist banana
     "playlistItems.insert": 50,  # Phase 5: video playlist mein daalna

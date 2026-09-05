@@ -3604,6 +3604,34 @@ def _():
     assert m["narration"]["voice_id"] == "hi_f_urgent"
 
 
+@test("metadata: generate_thumbnail 1280x720 valid JPEG banaye")
+def _():
+    import tempfile
+    from PIL import Image
+    from agents.metadata import generate_thumbnail
+    td = Path(tempfile.mkdtemp())
+    out_thumb = td / "thumbnail.jpg"
+    res = generate_thumbnail(out_thumb, "14 Log Jo Gayab Hue", "Suspense Kahani")
+    assert res.exists()
+    assert 0 < res.stat().st_size <= 2 * 1024 * 1024
+    with Image.open(res) as im:
+        assert im.size == (1280, 720)
+        assert im.format == "JPEG"
+
+
+@test("publisher: set_thumbnail dry-run mein 50 units check karke True return kare")
+def _():
+    import tempfile
+    d = fresh_db()
+    pub = YouTubePublisher(d, Quota(d), creds=object(), dry_run=True)
+    td = Path(tempfile.mkdtemp())
+    dummy_thumb = td / "thumbnail.jpg"
+    dummy_thumb.write_bytes(b"x" * 1000)
+    ok = pub.set_thumbnail("test_yt_id_123", dummy_thumb)
+    assert ok is True
+    d.close()
+
+
 # =====================================================================
 # REPORT
 # =====================================================================

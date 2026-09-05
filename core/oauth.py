@@ -328,7 +328,7 @@ def authorize(scopes: list[str] | None = None,
 
 # =====================================================================
 def api_request(creds: Credentials, url: str, *, method: str = "GET",
-                body: dict | None = None, headers: dict | None = None,
+                body: dict | bytes | None = None, headers: dict | None = None,
                 timeout: int = 60) -> tuple[int, dict, dict]:
     """
     Authenticated API call.
@@ -336,7 +336,12 @@ def api_request(creds: Credentials, url: str, *, method: str = "GET",
     HTTP errors raise nahi karte — caller decide kare (quota vs rate limit alag hain).
     """
     h = {"Content-Type": "application/json", **creds.auth_header(), **(headers or {})}
-    data = json.dumps(body).encode() if body is not None else None
+    if isinstance(body, (bytes, bytearray)):
+        data = body
+    elif body is not None:
+        data = json.dumps(body).encode()
+    else:
+        data = None
     req = urllib.request.Request(url, data=data, headers=h, method=method)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:

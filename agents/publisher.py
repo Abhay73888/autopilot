@@ -163,10 +163,13 @@ class YouTubePublisher:
                           platform="youtube", yt_video_id=yt_id, privacy=privacy)
         log.ok(f"✅ YouTube pe chala gaya: {url}", video_id=video_id, privacy=privacy)
 
-        # ---------- thumbnail (cover frame, agar bana ho) ----------
-        cover = row["cover_path"] if "cover_path" in row.keys() else None
-        if cover and Path(cover).exists():
-            self.set_thumbnail(yt_id, cover)
+        # ---------- thumbnail (thumbnail.jpg ya cover frame, agar bana ho) ----------
+        out_dir = path.parent
+        thumb = out_dir / "thumbnail.jpg"
+        if not thumb.exists():
+            thumb = Path(row["cover_path"] or "") if "cover_path" in row.keys() else None
+        if thumb and Path(thumb).exists():
+            self.set_thumbnail(yt_id, thumb)
 
         # ---------- pinned first comment (Section 8: comment seeding) ----------
         if pin_comment and privacy != "private":
@@ -270,7 +273,7 @@ class YouTubePublisher:
         elapsed = time.time() - t0
 
         # ---------- thumbnail (fail hua to upload phir bhi success hai) ----------
-        thumb = Path(thumbnail) if thumbnail else p.parent / "cover.jpg"
+        thumb = Path(thumbnail) if thumbnail else (p.parent / "thumbnail.jpg" if (p.parent / "thumbnail.jpg").exists() else p.parent / "cover.jpg")
         if thumb.exists():
             self.set_thumbnail(yt_id, thumb)
 
@@ -528,24 +531,35 @@ class YouTubePublisher:
         return pl_id
 
     def set_thumbnail(self, yt_id: str, image_path: str | Path) -> bool:
-        """Cover frame ko thumbnail banao. Shorts search carousel mein ye dikhta hai."""
+        """Cover frame / thumbnail.jpg ko thumbnail banao (50 units). Shorts search carousel mein ye dikhta hai."""
         p = Path(image_path)
-        if not p.exists():
+        if not p.exists() or p.stat().st_size == 0:
             return False
         if p.stat().st_size > 2 * 1024 * 1024:
             log.warn("Thumbnail 2MB se bada hai — YouTube reject karega")
             return False
+
+        if not self.quota.can_spend("youtube_units", 50):
+            log.warn("Thumbnail upload skip — youtube_units quota kam hai (50 units chahiye)")
+            return False
+
+        if self.dry_run:
+            log.info(f"DRY RUN: set_thumbnail({yt_id}, {p.name}) [50 units]")
+            return True
+
         try:
-            self.quota.yt_call("videos.update", reason="thumbnail")
+            self.quota.yt_call("thumbnails.set", reason="thumbnail")
         except QuotaExceeded:
             return False
+
+        content_type = "image/png" if p.suffix.lower() == ".png" else "image/jpeg"
         req = urllib.request.Request(
             f"https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId={yt_id}",
             data=p.read_bytes(), method="POST",
-            headers={**self.creds.auth_header(), "Content-Type": "image/jpeg"})
+            headers={**self.creds.auth_header(), "Content-Type": content_type})
         try:
             with urllib.request.urlopen(req, timeout=120):
-                log.ok("Thumbnail set ho gaya")
+                log.ok("Thumbnail set ho gaya", yt_id=yt_id)
                 return True
         except urllib.error.HTTPError as e:
             body = e.read().decode("utf-8", "replace")[:200]
@@ -554,6 +568,9 @@ class YouTubePublisher:
                          "youtube.com/verify pe phone verify karo (2 min).")
             else:
                 log.warn(f"Thumbnail fail: {e.code} {body}")
+            return False
+        except Exception as e:
+            log.warn(f"Thumbnail upload error: {str(e)[:150]}")
             return False
 
 

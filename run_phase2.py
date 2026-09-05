@@ -127,6 +127,16 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
     # ---------- 5. SCENE TIMING (image ko audio se match karo) ----------
     scenes = assign_scene_timing(scenes, narration)
 
+    # ---------- THUMBNAIL (1280x720 16:9 YouTube cover) ----------
+    thumb_path = out_dir / "thumbnail.jpg"
+    try:
+        from agents.metadata import generate_thumbnail
+        base_img = out_dir / "scene_01.jpg" if (out_dir / "scene_01.jpg").exists() else None
+        thumb_text = script.get("hook_text_overlay") or script.get("title", "")
+        generate_thumbnail(thumb_path, thumb_text, base_image_path=base_img)
+    except Exception as e:
+        log.warn(f"Thumbnail generation fail: {e}")
+
     # ---------- 6. MANIFEST — Phase 3 (render.py) isse padhega ----------
     manifest = {
         "video_id": vid,

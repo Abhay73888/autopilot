@@ -37,7 +37,7 @@ from pipeline.render import ken_burns, build_audio_filter, _even, _shift_audio_i
 from pipeline.validate import (validate, validate_dir, Report, LIMITS,  # noqa: E402
                                _check_video_stream, _check_audio_stream,
                                _check_duration, _check_content, _parse_fps)
-from web.server import gather, do_action, _check_webhook_auth  # noqa: E402
+from web.server import gather, do_action, _check_webhook_auth, fetch_logs  # noqa: E402
 from core.oauth import Credentials, OAuthError, YT_SCOPES, _load_client_secret  # noqa: E402
 from agents.publisher import (YouTubePublisher, PublishError, _yt_error,  # noqa: E402
                               best_publish_time, CHUNK)
@@ -3555,6 +3555,45 @@ def _():
     assert len(words) == 2
     assert words[0]["w"] == "test"
 
+
+
+@test("server: rerender action missing manifest pe error return kare")
+def _():
+    from core.db import DB
+    d = DB()
+    vid = d.create_video("test_rerender_missing_manifest")
+    try:
+        res = do_action("rerender", vid, {})
+        assert not res.get("ok")
+        assert "manifest.json nahi mila" in res.get("error", "")
+    finally:
+        d.close()
+
+
+@test("server: fetch_logs correctly filters by video_id")
+def _():
+    import tempfile
+    import web.server
+    td = Path(tempfile.mkdtemp())
+    lf = td / "test.jsonl"
+    lf.write_text(
+        json.dumps({"ts": "2026-09-06T00:00:00Z", "level": "info", "video_id": 101, "msg": "vid 101 log"}) + "\n" +
+        json.dumps({"ts": "2026-09-06T00:01:00Z", "level": "info", "video_id": 202, "msg": "vid 202 log"}) + "\n",
+        encoding="utf-8"
+    )
+    orig_root = web.server.ROOT
+    orig_cfg = web.server.CONFIG
+    web.server.ROOT = td
+    web.server.CONFIG = {"log_dir": "."}
+    try:
+        all_logs = fetch_logs(None)
+        assert len(all_logs) == 2
+        filtered = fetch_logs(101)
+        assert len(filtered) == 1
+        assert filtered[0]["video_id"] == 101
+    finally:
+        web.server.ROOT = orig_root
+        web.server.CONFIG = orig_cfg
 
 
 # =====================================================================

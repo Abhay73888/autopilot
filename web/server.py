@@ -317,6 +317,32 @@ def do_action(action: str, video_id: int, payload: dict) -> dict:
             db.log_event("approval", "human", video_id, decision="rejected", reason=reason)
             return {"ok": True, "msg": f"Video #{video_id} reject ho gaya"}
 
+        if action == "rerender":
+            out_dir = ROOT / "output" / f"video_{video_id:04d}"
+            mf = out_dir / "manifest.json"
+            if not mf.exists():
+                return {"ok": False, "error": f"manifest.json nahi mila: {mf}"}
+            from pipeline.render import Renderer
+            from pipeline.validate import validate_dir
+            try:
+                info = Renderer(mf).render(out_dir, preset=payload.get("preset", "medium"),
+                                           keep_temp=bool(payload.get("keep_temp", False)))
+                m = json.loads(mf.read_text(encoding="utf-8"))
+                m["render"] = info
+                rep = validate_dir(out_dir)
+                m["validation"] = rep.to_dict()
+                mf.write_text(json.dumps(m, ensure_ascii=False, indent=2), encoding="utf-8")
+                db.update_video(video_id, video_path=info["video_path"],
+                                cover_path=info["cover_path"],
+                                length_sec=info["duration_sec"],
+                                status="validated" if rep.ok else "failed")
+                db.log_event("rerendered", "dashboard", video_id, ok=rep.ok)
+                return {"ok": True, "msg": f"Video #{video_id} dobara render ho gaya", "info": info, "report": rep.to_dict()}
+            except Exception as e:
+                db.set_status(video_id, "failed", note=f"rerender fail: {str(e)[:150]}")
+                log.error(f"Rerender fail video #{video_id}", e)
+                return {"ok": False, "error": f"Render fail: {e}"}
+
         if action == "validate":
             from pipeline.validate import validate_dir
             rep = validate_dir(ROOT / "output" / f"video_{video_id:04d}")
@@ -328,6 +354,40 @@ def do_action(action: str, video_id: int, payload: dict) -> dict:
             return {"ok": True, "report": rep.to_dict()}
 
         return {"ok": False, "error": f"Unknown action: {action}"}
+
+
+def fetch_logs(video_id: int | None = None, limit: int = 200) -> list[dict]:
+    """logs/*.jsonl se logs padho. video_id filter ho to specific video ke."""
+    log_dir = (ROOT / CONFIG.get("log_dir", "logs")).resolve()
+    if not str(log_dir).startswith(str(ROOT.resolve())):
+        return []
+
+    entries = []
+    if log_dir.exists():
+        for log_file in sorted(log_dir.glob("*.jsonl"), reverse=True):
+            try:
+                with open(log_file, encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            obj = json.loads(line)
+                            if video_id is not None:
+                                v_match = (obj.get("video_id") == video_id or
+                                           obj.get("vid") == video_id or
+                                           f"#{video_id}" in str(obj.get("msg", "")) or
+                                           f"video_{video_id:04d}" in str(obj))
+                                if not v_match:
+                                    continue
+                            entries.append(obj)
+                        except json.JSONDecodeError:
+                            continue
+            except Exception as e:
+                log.warn(f"Log file read fail: {log_file.name}", e)
+            if len(entries) >= limit:
+                break
+    return entries[:limit]
 
 
 # =====================================================================
@@ -355,6 +415,16 @@ class Handler(BaseHTTPRequestHandler):
                 "task": CURRENT_TASK,
                 "now": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             })
+        # ---- Log viewer endpoint: /api/logs?video_id=N ----
+        if u.path == "/api/logs":
+            qs = parse_qs(u.query)
+            vid_str = qs.get("video_id", [""])[0]
+            try:
+                vid = int(vid_str) if vid_str else None
+            except ValueError:
+                return self._json(400, {"ok": False, "error": "Invalid video_id"})
+            return self._serve_logs(vid)
+
         if u.path.startswith("/media/"):
             return self._media(u.path[len("/media/"):])
         self._send(404, "text/plain", b"404")
@@ -470,6 +540,13 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(body)
         except BrokenPipeError:
             pass
+
+    def _serve_logs(self, video_id: int | None = None):
+        log_dir = (ROOT / CONFIG.get("log_dir", "logs")).resolve()
+        if not str(log_dir).startswith(str(ROOT.resolve())):
+            return self._json(403, {"ok": False, "error": "Access denied"})
+        entries = fetch_logs(video_id)
+        return self._json(200, {"ok": True, "video_id": video_id, "count": len(entries), "logs": entries})
 
     def _json(self, code: int, obj):
         self._send(code, "application/json; charset=utf-8",
@@ -637,9 +714,12 @@ function render() {
           <button class="gr" onclick="act('validate',${v.id})">🔍 Validate</button>
           <button class="ok" onclick="act('approve',${v.id})">✅ Approve</button>
           <button class="no" onclick="rej(${v.id})">✕ Reject</button>
+          <button class="gr" onclick="act('rerender',${v.id})">🔁 Re-render</button>
+          <button class="gr" onclick="toggleLogs(${v.id})">📜 Logs</button>
           <button class="ok" style="background:#1f6feb" onclick="act('publish_video',${v.id})">📤 Publish Now</button>
         </div>
         <div class="rep" id="rep${v.id}" style="display:none"></div>
+        <div class="rep" id="log${v.id}" style="display:none;background:#030712;color:#a5d6ff"></div>
       </div>
     </div>`).join('') : '<div class="empty">Queue khaali hai — <b>"✨ Nayi Video Banao"</b> button dabayein</div>';
 
@@ -791,6 +871,37 @@ function generateVideo() {
 function rej(id) {
   const reason = prompt('Reject kyun kar rahe ho? (ye learning ban jayega)');
   if (reason !== null) act('reject', id, {reason});
+}
+
+async function toggleLogs(id) {
+  const el = document.getElementById('log' + id);
+  if (!el) return;
+  if (el.style.display === 'block') {
+    el.style.display = 'none';
+    return;
+  }
+  el.style.display = 'block';
+  el.textContent = 'Logs load ho rahe hain...';
+  try {
+    const r = await fetch('/api/logs?video_id=' + id);
+    const j = await r.json();
+    if (!j.ok) {
+      el.textContent = '❌ ' + (j.error || 'Logs load fail');
+      return;
+    }
+    if (!j.logs || !j.logs.length) {
+      el.textContent = 'Is video ke liye koi specific log nahi mila.';
+      return;
+    }
+    el.textContent = j.logs.map(l => {
+      const ts = (l.ts || '').slice(11, 19);
+      const lvl = l.level ? `[${l.level.toUpperCase()}]` : '';
+      const ag = l.agent ? `[${l.agent}]` : '';
+      return `${ts} ${lvl} ${ag} ${l.msg || ''}`;
+    }).join('\n');
+  } catch (e) {
+    el.textContent = '❌ Network error logs fetch mein: ' + e;
+  }
 }
 
 load();

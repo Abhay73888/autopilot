@@ -40,6 +40,7 @@ import json
 import os
 import sys
 import time
+import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -59,6 +60,34 @@ IST = ZoneInfo("Asia/Kolkata")
 # Ek tick mein zyada se zyada kitna kaam
 MAX_VIDEOS_PER_TICK = 1        # ek baar mein ek video — machine pe pressure kam
 LOCK_STALE_MINUTES = 90        # itna purana lock = crashed process, hata do
+
+
+def send_telegram(text: str, token: str | None = None, chat_id: str | None = None) -> bool:
+    """
+    Telegram bot se digest/alert bhejo via urllib (no external deps).
+    Agar TELEGRAM_BOT_TOKEN ya TELEGRAM_CHAT_ID missing hai to silently skip (return False).
+    """
+    token = token or os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = chat_id or os.environ.get("TELEGRAM_CHAT_ID")
+    if not token or not chat_id:
+        return False
+
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {"chat_id": str(chat_id), "text": text[:4000]}
+    body = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        url, data=body, method="POST",
+        headers={"Content-Type": "application/json"}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            ok = (r.status == 200)
+            if ok:
+                log.ok("Telegram digest bhej diya gaya", chat_id=str(chat_id))
+            return ok
+    except Exception as e:
+        log.warn(f"Telegram send fail: {e}")
+        return False
 
 
 # =====================================================================
@@ -373,7 +402,7 @@ class Chief:
     # ==================================================================
     # DIGEST — subah ka email/print
     # ==================================================================
-    def digest(self) -> str:
+    def digest(self, send_tg: bool = True) -> str:
         """Plain Hinglish daily briefing. Section 6: 'kya kaam kar raha hai / kya nahi'."""
         from agents.analyst import Analyst
         from agents.scientist import Scientist
@@ -498,7 +527,10 @@ class Chief:
         L.append("")
         L.append(f"  Dashboard: python -m web.server")
         L.append("─" * 66)
-        return "\n".join(L)
+        text = "\n".join(L)
+        if send_tg and os.environ.get("TELEGRAM_BOT_TOKEN") and os.environ.get("TELEGRAM_CHAT_ID"):
+            send_telegram(text)
+        return text
 
     def _todos(self, counts, base, exp, champs) -> list[str]:
         t = []

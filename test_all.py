@@ -3632,6 +3632,55 @@ def _():
     d.close()
 
 
+@test("chief: send_telegram token unset hone pe silently False return kare (no call)")
+def _():
+    from agents.chief import send_telegram
+    old_tok = os.environ.pop("TELEGRAM_BOT_TOKEN", None)
+    old_chat = os.environ.pop("TELEGRAM_CHAT_ID", None)
+    try:
+        res = send_telegram("Test message bina token ke")
+        assert res is False
+    finally:
+        if old_tok is not None:
+            os.environ["TELEGRAM_BOT_TOKEN"] = old_tok
+        if old_chat is not None:
+            os.environ["TELEGRAM_CHAT_ID"] = old_chat
+
+
+@test("chief: send_telegram tokens ke saath sahi POST payload bheje")
+def _():
+    import urllib.request
+    from agents.chief import send_telegram
+    calls = []
+    class DummyResp:
+        status = 200
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+
+    def fake_urlopen(req, timeout=15):
+        calls.append({
+            "url": req.full_url,
+            "method": req.get_method(),
+            "data": json.loads(req.data.decode("utf-8")),
+            "headers": dict(req.headers),
+        })
+        return DummyResp()
+
+    orig_urlopen = urllib.request.urlopen
+    urllib.request.urlopen = fake_urlopen
+    try:
+        ok = send_telegram("Namaste Chief!", token="bot_test_token_123", chat_id="99887766")
+        assert ok is True
+        assert len(calls) == 1
+        assert "bot_test_token_123" in calls[0]["url"]
+        assert calls[0]["data"]["chat_id"] == "99887766"
+        assert calls[0]["data"]["text"] == "Namaste Chief!"
+    finally:
+        urllib.request.urlopen = orig_urlopen
+
+
 # =====================================================================
 # REPORT
 # =====================================================================

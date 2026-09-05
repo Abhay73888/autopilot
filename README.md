@@ -2,15 +2,17 @@
 
 # 🎬 AUTOPILOT
 
-### *Ek autonomous agent swarm — cartoon suspense shorts khud banata hai, khud publish karta hai, asli data se seekh kar khud ko behtar karta hai.*
+### *An autonomous agent swarm that generates, publishes, and self-optimizes Hindi cartoon suspense YouTube Shorts and Instagram Reels using closed-loop A/B testing.*
+*Ek autonomous agent swarm — cartoon suspense shorts khud banata hai, khud publish karta hai, asli data se seekh kar khud ko behtar karta hai.*
 
 <br>
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-260_passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white)
+![Tests](https://github.com/Abhay73888/autopilot/actions/workflows/tests.yml/badge.svg)
 ![Dependencies](https://img.shields.io/badge/Dependencies-only_3-orange?style=for-the-badge&logo=pypi&logoColor=white)
-![Cost](https://img.shields.io/badge/Cost-₹0%2Fmonth-gold?style=for-the-badge&logo=googlepay&logoColor=white)
-![Lines](https://img.shields.io/badge/Code-11.9k_lines-blueviolet?style=for-the-badge&logo=files&logoColor=white)
+![Cost](https://img.shields.io/badge/Cost-₹0%2Fmonth*-gold?style=for-the-badge&logo=googlepay&logoColor=white)
+![Lines](https://img.shields.io/badge/Code-13.4k_lines-blueviolet?style=for-the-badge&logo=files&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 ![YouTube Shorts](https://img.shields.io/badge/YouTube_Shorts-FF0000?style=flat-square&logo=youtube&logoColor=white)
 ![Instagram Reels](https://img.shields.io/badge/Instagram_Reels-E4405F?style=flat-square&logo=instagram&logoColor=white)
@@ -20,16 +22,18 @@
 
 <br>
 
-**[⚡ Shuru karo](#-shuru-karo)** · **[🗺️ System Map](#%EF%B8%8F-system-map)** · **[🧠 Agents](#-9-agents--ek-swarm)** · **[🔁 Learning Loop](#-learning-loop--ye-band-ho-chuka-hai)** · **[🛡️ Safety](#%EF%B8%8F-safety--yahi-system-ko-zinda-rakhta-hai)** · **[⚠️ Imandari](#%EF%B8%8F-imandari-ki-baatein)**
+**[⚡ Shuru karo](#-shuru-karo)** · **[🗺️ System Map](#%EF%B8%8F-system-map)** · **[🧠 Agents](#-10-agents--ek-swarm)** · **[🔁 Learning Loop](#-learning-loop--ye-band-ho-chuka-hai)** · **[🛡️ Safety](#%EF%B8%8F-safety--yahi-system-ko-zinda-rakhta-hai)** · **[⚠️ Imandari](#%EF%B8%8F-imandari-ki-baatein)**
 
 </div>
+
+> \* **Cost footnote**: Gemini free tier = 15 RPM / 1500 RPD (Flash), Pollinations best-effort. Rate limit aane pe pipeline queue karti hai, crash nahi.
 
 ---
 
 ## ⚡ Shuru karo
 
 ```bash
-git clone <tumhara-repo> && cd autopilot
+git clone https://github.com/Abhay73888/autopilot.git && cd autopilot
 pip install -r requirements.txt
 python run.py --dry-run        # 👈 bina kisi API key ke pehla test video
 ```
@@ -72,11 +76,13 @@ flowchart TB
         direction LR
         TS["🔍 TrendScout<br/><i>topic dhoondhta hai</i>"]
         WR["✍️ Writer<br/><i>script + hook</i>"]
+        MD["🏷️ Metadata<br/><i>SEO, titles, tags</i>"]
         AD["🎨 ArtDirector<br/><i>6-8 scenes</i>"]
         IG["🖼️ ImageGen<br/><i>cartoon frames</i>"]
         VO["🎙️ Voice<br/><i>Hindi TTS</i>"]
         ED["🎬 Editor<br/><i>ffmpeg render</i>"]
         TS --> WR --> AD --> IG --> ED
+        WR --> MD
         WR --> VO --> ED
     end
 
@@ -101,6 +107,7 @@ flowchart TB
 
     CHIEF ==>|"har tick"| CREATE
     ED ==> GATE
+    MD ==> PUBLISH
     G4 ==> PUBLISH
     PUB ==> AN
     IGP ==> AN
@@ -108,6 +115,7 @@ flowchart TB
     DB -.->|"⭐"| VO
     DB -.->|"⭐"| AD
     DB -.->|"⭐"| TS
+    DB -.->|"⭐"| MD
 
     style CHIEF fill:#e94560,stroke:#fff,color:#fff
     style DB fill:#0f3460,stroke:#e94560,color:#fff
@@ -151,13 +159,14 @@ flowchart TB
 
 ---
 
-## 🧠 9 Agents — Ek Swarm
+## 🧠 10 Agents — Ek Swarm
 
 | Agent | File | Superpower |
 |---|---|---|
 | 🧭 **Chief** | `agents/chief.py` | Orchestrator — cron tick, lock, daily digest. Sabka boss |
 | 🔍 **TrendScout** | `agents/trendscout.py` | Topics — apne winners ke keywords + series + LLM. `search.list` **kabhi nahi** (100 units!) |
 | ✍️ **Writer** | `agents/writer.py` | Script + hook. 4 hook types retention ke hisaab se weighted, rotation enforced |
+| 🏷️ **Metadata** | `agents/metadata.py` | 547 lines — SEO titles, tags, description, category, thumbnail brief, 0-100 SEO score |
 | 🎨 **ArtDirector** | `agents/artdirector.py` | 6-8 scenes. Character description **har prompt mein repeat** = consistency |
 | 🖼️ **ImageGen** | `agents/imagegen.py` | Cartoon frames — free tier, Pillow fallback |
 | 🎙️ **Voice** | `agents/voice.py` | 6 profiles rotate. Word-level timing, reveal se pehle 300ms dramatic pause |
@@ -266,7 +275,7 @@ sequenceDiagram
 
 | Bucket | Hamara cap | Asli limit | Kyun kam |
 |---|---|---|---|
-| `youtube_uploads` | **5/day** | ~7 (undocumented) | Docs 100 kehte hain, practice mein ~7 pe 429 |
+| `youtube_uploads` | **5/day** | 6/day (API quota) | Default API quota 10,000 units/day, `videos.insert` = 1,600 units → max 6 uploads/day (documented). Hamara cap 5/day safe margin deta hai |
 | `youtube_search` | **5/day** | 100 | Har call **100 units** — poora din barbaad ho sakta hai |
 | `ig_publishes` | **20/24h** | 50-100 | Sources disagree — safe margin |
 | `ig_calls_hour` | **150/h** | 200 | Container polling bhi isi mein ginti hai |
@@ -309,7 +318,9 @@ python -m web.server        # http://localhost:8765
 | 🧪 **Scientist** | Chal raha experiment + champions |
 | ⚠️ **Warnings** | Aaj ke errors |
 
-> 🔒 Sirf `127.0.0.1` pe bind hota hai. Path-traversal protected. **Test-enforced.**
+> 🔒 Server default mein sirf `127.0.0.1:8765` pe chalta hai. Path-traversal protected.
+> External automation (Make.com, n8n, cron) ke liye `/api/webhook` endpoint available hai.
+> ⚠️ **Nuance**: `/api/webhook` use karne ke liye `.env` mein `MAKE_WEBHOOK_SECRET` (min 32 chars) set hona **zaroori** hai. Jab tak `tunnel.py` na chale ye local hi rehta hai. `tunnel.py` public internet pe URL banata hai — isliye secret ke bina tunnel start hi nahi hoga.
 
 ---
 
@@ -343,7 +354,7 @@ imageio-ffmpeg  # sirf agar system pe ffmpeg install na kar sako
 ## 🧪 Tests
 
 ```bash
-python test_all.py       # 260 tests, ~35 second, ZERO API keys chahiye
+python test_all.py       # 301 tests passing, ZERO API keys chahiye
 ```
 
 <details>
@@ -371,17 +382,20 @@ python test_all.py       # 260 tests, ~35 second, ZERO API keys chahiye
 autopilot/
 ├── 🚀 run.py               ek command = poora video
 ├── 🚀 run_phase2.py        script → images → narration
+├── 🖥️ app.py               desktop launcher (web server + browser open)
+├── ⚡ Autopilot.bat         Windows double-click launcher
+├── 🌐 tunnel.py            Make.com public URL (⚠️ MAKE_WEBHOOK_SECRET zaroori)
 ├── 🔑 authorize_youtube.py  ek baar OAuth
-├── 🧪 test_all.py          260 tests
+├── 🧪 test_all.py          301 tests
 ├── ⚙️ config.yaml          poore system ka control panel
 │
 ├── 🧭 agents/              chief · trendscout · writer · artdirector
-│                           imagegen · voice · publisher · ig_publisher
-│                           analyst · scientist
+│                           imagegen · voice · metadata · publisher
+│                           ig_publisher · analyst · scientist
 ├── 🔧 core/                config · db · ffmpeg · hosting · llm
 │                           logbook · mp3 · oauth · quota · stats
 ├── 🎬 pipeline/            render · subtitles · validate
-├── 🖥️ web/                 server (dashboard)
+├── 🖥️ web/                 server (dashboard + /api/webhook)
 ├── 🧠 data/                autopilot.db  ← system ka dimaag, DELETE MAT KARNA
 └── 🔤 assets/fonts/        Noto Sans Devanagari
 ```
@@ -478,6 +492,13 @@ Statistics numerically verified hai, pipeline end-to-end kaam karti hai, par
 `review_first` default hai — pehle 20 videos tum khud dekhoge.
 </details>
 
+<details>
+<summary><b>10. Sandbox/office network pe edge-tts block ho sakta hai</b></summary>
+<br>
+
+`edge-tts` Microsoft ke WebSocket endpoint `speech.platform.bing.com:443` pe connect karta hai. Office ya firewall wale networks pe ye block ho sakta hai. Aise mein fallback ke liye `gTTS` (`pip install gTTS`) ya `espeak-ng` system package hona chahiye. Agar saare TTS fail hon to video mein silent audio clips banti hain aur validation us video ko **FATAL: silent_narration** se reject karke publish hone se rok deta hai.
+</details>
+
 ---
 
 ## 🚫 Ye kabhi mat karna
@@ -508,6 +529,9 @@ python run.py --dry-run
 
 **Banaya gaya ❤️ aur `urllib` se — kyunki 3 dependencies kaafi hain.**
 
+MIT License · Copyright © 2026 Abhay Kumar Maurya
+
 ⭐ *Star karo agar ye project pasand aaya!* ⭐
 
 </div>
+

@@ -46,9 +46,55 @@ log = Logbook("dashboard")
 ROOT = Path(CONFIG["_root"])
 PORT = int(CONFIG.get("dashboard_port", 8765))
 
-# Make.com webhook secret — .env mein MAKE_WEBHOOK_SECRET set karo
-# Agar nahi set kiya to sirf localhost se hi accessible hoga
+import hmac
+from collections import defaultdict
+
+# Make.com webhook secret — .env mein MAKE_WEBHOOK_SECRET set karo (min 32 chars)
 MAKE_WEBHOOK_SECRET = os.environ.get("MAKE_WEBHOOK_SECRET", "")
+if MAKE_WEBHOOK_SECRET and len(MAKE_WEBHOOK_SECRET) < 32:
+    log.warn(f"MAKE_WEBHOOK_SECRET chhota hai ({len(MAKE_WEBHOOK_SECRET)} chars) — min 32 chars rakho")
+
+# In-memory rate limiting: per-IP max 10 requests per minute
+WEBHOOK_RATE_LIMIT = 10
+WEBHOOK_RATE_WINDOW = 60.0
+_webhook_requests: dict[str, list[float]] = defaultdict(list)
+_webhook_lock = threading.Lock()
+
+
+def _check_webhook_auth(headers: dict, body: dict, client_ip: str | None = None) -> tuple[bool, int, str]:
+    """
+    Pure auth & rate limit checker for /api/webhook.
+    Returns: (is_ok, http_status_code, error_or_ok_message)
+    """
+    # Agar environment variable expressly define ho chuka hai (chahe empty ho) to usse lo
+    if "MAKE_WEBHOOK_SECRET" in os.environ:
+        secret = os.environ["MAKE_WEBHOOK_SECRET"].strip()
+    else:
+        secret = MAKE_WEBHOOK_SECRET.strip()
+    if not secret:
+        log.warn("Webhook disabled — .env mein MAKE_WEBHOOK_SECRET set karo (min 32 chars)")
+        return False, 403, "Webhook disabled: MAKE_WEBHOOK_SECRET not configured"
+
+    # Rate limiting check
+    ip_key = client_ip or "unknown"
+    now = time.time()
+    with _webhook_lock:
+        timestamps = [t for t in _webhook_requests[ip_key] if now - t < WEBHOOK_RATE_WINDOW]
+        if len(timestamps) >= WEBHOOK_RATE_LIMIT:
+            _webhook_requests[ip_key] = timestamps
+            log.warn(f"Webhook rate limit exceed hua for IP {ip_key}")
+            return False, 429, "Rate limit exceeded (max 10 req/min)"
+        timestamps.append(now)
+        _webhook_requests[ip_key] = timestamps
+
+    # Authentication check via constant-time hmac.compare_digest
+    incoming = body.get("secret", "") or headers.get("X-Webhook-Secret", "")
+    if not isinstance(incoming, str) or not incoming or not hmac.compare_digest(incoming, secret):
+        log.warn("Webhook: galat secret, reject kar rahe hain")
+        return False, 403, "Invalid secret"
+
+    return True, 200, "OK"
+
 
 
 # =====================================================================
@@ -350,12 +396,11 @@ class Handler(BaseHTTPRequestHandler):
             n = int(self.headers.get("Content-Length", 0))
             body = json.loads(self.rfile.read(n) or b"{}")
 
-            # Secret check (agar set hai)
-            if MAKE_WEBHOOK_SECRET:
-                incoming = body.get("secret", "") or self.headers.get("X-Webhook-Secret", "")
-                if incoming != MAKE_WEBHOOK_SECRET:
-                    log.warn("Webhook: galat secret, reject kar rahe hain")
-                    return self._json(403, {"ok": False, "error": "Invalid secret"})
+            client_ip = self.client_address[0] if hasattr(self, "client_address") and self.client_address else "unknown"
+            headers_dict = dict(self.headers)
+            ok, status_code, err_msg = _check_webhook_auth(headers_dict, body, client_ip)
+            if not ok:
+                return self._json(status_code, {"ok": False, "error": err_msg})
 
             action = body.get("action", "generate")
             topic  = body.get("topic") or None

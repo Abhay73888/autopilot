@@ -102,6 +102,16 @@ def load(path: str | Path | None = None) -> dict:
     data["db_path"] = str(ROOT / data["db_path"])
     data["log_dir"] = str(ROOT / data["log_dir"])
     data["_root"] = str(ROOT)
+
+    # ---- Placeholder checks (agar mock_mode false hai to warning do) ----
+    if not data.get("mock_mode", True):
+        if data.get("brand_name") == "AUTOPILOT":
+            print("⚠️  WARNING: config.yaml mein brand_name abhi bhi 'AUTOPILOT' hai — apna channel naam daalo")
+        if data.get("instagram_handle") in ("@your_handle", ""):
+            print("⚠️  WARNING: config.yaml mein instagram_handle abhi bhi placeholder hai — apna IG handle daalo")
+        if data.get("youtube_channel") in ("https://youtube.com/@your_channel", ""):
+            print("⚠️  WARNING: config.yaml mein youtube_channel abhi bhi placeholder hai — apna channel URL daalo")
+
     return data
 
 

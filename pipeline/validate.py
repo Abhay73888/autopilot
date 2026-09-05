@@ -137,6 +137,9 @@ def validate(video_path: str | Path, *, manifest: dict | None = None,
                 "Render fail hua tha. Logs dekho aur dobara render karo.")
         return rep
 
+    if manifest:
+        _check_content(rep, manifest)
+
     # ---------- container + streams ----------
     info = probe(p)
     streams = info.get("streams", [])
@@ -158,9 +161,6 @@ def validate(video_path: str | Path, *, manifest: dict | None = None,
         _check_loudness(rep, p)
         _check_black_frames(rep, p)
         _check_first_frame(rep, p)
-
-    if manifest:
-        _check_content(rep, manifest)
 
     return rep
 
@@ -404,7 +404,17 @@ def _check_content(rep: Report, m: dict):
                 "Ye publish layak nahi hai.",
                 "Internet check karke dobara chalao: python run.py")
 
-    if m.get("narration", {}).get("engines_used") == ["espeak"]:
+    narr = m.get("narration", {})
+    engines_used = set(narr.get("engines_used", []))
+    lines = narr.get("lines", [])
+    has_silent_line = any(ln.get("engine") == "silence" for ln in lines)
+    if "silence" in engines_used or has_silent_line:
+        rep.add("FATAL", "silent_narration",
+                "Narration mein silent audio clips hain — TTS fail hua tha. "
+                "Ye video publish layak nahi hai.",
+                "TTS engines check karo (SETUP.md STEP 4)")
+
+    if narr.get("engines_used") == ["espeak"]:
         rep.add("WARN", "ROBOTIC_VOICE",
                 "espeak fallback use hua — awaaz robotic hai, retention girega",
                 "`pip install edge-tts` karo")

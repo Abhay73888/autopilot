@@ -32,6 +32,7 @@ from pathlib import Path
 
 from core.config import CONFIG
 from core.db import DB
+from core.ffmpeg import ffmpeg_bin
 from core.logbook import Logbook
 from core.mp3 import duration_sec
 
@@ -137,13 +138,35 @@ class Voice:
         for i, line in enumerate(lines):
             path = out_dir / "lines" / f"line_{i+1:02d}.mp3"
             ok = self._synth(line, path, prof)
-            dur = duration_sec(path) if path.exists() else 0.0
+            dur = duration_sec(path) if (path.exists() and path.stat().st_size > 0) else 0.0
             if dur <= 0:
-                # fail-safe: silent clip banao taaki timing na bigde, par LOUD warning
+                # fail-safe: silent clip banao ffmpeg anullsrc se taaki timing na bigde
                 dur = max(1.2, len(line.split()) / 2.6)
                 log.warn(f"Line {i+1} ka audio nahi bana — {dur:.1f}s silence daal rahe hain",
                          line=line[:60])
                 ok = "silence"
+                created_silent = False
+                try:
+                    fb = ffmpeg_bin()
+                    cmd = [
+                        fb, "-y", "-hide_banner", "-loglevel", "error",
+                        "-f", "lavfi", "-t", f"{dur:.3f}",
+                        "-i", "anullsrc=channel_layout=mono:sample_rate=24000",
+                        "-codec:a", "libmp3lame", "-b:a", "64k",
+                        str(path)
+                    ]
+                    subprocess.run(cmd, check=True, capture_output=True, timeout=30)
+                    if path.exists() and path.stat().st_size > 0:
+                        created_silent = True
+                except Exception as e:
+                    log.warn(f"Silent audio generation fail ({str(e)[:80]}) — clip hata rahe hain")
+                    path.unlink(missing_ok=True)
+
+                if not created_silent:
+                    # ffmpeg nahi hai ya fail hua — clip timeline se hatao
+                    clips.append({"i": i, "text": line, "path": str(path), "dur": 0.0, "engine": "missing"})
+                    continue
+
             clips.append({"i": i, "text": line, "path": str(path), "dur": dur, "engine": ok})
 
         timeline = self._build_timeline(clips)
@@ -205,6 +228,7 @@ class Voice:
                 errors.append(f"{engine}: {str(e)[:100]}")
                 log.debug(f"{engine} fail: {str(e)[:120]}")
         log.error("Saare TTS engines fail: " + " | ".join(errors))
+        path.unlink(missing_ok=True)
         return ""
 
     def _tts_edge_tts(self, text: str, path: Path, prof: dict):
@@ -281,7 +305,7 @@ class Voice:
         MP3 frames ke liye ye chal jaata hai, par pauses nahi milte, isliye caller
         timeline recompute karta hai.
         """
-        existing = [c for c in clips if Path(c["path"]).exists()]
+        existing = [c for c in clips if Path(c["path"]).exists() and Path(c["path"]).stat().st_size > 0]
         if not existing:
             log.error("Koi audio clip nahi bani — narration.mp3 khaali rahega")
             out_path.write_bytes(b"")

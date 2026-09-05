@@ -180,6 +180,11 @@ def final_report(manifest: dict, info: dict, elapsed: float, rep=None):
     print(f"  Template : {manifest['art']['template_name']}")
     print(f"  Voice    : {n['voice_id']}")
     print(f"  Scenes   : {info['n_scenes']} · Subtitles: {len(manifest.get('words', []))} words")
+    engines = n.get("engines_used", [])
+    if "silence" in engines:
+        silent_count = sum(1 for ln in n.get("lines", []) if ln.get("engine") == "silence") or 1
+        print(f"  ⚠️  Narration mein {silent_count} lines silent hain — ye video publish layak NAHI hai. "
+              f"TTS fix karo (SETUP.md STEP 4).")
     print("-" * 68)
 
     # ---- validate.py ka poora report (Section 12 ke acceptance points) ----

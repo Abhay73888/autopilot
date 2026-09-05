@@ -37,7 +37,7 @@ from pipeline.render import ken_burns, build_audio_filter, _even, _shift_audio_i
 from pipeline.validate import (validate, validate_dir, Report, LIMITS,  # noqa: E402
                                _check_video_stream, _check_audio_stream,
                                _check_duration, _check_content, _parse_fps)
-from web.server import gather, do_action  # noqa: E402
+from web.server import gather, do_action, _check_webhook_auth  # noqa: E402
 from core.oauth import Credentials, OAuthError, YT_SCOPES, _load_client_secret  # noqa: E402
 from agents.publisher import (YouTubePublisher, PublishError, _yt_error,  # noqa: E402
                               best_publish_time, CHUNK)
@@ -3404,6 +3404,146 @@ def _():
     assert len(meta["snippet"]["tags"]) >= 15, "AI tags upload metadata tak nahi pahunche"
     assert meta["status"]["containsSyntheticMedia"] is True
     d.close()
+
+
+# =====================================================================
+# PRIORITY 1 TESTS: Webhook Auth & Voice Fallback Safety
+# =====================================================================
+@test("webhook: secret unset hone pe 403 milta hai")
+def _():
+    old = os.environ.get("MAKE_WEBHOOK_SECRET")
+    try:
+        os.environ["MAKE_WEBHOOK_SECRET"] = ""
+        ok, code, msg = _check_webhook_auth({}, {"secret": "anything"}, client_ip="127.0.0.1")
+        assert not ok
+        assert code == 403
+        assert "disabled" in msg.lower()
+    finally:
+        if old is not None:
+            os.environ["MAKE_WEBHOOK_SECRET"] = old
+        else:
+            os.environ.pop("MAKE_WEBHOOK_SECRET", None)
+
+
+@test("webhook: galat secret pe 403 milta hai")
+def _():
+    old = os.environ.get("MAKE_WEBHOOK_SECRET")
+    try:
+        os.environ["MAKE_WEBHOOK_SECRET"] = "a" * 32
+        ok, code, msg = _check_webhook_auth({}, {"secret": "galat_secret_123"}, client_ip="127.0.0.2")
+        assert not ok
+        assert code == 403
+        assert "invalid secret" in msg.lower()
+    finally:
+        if old is not None:
+            os.environ["MAKE_WEBHOOK_SECRET"] = old
+        else:
+            os.environ.pop("MAKE_WEBHOOK_SECRET", None)
+
+
+@test("webhook: sahi secret pe 200 milta hai")
+def _():
+    old = os.environ.get("MAKE_WEBHOOK_SECRET")
+    sec = "b" * 32
+    try:
+        os.environ["MAKE_WEBHOOK_SECRET"] = sec
+        ok, code, msg = _check_webhook_auth({"X-Webhook-Secret": sec}, {}, client_ip="127.0.0.3")
+        assert ok
+        assert code == 200
+    finally:
+        if old is not None:
+            os.environ["MAKE_WEBHOOK_SECRET"] = old
+        else:
+            os.environ.pop("MAKE_WEBHOOK_SECRET", None)
+
+
+@test("webhook: 1 min mein 11th request pe 429 rate limit milta hai")
+def _():
+    old = os.environ.get("MAKE_WEBHOOK_SECRET")
+    sec = "c" * 32
+    try:
+        os.environ["MAKE_WEBHOOK_SECRET"] = sec
+        test_ip = "192.168.99.99"
+        for i in range(10):
+            ok, code, _ = _check_webhook_auth({}, {"secret": sec}, client_ip=test_ip)
+            assert ok and code == 200, f"Request {i+1} fail hua"
+        # 11th request
+        ok, code, msg = _check_webhook_auth({}, {"secret": sec}, client_ip=test_ip)
+        assert not ok
+        assert code == 429
+        assert "rate limit" in msg.lower()
+    finally:
+        if old is not None:
+            os.environ["MAKE_WEBHOOK_SECRET"] = old
+        else:
+            os.environ.pop("MAKE_WEBHOOK_SECRET", None)
+
+
+@test("voice: _synth fail hone pe narrate() valid audio banaye ya silence handle kare")
+def _():
+    import tempfile
+    v = Voice(fresh_db())
+    out = Path(tempfile.mkdtemp())
+    # monkeypatch _synth to always fail
+    orig_synth = v._synth
+    v._synth = lambda text, path, prof: ""
+    try:
+        res = v.narrate(["Ek test line jo fail hogi"], out, profile_id="hi_m_grave")
+        assert "silence" in res["engines_used"] or "missing" in res["engines_used"]
+        merged = Path(res["audio_path"])
+        assert merged.exists()
+    finally:
+        v._synth = orig_synth
+
+
+@test("voice: _concat 0-byte clips ko skip kare")
+def _():
+    import tempfile
+    v = Voice(fresh_db())
+    out = Path(tempfile.mkdtemp())
+    zero_file = out / "zero.mp3"
+    zero_file.write_bytes(b"")
+    clips = [{"path": str(zero_file), "dur": 1.0, "i": 0, "text": "test"}]
+    merged = out / "merged.mp3"
+    v._concat(clips, merged, [])
+    assert merged.exists()
+    assert merged.stat().st_size == 0
+
+
+@test("validate: narration mein 'silence' hone pe validate FAIL kare (silent_narration)")
+def _():
+    import tempfile
+    out = Path(tempfile.mkdtemp())
+    mp4 = out / "final.mp4"
+    mp4.write_bytes(b"x" * 200000)
+    manifest = {
+        "video_id": 999,
+        "scenes": [],
+        "script": {"hook_type": "question", "hook_line": "test", "hook_text_overlay": "overlay"},
+        "narration": {"engines_used": ["silence"], "lines": [{"engine": "silence"}]}
+    }
+    rep = validate(mp4, manifest=manifest, deep=False)
+    assert not rep.ok
+    codes = [issue.code for issue in rep.issues]
+    assert "silent_narration" in codes
+
+
+@test("quota: ZoneInfoNotFoundError hone pe 'Timezone data nahi mila — pip install tzdata karo' error aata hai")
+def _():
+    import zoneinfo
+    import core.quota
+    orig_zoneinfo = core.quota.ZoneInfo
+    def fake_zoneinfo(key):
+        raise zoneinfo.ZoneInfoNotFoundError("No tzdata")
+    core.quota.ZoneInfo = fake_zoneinfo
+    try:
+        try:
+            core.quota._get_pacific_tz()
+            assert False, "RuntimeError aana chahiye tha"
+        except RuntimeError as e:
+            assert "pip install tzdata" in str(e)
+    finally:
+        core.quota.ZoneInfo = orig_zoneinfo
 
 
 # =====================================================================

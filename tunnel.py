@@ -2,9 +2,19 @@
 tunnel.py — Make.com ke liye public URL banao
 Ye script serveo.net use karta hai (free, no account needed)
 """
+import os
 import subprocess
 import time
 import sys
+
+secret = os.environ.get("MAKE_WEBHOOK_SECRET", "").strip()
+if not secret or len(secret) < 32:
+    print("\n❌ SECURITY ERROR:")
+    print("Bina secret ke public URL = koi bhi tumhara quota jala sakta hai.")
+    print("Pehle .env mein MAKE_WEBHOOK_SECRET set karo (min 32 characters).")
+    print("Secret generate karne ke liye chalao:")
+    print('  python -c "import secrets; print(secrets.token_urlsafe(32))"')
+    sys.exit(1)
 
 print("=" * 50)
 print("  AUTOPILOT — Public URL bana raha hai...")

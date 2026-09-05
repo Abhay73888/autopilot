@@ -17,13 +17,28 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timedelta, timezone
-from zoneinfo import ZoneInfo  # stdlib (Python 3.9+)
+try:
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError  # stdlib (Python 3.9+)
+except ImportError:
+    from zoneinfo import ZoneInfo  # type: ignore
+    ZoneInfoNotFoundError = KeyError  # type: ignore
 
 from .db import DB
 from .logbook import Logbook
 
 log = Logbook("quota")
-PACIFIC = ZoneInfo("America/Los_Angeles")
+
+def _get_pacific_tz() -> ZoneInfo:
+    try:
+        return ZoneInfo("America/Los_Angeles")
+    except ZoneInfoNotFoundError:
+        log.error("Timezone data nahi mila — pip install tzdata karo")
+        raise RuntimeError("Timezone data nahi mila — pip install tzdata karo") from None
+
+try:
+    PACIFIC = _get_pacific_tz()
+except RuntimeError:
+    PACIFIC = timezone(timedelta(hours=-8))  # fallback PST for import safety
 
 # ---------------------------------------------------------------------
 # BUDGETS — ye HAMARE safety caps hain, API ke asli limits se KAM.

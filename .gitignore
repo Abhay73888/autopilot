@@ -4,8 +4,17 @@ client_secret.json
 data/*.db
 data/*.db-wal
 data/*.db-shm
+data/*.json
 logs/
 output/
 __pycache__/
 *.pyc
 *.ass
+*.mp3
+*.mp4
+*.wav
+.venv/
+venv/
+.DS_Store
+Thumbs.db
+

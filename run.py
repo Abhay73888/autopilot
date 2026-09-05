@@ -92,11 +92,11 @@ def preflight() -> bool:
 
 
 def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
-              preset: str, keep_temp: bool) -> dict | None:
+              preset: str, keep_temp: bool, voice: str | None = None) -> dict | None:
     t0 = time.time()
 
     # ---------- PHASE 2 ----------
-    manifest = make_video(topic, dry_run=dry_run, with_images=with_images)
+    manifest = make_video(topic, dry_run=dry_run, with_images=with_images, voice=voice)
     vid = manifest["video_id"]
     out_dir = Path(CONFIG["_root"]) / "output" / f"video_{vid:04d}"
 
@@ -219,6 +219,7 @@ def final_report(manifest: dict, info: dict, elapsed: float, rep=None):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="AUTOPILOT — ek command se video")
     ap.add_argument("--topic", help="video ka topic")
+    ap.add_argument("--voice", help="voice profile (e.g. hi_m_grave, hi_f_calm)")
     ap.add_argument("--count", type=int, default=1, help="kitne videos banane hain")
     ap.add_argument("--dry-run", action="store_true", help="koi network call nahi")
     ap.add_argument("--no-images", action="store_true", help="images skip (tez test)")
@@ -244,7 +245,7 @@ if __name__ == "__main__":
                 if a.count > 1:
                     log.info(f"===== VIDEO {i+1}/{a.count} =====")
                 one_video(a.topic, dry_run=a.dry_run, with_images=not a.no_images,
-                          preset=a.preset, keep_temp=a.keep_temp)
+                          preset=a.preset, keep_temp=a.keep_temp, voice=a.voice)
         if a.dashboard:
             from web.server import serve
             serve()

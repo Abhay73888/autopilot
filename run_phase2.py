@@ -49,7 +49,7 @@ SEED_TOPICS = [
 
 
 def make_video(topic: str | None = None, *, dry_run: bool = False,
-               with_images: bool = True) -> dict:
+               with_images: bool = True, voice: str | None = None) -> dict:
     t0 = time.time()
     db = DB()
     llm = LLM(force_mock=True if dry_run else None)
@@ -110,8 +110,8 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
 
     # ---------- 3. VOICE ----------
     log.info("🎙️  Voice narration bana rahi hai...")
-    voice = Voice(db)
-    narration = voice.narrate(writer.lines(script), out_dir)
+    voice_agent = Voice(db)
+    narration = voice_agent.narrate(writer.lines(script), out_dir, profile_id=voice)
     db.update_video(vid, voice_id=narration["voice_id"],
                     length_sec=narration["duration_sec"])
 
@@ -265,11 +265,12 @@ def report(m: dict, out_dir: Path):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="AUTOPILOT Phase 2 runner")
     ap.add_argument("--topic", help="video ka topic (na do to seed list se uthega)")
+    ap.add_argument("--voice", help="voice profile (e.g. hi_m_grave, hi_f_calm)")
     ap.add_argument("--dry-run", action="store_true", help="koi network call nahi")
     ap.add_argument("--no-images", action="store_true", help="images skip karo (tez test)")
     a = ap.parse_args()
     try:
-        make_video(a.topic, dry_run=a.dry_run, with_images=not a.no_images)
+        make_video(a.topic, dry_run=a.dry_run, with_images=not a.no_images, voice=a.voice)
     except KeyboardInterrupt:
         log.warn("User ne rok diya")
     except Exception as e:  # noqa: BLE001

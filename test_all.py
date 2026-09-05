@@ -3596,6 +3596,14 @@ def _():
         web.server.CONFIG = orig_cfg
 
 
+@test("run: make_video custom topic aur voice parameter ko respect kare")
+def _():
+    from run_phase2 import make_video
+    m = make_video("CLI Custom Topic Test", dry_run=True, with_images=False, voice="hi_f_urgent")
+    assert m["topic"] == "CLI Custom Topic Test"
+    assert m["narration"]["voice_id"] == "hi_f_urgent"
+
+
 # =====================================================================
 # REPORT
 # =====================================================================

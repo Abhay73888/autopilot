@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: autopilot-swarm
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: HOST
+        value: "0.0.0.0"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: MAKE_WEBHOOK_SECRET
+        generateValue: true

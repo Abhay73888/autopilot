@@ -99,7 +99,7 @@ def build_sound_design_package(total: float, cuts: list[float],
       bg_label: label for mixed background audio
       applied: dictionary of applied effects
     """
-    cfg = cfg_override or CONFIG.get("effects", {}).get("sound", {})
+    cfg = cfg_override or (CONFIG.get("effects") or {}).get("sound") or {}
     do_heartbeat = cfg.get("heartbeat", True)
     do_riser = cfg.get("riser", True)
     do_sub_hit = cfg.get("sub_hit", True)

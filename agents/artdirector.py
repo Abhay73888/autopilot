@@ -296,7 +296,7 @@ Sirf JSON return karo:
         if not isinstance(raw_scenes, list):
             raw_scenes = []
 
-        cfg_eff = CONFIG.get("effects", {}).get("character_consistency", {})
+        cfg_eff = (CONFIG.get("effects") or {}).get("character_consistency") or {}
         neg_extra = cfg_eff.get("negative_prompt_extra", "different face, inconsistent clothing, different actor")
         full_negative = f"{NEGATIVE}, {neg_extra}"
 

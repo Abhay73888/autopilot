@@ -305,9 +305,11 @@ def do_action(action: str, video_id: int, payload: dict) -> dict:
             dry_run = bool(payload.get("dry_run", CONFIG.get("mock_mode")))
 
             def _gen(worker_db):
-                from run import make_video
-                res = make_video(topic=topic, dry_run=dry_run)
-                vid = res.get("video_id", 0) if isinstance(res, dict) else int(res or 0)
+                from run import one_video
+                manifest = one_video(topic=topic, dry_run=dry_run, with_images=True, preset="veryfast", keep_temp=False, voice=payload.get("voice"))
+                if not manifest:
+                    raise RuntimeError("Pipeline failed to generate and render video. Check logs for details.")
+                vid = manifest.get("video_id", 0)
                 v_dir = ROOT / "output" / f"video_{vid:04d}"
                 paths = {}
                 if (v_dir / "final.mp4").exists():

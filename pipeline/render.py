@@ -316,7 +316,7 @@ class Renderer:
 
     # ------------------------------------------------------------------
     def _render_clip(self, sc: dict, out: Path, preset: str, is_first: bool = False):
-        vis_cfg = self.m.get("effects", {}).get("visual") or CONFIG.get("effects", {}).get("visual", {})
+        vis_cfg = (self.m.get("effects") or {}).get("visual") or (CONFIG.get("effects") or {}).get("visual") or {}
         if vis_cfg:
             from pipeline.effects import build_cinematic_scene_filter
             vf, _ = build_cinematic_scene_filter(
@@ -397,7 +397,7 @@ class Renderer:
             if ln.get("role") == "reveal":
                 reveal_sec = float(ln.get("start", total * 0.75))
                 break
-        sound_cfg = self.m.get("effects", {}).get("sound") or CONFIG.get("effects", {}).get("sound", {})
+        sound_cfg = (self.m.get("effects") or {}).get("sound") or (CONFIG.get("effects") or {}).get("sound") or {}
         cinematic_sound = bool(sound_cfg)
 
         extra_inputs, afilter = build_audio_filter(len(scenes), cuts, total,

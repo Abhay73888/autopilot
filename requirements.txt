@@ -37,6 +37,10 @@ Pillow>=10.0.0
 python-dotenv>=1.0.0
 # ^ Environment variable loader for cloud environments and .env
 
+PyYAML>=6.0.1
+# ^ Full nested YAML parser for config.yaml (effects, character consistency, voice)
+
+
 
 
 # ---------- PHASE 3: ffmpeg ke liye ----------

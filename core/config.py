@@ -86,30 +86,26 @@ def _coerce(value: str):
 
 
 def _mini_yaml(text: str) -> dict:
-    """YAML parser — key: value aur 2-space indented sub-blocks padhta hai."""
+    """Robust YAML parser supporting arbitrary indentation nesting."""
     out = {}
-    curr_section = None
+    stack = [(-1, out)]  # (indent_level, dict_ref)
     for raw_line in text.splitlines():
         stripped = raw_line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if ":" not in stripped:
+        if not stripped or stripped.startswith("#") or ":" not in stripped:
             continue
         indent = len(raw_line) - len(raw_line.lstrip(" "))
         key, _, value = stripped.partition(":")
         key = key.strip()
         val_str = value.strip()
-        if indent > 0 and curr_section is not None:
-            if not isinstance(out.get(curr_section), dict):
-                out[curr_section] = {}
-            out[curr_section][key] = _coerce(val_str)
+        while len(stack) > 1 and indent <= stack[-1][0]:
+            stack.pop()
+        parent = stack[-1][1]
+        if not val_str or val_str.startswith("#"):
+            new_dict = {}
+            parent[key] = new_dict
+            stack.append((indent, new_dict))
         else:
-            if not val_str or val_str.startswith("#"):
-                out[key] = {}
-                curr_section = key
-            else:
-                out[key] = _coerce(val_str)
-                curr_section = None
+            parent[key] = _coerce(val_str)
     return out
 
 

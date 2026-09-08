@@ -82,6 +82,12 @@ class Logbook:
                 print(safe_line, file=out_stream)
             except Exception:
                 pass
+        except OSError:
+            # Windows background thread mein stdout/stderr invalid ho sakta hai
+            # [Errno 22] Invalid argument — silently ignore, file log already hua
+            pass
+        except Exception:
+            pass
 
     # ---------- public ----------
     def debug(self, msg, **f): self._write("DEBUG", msg, **f)

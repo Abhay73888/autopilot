@@ -309,7 +309,15 @@ def do_action(action: str, video_id: int, payload: dict) -> dict:
                 manifest = one_video(topic=topic, dry_run=dry_run, with_images=True, preset="veryfast", keep_temp=False, voice=payload.get("voice"))
                 if not manifest:
                     raise RuntimeError("Pipeline failed to generate and render video. Check logs for details.")
+                # one_video now returns the full manifest dict with video_id
                 vid = manifest.get("video_id", 0)
+                if not vid:
+                    # Fallback: try to get video_id from render info embedded in manifest
+                    render_info = manifest.get("render", {})
+                    video_path = render_info.get("video_path", "")
+                    import re
+                    m = re.search(r"video_(\d+)", video_path)
+                    vid = int(m.group(1)) if m else 0
                 v_dir = ROOT / "output" / f"video_{vid:04d}"
                 paths = {}
                 if (v_dir / "final.mp4").exists():

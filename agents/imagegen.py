@@ -89,7 +89,7 @@ class ImageGen:
         def _fetch():
             req = urllib.request.Request(url, headers={"User-Agent": UA})
             try:
-                with urllib.request.urlopen(req, timeout=45) as r:
+                with urllib.request.urlopen(req, timeout=8) as r:
                     data = r.read()
             except urllib.error.HTTPError as e:
                 if e.code == 429:
@@ -101,14 +101,8 @@ class ImageGen:
                 raise RuntimeError(f"JPEG/PNG nahi mila, mila: {data[:40]!r}")
             path.write_bytes(data)
 
-        # 1 retry only if not 429
-        try:
-            _fetch()
-        except RuntimeError as e:
-            if "429" in str(e):
-                raise
-            retry(_fetch, tries=2, base_delay=2.0, log=log, what=f"pollinations {path.name}")
-        time.sleep(0.5)
+        _fetch()
+        time.sleep(0.3)
 
     # ---------------- provider 2: gemini image ----------------
     def _p_gemini_image(self, prompt: str, path: Path, seed: int):

@@ -166,7 +166,8 @@ def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
     db.close()
 
     final_report(manifest, info, time.time() - t0, rep)
-    return info
+    # Return full manifest (contains video_id + render info) so callers can get video_id
+    return manifest
 
 
 def render_only(video_id: int, preset: str, keep_temp: bool):

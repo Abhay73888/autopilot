@@ -30,6 +30,32 @@ if sys.platform == "win32":
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def _load_env():
+    env_path = ROOT / ".env"
+    if not env_path.exists():
+        return
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(env_path)
+    except ImportError:
+        pass
+    try:
+        with open(env_path, "r", encoding="utf-8", errors="ignore") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                k = k.strip()
+                v = v.strip().strip('"').strip("'")
+                os.environ.setdefault(k, v)
+    except Exception:
+        pass
+
+
+_load_env()
+
+
 def _coerce(value: str):
     """String ko sahi Python type mein badlo: true -> True, 32 -> 32, "x" -> x"""
     v = value.strip()
@@ -60,16 +86,30 @@ def _coerce(value: str):
 
 
 def _mini_yaml(text: str) -> dict:
-    """Flat YAML parser — sirf 'key: value' lines padhta hai."""
+    """YAML parser — key: value aur 2-space indented sub-blocks padhta hai."""
     out = {}
-    for line in text.splitlines():
-        stripped = line.strip()
+    curr_section = None
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
         if not stripped or stripped.startswith("#"):
             continue
         if ":" not in stripped:
             continue
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
         key, _, value = stripped.partition(":")
-        out[key.strip()] = _coerce(value)
+        key = key.strip()
+        val_str = value.strip()
+        if indent > 0 and curr_section is not None:
+            if not isinstance(out.get(curr_section), dict):
+                out[curr_section] = {}
+            out[curr_section][key] = _coerce(val_str)
+        else:
+            if not val_str or val_str.startswith("#"):
+                out[key] = {}
+                curr_section = key
+            else:
+                out[key] = _coerce(val_str)
+                curr_section = None
     return out
 
 

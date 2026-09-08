@@ -52,9 +52,9 @@ class ImageGen:
         for sc in scenes:
             path = out_dir / sc["file"]
             # seed fix rakhna: same story = same style feel (consistency)
-            seed = (seed_base or 42) + sc["n"]
+            seed = sc.get("seed") or ((seed_base or 42) + sc["n"])
             provider = self.generate_one(sc["image_prompt"], path, seed=seed)
-            results.append({**sc, "path": str(path), "provider": provider})
+            results.append({**sc, "path": str(path), "provider": provider, "seed": seed})
         summary = {p: f"{s['ok']}✅/{s['fail']}❌" for p, s in self.stats.items() if s["ok"] or s["fail"]}
         log.ok(f"{len(results)} images ready", providers=summary, folder=str(out_dir))
         return results

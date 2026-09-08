@@ -50,12 +50,16 @@ HOOK_TYPES = {
     },
 }
 BANNED_HOOKS = ["generic_reveal"]  # 12% retention = distribution suicide
+VALID_EMOTIONS = {
+    "neutral", "curious", "serious", "nervous", "trembling",
+    "whispers", "panicked", "gasp", "sighs", "amazed", "cold", "urgent"
+}
 
 
 class Writer:
     def __init__(self, db: DB | None = None, llm: LLM | None = None):
         self.db = db or DB()
-        self.llm = llm or LLM()
+        self.llm = (llm.for_agent("writer") if hasattr(llm, "for_agent") else llm) if llm else LLM(agent_name="writer")
 
     # ------------------------------------------------------------------
     def pick_hook_type(self) -> str:
@@ -89,8 +93,6 @@ class Writer:
                     losers.append(r["loser"])
 
         # ⭐ HARD RULE: pichhle video ka hook type dobara nahi chalega.
-        # (Soft penalty kaafi nahi thi — random se repeat ho jaata tha, aur
-        #  lagatar same hook = duplicate-pattern clustering ka seedha invite hai.)
         blocked = set(recent[:1])
         candidates = [h for h in HOOK_TYPES if h not in blocked] or list(HOOK_TYPES)
 
@@ -98,24 +100,13 @@ class Writer:
         for h in candidates:
             w = HOOK_TYPES[h]["retention"]
             # Overuse penalty — duplicate-pattern clustering se bachav.
-            # ⚠️ Champion ke liye limit ZYADA hai (10 vs 6): wo jeeta hua hai,
-            # isliye usse zyada chalna CHAHIYE. Par 20 mein se 10 se zyada
-            # nahi — warna clustering ka risk. Ye ceiling jaan-boojh kar hai.
-            overuse_limit = 10 if h in winners else 6
-            if counts.get(h, 0) >= overuse_limit:
+            if counts.get(h, 0) >= 6:
                 w *= 0.25
-            if h in recent[1:3]:               # 2-3 video pehle tha = kam chance
-                w *= 0.35
             if h in winners:
-                # ⭐ A/B ka winner. Boost bada hai par INFINITE nahi —
-                # kyunki 100% ek hi hook = duplicate-pattern clustering = throttle.
-                # Target: champion ~35-40% share le, 100% nahi.
-                w *= 4.0
+                w *= 2.5
             if h in losers:
-                # high-confidence pe haara hua — lagbhag hata do (poora nahi,
-                # kyunki algorithm badal sakta hai aur re-test karna padega)
-                w *= 0.15
-            weights[h] = w
+                w *= 0.3
+            weights[h] = max(0.05, w)
 
         pick = random.choices(list(weights), weights=list(weights.values()))[0]
         log.info(f"Hook type chuna: {pick}", last20=counts, winners=winners or None)
@@ -157,14 +148,17 @@ TOPIC: {topic}
 VIDEO LENGTH: {length} seconds (~{target_words} shabd, isse zyada BILKUL nahi)
 HOOK TYPE (compulsory): {hook_type} — {HOOK_TYPES[hook_type]['desc']}
 
-ALGORITHM RULES (2026 research, inhe todna mana hai):
-1. Pehli spoken line 1.5 second mein khatam honi chahiye aur emotional trigger honi chahiye.
-2. Text overlay 5-8 shabd ka, curiosity-gap wala (60% log sound off pe dekhte hain).
-3. Aakhri line aisi ho jo PEHLI line se judti ho — loop banna chahiye taaki re-watch ho.
-4. Comment bait ek SPECIFIC sawaal ho jiska jawab 5+ shabd ka hoga
-   (5 shabd se chhote comments algorithm ginta hi nahi).
-5. Koi clickbait jhoot nahi — jo hook promise kare, wo body deliver kare.
-6. Sirf 3 hashtag.
+ALGORITHM RULES (2026 research, multi-voice dialogue):
+1. Narrator aur characters ka gender ALTERNATE hona chahiye — narrator male to kam se kam ek char female, vice versa. Har video mein male + female dono awaazein hon.
+2. Dialogue share: 30-50% lines characters ki hon, baaki narrator.
+3. Hook line aur ending HAMESHA narrator bolega. Reveal narrator ya character bol sakta hai.
+4. Pehli spoken line 1.5 second mein khatam honi chahiye aur emotional trigger honi chahiye.
+5. Text overlay 5-8 shabd ka, curiosity-gap wala (60% log sound off pe dekhte hain).
+6. Aakhri line aisi ho jo PEHLI line se judti ho — loop banna chahiye taaki re-watch ho.
+7. Comment bait ek SPECIFIC sawaal ho jiska jawab 5+ shabd ka hoga (5 shabd se chhote comments algorithm ginta nahi).
+8. Max 2 characters (narrator + char_a, optional char_b).
+9. emotion sirf in mein se ho: neutral, curious, serious, nervous, trembling, whispers, panicked, gasp, sighs, amazed, cold, urgent.
+10. Sirf 3 hashtag.
 
 JO PEHLE SEEKHA HAI (isse follow karo):
 {self._learnings_block()}
@@ -172,14 +166,23 @@ JO PEHLE SEEKHA HAI (isse follow karo):
 YE TOPICS HAAL HI MEIN USE HO CHUKE HAIN — inse alag jao:
 {json.dumps(self._recent_topics(), ensure_ascii=False)}
 
-Sirf JSON return karo, ye shape:
+Sirf JSON return karo, ye exact shape:
 {{
   "title": "YouTube title, 60 char se kam, curiosity-gap wala",
-  "hook_line": "pehli spoken line, {CONFIG['language']} mein, 1.5s mein boli ja sake",
   "hook_text_overlay": "5-8 shabd, screen pe dikhega",
   "hook_visual": "pattern-interrupt visual ka ek line description",
-  "body": ["spoken line 2", "spoken line 3", "..."],
-  "ending": "aakhri spoken line — pehli line se loop bane",
+  "cast": {{
+    "narrator": {{"gender": "male", "persona": "gambhir crime-doc narrator, dheemi awaaz"}},
+    "char_a": {{"name": "Ravi", "gender": "female", "persona": "darawani aawaz, ghabrahat"}},
+    "char_b": {{"name": "Meera", "gender": "female", "persona": "..."}}
+  }},
+  "lines": [
+    {{"speaker": "narrator", "text": "...", "emotion": "curious", "role": "hook"}},
+    {{"speaker": "char_a", "text": "...", "emotion": "nervous", "role": "body"}},
+    {{"speaker": "narrator", "text": "...", "emotion": "serious", "role": "body"}},
+    {{"speaker": "char_a", "text": "...", "emotion": "whispers", "role": "reveal"}},
+    {{"speaker": "narrator", "text": "...", "emotion": "serious", "role": "ending"}}
+  ],
   "comment_bait": "specific sawaal jo lamba jawab maange",
   "caption": "Instagram caption, 2 line",
   "hashtags": ["#tag1", "#tag2", "#tag3"]
@@ -199,23 +202,113 @@ Sirf JSON return karo, ye shape:
             "hook_type": hook_type,
             "target_length_sec": length,
             "title": str(data.get("title") or topic)[:95],
-            "hook_line": str(data.get("hook_line") or f"{topic} — sach kuch aur hai."),
             "hook_text_overlay": str(data.get("hook_text_overlay") or "Sach ab tak chhupa hai"),
             "hook_visual": str(data.get("hook_visual") or "close-up of a locked door, harsh shadow"),
-            "ending": str(data.get("ending") or "Aur jawab aaj tak nahi mila."),
             "comment_bait": str(data.get("comment_bait")
                                 or "Tumhe kya lagta hai iska asli reason kya tha? Detail mein batao."),
             "caption": str(data.get("caption") or topic),
         }
 
-        # body ko hamesha list of non-empty strings banao
-        body = data.get("body") or []
-        if isinstance(body, str):
-            body = [s.strip() for s in re.split(r"(?<=[।.!?])\s+", body) if s.strip()]
-        out["body"] = [str(b).strip() for b in body if str(b).strip()][:12]
-        if not out["body"]:
-            out["body"] = ["Us raat kya hua, koi nahi jaanta.",
-                           "Jo saboot mile, wo ulta sawaal khada karte the."]
+        # ---- CAST NORMALIZATION ----
+        raw_cast = data.get("cast") or {}
+        if not isinstance(raw_cast, dict):
+            raw_cast = {}
+
+        narrator_data = raw_cast.get("narrator") or {}
+        if not isinstance(narrator_data, dict):
+            narrator_data = {}
+        narr_gender = str(narrator_data.get("gender") or "male").strip().lower()
+        if narr_gender not in ("male", "female"):
+            narr_gender = "male"
+        narr_persona = str(narrator_data.get("persona") or "gambhir crime-doc narrator, dheemi awaaz")
+
+        cast = {
+            "narrator": {"gender": narr_gender, "persona": narr_persona}
+        }
+
+        # Extra characters (max 2 characters: char_a, char_b)
+        char_keys = [k for k in raw_cast if k != "narrator"]
+        kept_chars = {}
+        for idx, k in enumerate(char_keys[:2]):
+            c = raw_cast[k]
+            if isinstance(c, dict):
+                c_name = str(c.get("name") or f"Character {idx+1}").strip()
+                c_gender = str(c.get("gender") or ("female" if narr_gender == "male" else "male")).strip().lower()
+                if c_gender not in ("male", "female"):
+                    c_gender = "female" if narr_gender == "male" else "male"
+                c_persona = str(c.get("persona") or "darawani aawaz")
+                kept_chars[f"char_{chr(97+idx)}"] = {"name": c_name, "gender": c_gender, "persona": c_persona}
+
+        # Gender alternation rule: Narrator aur characters ka gender ALTERNATE hona chahiye.
+        if kept_chars:
+            char_genders = {c["gender"] for c in kept_chars.values()}
+            if len(char_genders) == 1 and narr_gender in char_genders:
+                narr_gender = "female" if narr_gender == "male" else "male"
+                cast["narrator"]["gender"] = narr_gender
+                log.warn("Narrator aur character ka gender identical tha — narrator gender flip kiya",
+                         new_narrator_gender=narr_gender)
+
+        cast.update(kept_chars)
+        valid_speakers = set(cast.keys())
+        # Also map character display names to their keys
+        name_to_key = {c["name"].lower(): k for k, c in kept_chars.items()}
+
+        # ---- LINES NORMALIZATION ----
+        raw_lines = data.get("lines")
+        norm_lines = []
+
+        if isinstance(raw_lines, list) and raw_lines:
+            for item in raw_lines:
+                if isinstance(item, dict):
+                    spk = str(item.get("speaker") or "narrator").strip().lower()
+                    if spk not in valid_speakers:
+                        spk = name_to_key.get(spk, "narrator")
+                    txt = str(item.get("text") or "").strip()
+                    emo = str(item.get("emotion") or "neutral").strip().lower()
+                    if emo not in VALID_EMOTIONS:
+                        emo = "neutral"
+                    role = str(item.get("role") or "body").strip().lower()
+                    if txt:
+                        norm_lines.append({"speaker": spk, "text": txt, "emotion": emo, "role": role})
+
+        # Fallback if lines missing or legacy shape
+        if not norm_lines:
+            hook_txt = str(data.get("hook_line") or f"{topic} — sach kuch aur hai.").strip()
+            norm_lines.append({"speaker": "narrator", "text": hook_txt, "emotion": "curious", "role": "hook"})
+
+            body_items = data.get("body") or []
+            if isinstance(body_items, str):
+                body_items = [s.strip() for s in re.split(r"(?<=[।.!?])\s+", body_items) if s.strip()]
+            for b in body_items:
+                btxt = str(b).strip()
+                if btxt:
+                    norm_lines.append({"speaker": "narrator", "text": btxt, "emotion": "serious", "role": "body"})
+
+            if len(norm_lines) == 1:
+                norm_lines.append({"speaker": "narrator", "text": "Us raat kya hua, koi nahi jaanta.", "emotion": "serious", "role": "body"})
+                norm_lines.append({"speaker": "narrator", "text": "Jo saboot mile, wo ulta sawaal khada karte the.", "emotion": "serious", "role": "body"})
+
+            end_txt = str(data.get("ending") or "Aur jawab aaj tak nahi mila.").strip()
+            norm_lines.append({"speaker": "narrator", "text": end_txt, "emotion": "serious", "role": "ending"})
+
+        # Enforce hook and ending rules
+        norm_lines[0]["speaker"] = "narrator"
+        norm_lines[0]["role"] = "hook"
+        if norm_lines[0]["emotion"] == "neutral":
+            norm_lines[0]["emotion"] = "curious"
+
+        norm_lines[-1]["speaker"] = "narrator"
+        norm_lines[-1]["role"] = "ending"
+        if norm_lines[-1]["emotion"] == "neutral":
+            norm_lines[-1]["emotion"] = "serious"
+
+        out["cast"] = cast
+        out["lines"] = norm_lines
+
+        # Backward compatibility: populate hook_line, body, ending
+        out["hook_line"] = norm_lines[0]["text"]
+        out["body"] = [l["text"] for l in norm_lines[1:-1]]
+        out["ending"] = norm_lines[-1]["text"]
 
         # hashtags: exactly 3
         tags = data.get("hashtags") or []
@@ -226,7 +319,7 @@ Sirf JSON return karo, ye shape:
             tags.append(["#unsolvedmystery", "#suspense", "#storytime"][len(tags)])
         out["hashtags"] = tags[:3]
 
-        # text overlay 5-8 shabd — zyada ho to kaat do (padhne ka time nahi milta)
+        # text overlay 5-8 shabd — zyada ho to kaat do
         words = out["hook_text_overlay"].split()
         if len(words) > 8:
             out["hook_text_overlay"] = " ".join(words[:8])
@@ -256,14 +349,20 @@ Sirf JSON return karo, ye shape:
     @staticmethod
     def full_narration(script: dict) -> str:
         """Saari spoken lines ek string mein — TTS ko yahi jaata hai."""
-        parts = [script["hook_line"], *script["body"], script["ending"]]
+        if "lines" in script and isinstance(script["lines"], list) and script["lines"]:
+            parts = [l["text"] if isinstance(l, dict) else str(l) for l in script["lines"]]
+        else:
+            parts = [script.get("hook_line", ""), *(script.get("body") or []), script.get("ending", "")]
         return " ".join(p.strip() for p in parts if p and p.strip())
 
     @staticmethod
-    def lines(script: dict) -> list[str]:
-        """Spoken lines ki list — scene split aur pacing ke liye."""
-        return [p.strip() for p in [script["hook_line"], *script["body"], script["ending"]]
-                if p and p.strip()]
+    def lines(script: dict) -> list[dict | str]:
+        """Spoken lines ki list — objects agar available hain, warna strings."""
+        if "lines" in script and isinstance(script["lines"], list) and script["lines"]:
+            return script["lines"]
+        return [p.strip() for p in [script.get("hook_line", ""),
+                                    *(script.get("body") or []),
+                                    script.get("ending", "")] if p and p.strip()]
 
 
 if __name__ == "__main__":

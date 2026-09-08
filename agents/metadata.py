@@ -107,7 +107,7 @@ class MetadataAgent:
 
     def __init__(self, db: DB | None = None, llm: LLM | None = None):
         self.db = db or DB()
-        self.llm = llm or LLM()
+        self.llm = (llm.for_agent("metadata") if hasattr(llm, "for_agent") else llm) if llm else LLM(agent_name="metadata")
 
     # ==================================================================
     # 1. TITLES — 5 variations

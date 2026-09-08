@@ -104,7 +104,7 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
     # ---------- 2. ART DIRECTOR ----------
     log.info("🎨 ArtDirector scenes bana raha hai...")
     ad = ArtDirector(db, llm)
-    art = ad.direct(script)
+    art = ad.direct(script, video_id=vid)
     pacing = art.get("pacing", "standard")
     db.update_video(vid, template_id=art["template_id"], scene_pacing=pacing)
     log.ok(f"{art['n_scenes']} scenes, template = {art['template_name']}, pacing = {pacing}")
@@ -153,6 +153,7 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
             "acodec": "aac", "abitrate": "128k", "ar": 44100,
             "loudness_lufs": -14,
         },
+        "effects": CONFIG.get("effects", {}),
         "built_in_sec": round(time.time() - t0, 1),
     }
     (out_dir / "manifest.json").write_text(

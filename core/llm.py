@@ -42,6 +42,8 @@ _read_env_file()
 
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+MOONSHOT_BASE_URL = os.environ.get("MOONSHOT_BASE_URL", "https://api.moonshot.ai/v1")
+MOONSHOT_DEFAULT_MODEL = os.environ.get("MOONSHOT_MODEL", "kimi-k3")
 
 
 # =====================================================================
@@ -96,13 +98,24 @@ class MockLLM:
             return {"category": "entertainment"}
         if '"opening"' in p:
             return {"opening": f"Ye kahani {h[:4]} — ek aisi raat ki hai jiska "
-                               f"jawab aaj tak nahi mila. Poora sach is video mein."}
+                                f"jawab aaj tak nahi mila. Poora sach is video mein."}
         if "hook" in p or "script" in p or "writer" in p:
             return {
                 "title": f"Wo raat jab sab kuch badal gaya #{h}",
                 "hook_type": "specific_outcome",
                 "hook_line": "Is gaon ke 14 log ek hi raat mein gayab ho gaye.",
                 "hook_text_overlay": "14 log. Ek raat. Zero saboot.",
+                "cast": {
+                    "narrator": {"gender": "male", "persona": "gambhir crime-doc narrator, dheemi awaaz"},
+                    "char_a": {"name": "Ravi", "gender": "female", "persona": "darawani aawaz, ghabrahat"},
+                },
+                "lines": [
+                    {"speaker": "narrator", "text": "Is gaon ke 14 log ek hi raat mein gayab ho gaye.", "emotion": "curious", "role": "hook"},
+                    {"speaker": "char_a", "text": "Police pahunchi to darwaze andar se band the.", "emotion": "nervous", "role": "body"},
+                    {"speaker": "narrator", "text": "Chai abhi bhi garam thi, par ghar khaali tha.", "emotion": "serious", "role": "body"},
+                    {"speaker": "char_a", "text": "Ek hi cheez mili thi — deewar pe likha ek number.", "emotion": "whispers", "role": "reveal"},
+                    {"speaker": "narrator", "text": "Aur wo number aaj bhi kisi ka phone number hai.", "emotion": "serious", "role": "ending"}
+                ],
                 "body": ["Police pahunchi to darwaze andar se band the.",
                          "Chai abhi bhi garam thi, par ghar khaali tha.",
                          "Ek hi cheez mili thi — deewar pe likha ek number."],
@@ -184,6 +197,85 @@ class GeminiLLM:
 
 
 # =====================================================================
+# MOONSHOT / KIMI K3 (real)
+# =====================================================================
+class MoonshotLLM:
+    """
+    Moonshot AI (Kimi K3) client — OpenAI-compatible REST endpoint (stdlib urllib only).
+    Har call se pehle quota.check_and_spend("moonshot_requests", 1).
+    """
+
+    name = "kimi"
+
+    def __init__(self, api_key: str, model: str | None = None,
+                 base_url: str | None = None, quota: Quota | None = None):
+        self.api_key = api_key
+        self.model = model or os.environ.get("MOONSHOT_MODEL") or MOONSHOT_DEFAULT_MODEL
+        raw_url = base_url or os.environ.get("MOONSHOT_BASE_URL") or MOONSHOT_BASE_URL
+        self.base_url = raw_url.rstrip("/")
+        self.quota = quota or Quota()
+
+    def generate(self, prompt: str, *, temperature: float = 0.9, max_tokens: int = 2048,
+                 system: str | None = None) -> str:
+        # STEP 1: quota check — hard constraint (Moonshot is PAID API, daily spend cap)
+        self.quota.check_and_spend("moonshot_requests", 1, reason=f"generate:{self.model}")
+
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+
+        body = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+
+        endpoint = f"{self.base_url}/chat/completions"
+        req = urllib.request.Request(
+            endpoint,
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}",
+            },
+            method="POST",
+        )
+
+        def _call_model():
+            try:
+                with urllib.request.urlopen(req, timeout=90) as resp:
+                    return json.loads(resp.read().decode("utf-8"))
+            except urllib.error.HTTPError as e:
+                detail = e.read().decode("utf-8", "replace")[:400]
+                if e.code == 401:
+                    raise RuntimeError(f"Moonshot API key invalid ya unauthorized (401): {detail}") from e
+                if e.code == 429:
+                    raise QuotaExceeded(f"Moonshot API rate/quota limit (429): {detail}") from e
+                raise RuntimeError(f"Moonshot HTTP error {e.code} {e.reason}: {detail}") from e
+
+        data = retry(_call_model, tries=3, base_delay=1.5, log=log,
+                     what=f"Moonshot {self.model} chat/completions")
+
+        try:
+            return data["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError):
+            raise RuntimeError(f"Moonshot ne content nahi diya. Raw: {json.dumps(data)[:300]}")
+
+
+def _normalize_provider(p: str) -> str:
+    p = (p or "").strip().lower()
+    if p in ("moonshot", "kimi", "kimi-k3"):
+        return "kimi"
+    if p in ("gemini", "google"):
+        return "gemini"
+    if p == "mock":
+        return "mock"
+    return p
+
+
+# =====================================================================
 # LLM — wrapper jo fallback chain sambhalta hai
 # =====================================================================
 class LLM:
@@ -194,36 +286,137 @@ class LLM:
         data = llm.json("... JSON mein jawab do ...")
     """
 
-    def __init__(self, quota: Quota | None = None, force_mock: bool | None = None):
+    def __init__(self, quota: Quota | None = None, force_mock: bool | None = None,
+                 agent_name: str | None = None):
         self.quota = quota
-        key = os.environ.get("GEMINI_API_KEY", "").strip()
-        mock = CONFIG.get("mock_mode", True) if force_mock is None else force_mock
+        self.force_mock = force_mock
+        self.agent_name = agent_name
+        self.backends = []
 
+        mock = CONFIG.get("mock_mode", True) if force_mock is None else force_mock
         if mock:
-            self.backend = MockLLM()
-            log.info("LLM MOCK mode mein hai (config.yaml -> mock_mode: false karke real karo)")
-        elif not key:
-            self.backend = MockLLM()
-            log.warn("GEMINI_API_KEY nahi mili — mock pe gir gaye. "
-                     ".env mein GEMINI_API_KEY=... daalo (aistudio.google.com/apikey, free)")
+            self.backends = [MockLLM()]
+            self.backend = self.backends[0]
+            log.info(f"LLM [{self.agent_name or 'global'}] MOCK mode mein hai (config.yaml -> mock_mode: false karke real karo)")
+            return
+
+        gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+        moonshot_key = os.environ.get("MOONSHOT_API_KEY", "").strip()
+
+        order = self._resolve_order(agent_name)
+
+        for name in order:
+            if name == "kimi":
+                if moonshot_key:
+                    self.backends.append(MoonshotLLM(moonshot_key, quota=quota))
+                else:
+                    log.warn(f"MOONSHOT_API_KEY nahi mili — kimi backend skip ho raha hai")
+            elif name == "gemini":
+                if gemini_key:
+                    self.backends.append(GeminiLLM(gemini_key, quota=quota))
+                else:
+                    log.warn(f"GEMINI_API_KEY nahi mili — gemini backend skip ho raha hai")
+            elif name == "mock":
+                self.backends.append(MockLLM())
+
+        if not any(not isinstance(b, MockLLM) for b in self.backends):
+            if not self.backends:
+                self.backends = [MockLLM()]
+            log.warn("Koi valid LLM API key nahi mili — mock pe gir gaye. "
+                     ".env mein GEMINI_API_KEY ya MOONSHOT_API_KEY daalo")
+        elif not any(isinstance(b, MockLLM) for b in self.backends):
+            # Mock hamesha aakhri resort hona chahiye
+            self.backends.append(MockLLM())
+
+        self.backend = self.backends[0]
+        chain_str = " -> ".join(b.name for b in self.backends)
+        log.info(f"LLM [{self.agent_name or 'global'}] routing chain: {chain_str}")
+        if isinstance(self.backend, GeminiLLM):
+            log.ok(f"Gemini connected: {self.backend.model}")
+        elif isinstance(self.backend, MoonshotLLM):
+            log.ok(f"Moonshot connected: {self.backend.model} ({self.backend.base_url})")
+
+    def _resolve_order(self, agent_name: str | None) -> list[str]:
+        """Env vars aur config.yaml ke mutabiq providers ka order return karo."""
+        # 1. LLM_FALLBACK_ORDER agar diya hai to sabse pehle usse maano
+        fallback_order = os.environ.get("LLM_FALLBACK_ORDER", "").strip()
+        if fallback_order:
+            chain = [_normalize_provider(p) for p in fallback_order.split(",") if p.strip()]
+            if "mock" not in chain:
+                chain.append("mock")
+            return chain
+
+        # 2. Per-agent override in config.yaml (llm_routing)
+        routing_cfg = CONFIG.get("llm_routing") or {}
+        agent_pref = None
+        if agent_name and isinstance(routing_cfg, dict):
+            raw_pref = routing_cfg.get(agent_name)
+            if raw_pref:
+                agent_pref = _normalize_provider(str(raw_pref))
+
+        # 3. Global LLM_PROVIDER
+        global_provider = _normalize_provider(os.environ.get("LLM_PROVIDER", "auto"))
+
+        # 4. Global LLM_PRIMARY
+        global_primary = _normalize_provider(os.environ.get("LLM_PRIMARY", "gemini"))
+        if global_primary not in ("kimi", "gemini"):
+            global_primary = "gemini"
+
+        target_pref = agent_pref or (global_provider if global_provider != "auto" else None)
+
+        if target_pref == "kimi":
+            return ["kimi", "gemini", "mock"]
+        if target_pref == "gemini":
+            return ["gemini", "kimi", "mock"]
+        if target_pref == "mock":
+            return ["mock"]
+
+        # auto mode:
+        gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+        moonshot_key = os.environ.get("MOONSHOT_API_KEY", "").strip()
+        if gemini_key and moonshot_key:
+            if global_primary == "kimi":
+                return ["kimi", "gemini", "mock"]
+            return ["gemini", "kimi", "mock"]
+        elif moonshot_key and not gemini_key:
+            return ["kimi", "gemini", "mock"]
+        elif gemini_key and not moonshot_key:
+            return ["gemini", "kimi", "mock"]
         else:
-            self.backend = GeminiLLM(key, quota=quota)
-            log.ok(f"Gemini connected: {DEFAULT_MODEL}")
+            if global_primary == "kimi":
+                return ["kimi", "gemini", "mock"]
+            return ["gemini", "kimi", "mock"]
+
+    def for_agent(self, agent_name: str) -> "LLM":
+        """Naya LLM instance banao is agent ke specific routing ke saath."""
+        if self.agent_name == agent_name:
+            return self
+        return LLM(quota=self.quota, force_mock=self.force_mock, agent_name=agent_name)
 
     @property
     def is_mock(self) -> bool:
         return isinstance(self.backend, MockLLM)
 
     def ask(self, prompt: str, **kw) -> str:
-        """Plain text jawab. Real backend fail ho to mock se graceful degrade."""
-        try:
-            return self.backend.generate(prompt, **kw)
-        except QuotaExceeded as e:
-            log.warn(f"Gemini quota khatam, mock se kaam chalate hain: {e}")
-        except Exception as e:  # noqa: BLE001
-            log.error("Gemini call fail — mock fallback", e)
+        """Plain text jawab. Har provider koshish karega, fail ho to agla provider."""
+        had_real_backend = any(not isinstance(b, MockLLM) for b in self.backends)
+        for backend in self.backends:
+            if isinstance(backend, MockLLM):
+                if had_real_backend:
+                    log.warn("⚠️  Saare real LLM fail ho gaye — ye output MOCK hai, asli LLM ka nahi. Quality kam hogi.")
+                return backend.generate(prompt, **kw)
+            try:
+                ans = backend.generate(prompt, **kw)
+                log.ok(f"LLM [{self.agent_name or 'global'}] served by {backend.name} ({getattr(backend, 'model', '')})")
+                return ans
+            except QuotaExceeded as e:
+                log.warn(f"[{backend.name}] quota khatam, agla backend try karte hain: {e}")
+            except Exception as e:  # noqa: BLE001
+                log.error(f"[{backend.name}] call fail — agla backend try karte hain", e)
+
         fallback = MockLLM().generate(prompt)
-        log.warn("⚠️  Ye output MOCK hai, asli LLM ka nahi. Quality kam hogi.")
+        if had_real_backend:
+            log.warn("⚠️  Ye output MOCK hai, asli LLM ka nahi. Quality kam hogi.")
         return fallback
 
     def json(self, prompt: str, *, schema_hint: str = "", tries: int = 2, **kw) -> dict:
@@ -256,9 +449,15 @@ def _extract_json(text: str) -> dict | None:
     t = text.strip()
     t = re.sub(r"^```(?:json)?\s*|\s*```$", "", t, flags=re.MULTILINE).strip()
     try:
-        v = json.loads(t)
+        v = json.loads(t, strict=False)
         return v if isinstance(v, dict) else {"data": v}
-    except json.JSONDecodeError:
+    except Exception:
+        pass
+    try:
+        clean = re.sub(r",\s*([\]}])", r"\1", t)
+        v = json.loads(clean, strict=False)
+        return v if isinstance(v, dict) else {"data": v}
+    except Exception:
         pass
     start = t.find("{")
     if start == -1:
@@ -280,10 +479,15 @@ def _extract_json(text: str) -> dict | None:
         elif ch == "}":
             depth -= 1
             if depth == 0:
+                sub = t[start:i + 1]
                 try:
-                    return json.loads(t[start:i + 1])
-                except json.JSONDecodeError:
-                    return None
+                    return json.loads(sub, strict=False)
+                except Exception:
+                    try:
+                        clean_sub = re.sub(r",\s*([\]}])", r"\1", sub)
+                        return json.loads(clean_sub, strict=False)
+                    except Exception:
+                        return None
     return None
 
 

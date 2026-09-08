@@ -84,11 +84,12 @@ def capabilities() -> dict:
      isliye code drawtext pe depend nahi karta, sirf ASS subtitles use karta hai.)
     """
     caps = {"drawtext": False, "ass": False, "zoompan": False, "xfade": False,
-            "loudnorm": False, "libx264": False, "aac": False}
+            "loudnorm": False, "alimiter": False, "sidechaincompress": False,
+            "libx264": False, "aac": False}
     try:
         out = subprocess.run([ffmpeg_bin(), "-hide_banner", "-filters"],
                              capture_output=True, text=True, timeout=30).stdout
-        for f in ("drawtext", "ass", "zoompan", "xfade", "loudnorm"):
+        for f in ("drawtext", "ass", "zoompan", "xfade", "loudnorm", "alimiter", "sidechaincompress"):
             caps[f] = f" {f} " in out
         enc = subprocess.run([ffmpeg_bin(), "-hide_banner", "-encoders"],
                              capture_output=True, text=True, timeout=30).stdout

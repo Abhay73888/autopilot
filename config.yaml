@@ -10,7 +10,7 @@ niche:            "unsolved mysteries + true suspense stories"
 language:         "Hindi"                 # Hindi | English | Hinglish
 target_audience:  "India, 18-34, mobile-first"
 visual_style:     "flat 2D cartoon, noir shadows, muted teal-orange palette"
-brand_name:       "AUTOPILOT"             # TODO: apna channel naam daalo
+brand_name:       "whop"
 
 # ============ OUTPUT TARGETS ============
 video_length_sec:  32                     # 22-45s sweet spot
@@ -20,7 +20,7 @@ resolution:        "1080x1920"
 
 # ============ ACCOUNTS ============
 instagram_handle:  "@your_handle"         # TODO: Business/Creator account hona chahiye
-youtube_channel:   "https://youtube.com/@your_channel"   # TODO
+youtube_channel:   "https://youtube.com/channel/UCOvDjaHzT3kUgJinQV_4vDQ"
 
 # ============ BUDGET ============
 monthly_budget_inr: 0                     # ZERO — sirf free tiers
@@ -35,6 +35,50 @@ timezone: "Asia/Kolkata"
 db_path: "data/autopilot.db"
 log_dir: "logs"
 
+# ============ LLM ROUTING (Optional per-agent override) ============
+# Har agent ko alag backend assign kar sakte ho: kimi (moonshot) | gemini | mock
+# Agar yahan empty hai ya agent defined nahi hai, to global .env rule chalega.
+llm_routing:
+  # writer: kimi
+  # trendscout: gemini
+  # metadata: gemini
+  # artdirector: kimi
+
 # ============ PHASE 5: AI PUBLISHING ============
 default_playlist: ""                      # naam do to har upload isme jayega (banegi agar nahi hai)
 seo_min_score: 60                         # isse kam SEO score pe warning milegi
+
+# ============ VOICE CONFIGURATION (Phase A) ============
+voice:
+  engine_order: [elevenlabs, gemini_tts, edge_tts, gtts, espeak]
+  gemini_tts_model: gemini-2.5-flash-preview-tts
+  dialogue_share: 0.4
+  force_mixed_gender: true
+
+# ============ CINEMATIC EFFECTS CONFIGURATION (Phase B & C) ============
+effects:
+  sound:
+    heartbeat: true
+    riser: true
+    sub_hit: true
+    flash_click: true
+    room_tone: true
+    ducking: true
+    master_limiter: true
+  visual:
+    color_grade: true
+    film_grain: true
+    vignette_pulse: true
+    camera_shake: true
+    flash_cut: true
+    speed_ramp: true
+    breathing: true
+    layered_scenes: false
+    particles: false
+  character_consistency:
+    enabled: true
+    reuse_existing: true
+    inject_keywords: true
+    seed_proximity: true
+    negative_prompt_extra: "different face, inconsistent clothing, different actor, cartoon, 3d render"
+

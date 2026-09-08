@@ -58,6 +58,10 @@ BUDGETS = {
                         "note": "Container polling bhi isi mein ginti hai."},
     "gemini_requests": {"limit": 1200,  "window": "day_pacific", "real": 1500,
                         "note": "Gemini free tier RPD."},
+    "gemini_tts_requests": {"limit": 100, "window": "day_pacific", "real": 100,
+                            "note": "Gemini TTS daily safety cap."},
+    "moonshot_requests": {"limit": 100, "window": "day_pacific", "real": 500,
+                          "note": "Moonshot Kimi K3 paid API daily spend-control safety cap (ye API limit nahi, kharcha rokne ke liye hai)."},
 }
 
 # Har YouTube endpoint ki cost (units). Section 2 se.

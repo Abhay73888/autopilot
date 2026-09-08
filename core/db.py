@@ -137,6 +137,39 @@ CREATE TABLE IF NOT EXISTS events (
     video_id  INTEGER,
     payload   TEXT
 );
+
+CREATE TABLE IF NOT EXISTS characters (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    name          TEXT NOT NULL,
+    video_id      INTEGER,
+    visual_anchor TEXT NOT NULL,
+    costume       TEXT,
+    features_json TEXT,
+    created_at    TEXT NOT NULL,
+    FOREIGN KEY (video_id) REFERENCES videos(id)
+);
+CREATE INDEX IF NOT EXISTS idx_char_name ON characters(name);
+
+CREATE TABLE IF NOT EXISTS jobs (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    job_id           TEXT UNIQUE NOT NULL,
+    request_id       TEXT,
+    idempotency_key  TEXT UNIQUE,
+    status           TEXT NOT NULL DEFAULT 'queued',
+    action           TEXT NOT NULL,
+    topic            TEXT,
+    created_ts       TEXT NOT NULL,
+    started_ts       TEXT,
+    completed_ts     TEXT,
+    video_id         INTEGER,
+    error_message    TEXT,
+    result_paths     TEXT,
+    FOREIGN KEY (video_id) REFERENCES videos(id)
+);
+CREATE INDEX IF NOT EXISTS idx_jobs_job_id ON jobs(job_id);
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
+CREATE INDEX IF NOT EXISTS idx_jobs_idem ON jobs(idempotency_key);
+CREATE INDEX IF NOT EXISTS idx_jobs_created ON jobs(created_ts);
 """
 
 
@@ -311,6 +344,80 @@ class DB:
     def log_event(self, kind: str, agent: str = "system", video_id: int | None = None, **payload):
         self.conn.execute("INSERT INTO events (ts,agent,kind,video_id,payload) VALUES (?,?,?,?,?)",
                           (now(), agent, kind, video_id, json.dumps(payload, ensure_ascii=False, default=str)))
+
+    # ---------- characters (Phase D: Character Consistency) ----------
+    def save_character(self, name: str, visual_anchor: str, video_id: int | None = None,
+                       costume: str | None = None, features: dict | None = None) -> int:
+        features_json = json.dumps(features or {}, ensure_ascii=False) if features else None
+        cur = self.conn.execute(
+            "INSERT INTO characters (name, video_id, visual_anchor, costume, features_json, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (name.strip(), video_id, visual_anchor.strip(), costume, features_json, now())
+        )
+        return cur.lastrowid
+
+    def get_character(self, name: str) -> sqlite3.Row | None:
+        return self.one(
+            "SELECT * FROM characters WHERE LOWER(name)=LOWER(?) ORDER BY id DESC LIMIT 1",
+            (name.strip(),)
+        )
+
+    def list_characters(self, limit: int = 50) -> list[sqlite3.Row]:
+        return self.q("SELECT * FROM characters ORDER BY id DESC LIMIT ?", (limit,))
+
+    # ---------- jobs (Phase 2: Secure Make.com Integration) ----------
+    def create_job(self, job_id: str, action: str, topic: str | None = None,
+                   idempotency_key: str | None = None, request_id: str | None = None) -> int:
+        cur = self.conn.execute(
+            "INSERT INTO jobs (job_id, action, topic, idempotency_key, request_id, status, created_ts) "
+            "VALUES (?, ?, ?, ?, ?, 'queued', ?)",
+            (job_id, action, topic, idempotency_key, request_id, now())
+        )
+        log.audit("job_created", job_id=job_id, job_action=action, topic=topic)
+        return cur.lastrowid
+
+    def get_job(self, job_id: str) -> sqlite3.Row | None:
+        return self.one("SELECT * FROM jobs WHERE job_id = ? LIMIT 1", (job_id,))
+
+    def get_job_by_idempotency_key(self, idempotency_key: str) -> sqlite3.Row | None:
+        if not idempotency_key:
+            return None
+        return self.one("SELECT * FROM jobs WHERE idempotency_key = ? LIMIT 1", (idempotency_key,))
+
+    def update_job(self, job_id: str, *, status: str | None = None,
+                   started_ts: str | None = None, completed_ts: str | None = None,
+                   video_id: int | None = None, error_message: str | None = None,
+                   result_paths: dict | list | str | None = None) -> bool:
+        sets = []
+        vals = []
+        if status is not None:
+            sets.append("status = ?")
+            vals.append(status)
+        if started_ts is not None:
+            sets.append("started_ts = ?")
+            vals.append(started_ts)
+        if completed_ts is not None:
+            sets.append("completed_ts = ?")
+            vals.append(completed_ts)
+        if video_id is not None:
+            sets.append("video_id = ?")
+            vals.append(video_id)
+        if error_message is not None:
+            sets.append("error_message = ?")
+            vals.append(error_message)
+        if result_paths is not None:
+            sets.append("result_paths = ?")
+            vals.append(json.dumps(result_paths, ensure_ascii=False) if isinstance(result_paths, (dict, list)) else str(result_paths))
+        if not sets:
+            return False
+        vals.append(job_id)
+        cur = self.conn.execute(f"UPDATE jobs SET {', '.join(sets)} WHERE job_id = ?", vals)
+        return cur.rowcount > 0
+
+    def list_jobs(self, limit: int = 50, status: str | None = None) -> list[sqlite3.Row]:
+        if status:
+            return self.q("SELECT * FROM jobs WHERE status = ? ORDER BY id DESC LIMIT ?", (status, limit))
+        return self.q("SELECT * FROM jobs ORDER BY id DESC LIMIT ?", (limit,))
 
     # ---------- dashboard ----------
     def dashboard_summary(self) -> dict:

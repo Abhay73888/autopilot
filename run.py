@@ -81,11 +81,39 @@ def preflight() -> bool:
     import os
     if CONFIG.get("mock_mode"):
         print("  ⚠️  MOCK MODE ON — content ghisa-pita hoga, publish layak nahi.\n"
-              "     Fix: .env mein GEMINI_API_KEY daalo + config.yaml mein mock_mode: false")
-    elif not os.environ.get("GEMINI_API_KEY"):
-        print("  ⚠️  GEMINI_API_KEY nahi mili — mock pe girega")
+              "     Fix: .env mein GEMINI_API_KEY / MOONSHOT_API_KEY daalo + config.yaml mein mock_mode: false")
     else:
-        print("  ✅ Gemini API key")
+        gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+        moonshot_key = os.environ.get("MOONSHOT_API_KEY", "").strip()
+        provider = os.environ.get("LLM_PROVIDER", "auto").strip().lower()
+        primary = os.environ.get("LLM_PRIMARY", "gemini").strip().lower()
+        fallback_order = os.environ.get("LLM_FALLBACK_ORDER", "").strip().lower()
+
+        if fallback_order:
+            first_choice = [p.strip() for p in fallback_order.split(",") if p.strip()][0]
+        elif provider in ("kimi", "moonshot"):
+            first_choice = "kimi"
+        elif provider in ("gemini", "google"):
+            first_choice = "gemini"
+        elif primary in ("kimi", "moonshot"):
+            first_choice = "kimi"
+        else:
+            first_choice = "gemini"
+
+        if not gemini_key and not moonshot_key:
+            print("  ⚠️  GEMINI_API_KEY aur MOONSHOT_API_KEY dono nahi mili — mock pe girega")
+        else:
+            if gemini_key:
+                role = " (primary)" if first_choice == "gemini" and moonshot_key else ""
+                print(f"  ✅ Gemini API key{role}")
+            else:
+                print("  ⚠️  GEMINI_API_KEY nahi mili — Kimi use hoga")
+
+            if moonshot_key:
+                role = " (primary)" if first_choice in ("kimi", "moonshot") and gemini_key else ""
+                print(f"  ✅ Kimi K3 API key{role}")
+            else:
+                print("  ⚠️  MOONSHOT_API_KEY nahi mili — Gemini use hoga")
 
     print("-" * 60)
     return ok

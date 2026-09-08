@@ -34,6 +34,10 @@ Pillow>=10.0.0
 #   pollinations aur gemini dono fail ho jayein. Iske bina pipeline image
 #   ke bina ruk jaati — aur hard constraint #1 kehta hai "graceful degrade karo".
 
+python-dotenv>=1.0.0
+# ^ Environment variable loader for cloud environments and .env
+
+
 
 # ---------- PHASE 3: ffmpeg ke liye ----------
 imageio-ffmpeg>=0.5.0

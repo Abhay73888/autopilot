@@ -141,24 +141,72 @@ cp .env.example .env
 ```
 
 Phase 1 ke liye isme kuch bharna zaroori **nahi** hai — system mock mode mein chalega.
-Phase 2 se pehle sirf ek cheez chahiye hogi:
+Asli videos ke liye tum Gemini (free tier) ya Kimi K3 (Moonshot AI) ya dono ek saath use kar sakte ho.
 
-**Gemini API key (free, credit card nahi):**
-1. [aistudio.google.com/apikey](https://aistudio.google.com/apikey) kholo
-2. Google account se login karo
-3. **"Create API key"** → **"Create API key in new project"**
-4. Key copy karo → `.env` mein paste karo: `GEMINI_API_KEY=AIza...`
-5. `config.yaml` mein `mock_mode: false` kar do
+### LLM Providers & API Keys:
+
+1. **Gemini API key (Free tier, credit card nahi):**
+   - [aistudio.google.com/apikey](https://aistudio.google.com/apikey) se free key lo.
+   - `.env` mein daalo: `GEMINI_API_KEY=...`
+
+2. **Kimi K3 / Moonshot AI (Paid OpenAI-compatible provider):**
+   - [platform.moonshot.cn/console/api-keys](https://platform.moonshot.cn/console/api-keys) se key lo.
+   - `.env` mein daalo: `MOONSHOT_API_KEY=...`
+
+---
+
+### 4 Supported LLM Setups:
+
+#### Setup 1: Only Gemini (Free Tier Default)
+```ini
+GEMINI_API_KEY=your_gemini_key
+GEMINI_MODEL=gemini-2.0-flash
+LLM_PROVIDER=gemini
+```
+
+#### Setup 2: Only Kimi K3 (Moonshot AI)
+```ini
+MOONSHOT_API_KEY=your_moonshot_key
+MOONSHOT_MODEL=kimi-k3
+MOONSHOT_BASE_URL=https://api.moonshot.ai/v1
+LLM_PROVIDER=kimi
+```
+
+#### Setup 3: Kimi Primary + Gemini Fallback (Recommended Dual Setup)
+Kimi K3 pehle chalega; 429 rate limit ya fail hone par automatic Gemini failover hoga:
+```ini
+GEMINI_API_KEY=your_gemini_key
+MOONSHOT_API_KEY=your_moonshot_key
+MOONSHOT_MODEL=kimi-k3
+LLM_PROVIDER=auto
+LLM_PRIMARY=kimi
+# Optional explicit chain:
+# LLM_FALLBACK_ORDER=kimi,gemini,mock
+```
+
+#### Setup 4: Per-Agent Routing (Split Workload)
+Dono keys `.env` mein rakho:
+```ini
+GEMINI_API_KEY=your_gemini_key
+MOONSHOT_API_KEY=your_moonshot_key
+LLM_PROVIDER=auto
+LLM_PRIMARY=gemini
+```
+Aur `config.yaml` mein `llm_routing:` block add karo:
+```yaml
+llm_routing:
+  writer: kimi          # Scripting + hooks ke liye Kimi K3
+  trendscout: gemini    # Fast topic search ke liye Gemini
+  metadata: gemini      # SEO tags/titles ke liye Gemini
+  artdirector: kimi     # Scene descriptions ke liye Kimi
+```
 
 Test karo:
 ```bash
 python3 core/llm.py
 ```
 - `mock? True` dikhe → key nahi mili ya `mock_mode: true` hai
-- `mock? False` + Hindi mein asli script JSON dikhe → ✅ Gemini connected
-
-**Agar `403` aaye:** key galat hai ya us project mein Generative Language API enable nahi hai.
-**Agar `429` aaye:** free tier ka rate limit — code khud backoff karke retry karega, ruko.
+- `mock? False` + Hindi mein script JSON dikhe → ✅ LLM backend connected!
 
 ---
 

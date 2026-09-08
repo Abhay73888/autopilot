@@ -58,7 +58,7 @@ class TrendScout:
     def __init__(self, db: DB | None = None, llm: LLM | None = None,
                  quota: Quota | None = None, creds=None):
         self.db = db or DB()
-        self.llm = llm or LLM()
+        self.llm = (llm.for_agent("trendscout") if hasattr(llm, "for_agent") else llm) if llm else LLM(agent_name="trendscout")
         self.quota = quota or Quota(self.db)
         self._creds = creds
 

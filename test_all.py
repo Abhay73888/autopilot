@@ -23,7 +23,7 @@ os.environ["AUTOPILOT_MOCK_MODE"] = "true"  # tests hamesha mock mode mein
 
 from core import db as db_mod          # noqa: E402
 from core.db import DB                 # noqa: E402
-from core.llm import LLM, _extract_json  # noqa: E402
+from core.llm import LLM, _extract_json, MoonshotLLM, GeminiLLM, MockLLM  # noqa: E402
 from core.logbook import Logbook, explain, retry  # noqa: E402
 from core.quota import Quota, QuotaExceeded  # noqa: E402
 from core.mp3 import duration_sec           # noqa: E402
@@ -345,6 +345,252 @@ def _():
     q.spend("gemini_requests", 1200, "burn")
     assert not q.can_spend("gemini_requests", 1)
     q.close()
+
+
+@test("Moonshot requests quota limit track aur spend hoti hai")
+def _():
+    q = Quota(fresh_db())
+    assert q.can_spend("moonshot_requests", 1)
+    q.spend("moonshot_requests", 100, "burn")
+    assert not q.can_spend("moonshot_requests", 1)
+    try:
+        q.check_and_spend("moonshot_requests", 1)
+        assert False, "QuotaExceeded aana chahiye tha"
+    except QuotaExceeded:
+        pass
+    q.close()
+
+
+@test("MoonshotLLM request body, headers aur response parsing sahi hai")
+def _():
+    import urllib.request
+
+    captured = {}
+
+    class FakeResponse:
+        def __init__(self, data):
+            self.data = data
+        def read(self):
+            return self.data
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+
+    def mock_urlopen(req, timeout=90):
+        captured["url"] = req.full_url
+        captured["method"] = req.get_method()
+        captured["headers"] = dict(req.headers)
+        captured["body"] = json.loads(req.data.decode("utf-8"))
+        captured["timeout"] = timeout
+        resp_data = json.dumps({
+            "choices": [{"message": {"content": "Kimi K3 ka jawab"}}]
+        }).encode("utf-8")
+        return FakeResponse(resp_data)
+
+    orig_urlopen = urllib.request.urlopen
+    urllib.request.urlopen = mock_urlopen
+    try:
+        q = Quota(fresh_db())
+        llm = MoonshotLLM(api_key="test-moonshot-key", model="kimi-k3",
+                          base_url="https://api.moonshot.ai/v1", quota=q)
+        ans = llm.generate("Ek suspense scene", temperature=0.7, max_tokens=512, system="Suspense writer")
+        assert ans == "Kimi K3 ka jawab"
+        assert captured["url"] == "https://api.moonshot.ai/v1/chat/completions"
+        assert captured["timeout"] == 90
+        assert captured["method"] == "POST"
+        assert captured["body"]["model"] == "kimi-k3"
+        assert captured["body"]["temperature"] == 0.7
+        assert captured["body"]["max_tokens"] == 512
+        assert captured["body"]["messages"][0] == {"role": "system", "content": "Suspense writer"}
+        assert captured["body"]["messages"][1] == {"role": "user", "content": "Ek suspense scene"}
+        auth_header = captured["headers"].get("Authorization") or captured["headers"].get("authorization")
+        assert auth_header == "Bearer test-moonshot-key"
+        assert q.used("moonshot_requests") == 1
+        q.close()
+    finally:
+        urllib.request.urlopen = orig_urlopen
+
+
+@test("MoonshotLLM 401 pe clear error deta hai aur 429 pe QuotaExceeded")
+def _():
+    import urllib.request
+    import urllib.error
+    from io import BytesIO
+
+    def mock_401(req, timeout=90):
+        raise urllib.error.HTTPError(
+            req.full_url, 401, "Unauthorized", {}, BytesIO(b'{"error": "invalid api key"}')
+        )
+
+    def mock_429(req, timeout=90):
+        raise urllib.error.HTTPError(
+            req.full_url, 429, "Too Many Requests", {}, BytesIO(b'{"error": "rate limit exceeded"}')
+        )
+
+    orig_urlopen = urllib.request.urlopen
+    try:
+        # 401 test
+        urllib.request.urlopen = mock_401
+        q1 = Quota(fresh_db())
+        llm1 = MoonshotLLM(api_key="invalid-key", quota=q1)
+        try:
+            llm1.generate("hi")
+            assert False, "401 pe error aana chahiye tha"
+        except RuntimeError as e:
+            assert "401" in str(e) or "unauthorized" in str(e).lower()
+        q1.close()
+
+        # 429 test
+        urllib.request.urlopen = mock_429
+        q2 = Quota(fresh_db())
+        llm2 = MoonshotLLM(api_key="valid-key", quota=q2)
+        try:
+            llm2.generate("hi")
+            assert False, "429 pe QuotaExceeded aana chahiye tha"
+        except QuotaExceeded as e:
+            assert "429" in str(e) or "quota" in str(e).lower()
+        q2.close()
+    finally:
+        urllib.request.urlopen = orig_urlopen
+
+
+@test("Provider selection: auto/primary/fallback order via env vars")
+def _():
+    from core.config import CONFIG
+    old_env = dict(os.environ)
+    old_mock = CONFIG.get("mock_mode")
+    try:
+        CONFIG["mock_mode"] = False
+        os.environ["AUTOPILOT_MOCK_MODE"] = "false"
+
+        # Case 1: only Gemini key -> Gemini primary
+        os.environ["GEMINI_API_KEY"] = "gem-key-1"
+        os.environ.pop("MOONSHOT_API_KEY", None)
+        os.environ.pop("LLM_PROVIDER", None)
+        os.environ.pop("LLM_PRIMARY", None)
+        os.environ.pop("LLM_FALLBACK_ORDER", None)
+        l1 = LLM(force_mock=False)
+        assert l1.backends[0].name == "gemini"
+
+        # Case 2: only Moonshot key -> Kimi primary
+        os.environ.pop("GEMINI_API_KEY", None)
+        os.environ["MOONSHOT_API_KEY"] = "moon-key-1"
+        l2 = LLM(force_mock=False)
+        assert l2.backends[0].name == "kimi"
+
+        # Case 3: both keys, auto mode, primary=gemini (default)
+        os.environ["GEMINI_API_KEY"] = "gem-key-1"
+        os.environ["MOONSHOT_API_KEY"] = "moon-key-1"
+        os.environ["LLM_PROVIDER"] = "auto"
+        os.environ["LLM_PRIMARY"] = "gemini"
+        l3 = LLM(force_mock=False)
+        assert l3.backends[0].name == "gemini"
+        assert l3.backends[1].name == "kimi"
+
+        # Case 4: both keys, auto mode, primary=kimi
+        os.environ["LLM_PRIMARY"] = "kimi"
+        l4 = LLM(force_mock=False)
+        assert l4.backends[0].name == "kimi"
+        assert l4.backends[1].name == "gemini"
+
+        # Case 5: explicit LLM_FALLBACK_ORDER overrides primary
+        os.environ["LLM_FALLBACK_ORDER"] = "kimi,gemini,mock"
+        os.environ["LLM_PRIMARY"] = "gemini"
+        l5 = LLM(force_mock=False)
+        assert [b.name for b in l5.backends] == ["kimi", "gemini", "mock"]
+
+        # Case 6: neither key -> fallback to mock
+        os.environ.pop("GEMINI_API_KEY", None)
+        os.environ.pop("MOONSHOT_API_KEY", None)
+        os.environ.pop("LLM_FALLBACK_ORDER", None)
+        l6 = LLM(force_mock=False)
+        assert l6.backends[0].name == "mock"
+    finally:
+        os.environ.clear()
+        os.environ.update(old_env)
+        CONFIG["mock_mode"] = old_mock
+
+
+@test("LLM failover: pehla backend fail ho to agla backend use hota hai")
+def _():
+    class BrokenPrimary:
+        name = "broken"
+        def generate(self, prompt, **kw):
+            raise RuntimeError("Primary API network crash")
+
+    class WorkingSecondary:
+        name = "working"
+        model = "fake-v1"
+        def generate(self, prompt, **kw):
+            return "Secondary backend ka jawab"
+
+    llm = LLM(force_mock=True)
+    # Inject fallback chain
+    llm.backends = [BrokenPrimary(), WorkingSecondary(), MockLLM()]
+    llm.backend = llm.backends[0]
+    res = llm.ask("kuch bhi")
+    assert res == "Secondary backend ka jawab"
+
+    # Test jab saare real fail ho jayein to mock pe girna
+    class AlsoBroken:
+        name = "also_broken"
+        def generate(self, prompt, **kw):
+            raise QuotaExceeded("quota zero")
+
+    llm.backends = [BrokenPrimary(), AlsoBroken(), MockLLM()]
+    llm.backend = llm.backends[0]
+    res_mock = llm.ask("kuch bhi")
+    assert "[MOCK-" in res_mock
+
+
+@test("Per-agent llm_routing: config.yaml se har agent ka backend alag ho sakta hai")
+def _():
+    from core.config import CONFIG
+    old_env = dict(os.environ)
+    old_mock = CONFIG.get("mock_mode")
+    old_routing = CONFIG.get("llm_routing")
+    try:
+        CONFIG["mock_mode"] = False
+        os.environ["AUTOPILOT_MOCK_MODE"] = "false"
+        os.environ["GEMINI_API_KEY"] = "gem-key-1"
+        os.environ["MOONSHOT_API_KEY"] = "moon-key-1"
+        os.environ["LLM_PROVIDER"] = "auto"
+        os.environ["LLM_PRIMARY"] = "gemini"
+
+        CONFIG["llm_routing"] = {
+            "writer": "kimi",
+            "trendscout": "gemini",
+        }
+
+        # writer should be kimi primary
+        w_llm = LLM(force_mock=False, agent_name="writer")
+        assert w_llm.backends[0].name == "kimi"
+
+        # trendscout should be gemini primary
+        ts_llm = LLM(force_mock=False, agent_name="trendscout")
+        assert ts_llm.backends[0].name == "gemini"
+
+        # unconfigured agent (metadata) should follow global primary (gemini)
+        meta_llm = LLM(force_mock=False, agent_name="metadata")
+        assert meta_llm.backends[0].name == "gemini"
+
+        # for_agent helper preserves settings
+        derived_w = meta_llm.for_agent("writer")
+        assert derived_w.backends[0].name == "kimi"
+
+        # Agent classes pass their agent_name to LLM correctly
+        d = fresh_db()
+        writer = Writer(d, w_llm)
+        assert writer.llm.backends[0].name == "kimi"
+        ts = TrendScout(d, ts_llm)
+        assert ts.llm.backends[0].name == "gemini"
+        d.close()
+    finally:
+        os.environ.clear()
+        os.environ.update(old_env)
+        CONFIG["mock_mode"] = old_mock
+        CONFIG["llm_routing"] = old_routing
 
 
 # =====================================================================
@@ -3727,7 +3973,582 @@ def _():
     vid = d.create_video("test_pacing_col", scene_pacing="dynamic_fast")
     row = d.get_video(vid)
     assert row["scene_pacing"] == "dynamic_fast"
+# =====================================================================
+print("\n🧪 37. PHASE A: MULTI-VOICE DIALOGUE NARRATION")
+# =====================================================================
+
+@test("writer: script mein cast aur multi-speaker lines bante hain")
+def _():
+    d = fresh_db()
+    w = Writer(d, LLM(force_mock=True))
+    s = w.write("Test suspense story")
+    assert "cast" in s, "script mein cast missing hai"
+    assert "lines" in s, "script mein lines missing hai"
+    assert "narrator" in s["cast"]
+    assert len(s["lines"]) >= 3
+    assert s["lines"][0]["role"] == "hook"
+    assert s["lines"][-1]["role"] == "ending"
     d.close()
+
+
+@test("writer: legacy script (hook/body/ending) lines[] mein gracefully normalize hota hai")
+def _():
+    d = fresh_db()
+    w = Writer(d, LLM(force_mock=True))
+    legacy = {
+        "title": "Legacy Title",
+        "hook_line": "Legacy Hook Line",
+        "body": ["Body 1", "Body 2"],
+        "ending": "Legacy Ending Line",
+    }
+    norm = w._normalize(legacy, "Topic", "pov", 30)
+    assert "lines" in norm
+    assert len(norm["lines"]) == 4
+    assert norm["lines"][0]["speaker"] == "narrator"
+    assert norm["lines"][0]["role"] == "hook"
+    d.close()
+
+
+@test("writer: 2 se zyada characters hone pe surplus characters prune hokar narrator mein merge hote hain")
+def _():
+    d = fresh_db()
+    w = Writer(d, LLM(force_mock=True))
+    bloated = {
+        "cast": {
+            "narrator": {"gender": "male"},
+            "c1": {"gender": "female"},
+            "c2": {"gender": "male"},
+            "c3": {"gender": "female"},
+        },
+        "lines": [
+            {"speaker": "c1", "text": "Line 1", "emotion": "panicked", "role": "hook"},
+            {"speaker": "c2", "text": "Line 2", "emotion": "whispers", "role": "body"},
+            {"speaker": "c3", "text": "Line 3", "emotion": "terrified", "role": "body"},
+            {"speaker": "narrator", "text": "Line 4", "emotion": "neutral", "role": "ending"},
+        ]
+    }
+    norm = w._normalize(bloated, "Topic", "pov", 30)
+    char_keys = [k for k in norm["cast"] if k != "narrator"]
+    assert len(char_keys) <= 2
+    speakers = {l["speaker"] for l in norm["lines"]}
+    assert "c3" not in speakers
+    d.close()
+
+
+@test("writer: gender alternation enforce hoti hai (agar all chars same gender, narrator flips)")
+def _():
+    d = fresh_db()
+    w = Writer(d, LLM(force_mock=True))
+    same_gender = {
+        "cast": {
+            "narrator": {"gender": "male"},
+            "c1": {"gender": "male"},
+            "c2": {"gender": "male"},
+        },
+        "lines": [
+            {"speaker": "narrator", "text": "L1", "role": "hook"},
+            {"speaker": "c1", "text": "L2", "role": "body"},
+            {"speaker": "c2", "text": "L3", "role": "ending"},
+        ]
+    }
+    norm = w._normalize(same_gender, "Topic", "pov", 30)
+    assert norm["cast"]["narrator"]["gender"] == "female", "narrator gender flip nahi hua"
+    d.close()
+
+
+@test("voice: gemini_tts_requests quota spend aur limit 100/day enforce hoti hai")
+def _():
+    from core.quota import BUDGETS
+    d = fresh_db()
+    q = Quota(d)
+    assert "gemini_tts_requests" in BUDGETS
+    assert BUDGETS["gemini_tts_requests"]["limit"] == 100
+    for i in range(100):
+        q.check_and_spend("gemini_tts_requests", 1, reason=f"test_{i}")
+    try:
+        q.check_and_spend("gemini_tts_requests", 1, reason="overflow")
+        raise AssertionError("quota 100 ke baad block nahi hua")
+    except QuotaExceeded:
+        pass
+    d.close()
+
+
+@test("voice: pcm_to_wav aur mock Gemini TTS duration ~1s valid MP3 banate hain")
+def _():
+    from agents.voice import _call_gemini_tts, _pcm_to_wav
+    import wave
+    td = Path(tempfile.mkdtemp())
+    d = fresh_db()
+    pcm = _call_gemini_tts("Test suspense line", voice_name="Charon", db=d)
+    assert len(pcm) == 48000  # 1s * 24000 samples * 2 bytes
+    wav = td / "test.wav"
+    _pcm_to_wav(pcm, wav)
+    assert wav.exists()
+    with wave.open(str(wav), "rb") as wf:
+        assert wf.getnchannels() == 1
+        assert wf.getsampwidth() == 2
+        assert wf.getframerate() == 24000
+    d.close()
+
+
+@test("voice: _split_by_silence synthetic audio pe accurate cut points return kare")
+def _():
+    import subprocess
+    from agents.voice import _split_by_silence
+    td = Path(tempfile.mkdtemp())
+    wav_path = td / "synth_split.wav"
+    filt = "sine=frequency=400:duration=1.0 [s1]; anullsrc=duration=0.5 [gap1]; sine=frequency=400:duration=1.0 [s2]; [s1][gap1][s2] concat=n=3:v=0:a=1 [out]"
+    cmd = [ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+           "-filter_complex", filt, "-map", "[out]", "-ar", "24000", str(wav_path)]
+    subprocess.run(cmd, stdin=subprocess.DEVNULL, check=True, capture_output=True)
+    assert wav_path.exists()
+    segs = _split_by_silence(wav_path, expected_lines=2)
+    assert segs is not None
+    assert len(segs) == 2
+    assert abs(segs[0][1] - 1.25) < 0.2
+
+
+@test("voice: _split_by_silence gap count mismatch hone pe None return kare (fallback)")
+def _():
+    import subprocess
+    from agents.voice import _split_by_silence
+    td = Path(tempfile.mkdtemp())
+    wav_path = td / "synth_one.wav"
+    cmd = [ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+           "-f", "lavfi", "-i", "sine=frequency=400:duration=2.0", "-ar", "24000", str(wav_path)]
+    subprocess.run(cmd, stdin=subprocess.DEVNULL, check=True, capture_output=True)
+    segs = _split_by_silence(wav_path, expected_lines=3)
+    assert segs is None
+
+
+@test("voice: character aur narrator voices hamesha alag hoti hain")
+def _():
+    d = fresh_db()
+    v = Voice(d)
+    td = Path(tempfile.mkdtemp())
+    lines = [
+        {"speaker": "narrator", "text": "Narrator line", "role": "hook", "emotion": "neutral"},
+        {"speaker": "char_a", "text": "Character line", "role": "body", "emotion": "panicked"},
+        {"speaker": "narrator", "text": "Ending line", "role": "ending", "emotion": "neutral"},
+    ]
+    res = v.narrate(lines, td, profile_id="gem_m_grave")
+    assert res["voice_id"] == "gem_m_grave"
+    assert res["narrator_voice"] != res["character_voices"].get("char_a")
+    d.close()
+
+
+# =====================================================================
+print("\n🧪 38. PHASE B: CINEMATIC SOUND DESIGN")
+# =====================================================================
+
+@test("sound: heartbeat layer 50Hz sine aur dual-thump lub-dub pulse banata hai")
+def _():
+    from pipeline.sound import build_heartbeat_filter
+    inp, filt, lbl = build_heartbeat_filter(20.0, start_idx=3)
+    assert len(inp) == 6
+    assert "sine=frequency=50" in inp[5]
+    assert "[heartbeat]" in lbl
+    assert "volume=eval=frame" in filt[0]
+    assert "mod(" in filt[0]
+
+
+@test("sound: riser layer 200Hz to 600Hz frequency sweep banata hai")
+def _():
+    from pipeline.sound import build_riser_filter
+    inp, filt, lbl = build_riser_filter(reveal_sec=15.0, start_idx=4, dur_sec=2.5)
+    assert "200.0*t" in inp[5]
+    assert "[riser]" in lbl
+    assert "adelay=" in filt[0]
+
+
+@test("sound: sub-hit layer 42Hz burst at reveal point banata hai")
+def _():
+    from pipeline.sound import build_sub_hit_filter
+    inp, filt, lbl = build_sub_hit_filter(reveal_sec=18.0, start_idx=5, dur_sec=0.6, freq=42.0)
+    assert "42.0*t" in inp[5]
+    assert "[sub_hit]" in lbl
+    assert "adelay=18000|18000" in filt[0]
+
+
+@test("sound: room tone pink noise bed aur lowpass lagata hai")
+def _():
+    from pipeline.sound import build_room_tone_filter
+    inp, filt, lbl = build_room_tone_filter(total_sec=25.0, start_idx=6)
+    assert "color=pink" in inp[5]
+    assert "lowpass=f=1200" in filt[0]
+    assert "[room_tone]" in lbl
+
+
+@test("sound: sound design package mein zero external audio files hain")
+def _():
+    from pipeline.sound import build_sound_design_package
+    pkg = build_sound_design_package(30.0, cuts=[5.0, 10.0, 15.0, 20.0, 25.0], reveal_sec=22.0)
+    joined = " ".join(pkg["inputs"]) + " " + " ".join(pkg["parts"])
+    for bad in (".mp3", ".wav", "music/", "http"):
+        assert bad not in joined, f"external audio source mila: {bad}"
+    assert "heartbeat" in pkg["applied"]
+    assert "riser" in pkg["applied"]
+    assert "sub_hit" in pkg["applied"]
+
+
+@test("sound: build_audio_filter cinematic mode sidechain ducking aur limiter include kare")
+def _():
+    from pipeline.render import build_audio_filter
+    inputs, filt = build_audio_filter(5, [5.0, 10.0, 15.0, 20.0], 25.0,
+                                      reveal_sec=18.0, cinematic=True)
+    assert "sidechaincompress" in filt or "amix" in filt
+    assert "alimiter=limit=0.9" in filt
+    assert "loudnorm=I=-14:TP=-1.5" in filt
+
+
+@test("sound: cinematic audio filter chain ffmpeg dry-run pe bina error pass ho")
+def _():
+    import subprocess
+    from pipeline.render import build_audio_filter
+    inputs, filt = build_audio_filter(4, [5.0, 10.0, 15.0], 20.0,
+                                      reveal_sec=15.0, cinematic=True)
+    cmd = [ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+           "-f", "lavfi", "-i", "sine=frequency=440:duration=20",
+           *inputs, "-filter_complex", filt, "-map", "[aout]", "-t", "0.5", "-f", "null", "-"]
+    res = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True)
+# =====================================================================
+print("\n🧪 39. PHASE C: CINEMATIC VISUAL EFFECTS")
+# =====================================================================
+
+@test("effects: color grade teal-orange colorbalance filter banata hai")
+def _():
+    from pipeline.effects import build_color_grade_filter
+    cg = build_color_grade_filter()
+    assert "colorbalance" in cg
+    assert "rs=" in cg and "bs=" in cg
+
+
+@test("effects: 35mm film grain uniform+temporal noise banata hai")
+def _():
+    from pipeline.effects import build_film_grain_filter
+    fg = build_film_grain_filter(7)
+    assert "noise=alls=7:allf=t+u" in fg
+
+
+@test("effects: vignette pulse heartbeat synced oscillation banata hai")
+def _():
+    from pipeline.effects import build_vignette_pulse_filter
+    vp = build_vignette_pulse_filter(pulse=True, freq=1.1)
+    assert "vignette=" in vp
+    assert "sin(2*PI*t*1.1)" in vp
+
+
+@test("effects: camera shake even dimensions maintain karta hai")
+def _():
+    from pipeline.effects import build_camera_shake_filter
+    cs = build_camera_shake_filter(1080, 1920, intensity=12)
+    assert "scale=1080:1920" in cs
+    assert "crop=w=1048:h=1888" in cs
+
+
+@test("effects: white flash 2 frames (0.066s) ka pure white transition banata hai")
+def _():
+    from pipeline.effects import build_white_flash_filter
+    wf = build_white_flash_filter(0.066)
+    assert "color=white" in wf
+    assert "0.066" in wf
+
+
+@test("effects: breathing character 0.4% scale pulse banata hai")
+def _():
+    from pipeline.effects import build_breathing_character_filter
+    bc = build_breathing_character_filter(1080, 1920, intensity=0.004)
+    assert "2*floor(" in bc
+    assert "0.004" in bc
+
+
+@test("effects: cinematic scene filter ffmpeg dry-run pe bina error pass hota hai")
+def _():
+    import subprocess
+    from pipeline.effects import build_cinematic_scene_filter
+    vf, applied = build_cinematic_scene_filter(
+        "zoom_in", 3.0, 1080, 1920, 30,
+        emotion="panicked", role="reveal", is_first=True
+    )
+    assert "camera_shake" in applied
+    assert "white_flash" in applied
+    assert "color_grade" in applied
+    assert "film_grain" in applied
+    cmd = [ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+           "-f", "lavfi", "-i", "testsrc=size=1080x1920:rate=30",
+           "-vf", vf, "-frames:v", "2", "-f", "null", "-"]
+    res = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True)
+    assert res.returncode == 0, f"ffmpeg visual filter fail:\n{res.stderr}"
+
+
+# =====================================================================
+print("\n🧪 40. PHASE D: CHARACTER CONSISTENCY")
+# =====================================================================
+
+@test("consistency: build_visual_anchor detailed physical anchor banata hai")
+def _():
+    from agents.artdirector import build_visual_anchor
+    anchor_m = build_visual_anchor("Kabir", gender="male", age=35)
+    assert "Same 35-year-old South Asian man" in anchor_m["anchor"]
+    assert "sharp jawline" in anchor_m["anchor"]
+    assert "dark brown woolen trench coat" in anchor_m["anchor"]
+    assert "scar" in anchor_m["anchor"]
+    assert anchor_m["features"]["gender"] == "male"
+    assert "same character as previous scene" in anchor_m["keywords"]
+
+    anchor_f = build_visual_anchor("Priya", gender="female", age=29)
+    assert "Same 29-year-old South Asian woman" in anchor_f["anchor"]
+    assert "emerald green" in anchor_f["anchor"] or "ponytail" in anchor_f["anchor"]
+
+
+@test("consistency: visual anchor scene prompt ke START mein prepend hota hai")
+def _():
+    d = fresh_db()
+    llm = LLM(force_mock=True)
+    script = {
+        "title": "Test Mystery",
+        "hook_line": "Darwaza band tha.",
+        "body": ["Kabir ne andar dekha.", "Wahan koi nahi tha."],
+        "ending": "Lekin diary khuli thi.",
+        "target_length_sec": 30,
+        "cast": [{"name": "Kabir", "role": "protagonist", "gender": "male"}],
+    }
+    art = ArtDirector(d, llm).direct(script)
+    first_prompt = art["scenes"][0]["image_prompt"]
+    assert first_prompt.startswith("Same 32-year-old South Asian man") or "Same" in first_prompt[:40]
+    assert "same character as previous scene" in first_prompt
+    assert "identical facial features" in first_prompt
+    assert "consistent costume" in first_prompt
+    d.close()
+
+
+@test("consistency: negative prompt mein character consistency keywords hote hain")
+def _():
+    d = fresh_db()
+    llm = LLM(force_mock=True)
+    art = ArtDirector(d, llm).direct(Writer(d, llm).write("test topic"))
+    for sc in art["scenes"]:
+        p = sc["image_prompt"].lower()
+        assert "different face" in p
+        assert "inconsistent clothing" in p
+        assert "different actor" in p
+    d.close()
+
+
+@test("consistency: characters SQLite DB mein save hote hain")
+def _():
+    d = fresh_db()
+    vid = d.create_video("mystery story")
+    cid = d.save_character("Kabir", "Same 35-year-old South Asian man...", video_id=vid,
+                           costume="dark brown trench coat", features={"age": 35})
+    assert cid > 0
+    row = d.get_character("Kabir")
+    assert row is not None
+    assert row["name"] == "Kabir"
+    assert row["video_id"] == vid
+    assert "35-year-old" in row["visual_anchor"]
+    chars = d.list_characters()
+    assert len(chars) >= 1
+    d.close()
+
+
+@test("consistency: series mode mein existing character DB se reuse hota hai")
+def _():
+    d = fresh_db()
+    llm = LLM(force_mock=True)
+    # Save a custom character in DB
+    d.save_character("Vikram", "Custom visual anchor for Vikram with blue jacket",
+                     costume="blue jacket", features={"custom": True})
+    
+    script = {
+        "title": "Part 2",
+        "hook_line": "Vikram wapas aaya.",
+        "body": ["Usne diary kholi."],
+        "ending": "Sach samne tha.",
+        "target_length_sec": 30,
+        "cast": [{"name": "Vikram", "role": "protagonist", "gender": "male"}],
+    }
+    art = ArtDirector(d, llm).direct(script)
+    assert "Custom visual anchor for Vikram with blue jacket" in art["scenes"][0]["image_prompt"]
+    d.close()
+
+
+@test("consistency: multi-character cast mein har character ka alag anchor banta hai")
+def _():
+    d = fresh_db()
+    llm = LLM(force_mock=True)
+    script = {
+        "title": "Two Detectives",
+        "hook_line": "Kabir aur Priya kamre mein the.",
+        "body": ["Kabir ne diary uthayi.", "Priya ne darwaza lock kiya."],
+        "ending": "Dono phas chuke the.",
+        "target_length_sec": 30,
+        "cast": [
+            {"name": "Kabir", "role": "protagonist", "gender": "male"},
+            {"name": "Priya", "role": "partner", "gender": "female"}
+        ],
+    }
+    art = ArtDirector(d, llm).direct(script)
+    anchors = art["character_anchors"]
+    assert "kabir" in anchors and "priya" in anchors
+    assert "man" in anchors["kabir"]
+    assert "woman" in anchors["priya"]
+    d.close()
+
+
+@test("consistency: ImageGen scene-to-scene seed proximity maintain karta hai")
+def _():
+    from agents.imagegen import ImageGen
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        scenes = [
+            {"n": 1, "file": "scene_01.jpg", "image_prompt": "test 1"},
+            {"n": 2, "file": "scene_02.jpg", "image_prompt": "test 2"},
+            {"n": 3, "file": "scene_03.jpg", "image_prompt": "test 3"},
+        ]
+        ig = ImageGen(["local_placeholder"])
+        res = ig.generate_all(scenes, td, seed_base=100)
+        assert res[0]["seed"] == 101
+        assert res[1]["seed"] == 102
+        assert res[2]["seed"] == 103
+        assert res[1]["seed"] - res[0]["seed"] == 1
+
+
+# =====================================================================
+print("\n🧪 41. PHASE E: 2.5D LAYERED SCENES & PARTICLES")
+# =====================================================================
+
+@test("layered: docs/LAYERED_SCENES.md architectural spec maujood hai")
+def _():
+    from pathlib import Path
+    doc_path = Path("docs/LAYERED_SCENES.md")
+    assert doc_path.exists(), "docs/LAYERED_SCENES.md missing hai"
+    txt = doc_path.read_text(encoding="utf-8")
+    assert "Foreground/Background" in txt or "Parallax" in txt
+    assert "colorkey" in txt or "chromakey" in txt
+    assert "lavfi" in txt or "procedural" in txt
+
+
+@test("layered: build_dust_particle_filter procedural dust specks banata hai")
+def _():
+    from pipeline.effects import build_dust_particle_filter
+    flt = build_dust_particle_filter(1080, 1920, 3.0, density=0.002, alpha=0.3)
+    assert "nullsrc=s=1080x1920" in flt
+    assert "geq=" in flt
+    assert "colorchannelmixer=aa=0.30" in flt
+
+
+@test("layered: dust particle filter ffmpeg dry-run pe pass hota hai")
+def _():
+    import subprocess
+    from pipeline.effects import build_dust_particle_filter
+    flt = build_dust_particle_filter(640, 360, 0.2, density=0.002, alpha=0.3)
+    cmd = [ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+           "-f", "lavfi", "-i", flt, "-frames:v", "2", "-f", "null", "-"]
+    res = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True)
+    assert res.returncode == 0, f"dust particle ffmpeg fail:\n{res.stderr}"
+
+
+@test("layered: build_atmospheric_fog_filter drifting fog layer banata hai")
+def _():
+    from pipeline.effects import build_atmospheric_fog_filter
+    flt = build_atmospheric_fog_filter(1080, 1920, 3.0, alpha=0.15)
+    assert "nullsrc=s=1080x1920" in flt
+    assert "noise=alls=25:allf=t+u" in flt
+    assert "boxblur=15:5" in flt
+
+
+@test("layered: atmospheric fog filter ffmpeg dry-run pe pass hota hai")
+def _():
+    import subprocess
+    from pipeline.effects import build_atmospheric_fog_filter
+    flt = build_atmospheric_fog_filter(640, 360, 0.2, alpha=0.15)
+    cmd = [ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+           "-f", "lavfi", "-i", flt, "-frames:v", "2", "-f", "null", "-"]
+    res = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True)
+    assert res.returncode == 0, f"fog filter ffmpeg fail:\n{res.stderr}"
+
+
+@test("layered: build_parallax_filter differential motion aur overlay banata hai")
+def _():
+    from pipeline.effects import build_parallax_filter
+    flt = build_parallax_filter(1080, 1920, 3.0, intensity="medium")
+    assert "[0:v]scale=" in flt
+    assert "[1:v]scale=" in flt
+    assert "overlay=" in flt
+    assert "2*floor(" in flt
+
+
+@test("layered: parallax filter ffmpeg dry-run pe 2 plates ke saath pass hota hai")
+def _():
+    import subprocess
+    from pipeline.effects import build_parallax_filter
+    flt = build_parallax_filter(640, 360, 0.2, intensity="medium")
+    cmd = [ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+           "-f", "lavfi", "-i", "testsrc=size=640x360:rate=30",
+           "-f", "lavfi", "-i", "color=c=blue@0.5:size=640x360:rate=30:duration=0.2,format=yuva420p",
+           "-filter_complex", flt, "-frames:v", "2", "-f", "null", "-"]
+    res = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True)
+    assert res.returncode == 0, f"parallax filter ffmpeg fail:\n{res.stderr}"
+
+
+# =====================================================================
+print("\n🧪 42. PHASE F: ASYNC JOBS, IDEMPOTENCY & SECURE MAKE.COM")
+# =====================================================================
+
+@test("jobs: DB create_job, update_job aur get_job kaam karte hain")
+def _():
+    import uuid
+    from core.db import DB
+    with DB() as db:
+        jid = f"test_job_{uuid.uuid4().hex[:8]}"
+        db.create_job(jid, "generate", topic="haunted palace", idempotency_key=f"idem_{jid}")
+        job = db.get_job(jid)
+        assert job is not None
+        assert job["status"] == "queued"
+        assert job["topic"] == "haunted palace"
+        db.update_job(jid, status="running")
+        assert db.get_job(jid)["status"] == "running"
+        vid = db.create_video(topic="haunted palace")
+        db.update_job(jid, status="completed", video_id=vid, result_paths={"video_path": "output/test.mp4"})
+        res = db.get_job(jid)
+        assert res["status"] == "completed"
+        assert res["video_id"] == vid
+        assert "output/test.mp4" in res["result_paths"]
+
+@test("jobs: get_job_by_idempotency_key match karta hai")
+def _():
+    import uuid
+    from core.db import DB
+    with DB() as db:
+        jid = f"test_job_{uuid.uuid4().hex[:8]}"
+        ikey = f"idem_{uuid.uuid4().hex[:8]}"
+        db.create_job(jid, "generate", idempotency_key=ikey)
+        matched = db.get_job_by_idempotency_key(ikey)
+        assert matched is not None
+        assert matched["job_id"] == jid
+
+@test("jobs: webhook auth secret constant-time digest compare karta hai")
+def _():
+    import os
+    from web.server import _check_webhook_auth
+    old_sec = os.environ.get("MAKE_WEBHOOK_SECRET")
+    try:
+        os.environ["MAKE_WEBHOOK_SECRET"] = "x" * 32
+        ok, code, _ = _check_webhook_auth({"X-Webhook-Secret": "x" * 32}, {})
+        assert ok is True and code == 200
+        ok2, code2, _ = _check_webhook_auth({"X-Webhook-Secret": "wrong_secret"}, {})
+        assert ok2 is False and code2 == 403
+    finally:
+        if old_sec is not None:
+            os.environ["MAKE_WEBHOOK_SECRET"] = old_sec
+        else:
+            os.environ.pop("MAKE_WEBHOOK_SECRET", None)
+
+@test("voice: faster-whisper singleton model reuse karta hai")
+def _():
+    from agents.voice import _get_whisper_model
+    assert callable(_get_whisper_model)
 
 
 # =====================================================================

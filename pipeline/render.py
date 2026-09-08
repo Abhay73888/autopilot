@@ -112,15 +112,53 @@ def _even(n: float) -> int:
 # SOUND DESIGN — sab kuch ffmpeg se GENERATE hota hai
 # Hard constraint #6: koi copyrighted music nahi. Ye 100% synthesized hai.
 # =====================================================================
-def build_audio_filter(n_scenes: int, cuts: list[float], total: float) -> tuple[list[str], str]:
+def build_audio_filter(n_scenes: int, cuts: list[float], total: float,
+                       reveal_sec: float | None = None,
+                       effects_cfg: dict | None = None,
+                       cinematic: bool = False) -> tuple[list[str], str]:
     """
     Return: (extra ffmpeg inputs, filter_complex ka audio hissa)
 
-    3 layers:
-      1. Narration (input 0) — sabse upar, clear
-      2. Low drone ambience — 55Hz + 110Hz sine, bahut dheemi. Suspense feel deti hai.
-      3. Whoosh transitions — har cut pe. White noise + fast fade = "whoosh".
+    Layers:
+      1. Narration (input 0) — compressed & filtered for mobile clarity.
+      2. Ambient drone / heartbeat / riser / sub-hit / room-tone (via pipeline.sound if cinematic).
+      3. Dynamic ducking + master limiter before -14 LUFS loudnorm.
     """
+    if cinematic:
+        from pipeline.sound import build_sound_design_package
+        pkg = build_sound_design_package(total, cuts, reveal_sec=reveal_sec, cfg_override=effects_cfg)
+        inputs = pkg["inputs"]
+        parts = []
+
+        # Narration audio conditioning
+        parts.append("[0:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,"
+                     "acompressor=threshold=0.15:ratio=3:attack=20:release=250,"
+                     "highpass=f=85,volume=1.0[narr]")
+
+        # Sound design background layers
+        parts.extend(pkg["parts"])
+        bg_label = pkg["bg_label"]
+
+        # Ducking: duck background audio against narration
+        caps = capabilities()
+        if pkg.get("ducking") and caps.get("sidechaincompress", False):
+            parts.append("[narr]asplit=2[narr_sc][narr_mix]")
+            parts.append(f"{bg_label}[narr_sc]sidechaincompress=threshold=0.1:ratio=5:attack=20:release=250[bg_ducked]")
+            ducked_label = "[bg_ducked]"
+            narr_label = "[narr_mix]"
+        else:
+            ducked_label = bg_label
+            narr_label = "[narr]"
+
+        # Mix ducked background + narration
+        parts.append(f"{ducked_label}{narr_label}amix=inputs=2:duration=first:normalize=0[premix]")
+
+        # Master limiter + loudnorm (-14 LUFS)
+        limiter_str = "alimiter=limit=0.9:attack=5:release=50," if pkg.get("limiter") and caps.get("alimiter", False) else ""
+        parts.append(f"[premix]{limiter_str}loudnorm=I=-14:TP=-1.5:LRA=11,"
+                     f"aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo[aout]")
+        return inputs, ";".join(parts)
+
     inputs = []
     parts = []
 
@@ -220,7 +258,7 @@ class Renderer:
             clips = []
             for i, sc in enumerate(scenes):
                 cp = tmp / f"clip_{i:02d}.mp4"
-                self._render_clip(sc, cp, preset)
+                self._render_clip(sc, cp, preset, is_first=(i == 0))
                 clips.append(cp)
                 log.debug(f"clip {i+1}/{len(scenes)} ready", motion=sc["motion"],
                           dur=f"{sc['dur']:.2f}s")
@@ -277,9 +315,21 @@ class Renderer:
         return scenes
 
     # ------------------------------------------------------------------
-    def _render_clip(self, sc: dict, out: Path, preset: str):
-        vf = ken_burns(sc["motion"], sc["dur"], self.w, self.h, self.fps,
-                       parallax=sc.get("parallax", False))
+    def _render_clip(self, sc: dict, out: Path, preset: str, is_first: bool = False):
+        vis_cfg = self.m.get("effects", {}).get("visual") or CONFIG.get("effects", {}).get("visual", {})
+        if vis_cfg:
+            from pipeline.effects import build_cinematic_scene_filter
+            vf, _ = build_cinematic_scene_filter(
+                sc["motion"], sc["dur"], self.w, self.h, self.fps,
+                emotion=sc.get("emotion", "neutral"),
+                role=sc.get("role", "body"),
+                parallax=sc.get("parallax", False),
+                is_first=is_first,
+                effects_cfg=vis_cfg,
+            )
+        else:
+            vf = ken_burns(sc["motion"], sc["dur"], self.w, self.h, self.fps,
+                           parallax=sc.get("parallax", False))
         run(["-loop", "1", "-t", f"{sc['dur']:.3f}", "-r", str(self.fps),
              "-i", sc["path"], "-vf", vf,
              "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
@@ -335,14 +385,25 @@ class Renderer:
     def _finalize(self, video: Path, audio: Path, ass: Path,
                   scenes: list[dict], out: Path, preset: str):
         """Audio mix + subtitles burn + final encode — sab ek hi pass mein."""
+        total = sum(s["dur"] for s in scenes) - XFADE * (len(scenes) - 1)
         # cut points nikalo (whoosh SFX yahan lagenge)
         cuts, t = [], 0.0
         for s in scenes[:-1]:
             t += s["dur"] - XFADE
             cuts.append(t)
-        total = float(self.m["narration"]["duration_sec"])
+        # reveal point find karo
+        reveal_sec = None
+        for ln in self.m.get("narration", {}).get("lines", []):
+            if ln.get("role") == "reveal":
+                reveal_sec = float(ln.get("start", total * 0.75))
+                break
+        sound_cfg = self.m.get("effects", {}).get("sound") or CONFIG.get("effects", {}).get("sound", {})
+        cinematic_sound = bool(sound_cfg)
 
-        extra_inputs, afilter = build_audio_filter(len(scenes), cuts, total)
+        extra_inputs, afilter = build_audio_filter(len(scenes), cuts, total,
+                                                   reveal_sec=reveal_sec,
+                                                   effects_cfg=sound_cfg,
+                                                   cinematic=cinematic_sound)
 
         # subtitles path ko ffmpeg filter ke liye escape karna padta hai
         ass_esc = str(ass).replace("\\", "/").replace(":", "\\:").replace("'", "\\'")

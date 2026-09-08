@@ -157,8 +157,90 @@ def _srt_ts(sec: float) -> str:
     return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
 
 
+def align_with_groq(audio_path: str | Path, groq_key: str | None = None) -> list[dict] | None:
+    """
+    Groq Whisper Large v3 se audio transcribe karke exact word-level
+    timestamps nikalta hai (0.3s-1.0s response time).
+
+    Return: [{"w": "word", "start": 0.12, "end": 0.45}, ...]
+    Agar fail ho ya key na ho -> None (fallback to syllable weighting).
+    """
+    import json
+    import os
+    import urllib.request
+    from core.config import CONFIG
+
+    audio_path = Path(audio_path)
+    if not audio_path.exists() or audio_path.stat().st_size < 1000:
+        return None
+
+    key = groq_key or os.environ.get("GROQ_API_KEY") or CONFIG.get("GROQ_API_KEY")
+    if not key:
+        return None
+
+    try:
+        boundary = "----WebKitFormBoundaryAutopilotGroqWhisper"
+        body = []
+
+        # model
+        body.append(f"--{boundary}".encode())
+        body.append(b'Content-Disposition: form-data; name="model"\r\n')
+        body.append(b"whisper-large-v3")
+
+        # response_format
+        body.append(f"--{boundary}".encode())
+        body.append(b'Content-Disposition: form-data; name="response_format"\r\n')
+        body.append(b"verbose_json")
+
+        # timestamp_granularities[]
+        body.append(f"--{boundary}".encode())
+        body.append(b'Content-Disposition: form-data; name="timestamp_granularities[]"\r\n')
+        body.append(b"word")
+
+        # file
+        body.append(f"--{boundary}".encode())
+        body.append(f'Content-Disposition: form-data; name="file"; filename="{audio_path.name}"'.encode())
+        body.append(b"Content-Type: audio/mpeg\r\n")
+        with open(audio_path, "rb") as f:
+            body.append(f.read())
+
+        body.append(f"--{boundary}--\r\n".encode())
+        payload = b"\r\n".join(body)
+
+        req = urllib.request.Request(
+            "https://api.groq.com/openai/v1/audio/transcriptions",
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {key}",
+                "Content-Type": f"multipart/form-data; boundary={boundary}",
+                "User-Agent": "Autopilot/1.0",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=25) as resp:
+            data = json.loads(resp.read().decode())
+            raw_words = data.get("words", [])
+            if not raw_words:
+                return None
+            clean_words = []
+            for item in raw_words:
+                w_str = item.get("word", "").strip()
+                if w_str:
+                    clean_words.append({
+                        "w": w_str,
+                        "start": round(float(item.get("start", 0.0)), 3),
+                        "end": round(float(item.get("end", 0.0)), 3),
+                    })
+            if clean_words:
+                log.ok(f"Groq Whisper se {len(clean_words)} words frame-accurate align ho gaye!")
+                return clean_words
+    except Exception as e:
+        log.warn(f"Groq Whisper alignment fail ({str(e)[:80]}) — syllable approximation use hogi")
+    return None
+
+
 if __name__ == "__main__":
     demo = [{"w": w, "start": i * 0.4, "end": i * 0.4 + 0.38}
             for i, w in enumerate("Is gaon ke chaudah log gayab ho gaye".split())]
     p = build_ass(demo, "14 log. Ek raat. Zero saboot.", "output/_demo.ass")
     print(p.read_text()[:900])
+

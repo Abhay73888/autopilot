@@ -66,16 +66,56 @@ TEMPLATES = {
 MOTIONS = ["zoom_in", "pan_left", "zoom_out", "pan_right", "zoom_in_slow", "pan_up"]
 
 # Har image prompt ke end mein ye jaata hai — 9:16 aur "no text" enforce karne ke liye.
-# (Image models text likhne ki koshish karte hain aur wo hamesha gibberish hota hai —
-#  hamare subtitles ffmpeg lagayega, image mein text nahi chahiye.)
 NEGATIVE = ("vertical 9:16 composition, no text, no letters, no watermark, no signature, "
             "no photorealism, no real photograph, no logo")
+
+CONSISTENCY_KEYWORDS = "same character as previous scene, identical facial features, consistent costume"
+
+
+def build_visual_anchor(name: str, gender: str = "male", age: int = 32,
+                        costume: str | None = None, features: dict | None = None) -> dict:
+    """
+    Phase D: Visual Identity Anchor generator.
+    Produces deterministic, hyper-specific physical anchor and costume.
+    """
+    gender_norm = "female" if str(gender).lower() in ("female", "f", "woman") else "male"
+    man_woman = "woman" if gender_norm == "female" else "man"
+
+    if gender_norm == "male":
+        hair = (features and features.get("hair")) or "short textured black hair"
+        facial = (features and features.get("facial")) or "sharp jawline, tired intense dark eyes"
+        marks = (features and features.get("marks")) or "thin scar on left cheekbone, rectangular metal-rimmed glasses"
+        default_costume = costume or (features and features.get("costume")) or "dark brown woolen trench coat over maroon high-neck sweater"
+    else:
+        hair = (features and features.get("hair")) or "dark wavy hair tied back in low ponytail"
+        facial = (features and features.get("facial")) or "sharp defined cheekbones, intense watchful dark brown eyes"
+        marks = (features and features.get("marks")) or "thin faint scar near temple, rectangular dark-rimmed glasses"
+        default_costume = costume or (features and features.get("costume")) or "dark charcoal woolen trench coat over emerald green high-neck sweater"
+
+    feat = {
+        "name": name,
+        "gender": gender_norm,
+        "age": age,
+        "ethnicity": "South Asian",
+        "hair": hair,
+        "facial": facial,
+        "marks": marks,
+        "costume": default_costume,
+    }
+    anchor = f"Same {age}-year-old South Asian {man_woman} with {facial}, {hair}, {marks}, wearing {default_costume}"
+    return {
+        "name": name,
+        "anchor": anchor,
+        "costume": default_costume,
+        "features": feat,
+        "keywords": CONSISTENCY_KEYWORDS,
+    }
 
 
 class ArtDirector:
     def __init__(self, db: DB | None = None, llm: LLM | None = None):
         self.db = db or DB()
-        self.llm = llm or LLM()
+        self.llm = (llm.for_agent("artdirector") if hasattr(llm, "for_agent") else llm) if llm else LLM(agent_name="artdirector")
 
     # ------------------------------------------------------------------
     def pick_template(self) -> str:
@@ -131,7 +171,8 @@ class ArtDirector:
 
     # ------------------------------------------------------------------
     def direct(self, script: dict, template_id: str | None = None,
-               n_scenes: int | None = None, pacing: str | None = None) -> dict:
+               n_scenes: int | None = None, pacing: str | None = None,
+               video_id: int | None = None) -> dict:
         """
         Script -> scene list.
         Har scene mein: image prompt, motion, aur wo spoken line jo us par chalegi.
@@ -179,20 +220,85 @@ Sirf JSON return karo:
 }}"""
 
         data = self.llm.json(prompt)
-        return self._build(data, script, template_id, n_scenes, lines, pacing=pacing)
+        return self._build(data, script, template_id, n_scenes, lines, pacing=pacing, video_id=video_id)
 
     # ------------------------------------------------------------------
     def _build(self, data: dict, script: dict, template_id: str,
-               n_scenes: int, lines: list[str], pacing: str = "standard") -> dict:
+               n_scenes: int, lines: list[str], pacing: str = "standard",
+               video_id: int | None = None) -> dict:
         tpl = TEMPLATES[template_id]
         character = str(data.get("character") or
                         "a 30-year-old Indian man in a worn grey jacket, tired eyes, "
                         "short black hair, a red scarf around his neck")[:220]
         setting = str(data.get("setting") or "an abandoned village house at night")[:160]
 
+        # Phase D: Cast identification & Visual Identity Anchors
+        cast = script.get("cast") if isinstance(script.get("cast"), list) else []
+        char_anchors: dict[str, dict] = {}
+
+        if cast:
+            for member in cast:
+                cname = str(member.get("name") or "protagonist").strip()
+                cgender = str(member.get("gender") or "male").strip()
+                # Check DB for existing character
+                existing = self.db.get_character(cname) if hasattr(self.db, "get_character") else None
+                if existing and CONFIG.get("effects", {}).get("character_consistency", {}).get("reuse_existing", True):
+                    features = json.loads(existing["features_json"]) if existing["features_json"] else {}
+                    char_anchors[cname.lower()] = {
+                        "name": cname,
+                        "anchor": existing["visual_anchor"],
+                        "costume": existing["costume"],
+                        "features": features,
+                        "keywords": CONSISTENCY_KEYWORDS,
+                    }
+                    log.info(f"Existing character visual anchor reused: {cname}")
+                else:
+                    anchor_info = build_visual_anchor(cname, gender=cgender)
+                    char_anchors[cname.lower()] = anchor_info
+                    if hasattr(self.db, "save_character"):
+                        self.db.save_character(
+                            name=cname,
+                            visual_anchor=anchor_info["anchor"],
+                            video_id=video_id,
+                            costume=anchor_info["costume"],
+                            features=anchor_info["features"],
+                        )
+        else:
+            # Single character fallback
+            default_name = "protagonist"
+            existing = self.db.get_character(default_name) if hasattr(self.db, "get_character") else None
+            if existing and CONFIG.get("effects", {}).get("character_consistency", {}).get("reuse_existing", True):
+                features = json.loads(existing["features_json"]) if existing["features_json"] else {}
+                char_anchors[default_name] = {
+                    "name": default_name,
+                    "anchor": existing["visual_anchor"],
+                    "costume": existing["costume"],
+                    "features": features,
+                    "keywords": CONSISTENCY_KEYWORDS,
+                }
+            else:
+                anchor_info = build_visual_anchor(default_name, gender="male")
+                char_anchors[default_name] = anchor_info
+                if hasattr(self.db, "save_character"):
+                    self.db.save_character(
+                        name=default_name,
+                        visual_anchor=anchor_info["anchor"],
+                        video_id=video_id,
+                        costume=anchor_info["costume"],
+                        features=anchor_info["features"],
+                    )
+
+        # Primary anchor (first in cast or protagonist)
+        primary_key = list(char_anchors.keys())[0]
+        primary_anchor = char_anchors[primary_key]["anchor"]
+
         raw_scenes = data.get("scenes") or []
         if not isinstance(raw_scenes, list):
             raw_scenes = []
+
+        cfg_eff = CONFIG.get("effects", {}).get("character_consistency", {})
+        neg_extra = cfg_eff.get("negative_prompt_extra", "different face, inconsistent clothing, different actor")
+        full_negative = f"{NEGATIVE}, {neg_extra}"
 
         scenes = []
         for i in range(n_scenes):
@@ -203,14 +309,26 @@ Sirf JSON return karo:
                 base = f"the character stands still in {setting}, tense atmosphere"
                 log.warn(f"Scene {i+1} ka prompt LLM se nahi mila — fallback use kiya")
 
-            # ⭐ CHARACTER CONSISTENCY: har prompt mein wahi character + style + negatives
+            # Determine character for this scene
+            active_key = primary_key
+            for cname in char_anchors:
+                if cname in base.lower() or (i < len(lines) and cname in lines[i].lower()):
+                    active_key = cname
+                    break
+            active_info = char_anchors[active_key]
+
+            # Anchor prepended at the START of prompt with consistency keywords
+            anchor_prefix = f"{active_info['anchor']}, {CONSISTENCY_KEYWORDS}. "
+
+            # ⭐ CHARACTER CONSISTENCY: Har prompt mein wahi visual anchor + character + style + negatives
             full_prompt = (
+                f"{anchor_prefix}"
                 f"{tpl['style']}. "
                 f"CHARACTER (must look identical in every image): {character}. "
                 f"SCENE: {base}. "
                 f"SETTING: {setting}. "
                 f"Lighting: {tpl['lighting']}. Camera: {tpl['camera']}. "
-                f"{NEGATIVE}"
+                f"{full_negative}"
             )
 
             scenes.append({
@@ -218,10 +336,11 @@ Sirf JSON return karo:
                 "beat": str(src.get("beat") or "")[:200],
                 "image_prompt": _clean(full_prompt),
                 "motion": MOTIONS[i % len(MOTIONS)],   # alternate, kabhi lagatar same nahi
-                # parallax: har doosre scene pe on, taaki ek jaisa na lage
                 "parallax": i % 2 == 1,
                 "line": lines[i] if i < len(lines) else "",
                 "file": f"scene_{i+1:02d}.jpg",
+                "character_name": active_info["name"],
+                "visual_anchor": active_info["anchor"],
             })
 
         # Loop enforce: aakhri scene = pehle scene ka echo (Section 8: loop-perfect ending)
@@ -239,6 +358,8 @@ Sirf JSON return karo:
             "template_name": tpl["name"],
             "pacing": pacing,
             "character": character,
+            "characters": list(char_anchors.values()),
+            "character_anchors": {k: v["anchor"] for k, v in char_anchors.items()},
             "setting": setting,
             "scenes": scenes,
             "n_scenes": len(scenes),

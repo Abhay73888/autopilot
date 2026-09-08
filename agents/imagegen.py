@@ -36,7 +36,7 @@ GEN_W, GEN_H = 640, 1138
 
 class ImageGen:
     def __init__(self, providers: list[str] | None = None):
-        self.providers = providers or ["pollinations", "gemini_image", "local_placeholder"]
+        self.providers = providers or ["pollinations", "gemini_image", "pollinations_v2", "local_placeholder"]
         self.stats = {p: {"ok": 0, "fail": 0} for p in self.providers}
 
     # ------------------------------------------------------------------
@@ -89,11 +89,13 @@ class ImageGen:
         def _fetch():
             req = urllib.request.Request(url, headers={"User-Agent": UA})
             try:
-                with urllib.request.urlopen(req, timeout=8) as r:
+                with urllib.request.urlopen(req, timeout=25) as r:
                     data = r.read()
             except urllib.error.HTTPError as e:
                 if e.code == 429:
                     raise RuntimeError("Pollinations rate-limited (429)") from e
+                raise
+            except Exception:
                 raise
             if len(data) < 1000:
                 raise RuntimeError(f"response bahut chhota ({len(data)} bytes)")
@@ -101,8 +103,21 @@ class ImageGen:
                 raise RuntimeError(f"JPEG/PNG nahi mila, mila: {data[:40]!r}")
             path.write_bytes(data)
 
-        _fetch()
-        time.sleep(0.3)
+        # 3 retries with exponential backoff for rate limits
+        last_err = None
+        for attempt, wait in enumerate([0, 8, 20]):
+            if wait:
+                log.debug(f"Pollinations retry {attempt} — {wait}s wait")
+                time.sleep(wait)
+            try:
+                _fetch()
+                time.sleep(0.5)
+                return
+            except RuntimeError as e:
+                last_err = e
+                if "429" not in str(e) and "rate" not in str(e).lower():
+                    raise  # non-rate-limit error — don't retry
+        raise RuntimeError(f"Pollinations 3 tries ke baad bhi fail: {last_err}")
 
     # ---------------- provider 2: gemini image ----------------
     def _p_gemini_image(self, prompt: str, path: Path, seed: int):
@@ -112,7 +127,7 @@ class ImageGen:
         key = os.environ.get("GEMINI_API_KEY", "").strip()
         if not key:
             raise RuntimeError("GEMINI_API_KEY nahi hai")
-        model = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image")
+        model = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.0-flash-preview-image-generation")
         url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
                f"{model}:generateContent?key={key}")
         body = {"contents": [{"parts": [{"text": prompt[:1800]}]}],
@@ -121,8 +136,14 @@ class ImageGen:
         def _fetch():
             req = urllib.request.Request(url, data=json.dumps(body).encode(),
                                          headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=60) as r:
-                data = json.loads(r.read())
+            try:
+                with urllib.request.urlopen(req, timeout=90) as r:
+                    data = json.loads(r.read())
+            except urllib.error.HTTPError as e:
+                if e.code == 429:
+                    time.sleep(15)  # wait longer for rate limit
+                    raise RuntimeError(f"Gemini rate limited (429)") from e
+                raise
             for cand in data.get("candidates", []):
                 for part in cand.get("content", {}).get("parts", []):
                     if "inlineData" in part:
@@ -130,7 +151,24 @@ class ImageGen:
                         return
             raise RuntimeError("response mein koi image nahi mili")
 
-        retry(_fetch, tries=2, base_delay=2.0, log=log, what=f"gemini image {path.name}")
+        retry(_fetch, tries=3, base_delay=10.0, log=log, what=f"gemini image {path.name}")
+
+    # ---------------- provider 3: pollinations v2 (backup URL) ----------------
+    def _p_pollinations_v2(self, prompt: str, path: Path, seed: int):
+        """Alternate pollinations endpoint as backup."""
+        import json as _json
+        enc = urllib.parse.quote(prompt[:300], safe="")
+        # Try the newer pollinations API
+        url = f"https://image.pollinations.ai/prompt/{enc}?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true"
+        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        time.sleep(5)  # Wait before trying to avoid 429
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = r.read()
+        if len(data) < 1000:
+            raise RuntimeError(f"v2 response too small ({len(data)} bytes)")
+        if not (data[:2] == b"\xff\xd8" or data[:8].startswith(b"\x89PNG")):
+            raise RuntimeError("Not a valid image")
+        path.write_bytes(data)
 
     # ---------------- provider 3: local placeholder ----------------
     def _p_local_placeholder(self, prompt: str, path: Path, seed: int):

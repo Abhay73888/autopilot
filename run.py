@@ -156,9 +156,13 @@ def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
 
     if rep.ok:
-        # review_first hai to insaan ke approve ka intezaar; auto_publish hai to seedha aage
+        # No fatals — validated. review_first hai to insaan ke approve ka intezaar; auto_publish hai to seedha aage
         db.set_status(vid, "validated",
                       note=f"validate pass ({len(rep.warns)} warning)")
+    elif len(rep.fatals) == 0:
+        # Sirf warnings — still mark as validated so dashboard can publish
+        db.set_status(vid, "validated",
+                      note=f"validate pass with {len(rep.warns)} warnings")
     else:
         db.set_status(vid, "failed",
                       note=f"validate FAIL: {rep.fatals[0].code}")

@@ -40,7 +40,7 @@ from urllib.parse import parse_qs, urlparse
 # Ensure project root is in sys.path when executed as a script (python web/server.py)
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from core.config import CONFIG
+from core.config import CONFIG, ROOT
 from core.db import DB
 from core.logbook import Logbook
 from core.quota import Quota

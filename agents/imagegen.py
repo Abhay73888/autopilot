@@ -82,9 +82,9 @@ class ImageGen:
 
     # ---------------- provider 1: pollinations ----------------
     def _p_pollinations(self, prompt: str, path: Path, seed: int):
-        enc = urllib.parse.quote(prompt[:1400], safe="")
+        enc = urllib.parse.quote(prompt[:450], safe="")
         url = (f"https://image.pollinations.ai/prompt/{enc}"
-               f"?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true")
+               f"?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true&model=turbo")
 
         def _fetch():
             req = urllib.request.Request(url, headers={"User-Agent": UA})

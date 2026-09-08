@@ -167,6 +167,16 @@ display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
 
 def _load_client_secret(path: Path) -> tuple[str, str]:
     """client_secret.json padho. Google do format deta hai: 'installed' ya 'web'."""
+    raw_env = os.environ.get("YT_CLIENT_SECRET_JSON", "").strip()
+    if raw_env:
+        try:
+            data = json.loads(raw_env)
+            node = data.get("installed") or data.get("web")
+            if node and node.get("client_id") and node.get("client_secret"):
+                return node.get("client_id"), node.get("client_secret")
+        except Exception:
+            pass
+
     if not path.exists():
         raise OAuthError(
             f"client_secret.json nahi mila: {path}\n"
@@ -212,6 +222,14 @@ def authorize(scopes: list[str] | None = None,
         tok_path = root / tok_path
 
     client_id, client_secret = _load_client_secret(cs_path)
+
+    # ---------- materialise token from env if on cloud ----------
+    if not tok_path.exists() and os.environ.get("YT_TOKEN_JSON"):
+        try:
+            tok_path.parent.mkdir(parents=True, exist_ok=True)
+            tok_path.write_text(os.environ["YT_TOKEN_JSON"].strip(), encoding="utf-8")
+        except Exception:
+            pass
 
     # ---------- pehle se saved token? ----------
     if tok_path.exists() and not force:

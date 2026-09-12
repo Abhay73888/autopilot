@@ -393,8 +393,67 @@ class AutopilotAssistant:
                 "poll 2h/24h YouTube analytics snapshots, and monitor pipeline health."
             )
 
-        # 3. Publish intent
-        elif any(w in msg for w in ["publish", "upload", "youtube"]):
+        # 3. Channel Connection & Onboarding intents (YouTube / Instagram)
+        elif any(w in msg for w in ["connect youtube", "youtube connect", "youtube setup", "youtube kaise", "youtube guide"]):
+            thought_steps.append("User requested instructions to connect YouTube channel.")
+            reply = (
+                "📺 **How to Connect YouTube Channel for Full Automation:**\n\n"
+                "Follow these 3 simple steps to authorize your YouTube channel:\n\n"
+                "1. **Google Cloud Console Setup**:\n"
+                "   • Go to [Google Cloud Console](https://console.cloud.google.com/) and create a project.\n"
+                "   • Enable the **YouTube Data API v3** in *APIs & Services*.\n"
+                "   • Create OAuth 2.0 Credentials: Select **OAuth Client ID** ➔ Application Type: **Desktop app**.\n"
+                "   • Download the credentials JSON and save it as **`client_secret.json`** in your project root.\n\n"
+                "2. **Run One-Time Authorization**:\n"
+                "   • Open terminal in project folder and run:\n"
+                "   ```bash\n"
+                "   python authorize_youtube.py\n"
+                "   ```\n"
+                "   • A browser window will open. Sign in with your YouTube channel's Google account and click **Allow**.\n"
+                "   • This generates a perpetual **`token.json`** file.\n\n"
+                "3. **Automatic Publishing Ready**:\n"
+                "   • That's it! Autopilot will now upload rendered shorts directly with AI synthetic media disclosure.\n\n"
+                "💡 *Tip: Visit the **Connect & Setup (Channels)** tab in the dashboard for the visual flowchart!*"
+            )
+            quick_replies = ["⚡ Check Channel Status", "📸 How to Connect Instagram", "🚀 Generate Series 1"]
+
+        elif any(w in msg for w in ["connect instagram", "instagram connect", "instagram setup", "instagram kaise", "reels connect", "meta setup"]):
+            thought_steps.append("User requested instructions to connect Instagram Reels.")
+            reply = (
+                "📸 **How to Connect Instagram Reels for 100% Autonomous Publishing:**\n\n"
+                "Follow these 4 steps to connect your Instagram account:\n\n"
+                "1. **Link Instagram to Facebook Page**:\n"
+                "   • Ensure your Instagram account is switched to **Professional / Creator**.\n"
+                "   • Link it to a Facebook Business Page (e.g. via Instagram App ➔ *Edit Profile* ➔ *Page*).\n\n"
+                "2. **Meta for Developers App**:\n"
+                "   • Go to [developers.facebook.com](https://developers.facebook.com/) and create a **Business** App.\n"
+                "   • Add the **Instagram Graph API** product.\n\n"
+                "3. **Generate Long-Lived Token (60 Days)**:\n"
+                "   • In Meta Graph API Explorer, query your Page ID to get `instagram_business_account.id`.\n"
+                "   • Click *Access Token Tool* ➔ *Extend Access Token* to generate the 60-day token.\n\n"
+                "4. **Add to `.env` File**:\n"
+                "   ```env\n"
+                "   IG_BUSINESS_ACCOUNT_ID=178414xxxxxxxxxxx\n"
+                "   IG_LONG_LIVED_TOKEN=EAA...\n"
+                "   ```\n\n"
+                "Verify anytime with: `python -m agents.ig_publisher --info`!"
+            )
+            quick_replies = ["📺 How to Connect YouTube", "⚡ Check Channel Status", "🚀 Generate Series 1"]
+
+        elif any(w in msg for w in ["how to connect", "kaise connect", "connect channel", "channels", "setup channel", "onboarding"]):
+            thought_steps.append("User requested channel onboarding overview.")
+            reply = (
+                "🚀 **AUTOPILOT Channel Connection Hub:**\n\n"
+                "You can connect both major short-form platforms for 100% automated release:\n\n"
+                "• **📺 YouTube Shorts**: Requires `client_secret.json` from Google Cloud Console. Run `python authorize_youtube.py` to create `token.json`.\n"
+                "• **📸 Instagram Reels**: Requires Meta Graph API v21.0 credentials (`IG_BUSINESS_ACCOUNT_ID` & `IG_LONG_LIVED_TOKEN`) in `.env`.\n"
+                "• **🧠 AI & TTS Engine**: Runs **100% Free** via Microsoft Edge-TTS neural voices and Pollinations AI visual generation (zero API keys needed)!\n\n"
+                "👉 Open the new **'Connect & Setup'** tab on the top menu to see complete interactive flowcharts!"
+            )
+            quick_replies = ["📺 Connect YouTube Guide", "📸 Connect Instagram Guide", "⚡ Check Status"]
+
+        # 4. Publish intent
+        elif any(w in msg for w in ["publish", "upload"]):
             thought_steps.append("User requested publishing video to YouTube/Instagram.")
             m = re.search(r"#?(\d+)", msg)
             vid = int(m.group(1)) if m else 0

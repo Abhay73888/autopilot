@@ -124,3 +124,10 @@ imageio-ffmpeg>=0.5.0
 #           Install: SETUP.md STEP 5. Bina admin ke: `pip install imageio-ffmpeg`
 #           ⚠️ Build mein libx264 + AAC + libass hone chahiye. Check:
 #              `python core/ffmpeg.py`
+
+# ---------- PRODUCTION SAAS BACKEND ----------
+fastapi>=0.115.0
+pydantic>=2.9.0
+uvicorn>=0.30.0
+cryptography>=43.0.0
+

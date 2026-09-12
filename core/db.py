@@ -170,6 +170,41 @@ CREATE INDEX IF NOT EXISTS idx_jobs_job_id ON jobs(job_id);
 CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
 CREATE INDEX IF NOT EXISTS idx_jobs_idem ON jobs(idempotency_key);
 CREATE INDEX IF NOT EXISTS idx_jobs_created ON jobs(created_ts);
+
+-- Multi-tenancy workspaces for commercial SaaS
+CREATE TABLE IF NOT EXISTS workspaces (
+    id               TEXT PRIMARY KEY,
+    name             TEXT NOT NULL,
+    owner_email      TEXT,
+    api_key          TEXT,
+    plan_tier        TEXT NOT NULL DEFAULT 'starter', -- starter | pro | enterprise
+    credits_balance  INTEGER NOT NULL DEFAULT 100,
+    created_ts       TEXT,
+    is_active        INTEGER NOT NULL DEFAULT 1
+);
+
+-- Tamper-evident credit ledger
+CREATE TABLE IF NOT EXISTS credit_transactions (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    workspace_id     TEXT NOT NULL,
+    amount           INTEGER NOT NULL,
+    balance_after    INTEGER NOT NULL,
+    reason           TEXT NOT NULL,  -- video_render | topup | bonus | refund
+    reference_id     TEXT,
+    created_ts       TEXT NOT NULL,
+    FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
+);
+CREATE INDEX IF NOT EXISTS idx_credit_ws ON credit_transactions(workspace_id, created_ts);
+
+-- Dynamic visual presets & templates
+CREATE TABLE IF NOT EXISTS templates (
+    id               TEXT PRIMARY KEY,
+    name             TEXT NOT NULL,
+    category         TEXT NOT NULL, -- suspense | dialogue | scifi | viral_facts
+    aspect_ratio     TEXT NOT NULL DEFAULT '9:16',
+    config_json      TEXT NOT NULL,
+    is_premium       INTEGER DEFAULT 0
+);
 """
 
 
@@ -185,11 +220,32 @@ class DB:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.conn = sqlite3.connect(str(self.path), timeout=15, isolation_level=None)
         self.conn.row_factory = sqlite3.Row  # rows ko dict jaisa padh sako
+        
+        # Migrations for existing workspaces table if created without SaaS columns
+        for col_name, col_type in [
+            ("api_key", "TEXT"),
+            ("owner_email", "TEXT"),
+            ("plan_tier", "TEXT DEFAULT 'starter'"),
+            ("credits_balance", "INTEGER DEFAULT 100"),
+            ("created_ts", "TEXT"),
+        ]:
+            try:
+                self.conn.execute(f"ALTER TABLE workspaces ADD COLUMN {col_name} {col_type}")
+            except sqlite3.OperationalError:
+                pass
+
         self.conn.executescript(SCHEMA)
+
+        try:
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_workspaces_key ON workspaces(api_key)")
+        except sqlite3.OperationalError:
+            pass
+
         try:
             self.conn.execute("ALTER TABLE videos ADD COLUMN scene_pacing TEXT DEFAULT 'standard'")
         except sqlite3.OperationalError:
             pass  # column already exists
+        self._seed_defaults()
 
     # ---------- plumbing ----------
     def __enter__(self): return self
@@ -418,6 +474,121 @@ class DB:
         if status:
             return self.q("SELECT * FROM jobs WHERE status = ? ORDER BY id DESC LIMIT ?", (status, limit))
         return self.q("SELECT * FROM jobs ORDER BY id DESC LIMIT ?", (limit,))
+
+    # ---------- workspaces & credit ledger ----------
+    def _seed_defaults(self):
+        """Auto-seed default workspace and production video templates if empty."""
+        try:
+            ws = self.one("SELECT id FROM workspaces LIMIT 1")
+            if not ws:
+                ts = now()
+                self.conn.execute(
+                    "INSERT INTO workspaces (id, name, owner_email, api_key, plan_tier, credits_balance, created_ts, is_active) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    ("ws_default", "Default Studio", "founder@autopilot.ai", "ap_live_default_key_2026", "pro", 500, ts, 1)
+                )
+                self.conn.execute(
+                    "INSERT INTO credit_transactions (workspace_id, amount, balance_after, reason, reference_id, created_ts) "
+                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    ("ws_default", 500, 500, "welcome_bonus", "init_grant", ts)
+                )
+            
+            tmpl = self.one("SELECT id FROM templates LIMIT 1")
+            if not tmpl:
+                default_tmpls = [
+                    ("tmpl_suspense", "Suspense Cinematic Mystery", "suspense", "9:16",
+                     json.dumps({"color_grade": "teal_orange", "font": "Montserrat-Bold", "pacing": "dynamic_fast"})),
+                    ("tmpl_dialogue", "Dramatic 2-Person Dialogue", "dialogue", "9:16",
+                     json.dumps({"color_grade": "moody_film", "font": "Oswald-Bold", "pacing": "dialogue_cut"})),
+                    ("tmpl_scifi", "Cyberpunk & Sci-Fi Thriller", "scifi", "9:16",
+                     json.dumps({"color_grade": "neon_cyber", "font": "Roboto-Bold", "pacing": "dynamic_fast"})),
+                    ("tmpl_viral", "High-Retention Viral Facts", "viral_facts", "9:16",
+                     json.dumps({"color_grade": "vibrant_pop", "font": "Montserrat-Black", "pacing": "rapid_cuts"})),
+                ]
+                for tid, tname, tcat, tasp, tcfg in default_tmpls:
+                    self.conn.execute(
+                        "INSERT OR IGNORE INTO templates (id, name, category, aspect_ratio, config_json, is_premium) "
+                        "VALUES (?, ?, ?, ?, ?, ?)",
+                        (tid, tname, tcat, tasp, tcfg, 0)
+                    )
+        except Exception as e:
+            log.debug(f"Seed defaults skip: {e}")
+
+    def get_workspace(self, workspace_id: str = "ws_default") -> dict | None:
+        r = self.one("SELECT * FROM workspaces WHERE id = ?", (workspace_id,))
+        return dict(r) if r else None
+
+    def get_workspace_by_key(self, api_key: str) -> dict | None:
+        r = self.one("SELECT * FROM workspaces WHERE api_key = ? AND is_active = 1", (api_key,))
+        return dict(r) if r else None
+
+    def create_workspace(self, name: str, owner_email: str, plan_tier: str = "starter", credits: int = 100) -> dict:
+        import uuid
+        ws_id = f"ws_{uuid.uuid4().hex[:10]}"
+        api_key = f"ap_live_{uuid.uuid4().hex}"
+        ts = now()
+        with self.tx() as cur:
+            cur.execute(
+                "INSERT INTO workspaces (id, name, owner_email, api_key, plan_tier, credits_balance, created_ts, is_active) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (ws_id, name, owner_email, api_key, plan_tier, credits, ts, 1)
+            )
+            cur.execute(
+                "INSERT INTO credit_transactions (workspace_id, amount, balance_after, reason, reference_id, created_ts) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (ws_id, credits, credits, "welcome_bonus", "signup_grant", ts)
+            )
+        return self.get_workspace(ws_id)
+
+    def deduct_credits(self, workspace_id: str, amount: int, reason: str, reference_id: str = "") -> tuple[bool, int, str]:
+        """Atomic deduction of credits with balance check and transaction ledger entry."""
+        if amount <= 0:
+            return True, self.get_workspace(workspace_id).get("credits_balance", 0), "ok"
+        with self.tx() as cur:
+            cur.execute("SELECT credits_balance FROM workspaces WHERE id = ?", (workspace_id,))
+            row = cur.fetchone()
+            if not row:
+                return False, 0, "Workspace not found"
+            curr_bal = row[0]
+            if curr_bal < amount:
+                return False, curr_bal, f"Insufficient credits ({curr_bal} available, {amount} required)"
+            new_bal = curr_bal - amount
+            cur.execute("UPDATE workspaces SET credits_balance = ? WHERE id = ?", (new_bal, workspace_id))
+            cur.execute(
+                "INSERT INTO credit_transactions (workspace_id, amount, balance_after, reason, reference_id, created_ts) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (workspace_id, -amount, new_bal, reason, reference_id, now())
+            )
+            return True, new_bal, "success"
+
+    def add_credits(self, workspace_id: str, amount: int, reason: str, reference_id: str = "") -> int:
+        """Atomic addition of credits to a workspace balance with audit log."""
+        if amount <= 0:
+            raise ValueError("Amount must be positive")
+        with self.tx() as cur:
+            cur.execute("SELECT credits_balance FROM workspaces WHERE id = ?", (workspace_id,))
+            row = cur.fetchone()
+            if not row:
+                raise ValueError("Workspace not found")
+            new_bal = row[0] + amount
+            cur.execute("UPDATE workspaces SET credits_balance = ? WHERE id = ?", (new_bal, workspace_id))
+            cur.execute(
+                "INSERT INTO credit_transactions (workspace_id, amount, balance_after, reason, reference_id, created_ts) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (workspace_id, amount, new_bal, reason, reference_id, now())
+            )
+            return new_bal
+
+    def get_credit_history(self, workspace_id: str, limit: int = 50) -> list[dict]:
+        rows = self.q("SELECT * FROM credit_transactions WHERE workspace_id = ? ORDER BY id DESC LIMIT ?", (workspace_id, limit))
+        return [dict(r) for r in rows]
+
+    def list_templates(self, category: str | None = None) -> list[dict]:
+        if category:
+            rows = self.q("SELECT * FROM templates WHERE category = ?", (category,))
+        else:
+            rows = self.q("SELECT * FROM templates")
+        return [dict(r) for r in rows]
 
     # ---------- dashboard ----------
     def dashboard_summary(self) -> dict:

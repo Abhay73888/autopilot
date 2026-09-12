@@ -71,17 +71,17 @@ GEMINI_NARRATOR_PROFILES = {
 # rate/pitch se same base voice ka character kaafi badal jaata hai.
 # ---------------------------------------------------------------------
 VOICE_PROFILES = {
-    "hi_f_calm":     {"voice": "hi-IN-SwaraNeural",  "rate": "-4%",  "pitch": "-2Hz",
-                      "gender": "female", "desc": "shaant, dheemi — documentary narrator"},
-    "hi_f_urgent":   {"voice": "hi-IN-SwaraNeural",  "rate": "+12%", "pitch": "+6Hz",
+    "hi_f_calm":     {"voice": "hi-IN-SwaraNeural",  "rate": "+6%",  "pitch": "-2Hz",
+                      "gender": "female", "desc": "shaant, documentary narrator"},
+    "hi_f_urgent":   {"voice": "hi-IN-SwaraNeural",  "rate": "+22%", "pitch": "+6Hz",
                       "gender": "female", "desc": "tez, tension wali — breaking news feel"},
-    "hi_f_whisper":  {"voice": "hi-IN-SwaraNeural",  "rate": "-8%",  "pitch": "-8Hz",
+    "hi_f_whisper":  {"voice": "hi-IN-SwaraNeural",  "rate": "+5%",  "pitch": "-8Hz",
                       "gender": "female", "desc": "gehri, raaz kholti hui"},
-    "hi_m_grave":    {"voice": "hi-IN-MadhurNeural", "rate": "-6%",  "pitch": "-6Hz",
+    "hi_m_grave":    {"voice": "hi-IN-MadhurNeural", "rate": "+8%",  "pitch": "-6Hz",
                       "gender": "male",   "desc": "bhaari, gambhir — crime doc"},
-    "hi_m_narrator": {"voice": "hi-IN-MadhurNeural", "rate": "+2%",  "pitch": "+0Hz",
+    "hi_m_narrator": {"voice": "hi-IN-MadhurNeural", "rate": "+16%", "pitch": "+0Hz",
                       "gender": "male",   "desc": "neutral storyteller"},
-    "hi_m_intense":  {"voice": "hi-IN-MadhurNeural", "rate": "+14%", "pitch": "+8Hz",
+    "hi_m_intense":  {"voice": "hi-IN-MadhurNeural", "rate": "+25%", "pitch": "+8Hz",
                       "gender": "male",   "desc": "tez, aggressive — thriller"},
 }
 VOICE_PROFILES.update(GEMINI_NARRATOR_PROFILES)
@@ -98,10 +98,9 @@ VOICE_PROFILES_EN = {
                       "gender": "male",   "desc": "urgent thriller"},
 }
 
-# Suspense pacing (Section 6): reveal se pehle 300ms pause
-PAUSE_DEFAULT_MS = 220      # normal line gap
-PAUSE_REVEAL_MS = 300       # reveal se pehle extra
-PAUSE_HOOK_MS = 150         # hook ke baad chhota — momentum banaye rakho
+PAUSE_DEFAULT_MS = 140      # crisp line gap for high-retention shorts
+PAUSE_REVEAL_MS = 190       # reveal se pehle punchy pause
+PAUSE_HOOK_MS = 90          # hook ke baad turant momentum
 
 # Ye shabd batate hain ki agli line ek "reveal" hai -> pehle pause daalo
 REVEAL_MARKERS = ["lekin", "magar", "phir", "asli", "sach", "aakhir", "par ",
@@ -433,8 +432,8 @@ class Voice:
         prompt = (
             f"# AUDIO PROFILE: {prof.get('desc', 'Narrator')} — {persona or 'Suspense narrator'}\n"
             f"### DIRECTOR'S NOTES\n"
-            f"Style: Hindi suspense storytelling for a 30-second vertical video. Low, controlled intensity. No radio-announcer energy.\n"
-            f"Pacing: Slightly slower than conversational. Pause 300ms before any reveal.\n"
+            f"Style: Hindi storytelling for a fast-paced vertical video. High retention, crisp, energetic and punchy delivery.\n"
+            f"Pacing: Fast-paced, punchy, engaging, dynamic. No slow pauses or sluggish dragging.\n"
             f"Accent: Standard Hindi as spoken in Delhi/UP. Clear Devanagari pronunciation.\n"
             f"#### TRANSCRIPT\n"
             f"[{emotion}] {text}"
@@ -771,6 +770,10 @@ def _apply_speaker_audio_style(mp3_path: Path, speaker: str, emotion: str, role:
 
     if role == "reveal" or emotion == "whispers":
         filters.append("volume=1.25,lowpass=f=6000")
+
+    speed = float(CONFIG.get("voice", {}).get("speed", 1.20) or 1.20)
+    if speed > 1.01 or speed < 0.99:
+        filters.append(f"atempo={speed:.2f}")
 
     if not filters:
         return

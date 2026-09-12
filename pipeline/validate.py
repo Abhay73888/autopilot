@@ -19,6 +19,7 @@ Chalao:
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 from dataclasses import dataclass, field
@@ -396,22 +397,14 @@ def _check_content(rep: Report, m: dict):
     if len(tags) > 5:
         rep.add("WARN", "TOO_MANY_TAGS", f"{len(tags)} hashtags — 3 hi kaafi hain")
 
-    # placeholder images publish nahi honi chahiye — but WARN denge, FATAL nahi
-    # Cloud deployments mein rate limits common hain, pipeline ruko nahi
+    # placeholder images publish nahi honi chahiye (FATAL by default; WARN on cloud servers with PORT set)
     provs = {sc.get("provider") for sc in m.get("scenes", [])}
     if "local_placeholder" in provs:
-        real_count = sum(1 for sc in m.get("scenes", []) if sc.get("provider") != "local_placeholder")
-        ph_count = sum(1 for sc in m.get("scenes", []) if sc.get("provider") == "local_placeholder")
-        if real_count == 0:
-            # Sab placeholder — WARN (publish hoga lekin quality achhi nahi)
-            rep.add("WARN", "PLACEHOLDER_IMAGES",
-                    f"Saari {ph_count} images PLACEHOLDER hain (gradient + text cards). "
-                    "Image providers rate-limited the — retry baad mein kar sakte hain.",
-                    "Pollinations/Gemini retry karke dobara generate karo")
-        else:
-            rep.add("WARN", "SOME_PLACEHOLDERS",
-                    f"{ph_count} scenes mein placeholder images hain, {real_count} real hain.",
-                    "Kuch images rate-limited thi — next run mein replace ho jayengi")
+        level = "WARN" if (os.environ.get("PORT") or os.environ.get("AUTOPILOT_ALLOW_PLACEHOLDERS") == "true") else "FATAL"
+        rep.add(level, "PLACEHOLDER_IMAGES",
+                "Video mein PLACEHOLDER images hain (gradient + text cards). "
+                "Ye publish layak nahi hai.",
+                "Internet check karke dobara chalao: python run.py")
 
     narr = m.get("narration", {})
     engines_used = set(narr.get("engines_used", []))

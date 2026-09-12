@@ -1,6 +1,9 @@
 .env
 token.json
 client_secret.json
+*.db
+*.db-wal
+*.db-shm
 data/*.db
 data/*.db-wal
 data/*.db-shm

@@ -94,6 +94,8 @@ class Logbook:
     def info(self, msg, **f): self._write("INFO", msg, **f)
     def ok(self, msg, **f): self._write("OK", msg, **f)
     def warn(self, msg, **f): self._write("WARN", msg, **f)
+    def warning(self, msg, **f): self._write("WARN", msg, **f)
+
 
     def error(self, msg, exc: BaseException | None = None, **f):
         """Error log + Hinglish mein 'iska matlab kya hai' hint."""

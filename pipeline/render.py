@@ -65,7 +65,7 @@ def ken_burns(motion: str, dur: float, w: int, h: int, fps: int,
     """
     over = 1.35                       # kitna extra area rakhna hai movement ke liye
     bw, bh = _even(w * over), _even(h * over)
-    z = 0.16                          # kitna zoom karna hai (16%)
+    z = 0.24                          # 24% dynamic zoom for punchy mobile engagement
     p = 0.5 if parallax else 1.0      # parallax layer dheere chalti hai
 
     # base: image ko bade canvas pe fit karo (crop se aspect ratio bachao)
@@ -85,6 +85,20 @@ def ken_burns(motion: str, dur: float, w: int, h: int, fps: int,
         mv = (f"scale=w='2*floor({w}*(1+{z*p*0.55}*t/{dur})/2)':"
               f"h='2*floor({h}*(1+{z*p*0.55}*t/{dur})/2)':eval=frame,"
               f"crop={w}:{h}:(in_w-{w})/2:(in_h-{h})/2")
+    elif motion == "zoom_in_dramatic":
+        mv = (f"scale=w='2*floor({w}*(1+{z*p*1.4}*t/{dur})/2)':"
+              f"h='2*floor({h}*(1+{z*p*1.4}*t/{dur})/2)':eval=frame,"
+              f"crop={w}:{h}:(in_w-{w})/2:(in_h-{h})/2")
+    elif motion == "punch_in":
+        # Rapid high-impact punch zoom for dramatic viral hooks and reveals
+        mv = (f"scale=w='2*floor({w}*(1+{z*p*1.8}*min(1.0,t*1.5/{dur}))/2)':"
+              f"h='2*floor({h}*(1+{z*p*1.8}*min(1.0,t*1.5/{dur}))/2)':eval=frame,"
+              f"crop={w}:{h}:(in_w-{w})/2:(in_h-{h})/2")
+    elif motion == "whip_zoom":
+        # Dynamic whip zoom (deep zoom with acceleration)
+        mv = (f"scale=w='2*floor({w}*(1.1+{z*p*1.2}*(t/{dur})*(t/{dur}))/2)':"
+              f"h='2*floor({h}*(1.1+{z*p*1.2}*(t/{dur})*(t/{dur}))/2)':eval=frame,"
+              f"crop={w}:{h}:(in_w-{w})/2:(in_h-{h})/2")
     elif motion == "pan_left":
         mv = f"crop={w}:{h}:x='(in_w-{w})*(1-t/{dur})*{p}+(in_w-{w})*(1-{p})/2':y='(in_h-{h})/2'"
     elif motion == "pan_right":
@@ -95,8 +109,8 @@ def ken_burns(motion: str, dur: float, w: int, h: int, fps: int,
         log.warn(f"Motion '{motion}' pata nahi — static rakh rahe hain")
         mv = f"crop={w}:{h}:(in_w-{w})/2:(in_h-{h})/2"
 
-    # Colour grade: halka contrast + saturation boost. Mobile screens pe pop karta hai.
-    grade = "eq=contrast=1.06:saturation=1.10:gamma=0.98"
+    # Colour grade: enhanced contrast + saturation boost for mobile AMOLED punch
+    grade = "eq=contrast=1.08:saturation=1.15:gamma=0.97"
     # Vignette — dhyan center pe jaata hai (suspense content ke liye zaroori)
     vig = "vignette=PI/5"
 
@@ -114,6 +128,7 @@ def _even(n: float) -> int:
 # =====================================================================
 def build_audio_filter(n_scenes: int, cuts: list[float], total: float,
                        reveal_sec: float | None = None,
+                       notif_sec: float | None = None,
                        effects_cfg: dict | None = None,
                        cinematic: bool = False) -> tuple[list[str], str]:
     """
@@ -121,12 +136,12 @@ def build_audio_filter(n_scenes: int, cuts: list[float], total: float,
 
     Layers:
       1. Narration (input 0) — compressed & filtered for mobile clarity.
-      2. Ambient drone / heartbeat / riser / sub-hit / room-tone (via pipeline.sound if cinematic).
+      2. Ambient drone / heartbeat / riser / sub-hit / braam / room-tone (via pipeline.sound if cinematic).
       3. Dynamic ducking + master limiter before -14 LUFS loudnorm.
     """
     if cinematic:
         from pipeline.sound import build_sound_design_package
-        pkg = build_sound_design_package(total, cuts, reveal_sec=reveal_sec, cfg_override=effects_cfg)
+        pkg = build_sound_design_package(total, cuts, reveal_sec=reveal_sec, notif_sec=notif_sec, cfg_override=effects_cfg)
         inputs = pkg["inputs"]
         parts = []
 
@@ -268,9 +283,11 @@ class Renderer:
             self._concat_xfade(clips, scenes, silent, preset)
 
             # ---- STEP 3: subtitles ----
+            sub_style = (self.m.get("subtitles") or {}).get("style") or CONFIG.get("subtitle_style", "kinetic")
             ass = build_ass(self.m.get("words", []),
                             self.m["script"].get("hook_text_overlay", ""),
-                            tmp / "subs.ass", width=self.w, height=self.h)
+                            tmp / "subs.ass", width=self.w, height=self.h,
+                            style=sub_style)
             build_srt(self.m.get("words", []), out_dir / "subtitles.srt")
 
             # ---- STEP 4+5: audio mix + subtitles burn + final encode ----
@@ -400,8 +417,17 @@ class Renderer:
         sound_cfg = (self.m.get("effects") or {}).get("sound") or (CONFIG.get("effects") or {}).get("sound") or {}
         cinematic_sound = bool(sound_cfg)
 
+        # notification alert time find karo (social/chat scenes)
+        notif_sec = None
+        for ln in self.m.get("narration", {}).get("lines", []):
+            txt = ln.get("text", "").lower()
+            if any(k in txt for k in ("notification", "follow", "message", "dm", "accepted")):
+                notif_sec = float(ln.get("start", 0))
+                break
+
         extra_inputs, afilter = build_audio_filter(len(scenes), cuts, total,
                                                    reveal_sec=reveal_sec,
+                                                   notif_sec=notif_sec,
                                                    effects_cfg=sound_cfg,
                                                    cinematic=cinematic_sound)
 

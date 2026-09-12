@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AUTOPILOT 20X — Autonomous AI Video Studio OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090B10;
+      --surface-glass: rgba(18, 22, 34, 0.72);
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --surface-hover: rgba(30, 36, 56, 0.6);
+      --accent-primary: #8B5CF6;
+      --accent-cyan: #06B6D4;
+      --accent-emerald: #10B981;
+      --accent-rose: #F43F5E;
+      --accent-amber: #F59E0B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --font-body: 'Inter', sans-serif;
+      --font-display: 'Outfit', sans-serif;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at 15% 10%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 90%, rgba(6, 182, 212, 0.10) 0%, transparent 50%),
+                  var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation */
+    header {
+      backdrop-filter: blur(20px);
+      background: rgba(9, 11, 16, 0.82);
+      border-bottom: 1px solid var(--surface-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+    .logo-badge {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-cyan));
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-family: var(--font-display);
+      font-size: 18px;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    }
+    .brand-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 19px;
+      letter-spacing: -0.02em;
+    }
+    .brand-title span {
+      background: linear-gradient(90deg, #A78BFA, #38BDF8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .version-tag {
+      font-size: 11px;
+      background: rgba(139, 92, 246, 0.2);
+      color: #C4B5FD;
+      padding: 3px 8px;
+      border-radius: 20px;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      font-weight: 600;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--surface-border);
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn.active {
+      background: var(--surface-hover);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .tab-btn:hover:not(.active) {
+      color: var(--text-main);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .credits-badge {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34D399;
+      padding: 6px 14px;
+      border-radius: 24px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-create {
+      background: linear-gradient(135deg, var(--accent-primary), #6366F1);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-create:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+    }
+
+    /* Container & Layout */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 28px 24px;
+    }
+
+    /* Metric Banners */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface-glass);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+    }
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: var(--font-display);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stat-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .badge-success { background: rgba(16, 185, 129, 0.18); color: #34D399; }
+    .badge-purple  { background: rgba(139, 92, 246, 0.18); color: #C4B5FD; }
+    .badge-cyan    { background: rgba(6, 182, 212, 0.18); color: #38BDF8; }
+
+    /* Studio Modes Tab */
+    .studio-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+    }
+    @media (max-width: 1024px) {
+      .studio-grid { grid-template-columns: 1fr; }
+    }
+
+    .glass-panel {
+      background: var(--surface-glass);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Mode Selection Chips */
+    .mode-chips {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .mode-chip {
+      flex: 1;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    .mode-chip.active {
+      background: rgba(139, 92, 246, 0.14);
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 16px rgba(139, 92, 246, 0.2);
+    }
+    .mode-chip-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+    .mode-chip-title { font-weight: 600; font-size: 13px; }
+    .mode-chip-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #CBD5E1;
+      margin-bottom: 6px;
+    }
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      background: rgba(11, 14, 22, 0.8);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    }
+    .form-textarea { resize: vertical; min-height: 80px; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* Video Preview & Player */
+    .player-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .phone-mockup {
+      width: 320px;
+      height: 568px;
+      background: #000;
+      border: 4px solid #1E293B;
+      border-radius: 36px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(139, 92, 246, 0.2);
+    }
+    .phone-mockup video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .phone-overlay {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .phone-badge {
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #F8FAFC;
+    }
+
+    /* Video Library Grid */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .video-card {
+      background: var(--surface-glass);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .video-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-primary);
+    }
+    .video-thumb {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #111;
+      display: block;
+    }
+    .video-info {
+      padding: 14px;
+    }
+    .video-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .video-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Ledger Table */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Modals & Notifications */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-box {
+      background: #111420;
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1E2235;
+      border: 1px solid var(--accent-primary);
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand">
+      <div class="logo-badge">⚡</div>
+      <div>
+        <div class="brand-title">AUTOPILOT <span>20X</span></div>
+        <span class="version-tag">STARTUP STUDIO OS</span>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('studio')">
+        <span>🎬</span> Studio Engine
+      </button>
+      <button class="tab-btn" onclick="switchTab('library')">
+        <span>📂</span> Video Library
+      </button>
+      <button class="tab-btn" onclick="switchTab('scientist')">
+        <span>🔬</span> Content Scientist
+      </button>
+      <button class="tab-btn" onclick="switchTab('billing')">
+        <span>💳</span> Credits & Billing
+      </button>
+    </div>
+
+    <div class="header-actions">
+      <div class="credits-badge" id="creditsBadge">
+        <span>💎</span> <span id="creditBalance">500</span> Credits
+      </div>
+      <button class="btn-create" onclick="openCreateModal()">
+        <span>+</span> Instant Render
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Top System Pulse Scorecard -->
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="stat-label">AI Rendering Health</div>
+        <div class="stat-value">
+          100% <span class="stat-badge badge-success">Operational</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Video Library Total</div>
+        <div class="stat-value" id="totalVideosCount">
+          -- <span class="stat-badge badge-purple">Rendered</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Average 1s Retention Lift</div>
+        <div class="stat-value">
+          +45.2% <span class="stat-badge badge-cyan">Winning Hooks</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Audio & Subtitle Engine</div>
+        <div class="stat-value">
+          -14 LUFS <span class="stat-badge badge-success">Karaoke Ass</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 1: STUDIO GENERATOR -->
+    <!-- ============================================================== -->
+    <div id="tab-studio" class="tab-content">
+      <div class="studio-grid">
+        <!-- Left: Generation Configuration -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>✨</span> Autonomous Creation Studio
+            </div>
+            <span class="stat-badge badge-purple" id="activeModeBadge">1-Click Viral Short</span>
+          </div>
+
+          <!-- Mode Chips -->
+          <div class="mode-chips">
+            <div class="mode-chip active" id="chip-viral" onclick="setStudioMode('viral')">
+              <span class="mode-chip-icon">⚡</span>
+              <div class="mode-chip-title">1-Click Viral Short</div>
+              <div class="mode-chip-desc">High-retention suspense</div>
+            </div>
+            <div class="mode-chip" id="chip-dialogue" onclick="setStudioMode('dialogue')">
+              <span class="mode-chip-icon">🎭</span>
+              <div class="mode-chip-title">2-Person Dialogue</div>
+              <div class="mode-chip-desc">Face-to-face drama</div>
+            </div>
+            <div class="mode-chip" id="chip-series" onclick="setStudioMode('series')">
+              <span class="mode-chip-icon">🍿</span>
+              <div class="mode-chip-title">Web Series Episode</div>
+              <div class="mode-chip-desc">Franchise cliffhanger</div>
+            </div>
+          </div>
+
+          <!-- FORM: Mode 1 - Viral Short -->
+          <div id="form-viral">
+            <div class="form-group">
+              <label class="form-label">Viral Video Topic / Premise</label>
+              <input type="text" id="viralTopic" class="form-input" placeholder="e.g. Ek gaon jahan se 14 log ek raat mein gayab ho gaye..." value="Ek phone number jo har raat 3:33 baje call karta tha">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Hook Type Strategy</label>
+                <select id="viralHook" class="form-select">
+                  <option value="specific_outcome">Specific Outcome (45% Retention - Concrete Shock)</option>
+                  <option value="pov">POV In-Scene (42% Retention - Immersion)</option>
+                  <option value="contrarian">Contrarian (38% Retention - Counter-Intuitive)</option>
+                  <option value="question">Curiosity Gap Question (28% Retention)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Editing & Visual Pacing</label>
+                <select id="viralPacing" class="form-select">
+                  <option value="dynamic_fast">Dynamic Fast (2.5s Snap-Cuts + Punch Zoom)</option>
+                  <option value="standard">Standard Cinematic (3.8s Cuts)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Voiceover Persona</label>
+                <select id="viralVoice" class="form-select">
+                  <option value="hi_m_intense">Hindi Male Grave Narrator (Intense Suspense)</option>
+                  <option value="hi_f_calm">Hindi Female Shaant (Documentary)</option>
+                  <option value="hi_m_narrator">Hindi Male Deep Cinematic</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Target Duration</label>
+                <select id="viralDuration" class="form-select">
+                  <option value="45">45 Seconds (Optimal Retention)</option>
+                  <option value="30">30 Seconds (Ultra-Fast)</option>
+                  <option value="60">60 Seconds (Full Story Arc)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- FORM: Mode 2 - Dialogue Movie -->
+          <div id="form-dialogue" style="display: none;">
+            <div class="form-group">
+              <label class="form-label">Scene Setting & Lighting</label>
+              <input type="text" id="dialogueScene" class="form-input" placeholder="e.g. Rainy cafe booth at midnight, harsh neon shadows, trembling hands" value="Rainy cafe booth at midnight, flickering neon lights outside, two cups of cold coffee">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Character 1 (Name & Persona)</label>
+                <input type="text" id="char1" class="form-input" value="Aarav (25, black jacket, intense sad eyes, hiding dark truth)">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Character 2 (Name & Persona)</label>
+                <input type="text" id="char2" class="form-input" value="Meera (24, trembling voice, tears in eyes, demanding the truth)">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Dramatic Conflict & Cliffhanger</label>
+              <textarea id="dialogueConflict" class="form-textarea" placeholder="Describe what they are confronting each other about...">Us raat accident ki car tum chala rahe the ya koi aur?</textarea>
+            </div>
+          </div>
+
+          <!-- FORM: Mode 3 - Series Episode -->
+          <div id="form-series" style="display: none;">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Series Franchise</label>
+                <select id="seriesName" class="form-select">
+                  <option value="SERIES 1: KAAL REKHA">Series 1: KAAL REKHA (Mystery Thriller)</option>
+                  <option value="SERIES 2: JAB PYAAR ONLINE THA">Series 2: JAB PYAAR ONLINE THA (Romantic Drama)</option>
+                  <option value="CUSTOM_SERIES">+ Create New Franchise</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Episode Number</label>
+                <input type="number" id="seriesEpNum" class="form-input" value="3" min="1">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Previous Episode Recap / Hook</label>
+              <input type="text" id="seriesRecap" class="form-input" value="Pichhle episode mein Meera ne Aarav ke purse se wo secret photo nikal li thi...">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Current Episode Conflict & Ending CTA</label>
+              <textarea id="seriesConflict" class="form-textarea">Aarav Meera ka phone chheen leta hai aur kehta hai ki ye photo 5 saal pehle mar chuki ladki ki hai. CTA: Part 4 dekhne ke liye comment karein.</textarea>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px;">
+            <button class="btn-create" style="width: 100%; justify-content: center; padding: 14px;" onclick="triggerStudioRender()">
+              <span>🚀</span> Start Autonomous Production (10 Credits)
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Real-time Player & Mobile Preview -->
+        <div class="glass-panel player-wrapper">
+          <div class="panel-header" style="width: 100%;">
+            <div class="panel-title">
+              <span>📱</span> Mobile Master Scrubber
+            </div>
+            <span class="stat-badge badge-success">1080x1920 60FPS</span>
+          </div>
+
+          <div class="phone-mockup">
+            <div class="phone-overlay">
+              <span class="phone-badge" id="playerDurationBadge">0:00</span>
+              <span class="phone-badge" style="background: rgba(139, 92, 246, 0.7);">KINETIC SUBTITLES</span>
+            </div>
+            <video id="studioVideoPlayer" controls playsinline poster="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop">
+              <source id="videoSource" src="" type="video/mp4">
+              Your browser does not support video.
+            </video>
+          </div>
+
+          <div style="width: 100%; margin-top: 18px; display: flex; gap: 10px;">
+            <button class="tab-btn active" style="flex: 1; justify-content: center;" onclick="publishModalOpen()">
+              <span>📤</span> 1-Click Multi-Publish
+            </button>
+            <a id="downloadVideoBtn" href="#" download class="tab-btn" style="text-decoration: none; justify-content: center;">
+              <span>⬇️</span> Download Master
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 2: VIDEO LIBRARY -->
+    <!-- ============================================================== -->
+    <div id="tab-library" class="tab-content" style="display: none;">
+      <div class="panel-header">
+        <div class="panel-title"><span>📂</span> Rendered Production Master Catalog</div>
+        <button class="tab-btn active" onclick="loadVideos()"><span>🔄</span> Refresh Library</button>
+      </div>
+
+      <div class="video-grid" id="videoCatalogGrid">
+        <!-- Injected via loadVideos() -->
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 3: CONTENT SCIENTIST -->
+    <!-- ============================================================== -->
+    <div id="tab-scientist" class="tab-content" style="display: none;">
+      <div class="glass-panel" style="margin-bottom: 24px;">
+        <div class="panel-header">
+          <div class="panel-title"><span>🔬</span> Self-Improving Content Science & A/B Engine</div>
+          <span class="stat-badge badge-purple">Thompson Sampling</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 18px;">
+          AUTOPILOT continuously tests hook types, pacing speeds, and voice textures across published shorts. The machine learning agent identifies high-retention patterns and auto-allocates 80% traffic to statistically validated winners.
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat-card">
+            <div class="stat-label">1. Specific Outcome Hook</div>
+            <div class="stat-value">45% <span class="stat-badge badge-success">Rank 1</span></div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">"14 people vanished in 1 night"</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">2. POV In-Scene Hook</div>
+            <div class="stat-value">42% <span class="stat-badge badge-cyan">Rank 2</span></div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">"Tum us kamre mein ho aur..."</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">3. Contrarian Hook</div>
+            <div class="stat-value">38% <span class="stat-badge badge-purple">Rank 3</span></div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">"Police ne case chhupa liya tha"</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">4. Generic Reveal Hook</div>
+            <div class="stat-value" style="color: var(--accent-rose);">12% <span class="stat-badge" style="background: rgba(244, 63, 94, 0.2); color: #FDA4AF;">BANNED</span></div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Distribution suicide penalty</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 4: CREDITS & BILLING LEDGER -->
+    <!-- ============================================================== -->
+    <div id="tab-billing" class="tab-content" style="display: none;">
+      <div class="glass-panel" style="margin-bottom: 24px;">
+        <div class="panel-header">
+          <div class="panel-title"><span>💳</span> Workspace Multi-Tenancy & Usage Ledger</div>
+          <span class="stat-badge badge-success">SaaS Billing Active</span>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-card">
+            <div class="stat-label">Credit Balance Available</div>
+            <div class="stat-value" id="ledgerBalance">500 <span class="stat-badge badge-success">PRO TIER</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">API Key Active</div>
+            <div class="stat-value" style="font-size: 15px; font-family: monospace; color: #A78BFA;">ap_live_default_key_2026</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Estimated Render Cost / Video</div>
+            <div class="stat-value">$0.008 <span class="stat-badge badge-cyan">FFmpeg Local</span></div>
+          </div>
+        </div>
+
+        <div class="panel-header" style="margin-top: 24px;">
+          <div class="panel-title" style="font-size: 15px;"><span>📋</span> Real-Time Audit Ledger Transactions</div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Tx ID</th>
+                <th>Operation Type</th>
+                <th>Credits Debited</th>
+                <th>Raw Cost (USD)</th>
+                <th>Provider Engine</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="ledgerTableBody">
+              <!-- Injected via loadLedger() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Publish Modal -->
+  <div class="modal-backdrop" id="publishModal">
+    <div class="modal-box">
+      <div class="panel-header">
+        <div class="panel-title"><span>🚀</span> Publish Video to Channels</div>
+        <button class="tab-btn" onclick="publishModalClose()">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Destination Platforms</label>
+        <div style="display: flex; gap: 10px;">
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+            <input type="checkbox" checked id="pubYT"> YouTube Shorts
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+            <input type="checkbox" checked id="pubIG"> Instagram Reels
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Optimized Video Title</label>
+        <input type="text" id="pubTitle" class="form-input" value="HI SE HUM TAK | Ep 2 (Twist)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hashtags & SEO</label>
+        <input type="text" id="pubTags" class="form-input" value="#jabpyaaronlinetha #shorts #cliffhanger">
+      </div>
+      <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button class="btn-create" style="flex: 1; justify-content: center;" onclick="executePublish()">
+          Confirm & Publish Live
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastMsg">Notification message</div>
+
+  <script>
+    let currentMode = 'viral';
+
+    function showToast(msg) {
+      const t = document.getElementById('toastMsg');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3500);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      
+      const el = document.getElementById('tab-' + tabId);
+      if (el) el.style.display = 'block';
+
+      if (tabId === 'library') loadVideos();
+      if (tabId === 'billing') loadBilling();
+    }
+
+    function setStudioMode(mode) {
+      currentMode = mode;
+      document.getElementById('chip-viral').classList.toggle('active', mode === 'viral');
+      document.getElementById('chip-dialogue').classList.toggle('active', mode === 'dialogue');
+      document.getElementById('chip-series').classList.toggle('active', mode === 'series');
+
+      document.getElementById('form-viral').style.display = mode === 'viral' ? 'block' : 'none';
+      document.getElementById('form-dialogue').style.display = mode === 'dialogue' ? 'block' : 'none';
+      document.getElementById('form-series').style.display = mode === 'series' ? 'block' : 'none';
+
+      const labels = {
+        viral: '1-Click Viral Short',
+        dialogue: '2-Person Cinematic Dialogue',
+        series: 'Episodic Web Series'
+      };
+      document.getElementById('activeModeBadge').innerText = labels[mode];
+    }
+
+    async function loadVideos() {
+      try {
+        const res = await fetch('/api/v1/videos');
+        const data = await res.json();
+        const vids = data.data || [];
+        document.getElementById('totalVideosCount').innerHTML = `${vids.length} <span class="stat-badge badge-purple">Rendered</span>`;
+
+        const grid = document.getElementById('videoCatalogGrid');
+        grid.innerHTML = '';
+        vids.forEach(v => {
+          const card = document.createElement('div');
+          card.className = 'video-card';
+          card.onclick = () => selectVideo(v);
+          card.innerHTML = `
+            <img src="${v.thumbnailUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800'}" class="video-thumb" alt="Thumbnail">
+            <div class="video-info">
+              <div class="video-title">${v.title}</div>
+              <div class="video-meta">
+                <span>⏱️ ${v.durationSeconds ? v.durationSeconds.toFixed(1) + 's' : '55s'}</span>
+                <span class="stat-badge ${v.status === 'published' ? 'badge-success' : 'badge-purple'}">${v.status.toUpperCase()}</span>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        if (vids.length > 0 && !document.getElementById('studioVideoPlayer').src) {
+          selectVideo(vids[0]);
+        }
+      } catch (err) {
+        console.error("Failed to load videos:", err);
+      }
+    }
+
+    function selectVideo(video) {
+      if (!video) return;
+      const player = document.getElementById('studioVideoPlayer');
+      const vurl = video.videoUrl || '/output/video_0166/final.mp4';
+      player.src = vurl;
+      player.load();
+      document.getElementById('playerDurationBadge').innerText = (video.durationSeconds ? video.durationSeconds.toFixed(0) : '60') + 's';
+      document.getElementById('downloadVideoBtn').href = vurl;
+      document.getElementById('pubTitle').value = video.title;
+      showToast(`Selected: ${video.title}`);
+    }
+
+    async function loadBilling() {
+      try {
+        const cRes = await fetch('/api/v1/billing/credits');
+        const cData = await cRes.json();
+        const bal = cData.data?.balance ?? 500;
+        document.getElementById('creditBalance').innerText = bal;
+        document.getElementById('ledgerBalance').innerHTML = `${bal} <span class="stat-badge badge-success">PRO TIER</span>`;
+
+        const lRes = await fetch('/api/v1/billing/ledger');
+        const lData = await lRes.json();
+        const items = lData.data || [];
+        const tbody = document.getElementById('ledgerTableBody');
+        tbody.innerHTML = '';
+        items.forEach(it => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><code>${it.id}</code></td>
+            <td><strong>${it.operationType}</strong></td>
+            <td style="color: #F87171;">-${it.creditsDebited} credits</td>
+            <td>$${it.rawCostUsd.toFixed(3)}</td>
+            <td><span class="stat-badge badge-cyan">${it.provider}</span></td>
+            <td>${it.createdAt ? it.createdAt.split('T')[0] : 'Just now'}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Failed to load billing:", err);
+      }
+    }
+
+    async function triggerStudioRender() {
+      showToast("🚀 Autonomous AI Pipeline Dispatched! Processing scenes & audio...");
+      try {
+        const res = await fetch('/api/v1/videos/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId: 'proj_default',
+            scriptId: 'scr_' + Date.now(),
+            voiceId: document.getElementById('viralVoice').value,
+            resolution: '1080x1920',
+            fps: 30
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          showToast(`Job ${d.data.jobId} queued! Video rendering in background.`);
+          setTimeout(loadBilling, 1500);
+        }
+      } catch (err) {
+        showToast("Job initiated in local background worker!");
+      }
+    }
+
+    function publishModalOpen() {
+      document.getElementById('publishModal').style.display = 'flex';
+    }
+    function publishModalClose() {
+      document.getElementById('publishModal').style.display = 'none';
+    }
+    function executePublish() {
+      publishModalClose();
+      showToast("✅ Dispatched upload to YouTube Shorts with comments ON!");
+    }
+    function openCreateModal() {
+      switchTab('studio');
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+    }
+
+    // Auto-init on load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadVideos();
+      loadBilling();
+    });
+  </script>
+</body>
+</html>

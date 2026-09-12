@@ -77,6 +77,33 @@ def build_sub_hit_filter(reveal_sec: float, start_idx: int, dur_sec: float = 0.6
     return inputs, filt, "[sub_hit]"
 
 
+def build_braam_hit_filter(reveal_sec: float, start_idx: int, dur_sec: float = 1.2) -> tuple[list[str], list[str], str]:
+    """
+    Cinematic Braam / Heavy Sub Drop:
+    Combines 38Hz sub punch + 76Hz distorted harmonic with exponential decay.
+    Delivers a bone-rattling cinematic impact on reveals.
+    """
+    expr = f"aevalsrc=(sin(2*PI*38*t)+0.45*sin(2*PI*76*t))*(0.85*exp(-3.2*t)):s=44100:d={dur_sec:.2f}"
+    inputs = ["-f", "lavfi", "-t", f"{dur_sec:.2f}", "-i", expr]
+    delay_ms = int(max(0.0, reveal_sec) * 1000)
+    filt = [f"[{start_idx}:a]adelay={delay_ms}|{delay_ms},aformat=channel_layouts=stereo[braam_hit]"]
+    return inputs, filt, "[braam_hit]"
+
+
+def build_notification_ding(time_sec: float, start_idx: int) -> tuple[list[str], list[str], str]:
+    """
+    Pleasant 2-tone digital notification pop/chime (880Hz -> 1320Hz).
+    Ideal for Instagram follow, WhatsApp/DM pop, and message reveals.
+    """
+    dur = 0.45
+    expr = (f"aevalsrc=exprs='if(lt(t,0.12),sin(2*PI*880*t)*0.45*exp(-10*t),"
+            f"sin(2*PI*1320*(t-0.12))*0.55*exp(-12*(t-0.12)))':s=44100:d={dur}")
+    inputs = ["-f", "lavfi", "-t", f"{dur:.2f}", "-i", expr]
+    delay_ms = int(max(0.0, time_sec) * 1000)
+    filt = [f"[{start_idx}:a]adelay={delay_ms}|{delay_ms},aformat=channel_layouts=stereo[notif_ding]"]
+    return inputs, filt, "[notif_ding]"
+
+
 def build_room_tone_filter(total_sec: float, start_idx: int) -> tuple[list[str], list[str], str]:
     """
     Room tone: Subtle pink noise (-32dB) bed low-passed at 1200Hz.
@@ -90,6 +117,7 @@ def build_room_tone_filter(total_sec: float, start_idx: int) -> tuple[list[str],
 
 def build_sound_design_package(total: float, cuts: list[float],
                                reveal_sec: float | None = None,
+                               notif_sec: float | None = None,
                                cfg_override: dict | None = None) -> dict[str, Any]:
     """
     Build modular sound design layers based on config.
@@ -103,6 +131,8 @@ def build_sound_design_package(total: float, cuts: list[float],
     do_heartbeat = cfg.get("heartbeat", True)
     do_riser = cfg.get("riser", True)
     do_sub_hit = cfg.get("sub_hit", True)
+    do_braam = cfg.get("braam", True)
+    do_notif = cfg.get("notification", True)
     do_flash_click = cfg.get("flash_click", True)
     do_room_tone = cfg.get("room_tone", True)
     do_ducking = cfg.get("ducking", True)
@@ -147,14 +177,30 @@ def build_sound_design_package(total: float, cuts: list[float],
         cur_idx += rs_in.count("-i")
         applied["riser"] = {"start": round(max(0.0, reveal_sec - 2.5), 2), "sweep": "200Hz->600Hz"}
 
-    # Sub-hit
-    if do_sub_hit and reveal_sec > 1.0:
+    # Cinematic Braam & Sub-hit
+    if do_braam and reveal_sec > 1.0:
+        bm_in, bm_f, bm_lbl = build_braam_hit_filter(reveal_sec, cur_idx)
+        inputs += bm_in
+        parts += bm_f
+        bg_sublayers.append(bm_lbl)
+        cur_idx += bm_in.count("-i")
+        applied["braam_hit"] = {"time": round(reveal_sec, 2), "freq": "38Hz+76Hz"}
+    elif do_sub_hit and reveal_sec > 1.0:
         sh_in, sh_f, sh_lbl = build_sub_hit_filter(reveal_sec, cur_idx)
         inputs += sh_in
         parts += sh_f
         bg_sublayers.append(sh_lbl)
         cur_idx += sh_in.count("-i")
         applied["sub_hit"] = {"time": round(reveal_sec, 2), "freq": "42Hz"}
+
+    # Notification Ding
+    if do_notif and notif_sec is not None and notif_sec > 0.5:
+        nd_in, nd_f, nd_lbl = build_notification_ding(notif_sec, cur_idx)
+        inputs += nd_in
+        parts += nd_f
+        bg_sublayers.append(nd_lbl)
+        cur_idx += nd_in.count("-i")
+        applied["notification_ding"] = {"time": round(notif_sec, 2)}
 
     # Room Tone
     if do_room_tone:

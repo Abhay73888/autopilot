@@ -179,11 +179,11 @@ class GeminiLLM:
             data = retry(lambda: _call_model(self.model), tries=3, base_delay=1.5, log=log,
                          what=f"Gemini {self.model} generateContent")
         except (QuotaExceeded, RuntimeError) as e:
-            if self.model != "gemini-3.6-flash":
-                log.warn(f"Model '{self.model}' unavailable or quota limit — falling back to gemini-3.6-flash",
+            if self.model != "gemini-1.5-flash":
+                log.warn(f"Model '{self.model}' unavailable or quota limit — falling back to gemini-1.5-flash",
                          reason=str(e)[:120])
-                data = retry(lambda: _call_model("gemini-3.6-flash"), tries=3, base_delay=1.5,
-                             log=log, what="Gemini gemini-3.6-flash fallback")
+                data = retry(lambda: _call_model("gemini-1.5-flash"), tries=3, base_delay=1.5,
+                             log=log, what="Gemini gemini-1.5-flash fallback")
             else:
                 raise
 

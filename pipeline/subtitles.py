@@ -27,11 +27,20 @@ log = Logbook("subtitles")
 
 # ASS colours &HAABBGGRR format mein hote hain (BGR, RGB nahi! — aur AA = 00 matlab opaque)
 COL_WHITE = "&H00FFFFFF"
-COL_GOLD = "&H0000D7FF"    # highlight colour (BGR: FF D7 00 = amber/gold)
+COL_GOLD = "&H0000D7FF"    # BGR: FF D7 00 = amber/gold
+COL_RED = "&H00303BFF"     # BGR: FF 3B 30 = crimson red
+COL_PINK = "&H00552DFF"    # BGR: FF 2D 55 = hot pink/rose
+COL_CYAN = "&H00FFFF00"    # BGR: 00 FF FF = vibrant cyan
+COL_EMERALD = "&H0050FF00" # BGR: 00 FF 50 = neon emerald green
 COL_BLACK = "&H00000000"
-COL_SHADOW = "&H96000000"  # semi-transparent black
+COL_SHADOW = "&HB4000000"  # deep black drop shadow
 
 FONT_NAME = "Noto Sans Devanagari"   # assets/fonts se load hota hai
+
+DANGER_KEYWORDS = {"maut", "khoon", "mar", "qatil", "danger", "loop", "dead", "laash", "blade", "fire", "toot", "khatam", "aag", "cheekh", "qurban", "marenge", "shrap"}
+ROMANCE_KEYWORDS = {"pyaar", "dil", "meera", "love", "smile", "muskaan", "halka", "beautiful", "saadgi", "masoomiyat", "blush", "dhadak", "hum", "nazrein", "promise", "shaadi"}
+MYSTERY_KEYWORDS = {"raaz", "sach", "3:17", "3:18", "3:16", "clock", "ghadi", "waqt", "number", "notification", "follow", "dots", "screen", "hi", "roman", "lever", "core", "shadow"}
+COMEDY_KEYWORDS = {"funny", "galat", "sawal", "chammach", "paheli", "score", "dimag", "dahi", "chintu", "golu", "donut", "chocolate", "jadui", "pencil", "fail", "answer"}
 
 
 def _ts(sec: float) -> str:
@@ -51,22 +60,35 @@ def _esc(text: str) -> str:
 
 def build_ass(words: list[dict], hook_text: str, out_path: str | Path,
               *, width: int = 1080, height: int = 1920,
-              hook_duration: float = 3.0, words_per_group: int = 4,
-              font: str = FONT_NAME) -> Path:
+              hook_duration: float = 3.0, words_per_group: int | None = None,
+              font: str = FONT_NAME, style: str = "kinetic") -> Path:
     """
     words: [{"w": "shabd", "start": 1.2, "end": 1.6}, ...]  (voice.py se aata hai)
     hook_text: 5-8 shabd ka curiosity-gap overlay (writer.py se)
+    style: "kinetic" (viral 1-2 word pop-bounce in center) ya "karaoke" (bottom line)
 
     Return: bani hui .ass file ka path
     """
     out_path = Path(out_path)
 
-    # Font size resolution ke hisaab se — mobile pe padhne layak hona chahiye
-    sub_size = int(height * 0.039)    # 1920 -> ~74px
-    hook_size = int(height * 0.045)   # 1920 -> ~86px
+    # Resolution-adjusted sizes
+    hook_size = int(height * 0.046)   # ~88px
+
+    if style == "kinetic":
+        sub_size = int(height * 0.052)     # ~100px (Bold, center eye-line)
+        margin_v = int(height * 0.40)      # Center-lower (~768px from bottom)
+        outline_w = 6
+        shadow_d = 4
+        group_size = words_per_group or 2  # 1-2 words per burst
+    else:
+        sub_size = int(height * 0.039)     # ~74px
+        margin_v = 300
+        outline_w = 5
+        shadow_d = 3
+        group_size = words_per_group or 4
 
     head = f"""[Script Info]
-; AUTOPILOT ne banaya — karaoke subtitles
+; AUTOPILOT ne banaya — kinetic subtitles ({style})
 ScriptType: v4.00+
 PlayResX: {width}
 PlayResY: {height}
@@ -76,9 +98,9 @@ YCbCr Matrix: TV.709
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-; Sub  = neeche wale karaoke subtitles (Alignment 2 = bottom-center)
-Style: Sub,{font},{sub_size},{COL_WHITE},{COL_GOLD},{COL_BLACK},{COL_SHADOW},-1,0,0,0,100,100,0,0,1,5,3,2,90,90,300,1
-; Hook = upar wala curiosity-gap overlay (Alignment 8 = top-center, top third mein)
+; Sub = subtitles (Alignment 2 = bottom-center)
+Style: Sub,{font},{sub_size},{COL_WHITE},{COL_GOLD},{COL_BLACK},{COL_SHADOW},-1,0,0,0,100,100,0,0,1,{outline_w},{shadow_d},2,70,70,{margin_v},1
+; Hook = upar wala curiosity-gap overlay (Alignment 8 = top-center)
 Style: Hook,{font},{hook_size},{COL_GOLD},{COL_GOLD},{COL_BLACK},{COL_SHADOW},-1,0,0,0,100,100,0,0,1,6,4,8,80,80,{int(height*0.14)},1
 
 [Events]
@@ -93,28 +115,64 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             f"Dialogue: 1,{_ts(0.15)},{_ts(hook_duration)},Hook,,0,0,0,,"
             f"{{\\fad(180,250)}}{_esc(hook_text)}")
 
-    # ---------- LAYER 2: karaoke subtitles ----------
+    # ---------- LAYER 2: kinetic / karaoke subtitles ----------
     if not words:
         log.warn("Koi word timing nahi mili — sirf hook overlay banega")
-    for group in _group_words(words, words_per_group):
+
+    import re
+    for group in _group_words(words, group_size):
         start = group[0]["start"]
         end = group[-1]["end"]
         if end <= start:
             continue
-        # \k tag ki unit = centiseconds. Har shabd ka apna \k duration.
-        parts = []
-        for w in group:
-            cs = max(1, int(round((w["end"] - w["start"]) * 100)))
-            parts.append(f"{{\\k{cs}}}{_esc(w['w'])}")
-        text = " ".join(parts)
-        # \fad se soft entry/exit — jhatka nahi lagta
-        lines.append(f"Dialogue: 0,{_ts(start)},{_ts(end + 0.08)},Sub,,0,0,0,,"
-                     f"{{\\fad(90,90)}}{text}")
+
+        if style == "kinetic":
+            # Kinetic Center Pop: 1-2 words with scale-bounce and keyword color
+            parts = []
+            for w in group:
+                raw_w = w["w"]
+                clean_w = re.sub(r"[^\w:]", "", raw_w.lower())
+                
+                # Check semantic category
+                if clean_w in DANGER_KEYWORDS:
+                    col_tag = f"{{\\1c{COL_RED}&}}"
+                    suffix = " 💥" if len(group) == 1 else ""
+                elif clean_w in ROMANCE_KEYWORDS:
+                    col_tag = f"{{\\1c{COL_PINK}&}}"
+                    suffix = " ❤️" if len(group) == 1 else ""
+                elif clean_w in MYSTERY_KEYWORDS:
+                    col_tag = f"{{\\1c{COL_GOLD}&}}"
+                    suffix = " ⚡" if len(group) == 1 else ""
+                elif clean_w in COMEDY_KEYWORDS:
+                    col_tag = f"{{\\1c{COL_EMERALD}&}}"
+                    suffix = " ✨" if len(group) == 1 else ""
+                else:
+                    col_tag = f"{{\\1c{COL_WHITE}&}}"
+                    suffix = ""
+                
+                parts.append(f"{col_tag}{_esc(raw_w)}{suffix}")
+
+            inner_text = " ".join(parts)
+            # ASS scale bounce: dynamic pop at 125% scale for 70ms then settle to 100%
+            bounce_tag = "{\\fscx125\\fscy125\\t(0,70,\\fscx100\\fscy100)}"
+            lines.append(
+                f"Dialogue: 0,{_ts(start)},{_ts(end + 0.05)},Sub,,0,0,0,,"
+                f"{bounce_tag}{inner_text}"
+            )
+        else:
+            # Classic Karaoke: bottom-aligned with word-by-word highlight
+            parts = []
+            for w in group:
+                cs = max(1, int(round((w["end"] - w["start"]) * 100)))
+                parts.append(f"{{\\k{cs}}}{_esc(w['w'])}")
+            text = " ".join(parts)
+            lines.append(f"Dialogue: 0,{_ts(start)},{_ts(end + 0.08)},Sub,,0,0,0,,"
+                         f"{{\\fad(90,90)}}{text}")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(head + "\n".join(lines) + "\n", encoding="utf-8")
     log.ok(f"Subtitles ready: {len(lines)} events", file=out_path.name,
-           words=len(words), hook=bool(hook_text))
+           words=len(words), hook=bool(hook_text), style=style)
     return out_path
 
 

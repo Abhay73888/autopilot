@@ -50,8 +50,9 @@ seo_min_score: 60                         # isse kam SEO score pe warning milegi
 
 # ============ VOICE CONFIGURATION (Phase A) ============
 voice:
-  engine_order: [elevenlabs, gemini_tts, edge_tts, gtts, espeak]
+  engine_order: [gemini_tts, edge_tts, gtts, espeak]
   gemini_tts_model: gemini-2.5-flash-preview-tts
+  speed: 1.20                              # Voiceover speed multiplier (1.20x fast pacing for YouTube Shorts)
   dialogue_share: 0.4
   force_mixed_gender: true
 
@@ -67,12 +68,12 @@ effects:
     master_limiter: true
   visual:
     color_grade: true
-    film_grain: true
-    vignette_pulse: true
-    camera_shake: true
+    film_grain: false
+    vignette_pulse: false
+    camera_shake: false
     flash_cut: true
-    speed_ramp: true
-    breathing: true
+    speed_ramp: false
+    breathing: false
     layered_scenes: false
     particles: false
   character_consistency:

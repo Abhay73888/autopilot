@@ -346,6 +346,121 @@ Sirf JSON return karo, ye exact shape:
         return out
 
     # ------------------------------------------------------------------
+    def write_dialogue_movie(self, scene_setting: str, char_a: dict, char_b: dict,
+                             conflict: str, emotion: str = "dramatic",
+                             length_sec: int = 45) -> dict:
+        """
+        Two-Person Cinematic Movie Dialogue Script Generator.
+        Characters talk face-to-face in alternating close-ups with emotional intensity.
+        No narrator narration — pure movie dialogue with cliffhanger finish.
+        """
+        target_words = int(length_sec * 2.5)
+        char_a_name = char_a.get("name", "Character 1")
+        char_a_gender = char_a.get("gender", "male")
+        char_a_persona = char_a.get("persona", "intense, emotional")
+
+        char_b_name = char_b.get("name", "Character 2")
+        char_b_gender = char_b.get("gender", "female")
+        char_b_persona = char_b.get("persona", "guilty, holding back tears")
+
+        prompt = f"""Tum ek cinematic film writer ho jo ultra-realistic two-person drama likhta hai.
+SCENE: {scene_setting}
+CHARACTER A: {char_a_name} ({char_a_gender}, {char_a_persona})
+CHARACTER B: {char_b_name} ({char_b_gender}, {char_b_persona})
+CONFLICT / TOPIC: {conflict}
+OVERALL EMOTIONAL TONE: {emotion}
+TARGET DURATION: {length_sec} seconds (~{target_words} words max)
+
+RULES:
+1. NO 3RD PERSON NARRATION. Bilkul koi 'narrator' nahi hoga. Sirf dono characters aapas mein baat karenge.
+2. Direct face-to-face intense dialogue. Har line 4-10 shabd ki ho taaki realistic lagay.
+3. Rapid back-and-forth exchanges (6-10 lines total alternating between {char_a_name} and {char_b_name}).
+4. Emotive facial action cues aur suspenseful cliffhanger ending.
+5. Allowed emotions: neutral, curious, serious, nervous, trembling, whispers, panicked, gasp, sighs, amazed, cold, urgent.
+6. Aakhri line aisi ho jo audience ko shock kar de aur video ruk jaye (cliffhanger).
+
+Sirf JSON return karo:
+{{
+  "title": "Cinematic Short Title (60 char max)",
+  "hook_text_overlay": "5-7 words suspense text for video opening",
+  "hook_visual": "cinematic close-up of face with emotional lighting",
+  "cast": {{
+    "narrator": {{"gender": "{char_a_gender}", "persona": "{char_a_persona}"}},
+    "char_a": {{"name": "{char_a_name}", "gender": "{char_a_gender}", "persona": "{char_a_persona}"}},
+    "char_b": {{"name": "{char_b_name}", "gender": "{char_b_gender}", "persona": "{char_b_persona}"}}
+  }},
+  "lines": [
+    {{"speaker": "char_a", "text": "...", "emotion": "serious", "role": "hook"}},
+    {{"speaker": "char_b", "text": "...", "emotion": "nervous", "role": "body"}},
+    {{"speaker": "char_a", "text": "...", "emotion": "trembling", "role": "body"}},
+    {{"speaker": "char_b", "text": "...", "emotion": "whispers", "role": "reveal"}},
+    {{"speaker": "char_a", "text": "...", "emotion": "cold", "role": "ending"}}
+  ],
+  "comment_bait": "Agla part dekhne ke liye comment karein. Kisko lagta hai sach kya tha?",
+  "caption": "Cinematic Scene: {conflict}",
+  "hashtags": ["#cinematic", "#movielovers", "#suspense"]
+}}"""
+
+        raw = self.llm.json(prompt)
+        res = self._normalize(raw, conflict, "specific_outcome", length_sec)
+        # Ensure first line speaker can be char_a or char_b for movie dialogues
+        if res["lines"] and raw.get("lines"):
+            for i, l in enumerate(raw["lines"][:len(res["lines"])]):
+                spk = str(l.get("speaker", "")).lower()
+                if spk in ("char_a", "char_b", "narrator"):
+                    res["lines"][i]["speaker"] = spk
+        return res
+
+    # ------------------------------------------------------------------
+    def write_series_episode(self, series_name: str, episode_num: int,
+                             recap: str, conflict: str,
+                             cliffhanger_cta: str = "Part agla dekhne ke liye comment karein",
+                             length_sec: int = 60) -> dict:
+        """
+        Franchise/Series Episodic Video Generator.
+        Maintains character/world continuity, opens with viral recap hook, delivers high-stakes conflict,
+        and lands on a massive cliffhanger with episode continuation CTA.
+        """
+        target_words = int(length_sec * 2.6)
+        topic = f"{series_name} — Episode {episode_num}"
+        prompt = f"""Tum ek viral episodic web series ke lead writer ho.
+SERIES NAME: {series_name}
+EPISODE NUMBER: {episode_num}
+PREVIOUS RECAP / CONTEXT: {recap}
+CURRENT EPISODE CONFLICT: {conflict}
+TARGET DURATION: {length_sec} seconds (~{target_words} words max)
+CALL TO ACTION: {cliffhanger_cta}
+
+RULES:
+1. Opening line (1.5 sec hook) must instantly grip viewers with high urgency ("Episode {episode_num} mein sab badal gaya...").
+2. High retention storytelling with alternating tension between narrator and key character voices.
+3. Mid-episode twist or revelation (at ~30s).
+4. Ending cliffhanger MUST leave viewers desperate for next part, ending with: "{cliffhanger_cta}".
+5. Comment bait asks a question that requires a multi-word theory from viewers.
+
+Sirf JSON return karo:
+{{
+  "title": "{series_name} Ep {episode_num} | Twist",
+  "hook_text_overlay": "Ep {episode_num}: Sach samne aa gaya",
+  "hook_visual": "cinematic suspense macro shot",
+  "cast": {{
+    "narrator": {{"gender": "male", "persona": "dramatic web series narrator"}},
+    "char_a": {{"name": "Protagonist", "gender": "female", "persona": "emotional, shocked"}}
+  }},
+  "lines": [
+    {{"speaker": "narrator", "text": "...", "emotion": "curious", "role": "hook"}},
+    {{"speaker": "char_a", "text": "...", "emotion": "panicked", "role": "body"}},
+    {{"speaker": "narrator", "text": "...", "emotion": "serious", "role": "reveal"}},
+    {{"speaker": "narrator", "text": "Aage kya hoga? {cliffhanger_cta}", "emotion": "urgent", "role": "ending"}}
+  ],
+  "comment_bait": "Aapko kya lagta hai agle episode mein kya hoga? Comment karein!",
+  "caption": "{series_name} Episode {episode_num}. Like & Subscribe for next part!",
+  "hashtags": ["#{re.sub(r'[^a-zA-Z0-9]', '', series_name).lower()}", "#series", "#cliffhanger"]
+}}"""
+        raw = self.llm.json(prompt)
+        return self._normalize(raw, topic, "pov", length_sec)
+
+    # ------------------------------------------------------------------
     @staticmethod
     def full_narration(script: dict) -> str:
         """Saari spoken lines ek string mein — TTS ko yahi jaata hai."""

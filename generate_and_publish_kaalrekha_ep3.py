@@ -35,7 +35,7 @@ log = Logbook("kaalrekha_ep3")
 TOPIC = "Kaal-Rekha Part 3: The 4th Death Loop"
 TITLE = "Yeh Ladki Hi Mujhe Har Baar Maarti Hai?! 😱 | KAAL-REKHA (Part 3) #Shorts"
 CAPTION = "1998 ke cassette tape mein meri hi aawaz ne chetavani di... jiske paas parchhayi nahi hai, wahi kaatil hai! KAAL-REKHA Part 3. Aage kya hoga dekhne ke liye Part 4 ke liye COMMENT karein! 👇"
-HASHTAGS = ["#KaalRekha", "#Part3", "#AnimeHindi", "#SuspenseShorts", "#IndianAnime", "#Shorts"]
+HASHTAGS = ["#KaalRekha", "#Part3", "#Shorts"]
 HOOK_OVERLAY = "🎬 PART 3: THE 4TH DEATH LOOP ⚠️"
 COMMENT_BAIT = "1998 ke cassette tape mein Kabir ne khud ko warning kaise di? Meera ka asli sach kya hai? Part 4 dekhne ke liye abhi COMMENT karein! 👇"
 
@@ -165,7 +165,7 @@ def main():
 
     # 4. Generate Visual Frames
     print("\n🖼️ [Step 2] Generating Anime Visual Frames...")
-    img_agent = ImageGen(providers=["pollinations", "gemini_image", "local_placeholder"])
+    img_agent = ImageGen(providers=["pollinations"])
     scenes_with_paths = img_agent.generate_all(scenes, out_dir)
     print("✅ All anime scene frames generated successfully!")
 

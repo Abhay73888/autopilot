@@ -1,0 +1,29 @@
+# ==============================================================================
+# AUTOPILOT - Distributed Async Worker (Celery + FFmpeg)
+# ==============================================================================
+
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    fonts-dejavu-core \
+    fonts-freefont-ttf \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN mkdir -p data logs output
+
+CMD ["python", "-m", "celery", "-A", "backend.app.workers.celery_app", "worker", "--loglevel=info", "--concurrency=2"]

@@ -36,6 +36,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run test suite
+      - name: Lint Python syntax
+        run: |
+          pip install flake8
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=output,data,scratch,.git,__pycache__
+
+      - name: Run Backend SaaS Unit Tests
+        env:
+          AUTOPILOT_MOCK_MODE: "true"
+        run: |
+          python -m unittest discover -s backend/tests -v
+
+      - name: Run Legacy Engine Acceptance Tests
+        env:
+          AUTOPILOT_MOCK_MODE: "true"
         run: |
           python test_all.py

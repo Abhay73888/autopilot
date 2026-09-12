@@ -28,15 +28,13 @@ log = Logbook("imagegen")
 # Pollinations ko browser jaisa UA chahiye, warna 403 deta hai
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 AUTOPILOT/1.0"
 
-# 9:16 par chhota render — upscale ffmpeg karega.
-# Kyun chhota? Free endpoint bade sizes pe timeout karta hai. 640x1138 se 1080x1920
-# upscale karne pe cartoon art mein farq nahi dikhta (flat colours hain, photo nahi).
-GEN_W, GEN_H = 640, 1138
+# 9:16 HD render — crisp, sharp 720x1280 base for 1080x1920 YouTube Shorts.
+GEN_W, GEN_H = 720, 1280
 
 
 class ImageGen:
     def __init__(self, providers: list[str] | None = None):
-        self.providers = providers or ["pollinations", "gemini_image", "pollinations_v2", "local_placeholder"]
+        self.providers = providers or ["pollinations", "gemini_image", "local_placeholder"]
         self.stats = {p: {"ok": 0, "fail": 0} for p in self.providers}
 
     # ------------------------------------------------------------------
@@ -51,6 +49,12 @@ class ImageGen:
         results = []
         for sc in scenes:
             path = out_dir / sc["file"]
+            # Cache check: agar valid image pehle se maujood hai to reuse karo
+            if path.exists() and path.stat().st_size > 5000:
+                log.info(f"Image {sc['file']} already exists ({path.stat().st_size // 1024} KB), reusing.")
+                self.stats["pollinations"]["ok"] += 1
+                results.append({**sc, "path": str(path), "provider": "cached", "seed": sc.get("seed", 42)})
+                continue
             # seed fix rakhna: same story = same style feel (consistency)
             seed = sc.get("seed") or ((seed_base or 42) + sc["n"])
             provider = self.generate_one(sc["image_prompt"], path, seed=seed)
@@ -74,27 +78,32 @@ class ImageGen:
                 return prov
             except Exception as e:  # noqa: BLE001
                 self.stats[prov]["fail"] += 1
-                errors.append(f"{prov}: {type(e).__name__}: {str(e)[:120]}")
-                log.warn(f"{prov} fail — agla provider try kar rahe hain",
-                         file=path.name, reason=str(e)[:150])
+                log.warn(f"provider {prov} fail: {e}", prompt_preview=prompt[:60])
+                errors.append(f"{prov}: {e}")
         raise RuntimeError(f"Saare image providers fail ho gaye for {path.name}:\n  " +
                            "\n  ".join(errors))
 
     # ---------------- provider 1: pollinations ----------------
     def _p_pollinations(self, prompt: str, path: Path, seed: int):
-        enc = urllib.parse.quote(prompt[:450], safe="")
+        import ssl
+        enc = urllib.parse.quote(prompt[:650], safe="")
         url = (f"https://image.pollinations.ai/prompt/{enc}"
-               f"?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true&model=turbo")
+               f"?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true&model=flux")
 
         def _fetch():
             req = urllib.request.Request(url, headers={"User-Agent": UA})
             try:
-                with urllib.request.urlopen(req, timeout=25) as r:
+                with urllib.request.urlopen(req, timeout=60) as r:
                     data = r.read()
             except urllib.error.HTTPError as e:
                 if e.code == 429:
                     raise RuntimeError("Pollinations rate-limited (429)") from e
                 raise
+            except (ssl.SSLError, urllib.error.URLError) as e:
+                # Retry with unverified SSL context if certificate verification fails
+                unverified_ctx = ssl._create_unverified_context()
+                with urllib.request.urlopen(req, timeout=60, context=unverified_ctx) as r:
+                    data = r.read()
             except Exception:
                 raise
             if len(data) < 1000:
@@ -103,21 +112,24 @@ class ImageGen:
                 raise RuntimeError(f"JPEG/PNG nahi mila, mila: {data[:40]!r}")
             path.write_bytes(data)
 
-        # 3 retries with exponential backoff for rate limits
+        # Retries with backoff for network/server glitches
         last_err = None
-        for attempt, wait in enumerate([0, 8, 20]):
+        for attempt, wait in enumerate([0, 3, 6, 10, 15]):
             if wait:
                 log.debug(f"Pollinations retry {attempt} — {wait}s wait")
                 time.sleep(wait)
             try:
                 _fetch()
-                time.sleep(0.5)
+                time.sleep(1.0)
                 return
-            except RuntimeError as e:
+            except Exception as e:
                 last_err = e
-                if "429" not in str(e) and "rate" not in str(e).lower():
-                    raise  # non-rate-limit error — don't retry
-        raise RuntimeError(f"Pollinations 3 tries ke baad bhi fail: {last_err}")
+        try:
+            self._p_pollinations_v2(prompt, path, seed)
+            return
+        except Exception:
+            pass
+        raise RuntimeError(f"Pollinations retries ke baad bhi fail: {last_err}")
 
     # ---------------- provider 2: gemini image ----------------
     def _p_gemini_image(self, prompt: str, path: Path, seed: int):
@@ -157,13 +169,19 @@ class ImageGen:
     def _p_pollinations_v2(self, prompt: str, path: Path, seed: int):
         """Alternate pollinations endpoint as backup."""
         import json as _json
+        import ssl
         enc = urllib.parse.quote(prompt[:300], safe="")
-        # Try the newer pollinations API
-        url = f"https://image.pollinations.ai/prompt/{enc}?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true"
+        # Try pollinations with turbo model
+        url = f"https://image.pollinations.ai/prompt/{enc}?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true&model=turbo"
         req = urllib.request.Request(url, headers={"User-Agent": UA})
-        time.sleep(5)  # Wait before trying to avoid 429
-        with urllib.request.urlopen(req, timeout=30) as r:
-            data = r.read()
+        time.sleep(2)
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                data = r.read()
+        except (ssl.SSLError, urllib.error.URLError):
+            unverified_ctx = ssl._create_unverified_context()
+            with urllib.request.urlopen(req, timeout=60, context=unverified_ctx) as r:
+                data = r.read()
         if len(data) < 1000:
             raise RuntimeError(f"v2 response too small ({len(data)} bytes)")
         if not (data[:2] == b"\xff\xd8" or data[:8].startswith(b"\x89PNG")):

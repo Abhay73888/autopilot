@@ -116,8 +116,9 @@ class YouTubePublisher:
         # ---------- GATE 3: validate ----------
         from pipeline.validate import validate_dir
         rep = validate_dir(path.parent)
-        if not rep.ok:
-            fatal = "; ".join(f"[{i.code}] {i.msg}" for i in rep.fatals)
+        yt_fatals = [i for i in rep.fatals if i.code != "IG_TOO_LONG"]
+        if yt_fatals:
+            fatal = "; ".join(f"[{i.code}] {i.msg}" for i in yt_fatals)
             raise PublishError(f"Video validate fail — publish nahi karenge:\n  {fatal}")
 
         # ---------- GATE 4: quota ----------

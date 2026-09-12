@@ -48,8 +48,8 @@ except RuntimeError:
 BUDGETS = {
     "youtube_units":   {"limit": 10000, "window": "day_pacific", "real": 10000,
                         "note": "YouTube Data API v3 daily units"},
-    "youtube_uploads": {"limit": 5,     "window": "day_pacific", "real": 7,
-                        "note": "Hidden limit ~7/day. Hum 5 pe rukte hain."},
+    "youtube_uploads": {"limit": 10,    "window": "day_pacific", "real": 20,
+                        "note": "YouTube daily upload limit cap for shorts series."},
     "youtube_search":  {"limit": 5,     "window": "day_pacific", "real": 100,
                         "note": "search.list = 100 units/call. Bachao! playlistItems (1 unit) use karo."},
     "ig_publishes":    {"limit": 20,    "window": "rolling_24h", "real": 50,

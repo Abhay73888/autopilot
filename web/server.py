@@ -69,7 +69,7 @@ HOST = os.environ.get("HOST", "127.0.0.1")
 # → Create OAuth 2.0 Client ID (Web application)
 # → Add Authorized JavaScript origin: http://localhost:8765
 # Set GOOGLE_CLIENT_ID in your .env file
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID") or "435802513331-pvj41dcdi5qmop8mviijpds9rmjt7isk.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
 
 import hmac
@@ -3402,6 +3402,33 @@ body::before {
   <!-- TAB 1: STUDIO (ONE-CLICK VIDEO & SERIES CREATOR) -->
   <!-- ============================================================== -->
   <section class="tab-section active" id="sec-studio">
+    <!-- FLAGSHIP SERIES 5: ASHWATTHAMA 3049 AD (CROWN JEWEL) -->
+    <div class="series-hero-card" style="margin-bottom:20px; border-color:rgba(245, 158, 11, 0.45); background:linear-gradient(135deg, rgba(20, 14, 5, 0.95), rgba(35, 20, 8, 0.9)); box-shadow:0 12px 36px rgba(245, 158, 11, 0.15);">
+      <div class="series-badge" style="background:linear-gradient(135deg, #F59E0B, #EF4444); color:#fff; border:none; font-weight:800;">
+        ⚡ NEW CROWN JEWEL — SERIES 5
+      </div>
+      <h1 class="series-title" style="background:linear-gradient(135deg, #FFF, #FCD34D); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+        अश्वत्थामा 3049 AD — The Immortal Cyberpunk Warrior
+      </h1>
+      <p class="series-synopsis">
+        Himalaya ke 20,000 feet neeche frozen bunker mein jaag utha 5000 saal purana amar yoddha. Kali Yuga ke cybernetic predators aur neural implants ke khilaaf ek aakhri yuddh!
+      </p>
+      <div class="series-features">
+        <div class="series-feat">💎 Neo-Himalayan Cyberpunk Aesthetics (Flux Pro)</div>
+        <div class="series-feat">🎙️ Grave Neural Narration (Madhur Voice)</div>
+        <div class="series-feat">🔥 100% Autonomous YouTube Shorts Publishing</div>
+        <div class="series-feat">💬 Open Engaged Audience Comments</div>
+      </div>
+      <div class="series-actions" style="gap:12px; flex-wrap:wrap;">
+        <a href="https://youtube.com/shorts/8xVnjfdxUKU" target="_blank" rel="noopener" class="btn" style="background:#EF4444; color:#fff; text-decoration:none; display:inline-flex; align-items:center; gap:8px; font-weight:700; border-radius:10px; padding:10px 18px;">
+          ▶️ Watch Ep 1 on YouTube (Live)
+        </a>
+        <button class="btn btn-series" style="background:linear-gradient(135deg, #F59E0B, #D97706); border:none;" onclick="generateOtherSeries('SERIES_5')">
+          🚀 1-Click Generate Next Episode
+        </button>
+      </div>
+    </div>
+
     <!-- HERO: SERIES 1 KAAL-REKHA -->
     <div class="series-hero-card">
       <div class="series-badge" id="heroBadge">🔥 Flagship Anime Sci-Fi Series</div>
@@ -3425,7 +3452,7 @@ body::before {
       </div>
     </div>
 
-    <!-- OTHER 3 SERIES CARDS -->
+    <!-- OTHER SERIES CARDS -->
     <h3 style="margin-bottom:14px; font-family:'Outfit',sans-serif;" id="lblSeriesSwarm">📺 Choose From Our Series Swarm</h3>
     <div class="series-grid">
       <!-- Series 2: Modern Romance -->

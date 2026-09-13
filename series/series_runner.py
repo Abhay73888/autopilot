@@ -343,6 +343,7 @@ def _synthesize_procedural_episode(series_code: str, episode_num: int) -> dict[s
                 "Dramatic 8k anime perspective of quiet suburban street in rainy evening looking up at locked gate with closed windows, vertical 9:16, no text",
                 "Melancholic anime close up of boy's teary eyes reflecting city streetlights, vertical 9:16, masterpiece, no text"
             ]
+        }
     elif series_code == "SERIES_5":
         return {
             "title": f"Himalaya Ke 20,000 Feet Neeche Wo Jaag Utha! ⚡️🏔️ | ASHWATTHAMA 3049 AD (Part {episode_num}) #Shorts",

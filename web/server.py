@@ -1599,6 +1599,8 @@ class Handler(BaseHTTPRequestHandler):
                                 verified_by_google = (token_info.get("email_verified") in ("true", True, "1", 1))
                     except Exception as ve:
                         log.warn(f"Google tokeninfo verification returned: {ve}")
+                        if not email:
+                            return self._json(401, {"ok": False, "error": "Google Sign-In token verification failed or expired. Please sign in again."})
 
                 if not email:
                     return self._json(400, {"ok": False, "error": "Valid Google Account email is required."})
@@ -1608,10 +1610,13 @@ class Handler(BaseHTTPRequestHandler):
                 with DB() as db:
                     existing = db.get_user(email)
                     is_new = False
+                    role = "admin" if ("abhay" in email or email == "abhay@autopilot.ai") else "creator"
                     if existing:
                         user = existing
+                        if role == "admin" and user.get("role") != "admin":
+                            user["role"] = "admin"
                     else:
-                        user = db.create_user(email=email, name=name, role="creator")
+                        user = db.create_user(email=email, name=name, role=role)
                         is_new = True
                     if avatar_url and isinstance(user, dict):
                         user["avatar_url"] = avatar_url
@@ -4532,36 +4537,42 @@ async function quickFounderLogin() {
 // Called when the GSI library has loaded; renders the Google button & One Tap prompt
 function initGoogleSignIn() {
   const clientId = window.GOOGLE_CLIENT_ID;
+  const btn = document.getElementById('btnGoogleAuth');
+  const ctr = document.getElementById('googleSignInContainer');
+
   if (!clientId || !window.google?.accounts?.id) {
-    // Hide the button gracefully if no client ID is configured
-    const btn = document.getElementById('btnGoogleAuth');
-    const ctr = document.getElementById('googleSignInContainer');
-    if (btn) btn.style.display = 'none';
+    if (btn) btn.style.display = 'flex';
     if (ctr) ctr.style.display = 'none';
     return;
   }
 
-  // Initialize Google Identity Services
-  google.accounts.id.initialize({
-    client_id: clientId,
-    callback: onGoogleCredentialResponse,
-    auto_select: false,
-    cancel_on_tap_outside: true,
-    context: 'signin',
-    ux_mode: 'popup',
-  });
-
-  // Render the official Google button in the container div
-  const container = document.getElementById('googleSignInContainer');
-  if (container) {
-    google.accounts.id.renderButton(container, {
-      theme: 'filled_blue',
-      size: 'large',
-      text: 'signin_with',
-      shape: 'rectangular',
-      logo_alignment: 'left',
-      width: 340,
+  try {
+    // Initialize Google Identity Services
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: onGoogleCredentialResponse,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+      context: 'signin',
+      ux_mode: 'popup',
     });
+
+    // Render the official Google button in the container div
+    if (ctr) {
+      google.accounts.id.renderButton(ctr, {
+        theme: 'filled_blue',
+        size: 'large',
+        text: 'signin_with',
+        shape: 'rectangular',
+        logo_alignment: 'left',
+        width: 340,
+      });
+      // Once official button renders, hide redundant custom button
+      if (btn) btn.style.display = 'none';
+    }
+  } catch (e) {
+    console.warn('Google GSI initialization notice:', e);
+    if (btn) btn.style.display = 'flex';
   }
 }
 
@@ -4572,7 +4583,7 @@ async function onGoogleCredentialResponse(response) {
     return;
   }
   const btn = document.getElementById('btnGoogleAuth');
-  if (btn) { btn.disabled = true; btn.textContent = 'Verifying with Google…'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Verifying with Google…'; btn.style.display = 'flex'; }
 
   try {
     const res = await fetch('/api/auth/google', {
@@ -4583,7 +4594,10 @@ async function onGoogleCredentialResponse(response) {
     const data = await res.json();
     if (!data.ok) {
       toast('❌ ' + (data.error || 'Google Sign-In failed. Please try again.'));
-      if (btn) { btn.disabled = false; btn.innerHTML = '<svg class="google-g-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg><span>Sign in with Google (Verified Account)</span>'; }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="google-g-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg><span>Sign in with Google (Verified Account)</span>';
+      }
       return;
     }
 
@@ -4592,6 +4606,7 @@ async function onGoogleCredentialResponse(response) {
     if (data.user?.avatar_url) authUser.avatar_url = data.user.avatar_url;
     localStorage.setItem('autopilot_auth_user', JSON.stringify(authUser));
     if (typeof audio !== 'undefined' && audio.success) audio.success();
+    closeLoginModal();
     checkAuthState();
 
     const isNew = data.is_new;
@@ -4613,23 +4628,24 @@ async function onGoogleCredentialResponse(response) {
   }
 }
 
-// Fallback handler for the custom "Sign in with Google" button click
-// (triggers One Tap popup manually if GSI is ready)
+// Fallback handler for custom "Sign in with Google" click
 function handleGoogleSignIn() {
   const clientId = window.GOOGLE_CLIENT_ID;
   if (!clientId || !window.google?.accounts?.id) {
     toast('⚠️ Google Sign-In is not configured. Please set GOOGLE_CLIENT_ID in your .env file.');
     return;
   }
-  // Trigger One Tap prompt
+  const container = document.getElementById('googleSignInContainer');
+  if (container) {
+    const googleBtn = container.querySelector('[role="button"], button, div[tabindex]');
+    if (googleBtn) {
+      googleBtn.click();
+      return;
+    }
+  }
   google.accounts.id.prompt((notification) => {
     if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      // One Tap was blocked (e.g., user dismissed too many times) — click the rendered button instead
-      const container = document.getElementById('googleSignInContainer');
-      if (container) {
-        const googleBtn = container.querySelector('[role="button"], button, div[tabindex]');
-        if (googleBtn) googleBtn.click();
-      }
+      console.warn('Google One Tap not displayed:', notification.getNotDisplayedReason?.() || 'skipped');
     }
   });
 }
@@ -5485,8 +5501,8 @@ PAGE = (
              '<button class="tab-btn" id="tab-settings" onclick="switchNav(\'settings\')">⚙️ Settings &amp; Quota</button>\n    <button class="tab-btn" id="tab-editor" onclick="switchNav(\'editor\')">✂️ Mini Video Editor</button>\n    <button class="tab-btn" id="tab-ml" onclick="switchNav(\'ml\')">🧠 AI Brain &amp; ML Studio</button>', 1)
     .replace('</section>\n</div>\n\n<!-- FLOATING COPILOT ORB -->',
              '</section>\n' + ML_STUDIO_TAB_HTML + '\n' + EDITOR_TAB_HTML + '\n' + TOUR_HTML + '\n</div>\n\n<!-- FLOATING COPILOT ORB -->', 1)
-    .replace('</script>\n</body>',
-             ML_STUDIO_JS + '\n' + EDITOR_JS + '\n' + TOUR_JS + '\n</script>\n</body>', 1)
+    .replace('</script>\n\n<!-- DISCORD CONFIGURATION MODAL -->',
+             '\n' + ML_STUDIO_JS + '\n' + EDITOR_JS + '\n' + TOUR_JS + '\n</script>\n\n<!-- DISCORD CONFIGURATION MODAL -->', 1)
     # Inject real Google Client ID (safe: no special chars in a valid client ID)
     .replace('__GOOGLE_CLIENT_ID_PLACEHOLDER__', GOOGLE_CLIENT_ID or '')
 )

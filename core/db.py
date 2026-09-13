@@ -270,6 +270,13 @@ class DB:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.conn = sqlite3.connect(str(self.path), timeout=15, isolation_level=None)
         self.conn.row_factory = sqlite3.Row  # rows ko dict jaisa padh sako
+        try:
+            self.conn.execute("PRAGMA journal_mode=WAL;")
+            self.conn.execute("PRAGMA synchronous=NORMAL;")
+            self.conn.execute("PRAGMA cache_size=10000;")
+            self.conn.execute("PRAGMA temp_store=MEMORY;")
+        except Exception:
+            pass
         
         # Migrations for existing workspaces table if created without SaaS columns
         for col_name, col_type in [

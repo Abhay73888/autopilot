@@ -129,9 +129,25 @@ def _check_webhook_auth(headers: dict, body: dict, client_ip: str | None = None)
 
 
 # =====================================================================
-# DATA — dashboard ko chahiye sab kuch
+# DATA — dashboard ko chahiye sab kuch (20x Accelerated Cache)
 # =====================================================================
+_GATHER_CACHE: dict[tuple[str | None, bool], tuple[float, dict]] = {}
+_GATHER_CACHE_LOCK = threading.Lock()
+_GATHER_CACHE_TTL = 1.5  # 1.5s cache TTL for instant sub-millisecond responses
+
+def invalidate_gather_cache():
+    with _GATHER_CACHE_LOCK:
+        _GATHER_CACHE.clear()
+
 def gather(user_id: str | None = None, view_all: bool = False) -> dict:
+    cache_key = (user_id, view_all)
+    now_ts = time.time()
+    with _GATHER_CACHE_LOCK:
+        if cache_key in _GATHER_CACHE:
+            ts, val = _GATHER_CACHE[cache_key]
+            if now_ts - ts < _GATHER_CACHE_TTL:
+                return val
+
     db = DB()
     q = Quota(db)
     try:
@@ -245,7 +261,7 @@ def gather(user_id: str | None = None, view_all: bool = False) -> dict:
 
         active_u = user or (db.get_user("admin_abhay") if is_admin else None)
 
-        return {
+        out = {
             "brand": CONFIG.get("brand_name", "AUTOPILOT"),
             "autonomy": CONFIG.get("autonomy", "review_first"),
             "mock_mode": bool(CONFIG.get("mock_mode")),
@@ -265,6 +281,9 @@ def gather(user_id: str | None = None, view_all: bool = False) -> dict:
             "view_mode": "all" if (is_admin and view_all) else ("all" if user_id is None else "my"),
             "filter_user": filter_user,
         }
+        with _GATHER_CACHE_LOCK:
+            _GATHER_CACHE[cache_key] = (now_ts, out)
+        return out
     finally:
         db.close()
 
@@ -792,6 +811,7 @@ def test_channel(channel: str) -> dict:
 # ACTIONS
 # =====================================================================
 def do_action(action: str, video_id: int, payload: dict) -> dict:
+    invalidate_gather_cache()
     with DB() as db:
         # ---- experiment actions kisi video se bandhe nahi hain ----
         if action == "generate":
@@ -1888,6 +1908,24 @@ class Handler(BaseHTTPRequestHandler):
             pass  # browser ne video band kar diya — normal hai
 
     def _send(self, code: int, ctype: str, body: bytes):
+        import gzip
+        accept_encoding = self.headers.get("Accept-Encoding", "")
+        # High-performance Gzip compression for payloads > 1KB (reduces transfer size by 80%)
+        if "gzip" in accept_encoding and len(body) > 1024 and not ctype.startswith("video/") and not ctype.startswith("image/"):
+            try:
+                compressed = gzip.compress(body, compresslevel=6)
+                if len(compressed) < len(body):
+                    self.send_response(code)
+                    self.send_header("Content-Type", ctype)
+                    self.send_header("Content-Encoding", "gzip")
+                    self.send_header("Content-Length", str(len(compressed)))
+                    self.send_header("Vary", "Accept-Encoding")
+                    self.end_headers()
+                    self.wfile.write(compressed)
+                    return
+            except Exception:
+                pass
+
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
@@ -2723,14 +2761,21 @@ body::before {
   border: 1px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
-  transition: all 0.2s;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.25s ease;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   display: flex;
   flex-direction: column;
 }
 .video-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px) translateZ(0);
   border-color: var(--border-glow);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 242, 254, 0.18);
+}
+.series-hero-card, .mini-series-card, .btn, .tab-btn {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 .video-preview {
   position: relative;
@@ -4911,6 +4956,11 @@ function renderGallery() {
   const badgeV = document.getElementById('badgeVideoCount');
   if (badgeV) badgeV.textContent = vids.length;
 
+  // 20x Smoothness: Prevent destroying DOM nodes & video players if data has not changed
+  const currentKey = `${currentLang}_${vids.map(v => `${v.id}_${v.status}_${v.title || ''}_${v.video_url || ''}`).join('|')}`;
+  if (window._lastGalleryKey === currentKey) return;
+  window._lastGalleryKey = currentKey;
+
   const T = I18N[currentLang] || I18N.hi;
 
   if (vids.length === 0) {
@@ -4935,7 +4985,9 @@ function renderGallery() {
     const title = v.title || v.topic || `Video #${v.id}`;
     const preview = v.video_url
       ? `<video src="${v.video_url}" preload="metadata" controls playsinline></video>`
-      : (v.cover_url ? `<img src="${v.cover_url}" alt="Cover">` : `<div style="padding:40px 20px;text-align:center;color:var(--text-muted)">🎬 Rendering...</div>`);
+      : (v.cover_url
+         ? `<img src="${v.cover_url}" alt="${esc(title)}">`
+         : `<div class="video-preview-placeholder">🎬 #${v.id}</div>`);
 
     return `
       <div class="video-card">

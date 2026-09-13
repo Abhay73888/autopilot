@@ -800,32 +800,71 @@ Follow these steps to configure your Discord Developer Application:
 
 ---
 
-### ⚡ Slash Command Reference
+### ⚡ God-Level Slash Command & Button Suite
 
-All slash commands enforce **strict multi-tenant account isolation**. Commands automatically resolve the caller's Discord User ID to their authenticated AUTOPILOT account. A user can only inspect, trigger, or cancel jobs belonging to their own account.
+All slash commands and component buttons enforce **strict multi-tenant account isolation**. Commands automatically resolve the caller's Discord User ID to their authenticated AUTOPILOT account. A user can only inspect, trigger, or cancel jobs belonging to their own account.
 
 | Slash Command | Parameters | Description | Real Data Sourced |
 | :--- | :--- | :--- | :--- |
-| **`/status`** | *None* | Returns real-time progress checklist (Script, Images, Voice, Video, YouTube) of the user's latest video generation job. | `jobs` + `videos` tables |
-| **`/generate`** | `type` (Story, Shorts, Anime, News, Custom), `prompt` (optional) | Triggers the 12-agent AUTOPILOT generation pipeline for the requested franchise or custom topic. | Triggers `do_action("generate")` |
+| **`/status`** | *None* | Returns real-time progress checklist (Script, Images, Voice, Video, YouTube) with interactive action buttons (`[🔄 Refresh]`, `[⚡ Generate Series 5]`, `[📤 1-Click Upload]`, `[▶️ Watch Shorts]`). | `jobs` + `videos` tables |
+| **`/series`** | *None* | Interactive series catalog displaying all 5 official video franchises with live next episode counters and direct 1-click generation buttons for each series! | Unified `series_runner` engine |
+| **`/generate`** | `type` (Ashwatthama, Kaalrekha, Story, Shorts, Anime, News, Custom), `prompt` (optional) | Triggers the 12-agent AUTOPILOT generation pipeline for the requested franchise or custom viral topic. | Triggers `do_action("generate")` |
+| **`/copilot`** | `prompt` (required) | Instant AI Media Copilot powered by Google Gemini / Moonshot LLM. Generates viral 3-second hooks, narrative arcs, and provides a 1-click `[⚡ Generate]` trigger. | Neural LLM API |
+| **`/quota`** | *None* | Real-time monitoring of daily YouTube upload limits, API units, Gemini token counts, and pipeline health with 1-click `[🛠️ Auto-Fix Unlock]`. | `core/quota.py` state |
 | **`/cancel`** | *None* | Cancels the user's active running job, clears execution lockfiles, and restores pipeline to IDLE. | Unlocks pipeline state |
-| **`/upload`** | `video_id` (optional) | Publishes the user's latest validated/approved video to YouTube Shorts using the OAuth 2.0 resumable uploader. | Calls `publish_video` |
+| **`/upload`** | `video_id` (optional) | Publishes the user's latest validated/approved video to YouTube Shorts with Comments ON using the OAuth 2.0 resumable uploader. | Calls `publish_video` |
 | **`/analytics`** | *None* | Summarizes total videos, published count, processing count, failed count, and tracked YouTube 24h views. | `metrics` + `videos` tables |
 | **`/help`** | *None* | Returns interactive command directory with dashboard deep-links. | Built-in guide |
+
+#### 🔘 Interactive Discord Buttons (Type 3 Component Interactions)
+Discord messages are fully interactive—users can control the entire SaaS platform without typing commands:
+- **`[🔄 Refresh]`**: Updates live video generation stage in-place without posting duplicate messages.
+- **`[⚡ Generate Series 5]`**: 1-click instant trigger for Ashwatthama 3049 AD.
+- **`[📤 1-Click Upload #VID]`**: Approves and dispatches eligible videos to YouTube Shorts directly from Discord.
+- **`[▶️ Watch Shorts]`**: Direct deep-link to the live published YouTube Short.
+- **`[🛠️ Auto-Fix Unlock]`**: Automatically clears stale pipeline locks and resets status to IDLE.
+
+---
+
+### 🎬 Original Video Series Franchise Swarm
+
+AUTOPILOT includes 5 production-grade procedural video series franchises:
+
+1. **⚡ SERIES 5: अश्वत्थामा 3049 AD (Ashwatthama 3049 AD — The Last Warrior)**
+   - **Genre**: Dark Sci-Fi Mythological Cyberpunk Action Thriller *(Dune meets Mahabharat)*
+   - **Lore**: In 3049 AD, melting Himalayan glaciers at 20,000 feet unearth a subterranean nuclear bunker holding the immortal warrior Ashwatthama, whose 5,000-year curse has ended as he seeks the 10th Avatar: Kalki!
+   - **Aesthetic**: 8K photorealistic Unreal Engine 5, deep authoritative Hindi narration (`hi-IN-MadhurNeural`), kinetic gold/cyan subtitles, and 38Hz sub-bass Vedic Braam audio.
+   - **📺 Premiere Episode**: [Watch Part 1 on YouTube Shorts](https://youtube.com/shorts/8xVnjfdxUKU) *(Comments 100% ON)*
+
+2. **⏳ SERIES 1: काल-रेखा (Kaal-Rekha)**
+   - **Genre**: Dark Anime Psychological Time-Loop Thriller
+   - **Lore**: Kabir Sen trapped in a recursive 3:17 AM time loop where the cassette player reveals his own fate.
+
+3. **💖 SERIES 2: जब प्यार ऑनलाइन था**
+   - **Genre**: Modern Romance & Emotional Long-Distance Drama
+   - **Lore**: The bittersweet online love story of Aarav and Meera with soulful audio narration.
+
+4. **🧠 SERIES 4: दिमाग का दही (Paheliyan)**
+   - **Genre**: Mind-Bending Riddles & Interactive Brain Teasers
+   - **Lore**: High-retention viral riddle countdowns challenging 99% of viewers in the comments.
+
+5. **🎨 SERIES 3: चिंटू के जादुई कारनामे**
+   - **Genre**: Vibrant 3D Cartoon Family Adventure
+   - **Lore**: Fun, colorful 3D adventures and moral stories of Chintu and Golu.
 
 ---
 
 ### 📢 Automatic Event Notification Lifecycle
 
-When enabled, AUTOPILOT emits beautifully formatted rich embeds to your configured Discord channel:
+When enabled, AUTOPILOT emits beautifully formatted rich embeds with interactive buttons to your configured Discord channel:
 
 * **🎬 Video Generation Started**: Dispatches immediately upon job queueing with series title, part number, and active neural engines.
 * **✍️ Script Completed**: Summarizes writer output with curiosity hook type, word count, and estimated duration.
 * **🎨 Visual Scenes Completed**: Reports scene count, template style (e.g. *Noir Teal*, *MAPPA Dark*), and visual pacing.
 * **🎙️ Voiceover Synthesized**: Confirms neural audio generation with speaker profile and -14 LUFS EBU R128 loudness mastering.
-* **🎬 Video Rendered**: Emits when 60fps MP4 compositing finishes with video resolution, duration, and instant preview button.
-* **📤 YouTube Upload Started & Completed**: Provides live upload feedback and direct link to the published YouTube Short.
-* **🚨 Production Failure Alerts**: Sanitized production error notifications containing Job ID, failed pipeline stage, and dashboard diagnosis link (without exposing internal traces or secret keys).
+* **🎬 Video Rendered**: Emits when 60fps MP4 compositing finishes with video resolution, duration, and instant `[📤 1-Click Upload]` button.
+* **📤 YouTube Upload Started & Completed**: Provides live upload feedback and direct `[▶️ Watch Shorts]` button.
+* **🚨 Production Failure Alerts**: Sanitized production error notifications containing Job ID, failed pipeline stage, and dashboard auto-fix diagnosis link.
 
 > **🛡️ Secondary Integration Resilience**:
 > Discord is engineered as a secondary notification and remote-control bridge. Any Discord outage, rate-limit, or network error is trapped safely and will **NEVER interrupt or crash video generation or YouTube publishing**.

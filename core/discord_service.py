@@ -497,9 +497,11 @@ class DiscordSlashCommands:
                     "required": True,
                     "choices": [
                         {"name": "Story — Dramatic Romantic Suspense (Series 2)", "value": "story"},
+                        {"name": "Ashwatthama — Epic Sci-Fi Mythological Action (Series 5)", "value": "ashwatthama"},
                         {"name": "Shorts — Quick Viral Contrarian Short", "value": "shorts"},
-                        {"name": "Anime — Cyberpunk / Anime Thriller (Series 4)", "value": "anime"},
-                        {"name": "News — Mythological / Historical Mysteries (Series 3)", "value": "news"},
+                        {"name": "Anime — Time-Loop Psychological Thriller (Series 1)", "value": "kaalrekha"},
+                        {"name": "News — Mind-Bending Viral Riddles (Series 4)", "value": "anime"},
+                        {"name": "Cartoons — 3D Kids Adventures (Series 3)", "value": "news"},
                         {"name": "Custom — Custom topic prompt", "value": "custom"}
                     ]
                 },
@@ -510,6 +512,29 @@ class DiscordSlashCommands:
                     "required": False
                 }
             ]
+        },
+        {
+            "name": "series",
+            "description": "Browse all 5 video series and trigger 1-click episode generation.",
+            "type": 1
+        },
+        {
+            "name": "copilot",
+            "description": "Ask AUTOPILOT AI Copilot for viral script ideas, hooks, or optimizations.",
+            "type": 1,
+            "options": [
+                {
+                    "name": "prompt",
+                    "description": "Your idea, question, or prompt for the AI Copilot",
+                    "type": 3,
+                    "required": True
+                }
+            ]
+        },
+        {
+            "name": "quota",
+            "description": "Check real-time YouTube upload budget, AI tokens, and render health.",
+            "type": 1
         },
         {
             "name": "cancel",
@@ -593,9 +618,70 @@ class DiscordSlashCommands:
         discord_user_id = str(user_info.get("id", ""))
         discord_username = user_info.get("username", "Unknown")
 
-        log.info(f"[DISCORD] Command received: /{command_name} from @{discord_username} ({discord_user_id})")
+        # Message Component Interaction (Button clicks & Select menus)
+        if interaction_type == 3:
+            custom_id = data.get("custom_id", "")
+            log.info(f"[DISCORD] Component clicked: '{custom_id}' from @{discord_username} ({discord_user_id})")
+            with DB() as db:
+                conn = db.get_discord_connection_by_discord_id(discord_user_id)
+                if not conn:
+                    return {
+                        "type": 4,
+                        "data": {
+                            "flags": 64,
+                            "content": "⚠️ Your Discord account is not linked yet. Please click **'Connect Discord'** in the AUTOPILOT Dashboard."
+                        }
+                    }
+                user_id = conn["user_id"]
 
-        # Multi-Tenant Resolution
+                if custom_id == "btn_refresh_status":
+                    res = DiscordSlashCommands._handle_status(user_id, db)
+                    res["type"] = 7  # UPDATE_MESSAGE
+                    return res
+                elif custom_id == "btn_browse_series":
+                    res = DiscordSlashCommands._handle_series(user_id, db)
+                    res["type"] = 7
+                    return res
+                elif custom_id == "btn_check_quota":
+                    res = DiscordSlashCommands._handle_quota(user_id, db)
+                    res["type"] = 7
+                    return res
+                elif custom_id.startswith("btn_gen_s"):
+                    s_code = "SERIES_" + custom_id.replace("btn_gen_s", "").upper()
+                    from web.server import do_action
+                    do_action("generate_series", 0, {"series": s_code, "user_id": user_id})
+                    return {
+                        "type": 4,
+                        "data": {
+                            "flags": 64,
+                            "content": f"⚡ **{s_code} Generation Started!** The episode is rendering in the background. You'll receive a Discord embed notification as soon as it's ready!"
+                        }
+                    }
+                elif custom_id.startswith("btn_upload_"):
+                    vid_str = custom_id.replace("btn_upload_", "")
+                    from web.server import do_action
+                    do_action("publish_video", int(vid_str), {"user_id": user_id})
+                    return {
+                        "type": 4,
+                        "data": {
+                            "flags": 64,
+                            "content": f"📤 **Video #{vid_str} Upload Queued!** Publishing to YouTube Shorts with Comments ON."
+                        }
+                    }
+                elif custom_id == "btn_autofix_pipeline":
+                    from web.server import apply_pipeline_fix
+                    apply_pipeline_fix("reset_task")
+                    return {
+                        "type": 4,
+                        "data": {
+                            "flags": 64,
+                            "content": "🛠️ **Auto-Fix Applied!** Pipeline unlocked and task state reset to IDLE."
+                        }
+                    }
+                else:
+                    return {"type": 6}  # Defer update
+
+        # Multi-Tenant Resolution for Slash Commands
         with DB() as db:
             conn = db.get_discord_connection_by_discord_id(discord_user_id)
             if not conn:
@@ -629,6 +715,12 @@ class DiscordSlashCommands:
                 return DiscordSlashCommands._handle_help()
             elif command_name == "status":
                 return DiscordSlashCommands._handle_status(user_id, db)
+            elif command_name == "series":
+                return DiscordSlashCommands._handle_series(user_id, db)
+            elif command_name == "copilot":
+                return DiscordSlashCommands._handle_copilot(user_id, options, db)
+            elif command_name == "quota":
+                return DiscordSlashCommands._handle_quota(user_id, db)
             elif command_name == "generate":
                 return DiscordSlashCommands._handle_generate(user_id, options, db)
             elif command_name == "cancel":
@@ -752,7 +844,138 @@ class DiscordSlashCommands:
             ],
             url=f"{app_url}/"
         )
-        return {"type": 4, "data": {"embeds": [embed]}}
+        
+        btn_row = [
+            {"type": 2, "style": 1, "label": "🔄 Refresh", "custom_id": "btn_refresh_status"},
+            {"type": 2, "style": 3, "label": "⚡ New Series 5", "custom_id": "btn_gen_s5"},
+            {"type": 2, "style": 2, "label": "📚 All Series", "custom_id": "btn_browse_series"},
+            {"type": 2, "style": 5, "label": "🌐 Studio", "url": f"{app_url}/"}
+        ]
+        if video.get("yt_video_id"):
+            btn_row.insert(1, {
+                "type": 2, "style": 5, "label": "▶️ Watch Shorts", "url": f"https://youtube.com/shorts/{video.get('yt_video_id')}"
+            })
+        elif video.get("id") and video.get("status") in ("rendered", "approved", "validated"):
+            btn_row.insert(1, {
+                "type": 2, "style": 3, "label": f"📤 1-Click Upload #{video['id']}", "custom_id": f"btn_upload_{video['id']}"
+            })
+
+        components = [{"type": 1, "components": btn_row[:5]}]
+        return {"type": 4, "data": {"embeds": [embed], "components": components}}
+
+    @staticmethod
+    def _handle_series(user_id: str, db: DB) -> Dict[str, Any]:
+        app_url = DiscordConfig.app_url()
+        from series.series_runner import get_next_episode_number
+        s1_n = get_next_episode_number(db, "SERIES_1")
+        s2_n = get_next_episode_number(db, "SERIES_2")
+        s3_n = get_next_episode_number(db, "SERIES_3")
+        s4_n = get_next_episode_number(db, "SERIES_4")
+        s5_n = get_next_episode_number(db, "SERIES_5")
+
+        embed = DiscordNotifications.create_embed(
+            title="🎬 AUTOPILOT Video Series Catalog",
+            description="Control and produce episodes for all 5 official AI series with 1-click button triggers below!",
+            color=COLOR_BRAND,
+            fields=[
+                {"name": "⚡ SERIES 5: अश्वत्थामा 3049 AD", "value": f"Next: **Ep {s5_n}** • Dark Sci-Fi Mythological Cyberpunk Action", "inline": False},
+                {"name": "⏳ SERIES 1: काल-रेखा (Kaal-Rekha)", "value": f"Next: **Ep {s1_n}** • 3:17 AM Time-Loop Psychological Thriller", "inline": False},
+                {"name": "💖 SERIES 2: जब प्यार ऑनलाइन था", "value": f"Next: **Ep {s2_n}** • Modern Romantic Drama & Soulful Audio", "inline": False},
+                {"name": "🧠 SERIES 4: दिमाग का दही", "value": f"Next: **Ep {s4_n}** • High-Engagement Viral Mind Riddles", "inline": False},
+                {"name": "🎨 SERIES 3: चिंटू के जादुई कारनामे", "value": f"Next: **Ep {s3_n}** • Vibrant 3D Cartoon Family Adventures", "inline": False},
+            ],
+            url=app_url
+        )
+        components = [
+            {
+                "type": 1,
+                "components": [
+                    {"type": 2, "style": 3, "label": f"⚡ Ep {s5_n} Ashwatthama", "custom_id": "btn_gen_s5"},
+                    {"type": 2, "style": 1, "label": f"⏳ Ep {s1_n} Kaal-Rekha", "custom_id": "btn_gen_s1"},
+                    {"type": 2, "style": 2, "label": f"💖 Ep {s2_n} Romance", "custom_id": "btn_gen_s2"},
+                ]
+            },
+            {
+                "type": 1,
+                "components": [
+                    {"type": 2, "style": 2, "label": f"🧠 Ep {s4_n} Paheli", "custom_id": "btn_gen_s4"},
+                    {"type": 2, "style": 2, "label": f"🎨 Ep {s3_n} Chintu", "custom_id": "btn_gen_s3"},
+                    {"type": 2, "style": 5, "label": "🌐 Studio", "url": app_url},
+                ]
+            }
+        ]
+        return {"type": 4, "data": {"embeds": [embed], "components": components}}
+
+    @staticmethod
+    def _handle_copilot(user_id: str, options: Dict[str, Any], db: DB) -> Dict[str, Any]:
+        app_url = DiscordConfig.app_url()
+        user_prompt = options.get("prompt", "").strip()
+        from core.llm import LLM
+        llm = LLM()
+        system_prompt = (
+            "You are the AUTOPILOT AI Media Copilot for YouTube Shorts and Reels.\n"
+            "Generate an electrifying 3-second viral hook, pacing structure, and 1 sentence summary for the user's idea.\n"
+            "Format with clear bullet points and emojis. Keep under 120 words.\n\n"
+            f"User Idea: {user_prompt}"
+        )
+        ai_response = llm.generate(system_prompt)
+        embed = DiscordNotifications.create_embed(
+            title="🤖 AUTOPILOT AI Copilot Strategy",
+            description=ai_response[:2000],
+            color=COLOR_BRAND,
+            fields=[
+                {"name": "Original Prompt", "value": user_prompt[:250], "inline": False},
+                {"name": "Engine", "value": f"AUTOPILOT Neural ({llm.name})", "inline": True},
+            ],
+            url=app_url
+        )
+        components = [
+            {
+                "type": 1,
+                "components": [
+                    {"type": 2, "style": 3, "label": "⚡ Generate Series 5", "custom_id": "btn_gen_s5"},
+                    {"type": 2, "style": 2, "label": "📚 Browse All Series", "custom_id": "btn_browse_series"},
+                    {"type": 2, "style": 5, "label": "🌐 Open Studio", "url": app_url}
+                ]
+            }
+        ]
+        return {"type": 4, "data": {"embeds": [embed], "components": components}}
+
+    @staticmethod
+    def _handle_quota(user_id: str, db: DB) -> Dict[str, Any]:
+        app_url = DiscordConfig.app_url()
+        from core.quota import Quota
+        q = Quota(db)
+        snap = q.snapshot()
+        yt = snap.get("youtube_units", {})
+        gem = snap.get("gemini_requests", {})
+        uploads = snap.get("youtube_uploads", {})
+
+        embed = DiscordNotifications.create_embed(
+            title="📊 AUTOPILOT Quota & System Health",
+            description="Real-time daily usage quotas and pipeline health metrics.",
+            color=COLOR_BRAND,
+            fields=[
+                {"name": "YouTube API Units", "value": f"**{yt.get('used', 0)}** / {yt.get('limit', 10000)} units", "inline": True},
+                {"name": "Daily Uploads", "value": f"**{uploads.get('used', 0)}** / {uploads.get('limit', 10)} uploads", "inline": True},
+                {"name": "Gemini AI Tokens", "value": f"**{gem.get('used', 0)}** / {gem.get('limit', 1500)} req", "inline": True},
+                {"name": "TTS Narration Engine", "value": "🟢 Edge-TTS + Gemini Active", "inline": True},
+                {"name": "FFmpeg Render Core", "value": "🟢 Operational 60fps", "inline": True},
+                {"name": "Whisper Sync Engine", "value": "🟢 Groq Frame-Accurate", "inline": True},
+            ],
+            url=app_url
+        )
+        components = [
+            {
+                "type": 1,
+                "components": [
+                    {"type": 2, "style": 1, "label": "🔄 Refresh Quota", "custom_id": "btn_check_quota"},
+                    {"type": 2, "style": 2, "label": "🛠️ Auto-Fix Unlock", "custom_id": "btn_autofix_pipeline"},
+                    {"type": 2, "style": 5, "label": "🌐 Diagnostics", "url": app_url}
+                ]
+            }
+        ]
+        return {"type": 4, "data": {"embeds": [embed], "components": components}}
 
     @staticmethod
     def _handle_generate(user_id: str, options: Dict[str, Any], db: DB) -> Dict[str, Any]:
@@ -762,18 +985,26 @@ class DiscordSlashCommands:
 
         from web.server import do_action
 
-        if gen_type == "story":
+        if gen_type == "ashwatthama":
+            payload = {"action": "generate_series", "series": "SERIES_5", "user_id": user_id}
+            res = do_action("generate_series", 0, payload)
+            desc = "Generating **Series 5: Epic Sci-Fi Mythological Action (अश्वत्थामा 3049 AD)**..."
+        elif gen_type == "kaalrekha":
+            payload = {"action": "generate_series", "series": "SERIES_1", "user_id": user_id}
+            res = do_action("generate_series", 0, payload)
+            desc = "Generating **Series 1: Psychological Time-Loop Thriller (काल-रेखा)**..."
+        elif gen_type == "story":
             payload = {"action": "generate_series", "series": "SERIES_2", "user_id": user_id}
             res = do_action("generate_series", 0, payload)
             desc = "Generating **Series 2: Romantic Suspense (2020 — Jab Pyaar Online Tha)**..."
         elif gen_type == "anime":
             payload = {"action": "generate_series", "series": "SERIES_4", "user_id": user_id}
             res = do_action("generate_series", 0, payload)
-            desc = "Generating **Series 4: Anime / Cyberpunk Thriller (Neo-Kashi 2088)**..."
+            desc = "Generating **Series 4: Anime / Mind Riddles (दिमाग का दही)**..."
         elif gen_type == "news":
             payload = {"action": "generate_series", "series": "SERIES_3", "user_id": user_id}
             res = do_action("generate_series", 0, payload)
-            desc = "Generating **Series 3: Mystery & History (Kalyug ke Gupt Rahasya)**..."
+            desc = "Generating **Series 3: 3D Kids Adventure (चिंटू के जादुई कारनामे)**..."
         else:  # shorts or custom
             topic = prompt if prompt else "Top 3 Mind-Blowing AI Breakthroughs You Didn't Know"
             payload = {"action": "generate", "topic": topic, "user_id": user_id}

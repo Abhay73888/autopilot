@@ -100,3 +100,11 @@ ml_optimizer:
   min_training_samples: 3
   auto_evolve_prompts: true
 
+# ============ CRITICAL USER RESTRICTION: COMMENTS ALWAYS ON ============
+# ⚠️ MANDATORY: Comments section must NEVER be disabled on any video!
+comments_policy:
+  force_comments_enabled: true
+  self_declared_made_for_kids: false
+  allow_comments_disabled: false
+
+

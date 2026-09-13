@@ -284,6 +284,8 @@ class YouTubePublisher:
             "license": "youtube",
             "embeddable": True,
         }
+        # ⚠️ PERMANENT USER RESTRICTION: Comments must NEVER be disabled on any video!
+        assert status["selfDeclaredMadeForKids"] is False, "CRITICAL: Comments must NEVER be disabled! selfDeclaredMadeForKids must be False."
         if publish_at:
             if privacy != "private":
                 log.warn("publishAt sirf private ke saath chalta hai — ignore")
@@ -364,6 +366,8 @@ class YouTubePublisher:
             "license": "youtube",
             "embeddable": True,
         }
+        # ⚠️ PERMANENT USER RESTRICTION: Comments must NEVER be disabled on any video!
+        assert status["selfDeclaredMadeForKids"] is False, "CRITICAL: Comments must NEVER be disabled! selfDeclaredMadeForKids must be False."
         # publishAt sirf private ke saath chalta hai (Section 2)
         if publish_at:
             if privacy != "private":

@@ -343,8 +343,28 @@ def _synthesize_procedural_episode(series_code: str, episode_num: int) -> dict[s
                 "Dramatic 8k anime perspective of quiet suburban street in rainy evening looking up at locked gate with closed windows, vertical 9:16, no text",
                 "Melancholic anime close up of boy's teary eyes reflecting city streetlights, vertical 9:16, masterpiece, no text"
             ]
+    elif series_code == "SERIES_5":
+        return {
+            "title": f"Himalaya Ke 20,000 Feet Neeche Wo Jaag Utha! ⚡️🏔️ | ASHWATTHAMA 3049 AD (Part {episode_num}) #Shorts",
+            "caption": f"Ashwatthama 3049 AD (Part {episode_num}): Melting glacier ke 20,000 feet neeche secret bunker alarm baja... 5,000 saal purana mahayoddha aazad ho gaya! Dekhein kya hua! 👇⚡️",
+            "hook_overlay": f"⚡️ ASHWATTHAMA AWAKENED! (PART {episode_num}) 🏔️",
+            "comment_bait": f"Kya Ashwatthama sach me zinda hai? Part {episode_num + 1} ke liye COMMENT karein: 'KALKI'! 👇🔥",
+            "lines": [
+                {"speaker": "narrator", "text": "Himalaya ki 20,000 feet barf ke neeche military alarm baja... Ek 5,000 saal purana lohe ka dwar toot gaya!", "emotion": "shocked", "role": "hook"},
+                {"speaker": "narrator", "text": "Surveillance camera par jo dikha usne Pentagon ke hosh uda diye... Ek 8-foot lamba shakhs sub-zero barf mein nange pair chal raha tha!", "emotion": "mysterious", "role": "body"},
+                {"speaker": "narrator", "text": "Uske maathe par ek gaddha tha jahan se neeli cosmic roshni phoot rahi thi... wahi jagah jahan Krishna ne uski Mani cheen li thi!", "emotion": "intense", "role": "body"},
+                {"speaker": "narrator", "text": "Military drones ne jab firing ki, toh saari goliyaan hawa mein hi bhashm ho gayi!", "emotion": "urgent", "role": "climax"},
+                {"speaker": "narrator", "text": "Usne aasmaan ki taraf dekh kar kaha: 'Mera 5000 saal ka shrap poora hua... Kahan hai Kalki?!' Agle part ke liye subscribe karein!", "emotion": "intense", "role": "ending"}
+            ],
+            "image_prompts": [
+                "Cinematic 8k photorealistic wide shot of futuristic subterranean military bunker buried deep in blue ice cavern of Himalayas, red alert klaxon flashing, vertical 9:16, masterpiece, no text",
+                "Atmospheric 8k cinematic shot of colossal 8-foot tall muscular ancient Indian warrior silhouette walking through freezing white blizzard, vertical 9:16, no text",
+                "Extreme close up 8k photorealistic portrait of Ashwatthama's weathered battle-scarred warrior face with glowing blue celestial wound on forehead, intense piercing eyes, vertical 9:16, no text",
+                "Action 8k cinematic shot of high-tech military drones firing laser bullets dissolving into blue plasma energy shield around the towering immortal, vertical 9:16, no text",
+                "Epic 8k cinematic shot of Ashwatthama raising glowing armored fist towards stormy Himalayan night sky with violet lightning, vertical 9:16, Denis Villeneuve Dune aesthetic, no text"
+            ]
         }
-    else:
+    elif series_code == "SERIES_3":
         # Default Riddle / Fun
         return {
             "title": f"Dimag Hil Jayega! 99% Log Fail! 🧠😂 | Dimag Ka Dahi (Ep {episode_num}) #Shorts",

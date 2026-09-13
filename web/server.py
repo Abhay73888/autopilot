@@ -1237,6 +1237,7 @@ class Handler(BaseHTTPRequestHandler):
                     s2_next = get_next_episode_number(sdb, "SERIES_2")
                     s3_next = get_next_episode_number(sdb, "SERIES_3")
                     s4_next = get_next_episode_number(sdb, "SERIES_4")
+                    s5_next = get_next_episode_number(sdb, "SERIES_5")
                 catalog = [
                     {
                         "code": "SERIES_1",
@@ -1273,6 +1274,15 @@ class Handler(BaseHTTPRequestHandler):
                         "aesthetic": "Neon quiz countdown + viral retention sound fx",
                         "next_episode": s4_next,
                         "badge": "🧠 Viral Quiz"
+                    },
+                    {
+                        "code": "SERIES_5",
+                        "name": "अश्वत्थामा 3049 AD",
+                        "genre": "Dark Sci-Fi Mythological Cyberpunk Action",
+                        "hero": "Ashwatthama (Immortal Warrior)",
+                        "aesthetic": "8K Unreal Engine 5 + Dune aesthetic + Vedic Braam",
+                        "next_episode": s5_next,
+                        "badge": "⚡ Epic Sci-Fi"
                     }
                 ]
                 return self._json(200, {"ok": True, "series": catalog})
@@ -3433,6 +3443,13 @@ body::before {
         <h4 class="mini-title" id="titleS4">Series 4: दिमाग का दही (Paheliyan)</h4>
         <p class="mini-desc" id="descS4">Mind-bending paheliyan jo 99% logon ko confuse kar dein. High engagement viral format.</p>
         <button class="btn btn-ghost btn-gen-ep" onclick="generateOtherSeries('SERIES_4')">⚡ Generate Episode</button>
+      </div>
+      <!-- Series 5: Ashwatthama 3049 AD -->
+      <div class="mini-series-card" style="border: 1px solid rgba(245, 158, 11, 0.4); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%);">
+        <span class="mini-badge" style="background: linear-gradient(135deg, #F59E0B, #EF4444); color: white;" id="badgeS5">⚡ Epic Sci-Fi</span>
+        <h4 class="mini-title" id="titleS5">Series 5: अश्वत्थामा 3049 AD</h4>
+        <p class="mini-desc" id="descS5">Himalaya ke 20,000 feet neeche jaag utha 5000 saal purana amar yoddha. Dark cyberpunk action thriller.</p>
+        <button class="btn btn-ghost btn-gen-ep" style="border-color: #F59E0B; color: #F59E0B;" onclick="generateOtherSeries('SERIES_5')">⚡ Generate Episode</button>
       </div>
     </div>
 

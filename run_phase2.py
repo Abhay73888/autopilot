@@ -90,6 +90,19 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
     log.ok(f"Script ready: '{script['title']}'",
            hook=script["hook_type"], words=script["word_count"], est=f"{script['est_sec']}s")
 
+    try:
+        from core.discord_service import notify_event
+        notify_event("script_completed", {
+            "title": script["title"],
+            "hook_line": script.get("hook_line", ""),
+            "word_count": script.get("word_count", 0),
+            "est_sec": script.get("est_sec", 30),
+            "series_name": (series or {}).get("name"),
+            "series_index": (series or {}).get("index"),
+        })
+    except Exception:
+        pass
+
     # ---------- DB entry ----------
     vid = db.create_video(
         topic, title=script["title"], caption=script["caption"],
@@ -116,12 +129,34 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
     db.update_video(vid, voice_id=narration["voice_id"],
                     length_sec=narration["duration_sec"])
 
+    try:
+        from core.discord_service import notify_event
+        notify_event("voice_generation_completed", {
+            "title": script["title"],
+            "voice_id": narration.get("voice_id", "hi_m_narrator"),
+            "duration_sec": narration.get("duration_sec", 30),
+            "video_id": vid,
+        })
+    except Exception:
+        pass
+
     # ---------- 4. IMAGES ----------
     scenes = art["scenes"]
     if with_images:
         log.info(f"🖼️  {len(scenes)} images bana rahe hain (thoda time lagega)...")
         providers = ["local_placeholder"] if dry_run else None
         scenes = ImageGen(providers).generate_all(scenes, out_dir, seed_base=vid * 100)
+        try:
+            from core.discord_service import notify_event
+            notify_event("image_generation_completed", {
+                "title": script["title"],
+                "n_scenes": len(scenes),
+                "template_name": art.get("template_name", "Noir Teal"),
+                "pacing": pacing,
+                "video_id": vid,
+            })
+        except Exception:
+            pass
     else:
         log.warn("--no-images: images skip ki gayi")
 

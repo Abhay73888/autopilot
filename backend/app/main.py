@@ -20,6 +20,7 @@ from .api.v1.copilot import router as copilot_router
 from .api.v1.ideas import router as ideas_router
 from .api.v1.instagram import router as instagram_router
 from .api.v1.integrations_instagram import router as integrations_instagram_router
+from .api.v1.integrations_discord import router as integrations_discord_router
 from .api.v1.jobs import router as jobs_router
 from .api.v1.projects import router as projects_router
 from .api.v1.publish import router as publish_router
@@ -159,6 +160,7 @@ app.include_router(videos_router, prefix=v1_prefix)
 app.include_router(jobs_router, prefix=v1_prefix)
 app.include_router(publish_router, prefix=v1_prefix)
 app.include_router(integrations_instagram_router, prefix=v1_prefix)
+app.include_router(integrations_discord_router, prefix=v1_prefix)
 app.include_router(instagram_router, prefix=v1_prefix)
 app.include_router(analytics_router, prefix=v1_prefix)
 app.include_router(copilot_router, prefix=v1_prefix)

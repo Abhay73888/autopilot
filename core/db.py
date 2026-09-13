@@ -67,11 +67,13 @@ CREATE TABLE IF NOT EXISTS videos (
     scheduled_ts  TEXT,
     published_ts  TEXT,
     ai_disclosed  INTEGER DEFAULT 1, -- hard constraint #4: hamesha 1
+    user_id       TEXT DEFAULT 'admin_abhay', -- Multi-tenant creator isolation (Admin = 'admin_abhay')
     notes         TEXT,
     FOREIGN KEY (experiment_id) REFERENCES experiments(id)
 );
 CREATE INDEX IF NOT EXISTS idx_videos_status ON videos(status);
 CREATE INDEX IF NOT EXISTS idx_videos_sched  ON videos(scheduled_ts);
+CREATE INDEX IF NOT EXISTS idx_videos_user   ON videos(user_id);
 
 CREATE TABLE IF NOT EXISTS metrics (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -164,12 +166,30 @@ CREATE TABLE IF NOT EXISTS jobs (
     video_id         INTEGER,
     error_message    TEXT,
     result_paths     TEXT,
+    user_id          TEXT DEFAULT 'admin_abhay',
     FOREIGN KEY (video_id) REFERENCES videos(id)
 );
 CREATE INDEX IF NOT EXISTS idx_jobs_job_id ON jobs(job_id);
 CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
 CREATE INDEX IF NOT EXISTS idx_jobs_idem ON jobs(idempotency_key);
 CREATE INDEX IF NOT EXISTS idx_jobs_created ON jobs(created_ts);
+CREATE INDEX IF NOT EXISTS idx_jobs_user ON jobs(user_id);
+
+-- Multi-tenancy users & accounts
+CREATE TABLE IF NOT EXISTS users (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id          TEXT UNIQUE NOT NULL,
+    email            TEXT UNIQUE NOT NULL,
+    password_hash    TEXT,
+    name             TEXT NOT NULL,
+    role             TEXT NOT NULL DEFAULT 'creator', -- 'admin' | 'creator'
+    tier             TEXT NOT NULL DEFAULT 'starter', -- starter | pro | enterprise
+    credits          INTEGER NOT NULL DEFAULT 100,
+    tour_completed   INTEGER NOT NULL DEFAULT 0,
+    created_ts       TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_users_id ON users(user_id);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
 -- Multi-tenancy workspaces for commercial SaaS
 CREATE TABLE IF NOT EXISTS workspaces (
@@ -205,6 +225,36 @@ CREATE TABLE IF NOT EXISTS templates (
     config_json      TEXT NOT NULL,
     is_premium       INTEGER DEFAULT 0
 );
+
+-- Discord integration for notifications and bot automation
+CREATE TABLE IF NOT EXISTS discord_connections (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id             TEXT NOT NULL,
+    workspace_id        TEXT DEFAULT 'ws_default',
+    discord_user_id     TEXT NOT NULL,
+    username            TEXT NOT NULL,
+    global_name         TEXT,
+    avatar              TEXT,
+    access_token        TEXT,
+    refresh_token       TEXT,
+    token_expires_at    INTEGER,
+    guild_id            TEXT,
+    guild_name          TEXT,
+    channel_id          TEXT,
+    channel_name        TEXT,
+    notify_generation   INTEGER DEFAULT 1,
+    notify_upload       INTEGER DEFAULT 1,
+    notify_errors       INTEGER DEFAULT 1,
+    notify_analytics    INTEGER DEFAULT 0,
+    webhook_url         TEXT,
+    connected_at        TEXT NOT NULL,
+    updated_at          TEXT NOT NULL,
+    is_active           INTEGER DEFAULT 1,
+    UNIQUE(user_id, discord_user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_discord_user ON discord_connections(user_id);
+CREATE INDEX IF NOT EXISTS idx_discord_duid ON discord_connections(discord_user_id);
+CREATE INDEX IF NOT EXISTS idx_discord_guild ON discord_connections(guild_id);
 """
 
 
@@ -234,17 +284,32 @@ class DB:
             except sqlite3.OperationalError:
                 pass
 
-        self.conn.executescript(SCHEMA)
-
-        try:
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_workspaces_key ON workspaces(api_key)")
-        except sqlite3.OperationalError:
-            pass
+        # Multi-tenancy migrations for existing tables
+        for tbl in ("videos", "jobs"):
+            try:
+                self.conn.execute(f"ALTER TABLE {tbl} ADD COLUMN user_id TEXT DEFAULT 'admin_abhay'")
+            except sqlite3.OperationalError:
+                pass
 
         try:
             self.conn.execute("ALTER TABLE videos ADD COLUMN scene_pacing TEXT DEFAULT 'standard'")
         except sqlite3.OperationalError:
-            pass  # column already exists
+            pass
+
+        try:
+            self.conn.execute("ALTER TABLE users ADD COLUMN tour_completed INTEGER DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass
+
+        self.conn.executescript(SCHEMA)
+
+        try:
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_workspaces_key ON workspaces(api_key)")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_videos_user ON videos(user_id)")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_jobs_user ON jobs(user_id)")
+        except sqlite3.OperationalError:
+            pass
+
         self._seed_defaults()
 
     # ---------- plumbing ----------
@@ -270,9 +335,12 @@ class DB:
     def one(self, sql: str, params=()) -> sqlite3.Row | None:
         return self.conn.execute(sql, params).fetchone()
 
+    q1 = one
+
     # ---------- videos ----------
     def create_video(self, topic: str, **fields) -> int:
         fields = {k: v for k, v in fields.items() if v is not None}
+        fields.setdefault("user_id", "admin_abhay")
         if isinstance(fields.get("hashtags"), (list, tuple)):
             fields["hashtags"] = json.dumps(list(fields["hashtags"]), ensure_ascii=False)
         if isinstance(fields.get("script_json"), (dict, list)):
@@ -423,13 +491,14 @@ class DB:
 
     # ---------- jobs (Phase 2: Secure Make.com Integration) ----------
     def create_job(self, job_id: str, action: str, topic: str | None = None,
-                   idempotency_key: str | None = None, request_id: str | None = None) -> int:
+                   idempotency_key: str | None = None, request_id: str | None = None,
+                   user_id: str = "admin_abhay") -> int:
         cur = self.conn.execute(
-            "INSERT INTO jobs (job_id, action, topic, idempotency_key, request_id, status, created_ts) "
-            "VALUES (?, ?, ?, ?, ?, 'queued', ?)",
-            (job_id, action, topic, idempotency_key, request_id, now())
+            "INSERT INTO jobs (job_id, action, topic, idempotency_key, request_id, status, created_ts, user_id) "
+            "VALUES (?, ?, ?, ?, ?, 'queued', ?, ?)",
+            (job_id, action, topic, idempotency_key, request_id, now(), user_id)
         )
-        log.audit("job_created", job_id=job_id, job_action=action, topic=topic)
+        log.audit("job_created", job_id=job_id, job_action=action, topic=topic, user_id=user_id)
         return cur.lastrowid
 
     def get_job(self, job_id: str) -> sqlite3.Row | None:
@@ -470,10 +539,18 @@ class DB:
         cur = self.conn.execute(f"UPDATE jobs SET {', '.join(sets)} WHERE job_id = ?", vals)
         return cur.rowcount > 0
 
-    def list_jobs(self, limit: int = 50, status: str | None = None) -> list[sqlite3.Row]:
+    def list_jobs(self, limit: int = 50, status: str | None = None, user_id: str | None = None) -> list[sqlite3.Row]:
+        conditions = []
+        params = []
         if status:
-            return self.q("SELECT * FROM jobs WHERE status = ? ORDER BY id DESC LIMIT ?", (status, limit))
-        return self.q("SELECT * FROM jobs ORDER BY id DESC LIMIT ?", (limit,))
+            conditions.append("status = ?")
+            params.append(status)
+        if user_id:
+            conditions.append("user_id = ?")
+            params.append(user_id)
+        where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+        params.append(limit)
+        return self.q(f"SELECT * FROM jobs {where} ORDER BY id DESC LIMIT ?", tuple(params))
 
     # ---------- workspaces & credit ledger ----------
     def _seed_defaults(self):
@@ -492,6 +569,18 @@ class DB:
                     "VALUES (?, ?, ?, ?, ?, ?)",
                     ("ws_default", 500, 500, "welcome_bonus", "init_grant", ts)
                 )
+
+            # Auto-seed founder & lead admin Abhay Maurya
+            admin = self.one("SELECT id FROM users WHERE user_id = 'admin_abhay'")
+            if not admin:
+                ts = now()
+                self.conn.execute(
+                    "INSERT INTO users (user_id, email, password_hash, name, role, tier, credits, tour_completed, created_ts) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    ("admin_abhay", "abhay@autopilot.ai", "admin_autopilot_2026", "Abhay Maurya (Founder & Admin)", "admin", "enterprise", 10000, 1, ts)
+                )
+            else:
+                self.conn.execute("UPDATE users SET tour_completed = 1 WHERE user_id = 'admin_abhay'")
             
             tmpl = self.one("SELECT id FROM templates LIMIT 1")
             if not tmpl:
@@ -590,9 +679,59 @@ class DB:
             rows = self.q("SELECT * FROM templates")
         return [dict(r) for r in rows]
 
+    # ---------- users & multi-tenancy ----------
+    def get_user(self, user_id_or_email: str) -> dict | None:
+        ident = (user_id_or_email or "").strip().lower()
+        if not ident:
+            return None
+        r = self.one("SELECT * FROM users WHERE LOWER(user_id) = ? OR LOWER(email) = ? LIMIT 1", (ident, ident))
+        return dict(r) if r else None
+
+    def create_user(self, email: str, name: str, password: str = "", role: str = "creator", user_id: str | None = None) -> dict:
+        import uuid, re
+        clean_email = email.strip().lower()
+        existing = self.get_user(clean_email)
+        if existing:
+            return existing
+        if not user_id:
+            base = re.sub(r'[^a-zA-Z0-9_]', '', name.lower().replace(' ', '_'))[:12] or "user"
+            user_id = f"{base}_{uuid.uuid4().hex[:6]}"
+        else:
+            user_id = user_id.strip()
+        ts = now()
+        with self.tx() as cur:
+            cur.execute(
+                "INSERT INTO users (user_id, email, password_hash, name, role, tier, credits, created_ts) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (user_id, clean_email, password, name.strip(), role, "starter", 100, ts)
+            )
+        return self.get_user(user_id)
+
+    def list_users(self, limit: int = 50) -> list[dict]:
+        rows = self.q("SELECT id, user_id, email, name, role, tier, credits, tour_completed, created_ts FROM users ORDER BY id DESC LIMIT ?", (limit,))
+        return [dict(r) for r in rows]
+
+    def mark_tour_completed(self, user_id: str) -> bool:
+        """Permanently marks tour as completed for this user in DB."""
+        clean = (user_id or "").strip().lower()
+        if not clean:
+            return False
+        with self.tx() as cur:
+            cur.execute("UPDATE users SET tour_completed = 1 WHERE LOWER(user_id) = ? OR LOWER(email) = ?", (clean, clean))
+        return True
+
+    def is_tour_completed(self, user_id: str) -> bool:
+        u = self.get_user(user_id)
+        if not u:
+            return False
+        return bool(u.get("tour_completed", 0))
+
     # ---------- dashboard ----------
-    def dashboard_summary(self) -> dict:
-        counts = {r["status"]: r["n"] for r in self.q("SELECT status, COUNT(*) n FROM videos GROUP BY status")}
+    def dashboard_summary(self, user_id: str | None = None) -> dict:
+        if user_id:
+            counts = {r["status"]: r["n"] for r in self.q("SELECT status, COUNT(*) n FROM videos WHERE user_id = ? GROUP BY status", (user_id,))}
+        else:
+            counts = {r["status"]: r["n"] for r in self.q("SELECT status, COUNT(*) n FROM videos GROUP BY status")}
         exp = self.running_experiment()
         return {
             "videos_by_status": counts,
@@ -601,6 +740,162 @@ class DB:
             "running_experiment": dict(exp) if exp else None,
             "active_learnings": len(self.active_learnings()),
         }
+
+    # ---------- discord integrations ----------
+    def save_discord_connection(
+        self,
+        user_id: str,
+        discord_user_id: str,
+        username: str,
+        global_name: str | None = None,
+        avatar: str | None = None,
+        access_token: str | None = None,
+        refresh_token: str | None = None,
+        token_expires_at: int | None = None,
+        guild_id: str | None = None,
+        guild_name: str | None = None,
+        channel_id: str | None = None,
+        channel_name: str | None = None,
+        webhook_url: str | None = None,
+        workspace_id: str = "ws_default",
+    ) -> dict | None:
+        ts = now()
+        enc_access = access_token
+        enc_refresh = refresh_token
+        try:
+            from core.security import vault
+            if access_token:
+                enc_access = vault.encrypt_secret(access_token)
+            if refresh_token:
+                enc_refresh = vault.decrypt_secret(refresh_token) if False else vault.encrypt_secret(refresh_token)
+        except Exception:
+            pass
+
+        with self.tx() as cur:
+            cur.execute(
+                """
+                INSERT INTO discord_connections (
+                    user_id, workspace_id, discord_user_id, username, global_name, avatar,
+                    access_token, refresh_token, token_expires_at, guild_id, guild_name,
+                    channel_id, channel_name, webhook_url, connected_at, updated_at, is_active
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                ON CONFLICT(user_id, discord_user_id) DO UPDATE SET
+                    username = excluded.username,
+                    global_name = excluded.global_name,
+                    avatar = excluded.avatar,
+                    access_token = COALESCE(excluded.access_token, discord_connections.access_token),
+                    refresh_token = COALESCE(excluded.refresh_token, discord_connections.refresh_token),
+                    token_expires_at = COALESCE(excluded.token_expires_at, discord_connections.token_expires_at),
+                    guild_id = COALESCE(excluded.guild_id, discord_connections.guild_id),
+                    guild_name = COALESCE(excluded.guild_name, discord_connections.guild_name),
+                    channel_id = COALESCE(excluded.channel_id, discord_connections.channel_id),
+                    channel_name = COALESCE(excluded.channel_name, discord_connections.channel_name),
+                    webhook_url = COALESCE(excluded.webhook_url, discord_connections.webhook_url),
+                    updated_at = excluded.updated_at,
+                    is_active = 1
+                """,
+                (
+                    user_id, workspace_id, str(discord_user_id), username, global_name, avatar,
+                    enc_access, enc_refresh, token_expires_at, guild_id, guild_name,
+                    channel_id, channel_name, webhook_url, ts, ts
+                ),
+            )
+        return self.get_discord_connection(user_id)
+
+    def get_discord_connection(self, user_id: str) -> dict | None:
+        row = self.q1("SELECT * FROM discord_connections WHERE user_id = ? AND is_active = 1 ORDER BY id DESC LIMIT 1", (user_id,))
+        if not row:
+            return None
+        d = dict(row)
+        try:
+            from core.security import vault
+            if d.get("access_token"):
+                d["access_token"] = vault.decrypt_secret(d["access_token"])
+            if d.get("refresh_token"):
+                d["refresh_token"] = vault.decrypt_secret(d["refresh_token"])
+        except Exception:
+            pass
+        return d
+
+    def get_discord_connection_by_discord_id(self, discord_user_id: str) -> dict | None:
+        row = self.q1("SELECT * FROM discord_connections WHERE discord_user_id = ? AND is_active = 1 ORDER BY id DESC LIMIT 1", (str(discord_user_id),))
+        if not row:
+            return None
+        d = dict(row)
+        try:
+            from core.security import vault
+            if d.get("access_token"):
+                d["access_token"] = vault.decrypt_secret(d["access_token"])
+            if d.get("refresh_token"):
+                d["refresh_token"] = vault.decrypt_secret(d["refresh_token"])
+        except Exception:
+            pass
+        return d
+
+    def update_discord_settings(
+        self,
+        user_id: str,
+        notify_generation: int | None = None,
+        notify_upload: int | None = None,
+        notify_errors: int | None = None,
+        notify_analytics: int | None = None,
+        channel_id: str | None = None,
+        channel_name: str | None = None,
+        guild_id: str | None = None,
+        guild_name: str | None = None,
+        webhook_url: str | None = None,
+    ) -> bool:
+        fields = []
+        params = []
+        if notify_generation is not None:
+            fields.append("notify_generation = ?")
+            params.append(int(notify_generation))
+        if notify_upload is not None:
+            fields.append("notify_upload = ?")
+            params.append(int(notify_upload))
+        if notify_errors is not None:
+            fields.append("notify_errors = ?")
+            params.append(int(notify_errors))
+        if notify_analytics is not None:
+            fields.append("notify_analytics = ?")
+            params.append(int(notify_analytics))
+        if channel_id is not None:
+            fields.append("channel_id = ?")
+            params.append(channel_id)
+        if channel_name is not None:
+            fields.append("channel_name = ?")
+            params.append(channel_name)
+        if guild_id is not None:
+            fields.append("guild_id = ?")
+            params.append(guild_id)
+        if guild_name is not None:
+            fields.append("guild_name = ?")
+            params.append(guild_name)
+        if webhook_url is not None:
+            fields.append("webhook_url = ?")
+            params.append(webhook_url)
+
+        if not fields:
+            return False
+
+        fields.append("updated_at = ?")
+        params.append(now())
+        params.append(user_id)
+
+        sql = f"UPDATE discord_connections SET {', '.join(fields)} WHERE user_id = ? AND is_active = 1"
+        with self.tx() as cur:
+            cur.execute(sql, tuple(params))
+        return True
+
+    def disconnect_discord(self, user_id: str) -> bool:
+        ts = now()
+        with self.tx() as cur:
+            cur.execute("UPDATE discord_connections SET is_active = 0, updated_at = ? WHERE user_id = ?", (ts, user_id))
+        return True
+
+    def list_active_discord_connections(self) -> list[dict]:
+        rows = self.q("SELECT * FROM discord_connections WHERE is_active = 1")
+        return [dict(r) for r in rows]
 
 
 if __name__ == "__main__":

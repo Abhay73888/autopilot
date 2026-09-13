@@ -130,6 +130,17 @@ def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
 
     # ---------- PHASE 3 ----------
     log.info("🎬 Render shuru — ffmpeg kaam kar raha hai, ruko...")
+    try:
+        from core.discord_service import notify_event
+        notify_event("video_rendering_started", {
+            "video_id": vid,
+            "title": manifest.get("script", {}).get("title", f"Video #{vid}"),
+            "series_name": manifest.get("series_name"),
+            "series_index": manifest.get("series_index"),
+            "part": manifest.get("series_index") or "01",
+        })
+    except Exception:
+        pass
     db = DB()
     try:
         info = Renderer(manifest).render(out_dir, preset=preset, keep_temp=keep_temp)
@@ -141,6 +152,16 @@ def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
         db.set_status(vid, "failed", note=f"render fail: {str(e)[:200]}")
         db.log_event("render_failed", "chief", vid, error=str(e)[:500])
         log.error("Render fail ho gaya", e)
+        try:
+            from core.discord_service import notify_event
+            notify_event("generation_failed", {
+                "video_id": vid,
+                "title": manifest.get("script", {}).get("title", f"Video #{vid}"),
+                "error": str(e),
+                "part": manifest.get("series_index") or "01",
+            })
+        except Exception:
+            pass
         db.close()
         return None
 
@@ -168,6 +189,20 @@ def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
                       note=f"validate FAIL: {rep.fatals[0].code}")
     db.log_event("validated", "chief", vid, ok=rep.ok, issues=len(rep.issues))
     db.close()
+
+    try:
+        from core.discord_service import notify_event
+        notify_event("video_rendered", {
+            "video_id": vid,
+            "title": manifest.get("script", {}).get("title", f"Video #{vid}"),
+            "duration_sec": info["duration_sec"],
+            "resolution": info.get("resolution", "1080x1920"),
+            "series_name": manifest.get("series_name"),
+            "series_index": manifest.get("series_index"),
+            "part": manifest.get("series_index") or "01",
+        })
+    except Exception:
+        pass
 
     final_report(manifest, info, time.time() - t0, rep)
     # Return full manifest (contains video_id + render info) so callers can get video_id

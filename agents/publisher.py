@@ -150,11 +150,34 @@ class YouTubePublisher:
         # ---------- upload ----------
         self.db.set_status(video_id, "publishing")
         try:
+            from core.discord_service import notify_event
+            notify_event("youtube_upload_started", {
+                "video_id": video_id,
+                "title": row.get("title") or f"Video #{video_id}",
+                "privacy": privacy,
+                "series_name": row.get("series_name"),
+                "series_index": row.get("series_index"),
+                "part": row.get("series_index") or "01",
+            }, user_id=row.get("user_id"))
+        except Exception:
+            pass
+
+        try:
             yt_id = self._resumable_upload(path, meta)
         except Exception as e:
             self.db.set_status(video_id, "approved",
                                note=f"upload fail: {str(e)[:180]}")
             self.db.log_event("publish_failed", "publisher", video_id, error=str(e)[:500])
+            try:
+                from core.discord_service import notify_event
+                notify_event("upload_failed", {
+                    "video_id": video_id,
+                    "title": row.get("title") or f"Video #{video_id}",
+                    "error": str(e),
+                    "part": row.get("series_index") or "01",
+                }, user_id=row.get("user_id"))
+            except Exception:
+                pass
             raise
 
         url = f"https://youtube.com/shorts/{yt_id}"
@@ -163,6 +186,21 @@ class YouTubePublisher:
         self.db.log_event("published", "publisher", video_id,
                           platform="youtube", yt_video_id=yt_id, privacy=privacy)
         log.ok(f"✅ YouTube pe chala gaya: {url}", video_id=video_id, privacy=privacy)
+
+        try:
+            from core.discord_service import notify_event
+            notify_event("youtube_upload_completed", {
+                "video_id": video_id,
+                "title": row.get("title") or f"Video #{video_id}",
+                "yt_id": yt_id,
+                "url": url,
+                "privacy": privacy,
+                "series_name": row.get("series_name"),
+                "series_index": row.get("series_index"),
+                "part": row.get("series_index") or "01",
+            }, user_id=row.get("user_id"))
+        except Exception:
+            pass
 
         # ---------- thumbnail (thumbnail.jpg ya cover frame, agar bana ho) ----------
         out_dir = path.parent

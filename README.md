@@ -728,6 +728,110 @@ uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 
 ---
 
+## 💬 Discord Integration & Bot Automation
+
+AUTOPILOT includes an enterprise-grade Discord integration system designed for multi-tenant SaaS operation. It bridges creator communities directly into the autonomous video assembly line via **OAuth2 connection**, **live Discord embeds**, **fallback Webhooks**, and **autonomous Bot slash commands**.
+
+### 🏗️ Architecture & Interaction Flowchart
+
+```mermaid
+flowchart TD
+    User["👤 AUTOPILOT Creator"] -->|1. Click 'Connect Discord'| UI["🖥️ Web Dashboard (Port 8765)"]
+    UI -->|2. Generate Signed HMAC-SHA256 State| OAuth["🔐 Discord Developer OAuth2"]
+    OAuth -->|3. Authorize Server & Bot| Callback["📥 OAuth Callback Handler"]
+    Callback -->|4. Encrypt Tokens at Rest (Vault)| DB[("🗄️ Database (discord_connections)")]
+
+    subgraph BotSwarm["🤖 AUTOPILOT Discord Bot Swarm"]
+        Commands["⚡ Slash Command Dispatcher<br/>/status · /generate · /cancel · /upload · /analytics · /help"]
+        Gateway["🔌 WebSocket Gateway & HTTP Interactions"]
+        Notifier["📢 Rich Embed Notification Dispatcher"]
+    end
+
+    DB <-->|Resolve Discord UID ➔ AUTOPILOT User ID| Commands
+    Commands -->|Trigger Job with User Context| Engine["⚙️ 12-Agent Production Engine"]
+    Engine -->|Lifecycle Events (Start/Render/Upload/Fail)| Notifier
+    Notifier -->|Non-blocking REST Embeds| Channel["💬 Discord Server #autopilot-logs"]
+    Channel -->|Immediate Feedback| User
+
+    style User fill:#6366F1,stroke:#4F46E5,color:#fff
+    style DB fill:#059669,stroke:#10B981,color:#fff
+    style Channel fill:#5865F2,stroke:#4752C4,color:#fff
+```
+
+### 🔑 Discord Developer Portal Setup Guide
+
+Follow these steps to configure your Discord Developer Application:
+
+1. **Create Application**:
+   * Navigate to the [Discord Developer Portal](https://discord.com/developers/applications).
+   * Click **New Application** $\rightarrow$ Name it `AUTOPILOT` $\rightarrow$ Agree to Developer Terms.
+
+2. **Retrieve OAuth2 Credentials**:
+   * In the left sidebar, navigate to **OAuth2** $\rightarrow$ **General**.
+   * Copy the **Client ID** $\rightarrow$ Save as `DISCORD_CLIENT_ID`.
+   * Under *Client Secret*, click **Reset Secret** $\rightarrow$ Copy $\rightarrow$ Save as `DISCORD_CLIENT_SECRET`.
+
+3. **Configure OAuth2 Redirect URIs**:
+   * Under **Redirects**, click **Add Redirect** and insert both local and production callbacks:
+     * Local development: `http://localhost:8765/api/integrations/discord/oauth/callback`
+     * Production (Render): `https://autopilot-t9ku.onrender.com/api/integrations/discord/oauth/callback`
+   * Click **Save Changes**.
+
+4. **Create Bot & Retrieve Token**:
+   * In the left sidebar, click **Bot**.
+   * Set username to `AUTOPILOT`.
+   * Click **Reset Token** $\rightarrow$ Copy token $\rightarrow$ Save as `DISCORD_BOT_TOKEN`.
+   * Under **Privileged Gateway Intents**, keep default minimal intents (the bot uses interaction-driven slash commands).
+
+5. **Configure Environment Variables in `.env`**:
+   ```env
+   DISCORD_CLIENT_ID="your_client_id_here"
+   DISCORD_CLIENT_SECRET="your_client_secret_here"
+   DISCORD_BOT_TOKEN="your_bot_token_here"
+   DISCORD_REDIRECT_URI="https://autopilot-t9ku.onrender.com/api/integrations/discord/oauth/callback"
+   DISCORD_WEBHOOK_URL="optional_default_webhook_url"
+   ```
+
+6. **Connect Discord from AUTOPILOT Dashboard**:
+   * Open the dashboard $\rightarrow$ Navigate to **Distribution Channels & Onboarding**.
+   * In the **Discord Bot & Notifications** card, click **Connect Discord**.
+   * Authorize your server and select your destination channel (e.g. `#autopilot-logs`).
+   * Once connected, click **Send Test Ping** to verify delivery.
+
+---
+
+### ⚡ Slash Command Reference
+
+All slash commands enforce **strict multi-tenant account isolation**. Commands automatically resolve the caller's Discord User ID to their authenticated AUTOPILOT account. A user can only inspect, trigger, or cancel jobs belonging to their own account.
+
+| Slash Command | Parameters | Description | Real Data Sourced |
+| :--- | :--- | :--- | :--- |
+| **`/status`** | *None* | Returns real-time progress checklist (Script, Images, Voice, Video, YouTube) of the user's latest video generation job. | `jobs` + `videos` tables |
+| **`/generate`** | `type` (Story, Shorts, Anime, News, Custom), `prompt` (optional) | Triggers the 12-agent AUTOPILOT generation pipeline for the requested franchise or custom topic. | Triggers `do_action("generate")` |
+| **`/cancel`** | *None* | Cancels the user's active running job, clears execution lockfiles, and restores pipeline to IDLE. | Unlocks pipeline state |
+| **`/upload`** | `video_id` (optional) | Publishes the user's latest validated/approved video to YouTube Shorts using the OAuth 2.0 resumable uploader. | Calls `publish_video` |
+| **`/analytics`** | *None* | Summarizes total videos, published count, processing count, failed count, and tracked YouTube 24h views. | `metrics` + `videos` tables |
+| **`/help`** | *None* | Returns interactive command directory with dashboard deep-links. | Built-in guide |
+
+---
+
+### 📢 Automatic Event Notification Lifecycle
+
+When enabled, AUTOPILOT emits beautifully formatted rich embeds to your configured Discord channel:
+
+* **🎬 Video Generation Started**: Dispatches immediately upon job queueing with series title, part number, and active neural engines.
+* **✍️ Script Completed**: Summarizes writer output with curiosity hook type, word count, and estimated duration.
+* **🎨 Visual Scenes Completed**: Reports scene count, template style (e.g. *Noir Teal*, *MAPPA Dark*), and visual pacing.
+* **🎙️ Voiceover Synthesized**: Confirms neural audio generation with speaker profile and -14 LUFS EBU R128 loudness mastering.
+* **🎬 Video Rendered**: Emits when 60fps MP4 compositing finishes with video resolution, duration, and instant preview button.
+* **📤 YouTube Upload Started & Completed**: Provides live upload feedback and direct link to the published YouTube Short.
+* **🚨 Production Failure Alerts**: Sanitized production error notifications containing Job ID, failed pipeline stage, and dashboard diagnosis link (without exposing internal traces or secret keys).
+
+> **🛡️ Secondary Integration Resilience**:
+> Discord is engineered as a secondary notification and remote-control bridge. Any Discord outage, rate-limit, or network error is trapped safely and will **NEVER interrupt or crash video generation or YouTube publishing**.
+
+---
+
 ## ☁️ Cloud Deployment
 
 ### 1. Render Cloud Deployment (Recommended)

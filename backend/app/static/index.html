@@ -163,9 +163,15 @@
 
     /* Container & Layout */
     .container {
-      max-width: 1400px;
+      width: 100%;
+      max-width: 98vw;
       margin: 0 auto;
-      padding: 28px 24px;
+      padding: 24px clamp(16px, 1.8vw, 36px);
+    }
+    @media (min-width: 1920px) {
+      .container {
+        max-width: 1880px;
+      }
     }
 
     /* Metric Banners */

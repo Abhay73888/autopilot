@@ -4551,6 +4551,143 @@ def _():
     assert callable(_get_whisper_model)
 
 
+print("\n🧪 44. WAN2.1 VIDEO GENERATION & ML RETENTION FLYWHEEL")
+
+@test("videogen: VideoGen generates video clips with provider fallback")
+def _():
+    from pathlib import Path
+    from agents.videogen import VideoGen
+    vg = VideoGen(providers=["local_clip"])
+    out_clip = Path("output/test_unit_clip.mp4")
+    prov = vg.generate_one("Cinematic neon skyline in rain", out_clip, duration=0.5, seed=77)
+    assert prov == "local_clip", f"Unexpected provider: {prov}"
+    assert out_clip.exists() and out_clip.stat().st_size > 1000, "Output video clip invalid or missing"
+    out_clip.unlink(missing_ok=True)
+
+@test("ml: VideoAnalyzer extracts structured Video DNA & feature vectors")
+def _():
+    from core.video_analyzer import VideoAnalyzer
+    va = VideoAnalyzer()
+    dna = va.extract_features_from_data(
+        topic="3:17 AM Ka Rahasya",
+        script="Agar aapko lagta hai ki ghadi theek chal rahi hai, to 3:17 AM ka ye rahasya suniye. Kabir Sen ek aisi ghadi dekhta hai jo ulti chal rahi hai.",
+        length_sec=28.0,
+        hook_type="contrarian",
+        scene_count=7
+    )
+    assert "metrics" in dna and "categorical" in dna and "feature_vector" in dna, "DNA structure incomplete"
+    assert len(dna["feature_vector"]) == 8, f"Feature vector length must be 8, got {len(dna['feature_vector'])}"
+    assert dna["metrics"]["cuts_per_min"] > 10, "Cuts per min should be positive"
+
+@test("ml: MLOptimizer calculates retention prediction and velocity grade")
+def _():
+    from core.ml_optimizer import MLOptimizer
+    ml = MLOptimizer()
+    pred = ml.predict_retention(
+        topic="Mystery Clock",
+        script="Kuldhara gaon ka ansoojha rahasya aur aadhi raat ki dastak.",
+        length_sec=30.0,
+        hook_type="specific_outcome",
+        scene_count=7
+    )
+    assert 30.0 <= pred["predicted_retention_pct"] <= 100.0, f"Invalid retention percentage: {pred['predicted_retention_pct']}"
+    assert "velocity_grade" in pred, "Velocity grade missing"
+    assert len(pred["suggestions"]) > 0, "Suggestions should not be empty"
+
+@test("ml: MLOptimizer trains on historical data and evolves prompt guidelines")
+def _():
+    from core.ml_optimizer import MLOptimizer
+    ml = MLOptimizer()
+    res = ml.train()
+    assert res.get("ok") is True, f"Train failed: {res}"
+    guidelines = ml.get_prompt_guidelines()
+    assert len(guidelines) > 20, "Prompt guidelines too short or empty"
+
+@test("ml: Writer injects ML retention guidelines into system prompt")
+def _():
+    from agents.writer import Writer
+    w = Writer()
+    block = w._learnings_block()
+    assert "ML RETENTION FLYWHEEL GUIDELINES" in block, "ML guidelines not injected into Writer learnings block"
+
+@test("ml: web.server serves ML Studio section and tab button")
+def _():
+    from web.server import PAGE
+    assert 'id="sec-ml"' in PAGE, "sec-ml section HTML missing from PAGE"
+    assert 'id="tab-ml"' in PAGE, "tab-ml button HTML missing from PAGE"
+    assert "evaluateRetentionPrediction" in PAGE, "evaluateRetentionPrediction JS missing from PAGE"
+
+
+# =====================================================================
+# 45. AI MINI VIDEO EDITOR & FFMPEG RENDERING ENGINE
+# =====================================================================
+print("\n--- 45. AI MINI VIDEO EDITOR & FFMPEG RENDERING ENGINE ---")
+
+@test("editor: VideoEditor discovers editable videos from output and DB")
+def _():
+    from core.video_editor import VideoEditor
+    ve = VideoEditor()
+    vids = ve.list_editable_videos()
+    assert isinstance(vids, list), "list_editable_videos should return a list"
+    assert len(vids) > 0, "Should discover existing generated videos"
+    first = vids[0]
+    assert "id" in first and "video_url" in first, "Video summary missing required fields"
+
+@test("editor: VideoEditor pulls timeline, duration and scenes")
+def _():
+    from core.video_editor import VideoEditor
+    ve = VideoEditor()
+    vids = ve.list_editable_videos()
+    valid_id = next((v["id"] for v in vids if v["id"] > 0), None)
+    if valid_id:
+        tl = ve.get_video_timeline(valid_id)
+        assert tl.get("ok") is True, f"get_video_timeline failed: {tl}"
+        assert tl.get("duration", 0) > 0, "Video duration should be positive"
+        assert "presets" in tl, "Color presets missing from timeline info"
+
+@test("editor: Cinematic presets contain valid CSS and FFmpeg filter chains")
+def _():
+    from core.video_editor import CINEMATIC_PRESETS
+    assert "cyberpunk" in CINEMATIC_PRESETS, "Cyberpunk preset missing"
+    assert "noir" in CINEMATIC_PRESETS, "Noir preset missing"
+    assert "golden_hour" in CINEMATIC_PRESETS, "Golden Hour preset missing"
+    cp = CINEMATIC_PRESETS["cyberpunk"]
+    assert "css" in cp and "vf" in cp, "Preset missing css or vf"
+
+@test("editor: web.server integrates editor tab, HTML and JS assets")
+def _():
+    from web.server import PAGE
+    assert 'id="sec-editor"' in PAGE, "sec-editor section HTML missing from PAGE"
+    assert 'id="tab-editor"' in PAGE, "tab-editor button HTML missing from PAGE"
+    assert "loadEditorVideos" in PAGE, "loadEditorVideos JS missing from PAGE"
+    assert "exportEditedCut" in PAGE, "exportEditedCut JS missing from PAGE"
+    assert "triggerAiGodMode" in PAGE, "triggerAiGodMode JS missing from PAGE"
+
+@test("editor: VideoEditor trims and renders video cut via FFmpeg")
+def _():
+    from core.video_editor import VideoEditor
+    ve = VideoEditor()
+    vids = ve.list_editable_videos()
+    valid_id = next((v["id"] for v in vids if v["id"] > 0), None)
+    if valid_id:
+        # Fast 1.5 second test trim
+        res = ve.apply_edits(
+            video_id=valid_id,
+            start_sec=0.0,
+            end_sec=1.5,
+            speed=1.0,
+            filter_preset="golden_hour"
+        )
+        assert res.get("ok") is True, f"Render failed: {res}"
+        assert "output_url" in res, "Missing output_url in render result"
+        assert res.get("duration") == 1.5, "Trimmed duration mismatch"
+        if res.get("new_video_id"):
+            from core.db import DB
+            with DB() as db:
+                db.conn.execute("DELETE FROM videos WHERE id = ?", (res["new_video_id"],))
+                db.conn.commit()
+
+
 # =====================================================================
 # REPORT
 # =====================================================================

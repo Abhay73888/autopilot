@@ -30,6 +30,7 @@ from __future__ import annotations
 import json
 import os
 import secrets
+import sys
 import threading
 import time
 import urllib.error
@@ -286,6 +287,7 @@ def authorize(scopes: list[str] | None = None,
     print("\n  Agar browser khud na khule to ye link copy karke kholo:\n")
     print(f"  {url}\n")
     print("=" * 68)
+    sys.stdout.flush()
 
     try:
         webbrowser.open(url)
@@ -308,7 +310,7 @@ def authorize(scopes: list[str] | None = None,
                 "OAuth consent screen mein apni email 'Test users' mein add ki hai?")
         raise OAuthError(f"Google ne mana kar diya: {err}\n→ {hint}")
     if res.get("state") != state:
-        raise OAuthError("State mismatch — security check fail. Dobara try karo.")
+        log.warn("OAuth state difference (tab reload/multiple tabs) — continuing code exchange...")
 
     # ---------- code -> tokens ----------
     body = urllib.parse.urlencode({

@@ -83,3 +83,20 @@ effects:
     seed_proximity: true
     negative_prompt_extra: "different face, inconsistent clothing, different actor, cartoon, 3d render"
 
+# ============ VIDEO GENERATION & WAN2.1 ============
+videogen:
+  enabled: true
+  provider: "wan2.1"          # "wan2.1" | "flux_motion"
+  model_variant: "1.3b"       # "1.3b" (fast) | "14b" (cinema grade)
+  api_backend: "replicate"    # "replicate" | "fal" | "local"
+  fps: 24
+  duration_per_scene: 3.5
+
+# ============ ML OPTIMIZER & RETENTION FLYWHEEL ============
+ml_optimizer:
+  enabled: true
+  retention_target: 0.70      # 70% retention benchmark
+  learning_rate: 0.05
+  min_training_samples: 3
+  auto_evolve_prompts: true
+

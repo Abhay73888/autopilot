@@ -114,16 +114,25 @@ class Writer:
 
     # ------------------------------------------------------------------
     def _learnings_block(self) -> str:
-        """Active learnings ko prompt mein daalne layak text bana do."""
-        rows = self.db.active_learnings()
-        if not rows:
-            return "(Abhi koi learning nahi hai — ye shuruaati videos hain.)"
+        """Active learnings + ML Optimizer retention guidelines ko prompt mein daalo."""
         lines = []
-        for r in rows[:8]:
-            lines.append(f"- {r['variable']}: '{r['winner']}' ne '{r['loser']}' se "
-                         f"{r['lift_pct']:+.0f}% better perform kiya "
-                         f"(n={r['sample_size']}, confidence={r['confidence']})")
-        return "\n".join(lines)
+        try:
+            from core.ml_optimizer import MLOptimizer
+            ml_guide = MLOptimizer(self.db).get_prompt_guidelines()
+            if ml_guide:
+                lines.append("🤖 ML RETENTION FLYWHEEL GUIDELINES (Trained from Past Performance):")
+                lines.append(ml_guide)
+        except Exception:
+            pass
+
+        rows = self.db.active_learnings()
+        if rows:
+            lines.append("📊 A/B EXPERIMENT WINNERS:")
+            for r in rows[:8]:
+                lines.append(f"- {r['variable']}: '{r['winner']}' ne '{r['loser']}' se "
+                             f"{r['lift_pct']:+.0f}% better perform kiya "
+                             f"(n={r['sample_size']}, confidence={r['confidence']})")
+        return "\n".join(lines) if lines else "(Abhi koi learning nahi hai — ye shuruaati videos hain.)"
 
     def _recent_topics(self, n: int = 15) -> list[str]:
         return [r["topic"] for r in self.db.recent_videos(n) if r["topic"]]

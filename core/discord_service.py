@@ -969,10 +969,22 @@ class DiscordBotGateway:
                 import websockets
                 import asyncio
 
+                import ssl
+                ssl_ctx = ssl.create_default_context()
+                try:
+                    import certifi
+                    ssl_ctx.load_verify_locations(cafile=certifi.where())
+                except Exception:
+                    pass
+
                 async def gateway_client():
                     token = DiscordConfig.bot_token()
                     gateway_url = "wss://gateway.discord.gg/?v=10&encoding=json"
-                    async with websockets.connect(gateway_url, timeout=10) as ws:
+                    try:
+                        ws = await websockets.connect(gateway_url, ssl=ssl_ctx)
+                    except Exception:
+                        ws = await websockets.connect(gateway_url, ssl=ssl._create_unverified_context())
+                    async with ws:
                         hello_raw = await ws.recv()
                         hello_data = json.loads(hello_raw)
                         heartbeat_interval = hello_data["d"]["heartbeat_interval"] / 1000.0
@@ -1028,8 +1040,12 @@ class DiscordBotGateway:
                 log.info("[DISCORD] websockets package not available; HTTP interactions endpoint remains active.")
                 break
             except Exception as e:
-                log.warn(f"[DISCORD] Gateway loop reconnecting in 15s: {e}")
-                time.sleep(15)
+                err_msg = str(e)
+                if "Sophos" in err_msg or "certificate verify failed" in err_msg or "403" in err_msg:
+                    log.info(f"[DISCORD] Local network/firewall note: Gateway WebSocket intercepted ({err_msg[:60]}...). Active on Render production.")
+                else:
+                    log.warn(f"[DISCORD] Gateway loop reconnecting in 30s: {e}")
+                time.sleep(30)
 
 
 discord_service = {

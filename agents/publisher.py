@@ -217,6 +217,15 @@ class YouTubePublisher:
             log.info("Comment abhi nahi — video private hai. "
                      "Public karne ke baad comment post karo.")
 
+        # ---------- multi-language captions (YouTube 1-Tap CC Button) ----------
+        captions_en = out_dir / "captions_en.srt"
+        captions_hi = out_dir / "captions_hi.srt"
+        if captions_en.exists():
+            self.upload_caption(yt_id, captions_en, language="en", name="English")
+        if captions_hi.exists():
+            self.upload_caption(yt_id, captions_hi, language="hi", name="Hindi")
+
+
         return {"status": "published", "yt_video_id": yt_id, "url": url,
                 "privacy": privacy, "publish_at": publish_at}
 
@@ -516,8 +525,62 @@ class YouTubePublisher:
         }
 
     # ==================================================================
+    # CAPTIONS / SUBTITLES (YouTube 1-Tap Multi-Language CC)
+    # ==================================================================
+    def upload_caption(self, yt_video_id: str, srt_content_or_path: str | Path,
+                       *, language: str = "en", name: str = "English") -> dict:
+        """
+        Upload Closed Caption (.srt) track to YouTube.
+        Enables the native 1-tap 'CC' button on YouTube Shorts / Videos.
+        """
+        try:
+            if isinstance(srt_content_or_path, Path) or (isinstance(srt_content_or_path, str) and os.path.exists(srt_content_or_path)):
+                srt_text = Path(srt_content_or_path).read_text(encoding="utf-8")
+            else:
+                srt_text = str(srt_content_or_path)
+
+            boundary = f"===AUTOPILOT_CAPTION_{int(time.time())}==="
+            metadata = json.dumps({
+                "snippet": {
+                    "videoId": yt_video_id,
+                    "language": language,
+                    "name": name,
+                    "isDraft": False
+                }
+            }).encode("utf-8")
+
+            srt_bytes = srt_text.strip().encode("utf-8")
+            body = (
+                b"--" + boundary.encode() + b"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n" +
+                metadata +
+                b"\r\n--" + boundary.encode() + b"\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n" +
+                srt_bytes +
+                b"\r\n--" + boundary.encode() + b"--\r\n"
+            )
+
+            token = self.creds.data.get("access_token")
+            url = "https://www.googleapis.com/upload/youtube/v3/captions?part=snippet&uploadType=multipart"
+            req = urllib.request.Request(
+                url,
+                data=body,
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": f"multipart/related; boundary={boundary}"
+                },
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                res = json.loads(resp.read().decode("utf-8"))
+                log.ok(f"✅ Caption uploaded successfully: {language} ({name})", yt_video_id=yt_video_id)
+                return res
+        except Exception as e:
+            log.warn(f"⚠️ Caption upload skipped/failed for {language}: {e}")
+            return {}
+
+    # ==================================================================
     # PLAYLIST (Phase 5)
     # ==================================================================
+
     def find_playlist(self, name: str) -> str | None:
         """Apni playlists mein naam se dhoondho (case-insensitive). Milte hi id."""
         page = ""

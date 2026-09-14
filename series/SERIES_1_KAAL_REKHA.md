@@ -36,6 +36,19 @@
   * Status: **PUBLISHED ✅** (YouTube Shorts: `is_mWA_NZVs`, https://youtube.com/shorts/is_mWA_NZVs, 56.7s)
   * Edit Engine: **God-Level Suspense + Dual Neural Voiceover** (Terrified Kabir + Sinister Mirror Doppelganger, 38Hz Braam Hit, Reverse Sound Whoosh, Reverse Rain)
   * Climax: Frozen Meera ki aankh se aansu girta hai aur wo aaine ki taraf ishara karti hai. Aaine mein Kabir ki parchhayi muskura kar bolti hai ki waqt ulta bhaagne laga hai. Rain droplets zameen se aasmaan ki taraf reverse udne lagti hain aur Roman number V ghatt kar IV ban jata hai! Clock ticks back 3:18 -> 3:17 AM!
+* **Part 8 (Episode 8 — THE ORIGIN OF THE LOOP)**:
+  * Title: *Waqt Ka Aakhri Kanta: Kisne Banaya Ye Time-Loop?! ⏳😱 | KAAL-REKHA (Part 8) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `oChEafKcevg`, https://youtube.com/shorts/oChEafKcevg)
+* **Part 9 (Episode 9 — THE IMPOSSIBLE CHOICE)**:
+  * Title: *Meera Ko Bachau Ya Time-Loop Todu?! 😱⏳ | KAAL-REKHA (Part 9) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `aQd6Y3vLhB8`, https://youtube.com/shorts/aQd6Y3vLhB8)
+* **Part 10 (Episode 10 — GRAND FINALE)**:
+  * Title: *LOOP TOOT GAYA... YA MEERA KA SACH?! 💥⏳ | KAAL-REKHA (Grand Finale Part 10) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `SePr7LFoGbE`, https://youtube.com/shorts/SePr7LFoGbE)
+* **Part 11 (Episode 11 — THE GLOBAL ANOMALY / US EDITION)**:
+  * Title: *Why Did Every Clock in New York Freeze at 3:17 AM?! ⏳😱 | KAAL-REKHA (Part 11) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `HnDMmZlFR9M`, https://youtube.com/shorts/HnDMmZlFR9M, 35.3s)
+  * Major Evolution: Global / US Audience Edition in English. Dual American neural voices (`en-US-ChristopherNeural` + `en-US-JennyNeural`), Times Square temporal freeze, Roman Numeral III in Manhattan sky, Pentagon archive reveal, and 38Hz Braam Hit + Suspense BGM. Comments 100% ON with auto first comment bait.
 
 ---
 

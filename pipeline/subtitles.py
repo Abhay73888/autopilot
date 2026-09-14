@@ -208,6 +208,27 @@ def build_srt(words: list[dict], out_path: str | Path, words_per_group: int = 4)
     return out_path
 
 
+def build_dual_srt(lines: list[dict], out_en: str | Path, out_hi: str | Path) -> tuple[Path, Path]:
+    """
+    Builds both captions_en.srt and captions_hi.srt for YouTube multi-language CC.
+    Enables viewers to toggle between English and Hindi with 1 tap on the CC button.
+    """
+    out_en = Path(out_en)
+    out_hi = Path(out_hi)
+    blocks_en, blocks_hi = [], []
+    for i, line in enumerate(lines, 1):
+        s = line.get("start", (i - 1) * 5.0)
+        e = line.get("end", i * 5.0)
+        text_en = line.get("text_en") or line.get("text", "")
+        text_hi = line.get("text_hi") or line.get("text", "")
+        blocks_en.append(f"{i}\n{_srt_ts(s)} --> {_srt_ts(e)}\n{text_en}\n")
+        blocks_hi.append(f"{i}\n{_srt_ts(s)} --> {_srt_ts(e)}\n{text_hi}\n")
+    out_en.write_text("\n".join(blocks_en), encoding="utf-8")
+    out_hi.write_text("\n".join(blocks_hi), encoding="utf-8")
+    return out_en, out_hi
+
+
+
 def _srt_ts(sec: float) -> str:
     sec = max(0.0, sec)
     h, m = int(sec // 3600), int((sec % 3600) // 60)

@@ -18,8 +18,18 @@
 
 ---
 
-## 2. EPISODE 1: “KHAANE KI CHEEZ KA SAKHT SAWAL”
-* **Title**: Dimag Ka Dahi! 99% Log Galat Jawab Denge! 😂🧠 | Funny Paheli (Ep 1) #Shorts
-* **Question**: “Aisi kaun si cheez hai jise hum KHAANE ke liye khareedte hain... par kabhi KHAATE nahi?! Aur plate ya thali mat bolna, wo galat hai!”
-* **Reveal Answer**: “CHAMMACH (Spoon)! Khana toh spoon se khate hain, chammach ko thodi chaba jaoge!”
-* **Comment Call**: “Kis-kis ne galat socha tha? Bina sharmaye comment karo! 😂👇”
+## 2. EPISODES LOG & STATUS
+
+* **Part 1 (Episode 1)**:
+  * Title: *Dimag Ka Dahi! 99% Log Galat Jawab Denge! 😂🧠 | Funny Paheli (Ep 1) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `RxTYrGTeVT4`, https://youtube.com/shorts/RxTYrGTeVT4)
+* **Part 2 (Episode 2)**:
+  * Title: *Dimag Hil Jayega! 95% Log Fail Ho Gaye! 😂🧠 | Dimag Ka Dahi (Ep 2) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `BqrAbgZydu4`, https://youtube.com/shorts/BqrAbgZydu4)
+* **Part 3 (Episode 3)**:
+  * Title: *Bade-Bade IAS Fail Ho Gaye! 99% Log Galat Sochte Hain! 😂🧠 | Dimag Ka Dahi (Ep 3) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `9pMDmwVLX4w`, https://youtube.com/shorts/9pMDmwVLX4w)
+* **Part 4 (Episode 4)**:
+  * Title: *99% of People Get This Wrong in 5 Seconds! 🤯🧠 | Dimag Ka Dahi (Ep 4) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `CUDgNziz-wk`, https://youtube.com/shorts/CUDgNziz-wk)
+  * Riddle: *A coin has head and tail but no body!* High-energy 5-second countdown timer, braam hit, comments 100% ON.

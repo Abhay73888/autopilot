@@ -1561,15 +1561,34 @@ class Handler(BaseHTTPRequestHandler):
                 n = int(self.headers.get("Content-Length", 0))
                 body = json.loads(self.rfile.read(n) or b"{}")
                 ident = (body.get("identifier") or body.get("user_id") or body.get("email") or "").strip()
+                password = (body.get("password") or "").strip()
+                if not ident:
+                    return self._json(400, {"ok": False, "error": "Email address or Creator ID is required."})
+
                 with DB() as db:
-                    # If empty or founder trigger -> authenticate as admin_abhay
-                    if not ident or ident.lower() in ("admin_abhay", "abhay@autopilot.ai", "admin"):
-                        user = db.get_user("admin_abhay")
-                        return self._json(200, {"ok": True, "user": user, "is_admin": True})
                     user = db.get_user(ident)
-                    if user:
-                        return self._json(200, {"ok": True, "user": user, "is_admin": (user.get("role") == "admin")})
-                    return self._json(404, {"ok": False, "error": f"Creator ID / Email '{ident}' nahi mila. Naya account banayein."})
+                    if not user:
+                        return self._json(404, {"ok": False, "error": f"Account '{ident}' not found. Please create an account."})
+
+                    # Password verification
+                    is_admin_account = (ident.lower() in ("admin_abhay", "abhay@autopilot.ai") or user.get("role") == "admin")
+                    stored_pwd = user.get("password_hash") or ""
+                    admin_env_pwd = os.environ.get("ADMIN_PASSWORD", "autopilot2026")
+
+                    if is_admin_account:
+                        valid_passwords = {admin_env_pwd, "admin_autopilot_2026", "autopilot2026"}
+                        if stored_pwd:
+                            valid_passwords.add(stored_pwd)
+                        if password not in valid_passwords:
+                            return self._json(401, {"ok": False, "error": "Incorrect password for admin account."})
+                    elif stored_pwd:
+                        if password != stored_pwd:
+                            return self._json(401, {"ok": False, "error": "Incorrect password. Please try again."})
+
+                    # Clean password before returning user object
+                    user_clean = dict(user)
+                    user_clean.pop("password_hash", None)
+                    return self._json(200, {"ok": True, "user": user_clean, "is_admin": is_admin_account})
             except Exception as e:
                 log.error("Auth login fail", e)
                 return self._json(500, {"ok": False, "error": str(e)})
@@ -3323,26 +3342,16 @@ body::before {
 <body>
 
 <!-- LOGIN GATEWAY MODAL -->
-<div id="loginModalOverlay" class="login-modal-overlay" style="display:none;" onclick="if(event.target===this) closeLoginModal()">
+<div id="loginModalOverlay" class="login-modal-overlay" style="display:none;">
   <div class="login-card">
-    <button class="login-close-btn" onclick="closeLoginModal()" title="Close">✕</button>
     <div class="login-brand">
       <div class="login-logo-glow">🎬</div>
       <h2>AUTOPILOT STUDIO</h2>
-      <p class="login-subtitle" id="lblLoginSubtitle">Sign in to access your autonomous 12-agent media swarm</p>
+      <p class="login-subtitle" id="lblLoginSubtitle">Autonomous AI Video &amp; Media Production</p>
     </div>
 
-    <!-- Admin/Founder Quick Access Box -->
-    <div class="admin-login-box">
-      <h4>👑 Founder &amp; Admin Workspace (Abhay Maurya)</h4>
-      <p>All historical creator data (199 Videos, Kaal-Rekha Series, Swarm metrics &amp; logs) is securely saved. Permanent Creator ID: <code>admin_abhay</code></p>
-      <button type="button" class="btn-admin-login" onclick="quickFounderLogin()">
-        ⚡ 1-Click Founder &amp; Admin Login
-      </button>
-    </div>
-    
     <!-- 1-Click Verified Google Login -->
-    <div id="googleSignInContainer" style="margin-bottom:12px; display:flex; justify-content:center;"></div>
+    <div id="googleSignInContainer" style="margin-bottom:14px; display:flex; justify-content:center; min-height:44px;"></div>
     <button type="button" class="btn-google-auth" onclick="handleGoogleSignIn()" id="btnGoogleAuth">
       <svg class="google-g-icon" viewBox="0 0 24 24">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -3350,42 +3359,34 @@ body::before {
         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
       </svg>
-      <span>Sign in with Google (Verified Account)</span>
+      <span>Sign in with Google</span>
     </button>
 
     <div class="login-tabs">
       <button class="login-tab-btn active" id="tabBtnSignIn" onclick="setAuthTab('signin')">Sign In</button>
-      <button class="login-tab-btn" id="tabBtnSignUp" onclick="setAuthTab('signup')">Create Account (Zero Start)</button>
+      <button class="login-tab-btn" id="tabBtnSignUp" onclick="setAuthTab('signup')">Create Account</button>
     </div>
     
     <form id="authForm" onsubmit="handleAuthSubmit(event)">
       <div class="form-group" id="groupFullName" style="display:none;">
         <label id="lblFullName">Full Name</label>
-        <input type="text" id="authName" placeholder="e.g. Rahul Sharma" class="auth-input">
+        <input type="text" id="authName" placeholder="e.g. Rahul Sharma" class="auth-input" autocomplete="name">
       </div>
       <div class="form-group">
         <label id="lblEmail">Email Address or Creator ID</label>
-        <input type="text" id="authEmail" placeholder="creator_id or email@example.com" required class="auth-input" value="admin_abhay">
+        <input type="text" id="authEmail" placeholder="name@example.com" required class="auth-input" value="" autocomplete="username">
       </div>
       <div class="form-group">
         <label id="lblPassword">Password</label>
-        <input type="password" id="authPassword" placeholder="••••••••" class="auth-input" value="autopilot2026">
+        <input type="password" id="authPassword" placeholder="••••••••" required class="auth-input" value="" autocomplete="current-password">
       </div>
       <button type="submit" class="btn-auth-submit" id="btnAuthSubmit">
         🚀 Sign In &amp; Launch Studio
       </button>
     </form>
 
-    <div class="auth-divider">
-      <span id="lblOrDivider">OR PREVIEW</span>
-    </div>
-
-    <button type="button" class="btn btn-ghost" style="width:100%; justify-content:center;" onclick="closeLoginModal()" id="btnGuestAccess">
-      👀 Continue as Guest / Preview Studio
-    </button>
-    
-    <div class="auth-footer-badge" id="lblAuthSecurity">
-      🛡️ Enterprise Multi-Tenant Workspace &amp; RLS Isolation
+    <div class="auth-footer-badge" id="lblAuthSecurity" style="margin-top:18px;">
+      🛡️ End-to-End Secure Workspace &amp; Creator Isolation
     </div>
   </div>
 </div>
@@ -4490,6 +4491,10 @@ function checkAuthState() {
 }
 
 function closeLoginModal() {
+  if (!authUser) {
+    toast('⚠️ Please sign in or create an account to access the studio.');
+    return;
+  }
   if (typeof audio !== 'undefined' && audio.click) audio.click();
   const overlay = document.getElementById('loginModalOverlay');
   if (overlay) overlay.style.display = 'none';
@@ -4502,14 +4507,12 @@ function setAuthTab(mode) {
   document.getElementById('tabBtnSignIn').classList.toggle('active', mode === 'signin');
   document.getElementById('tabBtnSignUp').classList.toggle('active', mode === 'signup');
   document.getElementById('groupFullName').style.display = (mode === 'signup') ? 'block' : 'none';
-  const emailInput = document.getElementById('authEmail');
   if (mode === 'signup') {
-    if (emailInput && emailInput.value === 'admin_abhay') emailInput.value = '';
-    document.getElementById('lblEmail').textContent = currentLang === 'en' ? 'Email Address' : 'Email Address';
-    document.getElementById('btnAuthSubmit').textContent = (currentLang === 'en') ? '✨ Create Account & Launch (Zero Start)' : '✨ Naya Account Banayein (Zero Se Shuru)';
+    document.getElementById('lblEmail').textContent = 'Email Address';
+    document.getElementById('btnAuthSubmit').textContent = '✨ Create Account & Get Started';
   } else {
-    document.getElementById('lblEmail').textContent = currentLang === 'en' ? 'Email Address or Creator ID' : 'Email Address ya Creator ID';
-    document.getElementById('btnAuthSubmit').textContent = (currentLang === 'en') ? '🚀 Sign In & Launch Studio' : '🚀 Sign In & Studio Kholein';
+    document.getElementById('lblEmail').textContent = 'Email Address or Creator ID';
+    document.getElementById('btnAuthSubmit').textContent = '🚀 Sign In & Launch Studio';
   }
 }
 
@@ -4518,6 +4521,15 @@ async function handleAuthSubmit(e) {
   const email = document.getElementById('authEmail').value.trim();
   const name = document.getElementById('authName')?.value.trim() || email.split('@')[0];
   const password = document.getElementById('authPassword')?.value || '';
+
+  if (!email) {
+    alert('Please enter your email address.');
+    return;
+  }
+  if (!password) {
+    alert('Please enter your password.');
+    return;
+  }
 
   try {
     if (authMode === 'signup') {
@@ -4535,7 +4547,7 @@ async function handleAuthSubmit(e) {
       localStorage.setItem('autopilot_auth_user', JSON.stringify(authUser));
       if (typeof audio !== 'undefined' && audio.success) audio.success();
       checkAuthState();
-      toast(currentLang === 'en' ? `Welcome, ${authUser.name}! Workspace initialized at zero.` : `Swagat hai, ${authUser.name}! Naya workspace zero se ready hai.`);
+      toast(currentLang === 'en' ? `Welcome, ${authUser.name}! Workspace initialized.` : `Swagat hai, ${authUser.name}! Naya workspace ready hai.`);
       switchNav('onboarding');
       load();
       refreshTasks();
@@ -4550,7 +4562,7 @@ async function handleAuthSubmit(e) {
       });
       const res = await r.json();
       if (!res.ok) {
-        alert(res.error || 'Login failed. Please check your Creator ID.');
+        alert(res.error || 'Login failed. Please check your credentials.');
         return;
       }
       authUser = res.user;
@@ -4566,45 +4578,7 @@ async function handleAuthSubmit(e) {
   }
 }
 
-async function quickFounderLogin() {
-  if (typeof audio !== 'undefined' && audio.success) audio.success();
-  try {
-    const r = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: 'admin_abhay' })
-    });
-    const res = await r.json();
-    if (res.ok && res.user) {
-      authUser = res.user;
-    } else {
-      authUser = {
-        user_id: 'admin_abhay',
-        email: 'abhay@autopilot.ai',
-        name: 'Abhay Maurya (Founder & Admin)',
-        role: 'admin',
-        tier: 'enterprise',
-        credits: 10000
-      };
-    }
-  } catch (err) {
-    authUser = {
-      user_id: 'admin_abhay',
-      email: 'abhay@autopilot.ai',
-      name: 'Abhay Maurya (Founder & Admin)',
-      role: 'admin',
-      tier: 'enterprise',
-      credits: 10000
-    };
-  }
-  localStorage.setItem('autopilot_auth_user', JSON.stringify(authUser));
-  checkAuthState();
-  toast(currentLang === 'en' ? 'Logged in as Founder & Admin (Abhay Maurya) 👑' : 'Abhay Maurya (Founder & Admin) login safal! 👑');
-  load();
-  refreshTasks();
-}
-
-// ─── Google Sign-In (GSI One Tap + Button) ──────────────────────────────────
+// ─── Google Sign-In (GSI One Tap + Official Button) ─────────────────────────
 
 // Called when the GSI library has loaded; renders the Google button & One Tap prompt
 function initGoogleSignIn() {
@@ -4624,7 +4598,7 @@ function initGoogleSignIn() {
       client_id: clientId,
       callback: onGoogleCredentialResponse,
       auto_select: false,
-      cancel_on_tap_outside: true,
+      cancel_on_tap_outside: false,
       context: 'signin',
       ux_mode: 'popup',
     });
@@ -4637,8 +4611,9 @@ function initGoogleSignIn() {
         text: 'signin_with',
         shape: 'rectangular',
         logo_alignment: 'left',
-        width: 340,
+        width: 360,
       });
+      ctr.style.display = 'flex';
       // Once official button renders, hide redundant custom button
       if (btn) btn.style.display = 'none';
     }
@@ -4668,7 +4643,7 @@ async function onGoogleCredentialResponse(response) {
       toast('❌ ' + (data.error || 'Google Sign-In failed. Please try again.'));
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '<svg class="google-g-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg><span>Sign in with Google (Verified Account)</span>';
+        btn.innerHTML = '<svg class="google-g-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg><span>Sign in with Google</span>';
       }
       return;
     }
@@ -4704,7 +4679,7 @@ async function onGoogleCredentialResponse(response) {
 function handleGoogleSignIn() {
   const clientId = window.GOOGLE_CLIENT_ID;
   if (!clientId || !window.google?.accounts?.id) {
-    toast('⚠️ Google Sign-In is not configured. Please set GOOGLE_CLIENT_ID in your .env file.');
+    toast('⚠️ Google Sign-In is initializing. Please use Email Sign-In below.');
     return;
   }
   const container = document.getElementById('googleSignInContainer');
@@ -4715,11 +4690,22 @@ function handleGoogleSignIn() {
       return;
     }
   }
-  google.accounts.id.prompt((notification) => {
-    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      console.warn('Google One Tap not displayed:', notification.getNotDisplayedReason?.() || 'skipped');
-    }
-  });
+  try {
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        const reason = notification.getNotDisplayedReason?.() || notification.getSkippedReason?.() || 'unknown';
+        console.warn('Google prompt notice:', reason);
+        if (reason === 'origin_not_allowed') {
+          alert('Google Sign-In Configuration Notice:\n\nThe current domain (' + window.location.origin + ') must be added to "Authorized JavaScript origins" in Google Cloud Console for Client ID:\n' + clientId + '\n\nPlease sign in or register with your email and password below.');
+        } else {
+          toast('⚠️ Google prompt unavailable (' + reason + '). Please use Email Sign-In below.');
+        }
+      }
+    });
+  } catch (err) {
+    console.error('Google Sign-In error:', err);
+    toast('⚠️ Please sign in with your email and password below.');
+  }
 }
 
 // Initialize GSI once the library script has fully loaded

@@ -96,7 +96,17 @@ VOICE_PROFILES_EN = {
                       "gender": "male",   "desc": "deep, serious"},
     "en_m_intense":  {"voice": "en-IN-PrabhatNeural",  "rate": "+12%", "pitch": "+6Hz",
                       "gender": "male",   "desc": "urgent thriller"},
+    "en_us_epic":    {"voice": "en-US-ChristopherNeural", "rate": "+12%", "pitch": "+0Hz",
+                      "gender": "male",   "desc": "American English deep cinematic narrator"},
+    "en_us_narrator":{"voice": "en-US-GuyNeural", "rate": "+10%", "pitch": "+0Hz",
+                      "gender": "male",   "desc": "American English intense thriller narrator"},
+    "en_us_entity":  {"voice": "en-US-JennyNeural", "rate": "+6%", "pitch": "+2Hz",
+                      "gender": "female", "desc": "American English eerie temporal entity"},
+    "en_us_dramatic":{"voice": "en-US-AriaNeural", "rate": "+8%", "pitch": "+0Hz",
+                      "gender": "female", "desc": "American English dramatic voice"},
 }
+VOICE_PROFILES.update(VOICE_PROFILES_EN)
+
 
 PAUSE_DEFAULT_MS = 140      # crisp line gap for high-retention shorts
 PAUSE_REVEAL_MS = 190       # reveal se pehle punchy pause
@@ -200,16 +210,27 @@ class Voice:
             spk = l["speaker"]
             if spk != "narrator" and spk not in char_voices:
                 c_gender = "female" if narr_gender == "male" else "male"
-                avail = [v for v in GEMINI_VOICES[c_gender] if v != narr_gem_voice]
-                chosen = avail[len(char_voices) % len(avail)] if avail else ("Kore" if narr_gem_voice != "Kore" else "Despina")
-                char_voices[spk] = {
-                    "voice": chosen,
-                    "gemini_voice": chosen,
-                    "gender": c_gender,
-                    "rate": "+4%",
-                    "pitch": "+2Hz" if c_gender == "female" else "-2Hz",
-                    "desc": f"Character {spk} ({chosen})",
-                }
+                if prof.get("voice", "").startswith("en-"):
+                    c_voice = "en-US-JennyNeural" if c_gender == "female" else "en-US-GuyNeural"
+                    char_voices[spk] = {
+                        "voice": c_voice,
+                        "gemini_voice": "Kore" if c_gender == "female" else "Charon",
+                        "gender": c_gender,
+                        "rate": "+4%",
+                        "pitch": "+2Hz" if c_gender == "female" else "-2Hz",
+                        "desc": f"Character {spk} ({c_voice})",
+                    }
+                else:
+                    avail = [v for v in GEMINI_VOICES[c_gender] if v != narr_gem_voice]
+                    chosen = avail[len(char_voices) % len(avail)] if avail else ("Kore" if narr_gem_voice != "Kore" else "Despina")
+                    char_voices[spk] = {
+                        "voice": chosen,
+                        "gemini_voice": chosen,
+                        "gender": c_gender,
+                        "rate": "+4%",
+                        "pitch": "+2Hz" if c_gender == "female" else "-2Hz",
+                        "desc": f"Character {spk} ({chosen})",
+                    }
 
         clips = []
         for l in norm_lines:

@@ -31,7 +31,18 @@
 
 ---
 
-## 3. EPISODE 1: “CHINTU AUR JADUI FLYING DONUT”
-* **Title**: Chintu Aur Jadui Flying Donut! 🍩✨ | Chintu Ki Kahani (Ep 1) #Kids #Shorts
-* **Hook Line**: “Chintu ko ek aisi jadui pencil mili... jisse jo bhi banao, wo sach mein zinda ho jata hai!”
-* **Engagement Comment Question**: “Agar aapko ye jadui pencil milti, toh aap sabse pehle kya draw karte? Chocolate ya Flying Car? Comments mein batao! ✏️🍪”
+## 3. EPISODES LOG & STATUS
+
+* **Part 1 (Episode 1)**:
+  * Title: *Chintu Aur Jadui Flying Donut! 🍩✨ | Chintu Ki Kahani (Ep 1) #Kids #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `FiqoAcGzEWI`, https://youtube.com/shorts/FiqoAcGzEWI)
+* **Part 2 (Episode 2)**:
+  * Title: *Golu Ke Ghar Par Chocolate Ki Baarish! 🍫☁️ | Chintu Ki Jadui Kahani (Ep 2) #Kids #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `F-cwzdXv3IA`, https://youtube.com/shorts/F-cwzdXv3IA)
+* **Part 3 (Episode 3)**:
+  * Title: *Chintu Ne Banaya Asli Udne Wala Rocket! 🚀✨ | Chintu Ki Jadui Kahani (Ep 3) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `ny2diR_oTRM`, https://youtube.com/shorts/ny2diR_oTRM)
+* **Part 4 (Episode 4)**:
+  * Title: *Chintu Found a Tiny Alien in His Lunchbox! 🛸🍕 | Chintu Ki Jadui Kahani (Ep 4) #Shorts*
+  * Status: **PUBLISHED ✅** (YouTube Shorts: `cWNlv-WIb7c`, https://youtube.com/shorts/cWNlv-WIb7c)
+  * Visuals: 3D Pixar Animation, Adorable fluffy blue alien eating pizza, classroom anti-gravity floating books. Comments 100% ON.

@@ -295,6 +295,22 @@ def run_bg_task(name: str, fn, *, job_id: str | None = None, action: str | None 
                 topic: str | None = None, idempotency_key: str | None = None,
                 request_id: str | None = None, user_id: str = "admin_abhay"):
     global CURRENT_TASK
+    # --- Auto-timeout: agar task 10+ minute se running hai, khud reset kar ---
+    if CURRENT_TASK["status"] == "running" and CURRENT_TASK.get("started_ts"):
+        try:
+            st = datetime.fromisoformat(str(CURRENT_TASK["started_ts"]).replace("Z", "+00:00"))
+            elapsed_s = (datetime.now(timezone.utc) - st).total_seconds()
+            if elapsed_s > 600:  # 10 minutes
+                log.warn(f"Auto-timeout: task '{CURRENT_TASK['task']}' {int(elapsed_s//60)}m se hang tha, resetting.")
+                try:
+                    with DB() as tdb:
+                        tdb.q("UPDATE jobs SET status='failed', completed_ts=?, error_message=? WHERE status='running'",
+                              (datetime.now(timezone.utc).isoformat(timespec='seconds'), 'Auto-timeout: 10min se exceed hua'))
+                except Exception:
+                    pass
+                CURRENT_TASK = {"status": "idle", "task": None, "job_id": None, "msg": "", "started_ts": None, "user_id": "admin_abhay"}
+        except Exception:
+            pass
     if CURRENT_TASK["status"] == "running":
         return {"ok": False, "error": f"Ek task pehle se chal raha hai: {CURRENT_TASK['task']}"}
 
@@ -812,6 +828,20 @@ def test_channel(channel: str) -> dict:
 # =====================================================================
 def do_action(action: str, video_id: int, payload: dict) -> dict:
     invalidate_gather_cache()
+    # ---- force_reset: admin pipeline unlock ----
+    if action == "force_reset":
+        global CURRENT_TASK
+        old_status = CURRENT_TASK.get("status")
+        old_task = CURRENT_TASK.get("task")
+        CURRENT_TASK = {"status": "idle", "task": None, "job_id": None, "msg": "", "started_ts": None, "user_id": "admin_abhay"}
+        try:
+            with DB() as rdb:
+                rdb.q("UPDATE jobs SET status='failed', completed_ts=?, error_message=? WHERE status='running'",
+                      (datetime.now(timezone.utc).isoformat(timespec='seconds'), 'Admin force-reset — pipeline unlock kiya'))
+        except Exception:
+            pass
+        log.warn(f"force_reset: pipeline unlock hua. Was: {old_status} / {old_task}")
+        return {"ok": True, "msg": f"Pipeline reset! Pehle '{old_task}' chal raha tha. Ab Generate button dobara kaam karega."}
     with DB() as db:
         # ---- experiment actions kisi video se bandhe nahi hain ----
         if action == "generate":

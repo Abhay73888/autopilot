@@ -177,7 +177,15 @@ def build_sound_design_package(total: float, cuts: list[float],
         cur_idx += rs_in.count("-i")
         applied["riser"] = {"start": round(max(0.0, reveal_sec - 2.5), 2), "sweep": "200Hz->600Hz"}
 
-    # Cinematic Braam & Sub-hit
+    # Cinematic Sub-hit & Braam
+    if do_sub_hit and reveal_sec > 1.0:
+        sh_in, sh_f, sh_lbl = build_sub_hit_filter(reveal_sec, cur_idx)
+        inputs += sh_in
+        parts += sh_f
+        bg_sublayers.append(sh_lbl)
+        cur_idx += sh_in.count("-i")
+        applied["sub_hit"] = {"time": round(reveal_sec, 2), "freq": "42Hz"}
+
     if do_braam and reveal_sec > 1.0:
         bm_in, bm_f, bm_lbl = build_braam_hit_filter(reveal_sec, cur_idx)
         inputs += bm_in
@@ -185,13 +193,6 @@ def build_sound_design_package(total: float, cuts: list[float],
         bg_sublayers.append(bm_lbl)
         cur_idx += bm_in.count("-i")
         applied["braam_hit"] = {"time": round(reveal_sec, 2), "freq": "38Hz+76Hz"}
-    elif do_sub_hit and reveal_sec > 1.0:
-        sh_in, sh_f, sh_lbl = build_sub_hit_filter(reveal_sec, cur_idx)
-        inputs += sh_in
-        parts += sh_f
-        bg_sublayers.append(sh_lbl)
-        cur_idx += sh_in.count("-i")
-        applied["sub_hit"] = {"time": round(reveal_sec, 2), "freq": "42Hz"}
 
     # Notification Ding
     if do_notif and notif_sec is not None and notif_sec > 0.5:

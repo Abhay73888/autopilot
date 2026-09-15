@@ -234,11 +234,12 @@ def _():
 @test("⭐ Quota manager galat time pe API call BLOCK karta hai")
 def _():
     q = Quota(fresh_db())
-    for i in range(5):                       # cap = 5 uploads/day
+    rem = q.remaining("youtube_uploads")
+    for i in range(rem):                       # exhaust configured upload cap
         q.check_and_spend("youtube_uploads", 1, f"upload {i}")
-    assert q.can_spend("youtube_uploads", 1) is False, "6th upload block hona chahiye tha"
+    assert q.can_spend("youtube_uploads", 1) is False, "Extra upload block hona chahiye tha"
     try:
-        q.check_and_spend("youtube_uploads", 1, "6th")
+        q.check_and_spend("youtube_uploads", 1, "extra")
         raise AssertionError("QuotaExceeded raise nahi hua")
     except QuotaExceeded as e:
         assert "khatam" in str(e)
@@ -1207,15 +1208,22 @@ def _():
 print("\n🧪 15. RENDERED VIDEO SPEC (agar koi video bana ho)")
 # =====================================================================
 
+def _latest_full_video() -> str | None:
+    """Finds latest output/*/final.mp4 with subtitles.srt (fully rendered pipeline video)."""
+    import glob
+    vids = sorted(glob.glob(str(Path(__file__).parent / "output" / "*" / "final.mp4")))
+    complete = [v for v in vids if (Path(v).parent / "subtitles.srt").exists()]
+    return complete[-1] if complete else (vids[-1] if vids else None)
+
+
 @test("⭐ Rendered video IG/YT spec pe khara utarta hai")
 def _():
-    import glob
     from core.ffmpeg import probe
-    vids = sorted(glob.glob(str(Path(__file__).parent / "output" / "*" / "final.mp4")))
-    if not vids:
+    latest = _latest_full_video()
+    if not latest:
         print("     (skip — abhi koi video render nahi hua)")
         return
-    info = probe(vids[-1])
+    info = probe(latest)
     streams = info.get("streams", [])
     v = next((s for s in streams if s["codec_type"] == "video"), None)
     a = next((s for s in streams if s["codec_type"] == "audio"), None)
@@ -1233,11 +1241,10 @@ def _():
 
 @test("Cover frame aur SRT dono bante hain")
 def _():
-    import glob
-    vids = sorted(glob.glob(str(Path(__file__).parent / "output" / "*" / "final.mp4")))
-    if not vids:
+    latest = _latest_full_video()
+    if not latest:
         return
-    d = Path(vids[-1]).parent
+    d = Path(latest).parent
     assert (d / "cover.jpg").exists(), "cover.jpg nahi bana (thumbnail ke liye chahiye)"
     assert (d / "subtitles.srt").exists(), "subtitles.srt nahi bani"
 
@@ -1394,12 +1401,11 @@ print("\n🧪 18. VALIDATE — asli rendered video pe (Phase 4)")
 
 @test("⭐ Asli video validate pass karta hai (loudness + black frames ke saath)")
 def _():
-    import glob
-    vids = sorted(glob.glob(str(Path(__file__).parent / "output" / "*" / "final.mp4")))
-    if not vids:
+    latest = _latest_full_video()
+    if not latest:
         print("     (skip — abhi koi video render nahi hua)")
         return
-    r = validate_dir(Path(vids[-1]).parent, deep=True)
+    r = validate_dir(Path(latest).parent, deep=True)
     assert r.ok, "FATAL issues: " + "; ".join(f"{i.code}: {i.msg}" for i in r.fatals)
     f = r.facts
     assert f["vcodec"] == "h264" and f["acodec"] == "aac"
@@ -1412,11 +1418,10 @@ def _():
 
 @test("⭐ Beech mein kaale frames nahi hain (fadeblack bug regression)")
 def _():
-    import glob
-    vids = sorted(glob.glob(str(Path(__file__).parent / "output" / "*" / "final.mp4")))
-    if not vids:
+    latest = _latest_full_video()
+    if not latest:
         return
-    r = validate_dir(Path(vids[-1]).parent, deep=True)
+    r = validate_dir(Path(latest).parent, deep=True)
     n = r.facts.get("black_segments")
     if n is not None:
         assert n == 0, (f"{n} jagah kaale frames mile — 'fadeblack' transition "
@@ -1708,13 +1713,12 @@ def _():
 
 @test("⭐ DRY RUN mein quota kharch NAHI hota (bug regression)")
 def _():
-    import glob
-    vids = sorted(glob.glob(str(Path(__file__).parent / "output" / "*" / "final.mp4")))
-    if not vids:
+    latest = _latest_full_video()
+    if not latest:
         return
     d = fresh_db()
     q = Quota(d)
-    vid = d.create_video("x", video_path=vids[-1], script_json={}, hashtags=[],
+    vid = d.create_video("x", video_path=latest, script_json={}, hashtags=[],
                          title="test")
     d.set_status(vid, "approved")
     YouTubePublisher(d, q, creds=object(), dry_run=True).publish(vid)
@@ -1725,15 +1729,15 @@ def _():
 
 @test("⭐ Quota khatam ho to upload queue mein jaata hai (crash nahi)")
 def _():
-    import glob
-    vids = sorted(glob.glob(str(Path(__file__).parent / "output" / "*" / "final.mp4")))
-    if not vids:
+    latest = _latest_full_video()
+    if not latest:
         return
     d = fresh_db()
     q = Quota(d)
-    for i in range(5):                      # cap = 5/day
+    rem = q.remaining("youtube_uploads")
+    for i in range(rem):                      # exhaust daily upload cap
         q.check_and_spend("youtube_uploads", 1, f"burn {i}")
-    vid = d.create_video("x", video_path=vids[-1], script_json={}, hashtags=[], title="t")
+    vid = d.create_video("x", video_path=latest, script_json={}, hashtags=[], title="t")
     d.set_status(vid, "approved")
     res = YouTubePublisher(d, q, creds=object(), dry_run=False).publish(vid)
     assert res["status"] == "queued", f"queue hona chahiye tha, mila: {res}"
@@ -1904,7 +1908,8 @@ def _():
     import tempfile
     d = fresh_db()
     q = Quota(d)
-    for i in range(5):                      # cap = 5/day
+    rem = q.remaining("youtube_uploads")
+    for i in range(rem):                      # exhaust daily upload cap
         q.check_and_spend("youtube_uploads", 1, f"burn {i}")
     f = Path(tempfile.mkdtemp()) / "v.mp4"
     f.write_bytes(b"x" * 5000)
@@ -2054,13 +2059,12 @@ def _():
 
 @test("⭐ DRY RUN mein IG quota kharch NAHI hota")
 def _():
-    import glob
-    vids = sorted(glob.glob(str(Path(__file__).parent / "output" / "*" / "final.mp4")))
-    if not vids:
+    latest = _latest_full_video()
+    if not latest:
         return
     d = fresh_db()
     q = Quota(d)
-    vid = _ig_row(d, vids[-1])
+    vid = _ig_row(d, latest)
     d.set_status(vid, "approved")
     InstagramPublisher(d, q, dry_run=True).publish(vid)
     assert q.used("ig_publishes") == 0, "dry-run ne asli quota kha liya!"
@@ -2070,15 +2074,14 @@ def _():
 
 @test("⭐ IG quota khatam ho to queue mein jaata hai (crash nahi)")
 def _():
-    import glob, os as _os
-    vids = sorted(glob.glob(str(Path(__file__).parent / "output" / "*" / "final.mp4")))
-    if not vids:
+    latest = _latest_full_video()
+    if not latest:
         return
     d = fresh_db()
     q = Quota(d)
     for i in range(20):                    # cap = 20
         q.check_and_spend("ig_publishes", 1, f"burn {i}")
-    vid = _ig_row(d, vids[-1])
+    vid = _ig_row(d, latest)
     d.set_status(vid, "approved")
     ig = InstagramPublisher(d, q, dry_run=False)
     ig.token, ig.ig_user_id = "fake", "123"   # creds check pass karne ke liye

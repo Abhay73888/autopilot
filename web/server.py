@@ -1044,6 +1044,18 @@ class Handler(BaseHTTPRequestHandler):
     # ---------- GET ----------
     def do_GET(self):  # noqa: N802
         u = urlparse(self.path)
+
+        # Anti-scanner honeypot filter
+        p_lower = u.path.lower()
+        if any(p_lower.startswith(prefix) for prefix in (
+            "/.env", "/.git", "/wp-", "/phpmyadmin", "/config.", "/backup", "/.aws", "/admin.php"
+        )):
+            log.warn(f"Blocked malicious scanner probing: {u.path}")
+            return self._send(403, "text/plain; charset=utf-8", b"Forbidden: Scanner blocked\n")
+
+        if u.path == "/robots.txt":
+            return self._send(200, "text/plain; charset=utf-8", b"User-agent: *\nDisallow: /\n")
+
         if u.path == "/":
             return self._send(200, "text/html; charset=utf-8", PAGE.encode("utf-8"))
         if u.path == "/api/data":
@@ -1463,6 +1475,23 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):  # noqa: N802
         u = urlparse(self.path)
 
+        # Anti-scanner honeypot filter
+        p_lower = u.path.lower()
+        if any(p_lower.startswith(prefix) for prefix in (
+            "/.env", "/.git", "/wp-", "/phpmyadmin", "/config.", "/backup", "/.aws", "/admin.php"
+        )):
+            log.warn(f"Blocked malicious scanner probing: {u.path}")
+            return self._send(403, "text/plain; charset=utf-8", b"Forbidden: Scanner blocked\n")
+
+        # DoS Protection: Maximum payload size 10MB
+        cl_header = self.headers.get("Content-Length", 0)
+        try:
+            cl = int(cl_header)
+            if cl > 10 * 1024 * 1024:
+                return self._json(413, {"ok": False, "error": "Payload too large (max 10MB)"})
+        except ValueError:
+            return self._json(400, {"ok": False, "error": "Invalid Content-Length header"})
+
         # ---- Make.com webhook endpoint ----
         if u.path == "/api/webhook":
             return self._handle_webhook()
@@ -1776,6 +1805,8 @@ class Handler(BaseHTTPRequestHandler):
                 body["user_id"] = self.headers.get("X-User-Id")
             res = do_action(body.get("action", ""), int(body.get("video_id", 0)), body)
             return self._json(200, res)
+        except json.JSONDecodeError as e:
+            return self._json(400, {"ok": False, "error": f"Invalid JSON payload: {str(e)}"})
         except Exception as e:  # noqa: BLE001
             log.error("Dashboard action fail", e)
             return self._json(500, {"ok": False, "error": str(e)})
@@ -1920,11 +1951,34 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(size))
         self.send_header("Accept-Ranges", "bytes")
+        self._send_security_headers()
         self.end_headers()
         try:
             self.wfile.write(target.read_bytes())
         except BrokenPipeError:
             pass  # browser ne video band kar diya — normal hai
+
+    def _send_security_headers(self):
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("X-XSS-Protection", "1; mode=block")
+        self.send_header("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
+        self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
+        self.send_header("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet")
+        csp = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; "
+            "font-src 'self' https://fonts.gstatic.com data:; "
+            "img-src 'self' data: https: blob:; "
+            "media-src 'self' blob: data:; "
+            "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com; "
+            "frame-src https://accounts.google.com; "
+            "frame-ancestors 'none'; "
+            "base-uri 'self';"
+        )
+        self.send_header("Content-Security-Policy", csp)
 
     def _send(self, code: int, ctype: str, body: bytes):
         import gzip
@@ -1939,6 +1993,7 @@ class Handler(BaseHTTPRequestHandler):
                     self.send_header("Content-Encoding", "gzip")
                     self.send_header("Content-Length", str(len(compressed)))
                     self.send_header("Vary", "Accept-Encoding")
+                    self._send_security_headers()
                     self.end_headers()
                     self.wfile.write(compressed)
                     return
@@ -1948,6 +2003,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
+        self._send_security_headers()
         self.end_headers()
         try:
             self.wfile.write(body)

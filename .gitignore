@@ -8,6 +8,7 @@ data/*.db
 data/*.db-wal
 data/*.db-shm
 data/*.json
+data/backup/
 logs/
 output/
 __pycache__/

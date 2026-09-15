@@ -61,7 +61,7 @@ def _esc(text: str) -> str:
 def build_ass(words: list[dict], hook_text: str, out_path: str | Path,
               *, width: int = 1080, height: int = 1920,
               hook_duration: float = 3.0, words_per_group: int | None = None,
-              font: str = FONT_NAME, style: str = "kinetic") -> Path:
+              font: str = FONT_NAME, style: str = "karaoke") -> Path:
     """
     words: [{"w": "shabd", "start": 1.2, "end": 1.6}, ...]  (voice.py se aata hai)
     hook_text: 5-8 shabd ka curiosity-gap overlay (writer.py se)

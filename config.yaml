@@ -68,12 +68,12 @@ effects:
     master_limiter: true
   visual:
     color_grade: true
-    film_grain: false
-    vignette_pulse: false
-    camera_shake: false
+    film_grain: true
+    vignette_pulse: true
+    camera_shake: true
     flash_cut: true
     speed_ramp: false
-    breathing: false
+    breathing: true
     layered_scenes: false
     particles: false
   character_consistency:

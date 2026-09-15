@@ -7,7 +7,7 @@
 
 <br>
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-autopilot--t9ku.onrender.com-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://autopilot-t9ku.onrender.com)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-autopilot--7pxl.onrender.com-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://autopilot-7pxl.onrender.com)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 [![CI Tests](https://img.shields.io/github/actions/workflow/status/Abhay73888/autopilot/tests.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%20Build)](https://github.com/Abhay73888/autopilot/actions)
 [![Python 3.10 | 3.11 | 3.12](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-38BDF8?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -775,7 +775,7 @@ Follow these steps to configure your Discord Developer Application:
 3. **Configure OAuth2 Redirect URIs**:
    * Under **Redirects**, click **Add Redirect** and insert both local and production callbacks:
      * Local development: `http://localhost:8765/api/integrations/discord/oauth/callback`
-     * Production (Render): `https://autopilot-t9ku.onrender.com/api/integrations/discord/oauth/callback`
+     * Production (Render): `https://autopilot-7pxl.onrender.com/api/integrations/discord/oauth/callback`
    * Click **Save Changes**.
 
 4. **Create Bot & Retrieve Token**:
@@ -789,7 +789,7 @@ Follow these steps to configure your Discord Developer Application:
    DISCORD_CLIENT_ID="your_client_id_here"
    DISCORD_CLIENT_SECRET="your_client_secret_here"
    DISCORD_BOT_TOKEN="your_bot_token_here"
-   DISCORD_REDIRECT_URI="https://autopilot-t9ku.onrender.com/api/integrations/discord/oauth/callback"
+   DISCORD_REDIRECT_URI="https://autopilot-7pxl.onrender.com/api/integrations/discord/oauth/callback"
    DISCORD_WEBHOOK_URL="optional_default_webhook_url"
    ```
 
@@ -1041,7 +1041,7 @@ Engineered with ❤️ and architectural rigor by **Abhay Kumar Maurya**:
 
 * **GitHub**: [@Abhay73888](https://github.com/Abhay73888)
 * **Repository**: [Abhay73888/autopilot](https://github.com/Abhay73888/autopilot)
-* **Live Deployment**: [https://autopilot-t9ku.onrender.com](https://autopilot-t9ku.onrender.com)
+* **Live Deployment**: [https://autopilot-7pxl.onrender.com](https://autopilot-7pxl.onrender.com)
 
 ---
 

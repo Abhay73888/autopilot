@@ -68,7 +68,7 @@ class DiscordConfig:
 
     @staticmethod
     def app_url() -> str:
-        raw = os.environ.get("APP_URL") or os.environ.get("AUTOPILOT_URL") or os.environ.get("RENDER_EXTERNAL_URL") or "https://autopilot-t9ku.onrender.com"
+        raw = os.environ.get("APP_URL") or os.environ.get("AUTOPILOT_URL") or os.environ.get("RENDER_EXTERNAL_URL") or "https://autopilot-7pxl.onrender.com"
         return raw.rstrip("/")
 
     @staticmethod

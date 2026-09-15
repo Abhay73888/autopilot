@@ -16,7 +16,7 @@ brand_name:       "whop"
 video_length_sec:  32                     # 22-45s sweet spot
 videos_per_day:    2
 aspect_ratio:      "9:16"
-resolution:        "1080x1920"
+resolution:        "720x1280"               # Cloud-safe: 720p saves 3x RAM vs 1080p on Render 512MB
 
 # ============ ACCOUNTS ============
 instagram_handle:  "@your_handle"         # TODO: Business/Creator account hona chahiye
@@ -67,13 +67,13 @@ effects:
     ducking: true
     master_limiter: true
   visual:
-    color_grade: true
-    film_grain: true
-    vignette_pulse: true
-    camera_shake: true
-    flash_cut: true
+    color_grade: true             # Cheap: single color balance pass
+    film_grain: false             # DISABLED: per-frame noise filter kills RAM on 512MB cloud
+    vignette_pulse: false         # DISABLED: sin(t) eval=frame expensive on fractional vCPU
+    camera_shake: false           # DISABLED: per-frame crop math - OOM risk on Render free
+    flash_cut: true               # Cheap: single fade at start
     speed_ramp: false
-    breathing: true
+    breathing: false              # DISABLED: per-frame scale eval - too heavy for cloud
     layered_scenes: false
     particles: false
   character_consistency:

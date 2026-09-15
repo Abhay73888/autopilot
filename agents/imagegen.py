@@ -14,6 +14,7 @@ aur agar teeno fail ho jaayein to exception raise hoti hai (chupke se aage nahi 
 from __future__ import annotations
 
 import hashlib
+import os
 import time
 import urllib.error
 import urllib.parse
@@ -64,8 +65,8 @@ class ImageGen:
             seed = sc.get("seed") or ((seed_base or 42) + sc["n"])
             provider = self.generate_one(sc["image_prompt"], path, seed=seed)
             results.append({**sc, "path": str(path), "provider": provider, "seed": seed})
-            # Polite delay between consecutive generations to avoid rate limiting
-            time.sleep(3)
+            # Polite delay between consecutive generations (shorter on cloud to avoid timeout)
+            time.sleep(1 if os.environ.get("PORT") else 3)
         summary = {p: f"{s['ok']}✅/{s['fail']}❌" for p, s in self.stats.items() if s["ok"] or s["fail"]}
         log.ok(f"{len(results)} images ready", providers=summary, folder=str(out_dir))
         return results

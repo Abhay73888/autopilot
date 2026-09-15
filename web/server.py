@@ -818,10 +818,12 @@ def do_action(action: str, video_id: int, payload: dict) -> dict:
             topic = payload.get("topic")
             dry_run = bool(payload.get("dry_run", CONFIG.get("mock_mode")))
             req_user_id = payload.get("user_id") or "admin_abhay"
+            # Use ultrafast on cloud (Render/Railway) to avoid 512MB OOM
+            _cloud_preset = "ultrafast" if os.environ.get("PORT") else "veryfast"
 
             def _gen(worker_db):
                 from run import one_video
-                manifest = one_video(topic=topic, dry_run=dry_run, with_images=True, preset="veryfast", keep_temp=False, voice=payload.get("voice"))
+                manifest = one_video(topic=topic, dry_run=dry_run, with_images=True, preset=_cloud_preset, keep_temp=False, voice=payload.get("voice"))
                 if not manifest:
                     raise RuntimeError("Pipeline failed to generate and render video. Check logs for details.")
                 # one_video now returns the full manifest dict with video_id
@@ -864,10 +866,12 @@ def do_action(action: str, video_id: int, payload: dict) -> dict:
                 ep_num = None
             dry_run = bool(payload.get("dry_run", CONFIG.get("mock_mode")))
             req_user_id = payload.get("user_id") or "admin_abhay"
+            # Use ultrafast on cloud (Render/Railway) to avoid 512MB OOM
+            _series_preset = "ultrafast" if os.environ.get("PORT") else "veryfast"
 
             def _gen_series(worker_db):
                 from series.series_runner import generate_series_episode
-                res = generate_series_episode(series_code=series_code, episode_num=ep_num, dry_run=dry_run)
+                res = generate_series_episode(series_code=series_code, episode_num=ep_num, dry_run=dry_run, preset=_series_preset)
                 if not res.get("ok"):
                     raise RuntimeError(res.get("error", f"{series_code} generation failed"))
                 vid = res.get("video_id")
@@ -5648,7 +5652,33 @@ PAGE = (
 )
 
 
+def _startup_heal_stuck_jobs():
+    """On server startup, reset any jobs stuck in 'running' state (from previous dyno crash/restart)."""
+    global CURRENT_TASK
+    try:
+        with DB() as db:
+            stuck = db.q("SELECT job_id FROM jobs WHERE status = 'running'")
+            if stuck:
+                ids = [r['job_id'] for r in stuck]
+                now_ts = datetime.now(timezone.utc).isoformat(timespec='seconds')
+                for jid in ids:
+                    db.update_job(jid, status='failed', completed_ts=now_ts,
+                                  error_message='Dyno restart — job interrupted. Click Generate again.')
+                log.warn(f"Startup heal: {len(ids)} stuck running jobs reset to failed: {ids}")
+            else:
+                log.info("Startup check: no stuck running jobs found.")
+        CURRENT_TASK = {
+            "status": "idle", "task": None, "job_id": None,
+            "msg": "", "started_ts": None, "user_id": "admin_abhay"
+        }
+    except Exception as e:
+        log.warn(f"Startup heal check failed: {e}")
+
+
 def serve(host: str = HOST, port: int = PORT, open_browser: bool = True):
+    # Heal any jobs stuck as 'running' from a previous dyno crash/restart
+    _startup_heal_stuck_jobs()
+
     # Start Discord Bot Gateway listener if DISCORD_BOT_TOKEN is present
     try:
         from core.discord_service import DiscordBotGateway

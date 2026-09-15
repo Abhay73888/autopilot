@@ -5067,9 +5067,19 @@ function checkActiveTask(t) {
 
   if (t && t.status === 'running') {
     if (b) b.textContent = T.statusBusy;
-    if (title) title.textContent = t.step || T.liveTaskTitle;
-    if (detail) detail.textContent = t.topic || T.liveTaskDetail;
+    if (title) title.textContent = t.task || t.step || T.liveTaskTitle;
+    if (detail) detail.textContent = t.msg || t.topic || T.liveTaskDetail;
     setStageNode(t.stage || 3);
+  } else if (t && t.status === 'completed') {
+    if (b) b.textContent = '● Completed';
+    if (title) title.textContent = t.task ? `${t.task} (Complete)` : 'Generation Finished';
+    if (detail) detail.textContent = t.msg || 'Video ready in gallery!';
+    setStageNode(5);
+  } else if (t && t.status === 'error' || (t && t.status === 'failed')) {
+    if (b) b.textContent = '● Error';
+    if (title) title.textContent = t.task ? `${t.task} (Failed)` : 'Error occurred';
+    if (detail) detail.textContent = t.msg || 'Check problem diagnostics';
+    setStageNode(0);
   } else {
     if (b) b.textContent = '● Idle';
     if (title) title.textContent = currentLang === 'en' ? 'Swarm Idle' : 'Swarm Taiyar Hai';
@@ -5116,15 +5126,23 @@ async function refreshTasks() {
             <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">${currentLang==='en'?'Video generation tasks will appear live here in real-time.':'Video render shuru karte hi yahan live progress dikhegi.'}</div>
           </td></tr>`;
         } else {
-          tb.innerHTML = jobList.map(h => `
+          tb.innerHTML = jobList.map(h => {
+            const act = h.action || h.kind || 'Task';
+            const top = h.topic || h.task || '—';
+            const st = h.status || 'unknown';
+            const badgeCls = st === 'completed' ? 'b-kids' : (st === 'failed' ? 'b-romance' : (st === 'running' ? 'b-riddle' : 'b-quote'));
+            const timeStr = h.created_ts || h.started_ts || h.ts || '';
+            const jid = h.job_id || h.id || '';
+            return `
             <tr>
-              <td><b>${esc(h.kind)}</b></td>
-              <td>${esc(h.topic)}</td>
-              <td><span class="mini-badge ${h.status==='completed'?'b-kids':(h.status==='failed'?'b-romance':'b-riddle')}">${esc(h.status)}</span></td>
-              <td style="color:var(--text-muted);font-size:11px;">${esc(h.ts)}</td>
-              <td><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;" onclick="toast('Details for #${h.id}')">Info</button></td>
+              <td><b>${esc(act)}</b></td>
+              <td>${esc(top)}</td>
+              <td><span class="mini-badge ${badgeCls}">${esc(st)}</span></td>
+              <td style="color:var(--text-muted);font-size:11px;">${esc(timeStr)}</td>
+              <td><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;" onclick="toast('Job ID: #${esc(jid)}')">Info</button></td>
             </tr>
-          `).join('');
+          `;
+          }).join('');
         }
       }
     }
@@ -5552,6 +5570,7 @@ async function disconnectDiscord() {
 
 // Polling and Init
 setInterval(load, 5000);
+setInterval(refreshTasks, 4000);
 setInterval(refreshProblems, 10000);
 
 checkAuthState();

@@ -135,8 +135,15 @@ def load(path: str | Path | None = None) -> dict:
     data.setdefault("autonomy", "review_first")
 
     # relative paths ko absolute banao (kahin se bhi script chale, kaam kare)
-    data["db_path"] = str(ROOT / data["db_path"])
-    data["log_dir"] = str(ROOT / data["log_dir"])
+    # Cloud (Render/Railway) pe /tmp use karo — data/ directory har deploy pe wipe ho jaati hai
+    if os.environ.get("PORT") or os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RENDER"):
+        # Cloud deployment: /tmp is ephemeral but survives within same dyno session
+        cloud_db = os.environ.get("DATABASE_PATH", "/tmp/autopilot.db")
+        data["db_path"] = cloud_db
+        data["log_dir"] = "/tmp/autopilot_logs"
+    else:
+        data["db_path"] = str(ROOT / data["db_path"])
+        data["log_dir"] = str(ROOT / data["log_dir"])
     data["_root"] = str(ROOT)
 
     # ---- Placeholder checks (agar mock_mode false hai to warning do) ----

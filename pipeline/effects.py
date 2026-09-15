@@ -114,7 +114,7 @@ def build_cinematic_scene_filter(motion: str, dur: float, w: int, h: int, fps: i
     # Remove final format=yuv420p so we can append extra cinematic filters
     if base_kb.endswith(",format=yuv420p"):
         base_kb = base_kb[:-len(",format=yuv420p")]
-    if do_vignette and ",vignette=PI/5" in base_kb:
+    if ",vignette=PI/5" in base_kb:
         base_kb = base_kb.replace(",vignette=PI/5", "")
 
     chain.append(base_kb)

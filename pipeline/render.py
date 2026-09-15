@@ -63,7 +63,7 @@ def ken_burns(motion: str, dur: float, w: int, h: int, fps: int,
     Trick: pehle image ko 1.35x bade canvas pe scale karo, phir us bade canvas
     ke andar move/zoom karo. Isse edges kabhi khaali nahi dikhte.
     """
-    over = 1.35                       # kitna extra area rakhna hai movement ke liye
+    over = 1.15                       # 15% extra area (lightweight, safe for 512MB RAM cloud containers)
     bw, bh = _even(w * over), _even(h * over)
     z = 0.24                          # 24% dynamic zoom for punchy mobile engagement
     p = 0.5 if parallax else 1.0      # parallax layer dheere chalti hai
@@ -347,11 +347,22 @@ class Renderer:
         else:
             vf = ken_burns(sc["motion"], sc["dur"], self.w, self.h, self.fps,
                            parallax=sc.get("parallax", False))
-        run(["-loop", "1", "-t", f"{sc['dur']:.3f}", "-r", str(self.fps),
-             "-i", sc["path"], "-vf", vf,
-             "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
-             "-pix_fmt", "yuv420p", "-an", str(out)],
-            what=f"scene {sc['n']} render", timeout=300)
+        try:
+            run(["-loop", "1", "-t", f"{sc['dur']:.3f}", "-r", str(self.fps),
+                 "-i", sc["path"], "-vf", vf,
+                 "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
+                 "-threads", "1",
+                 "-pix_fmt", "yuv420p", "-an", str(out)],
+                what=f"scene {sc['n']} render", timeout=300)
+        except Exception as e:
+            log.warn(f"Cinematic scene {sc['n']} render failed ({e}). Falling back to ultra-safe low-memory scaler...")
+            safe_vf = f"scale={self.w}:{self.h}:force_original_aspect_ratio=increase,crop={self.w}:{self.h},fps={self.fps},format=yuv420p"
+            run(["-loop", "1", "-t", f"{sc['dur']:.3f}", "-r", str(self.fps),
+                 "-i", sc["path"], "-vf", safe_vf,
+                 "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
+                 "-threads", "1",
+                 "-pix_fmt", "yuv420p", "-an", str(out)],
+                what=f"scene {sc['n']} safe fallback render", timeout=300)
 
     # ------------------------------------------------------------------
     def _concat_xfade(self, clips: list[Path], scenes: list[dict],
@@ -376,20 +387,20 @@ class Renderer:
         for i in range(1, len(clips)):
             offset += scenes[i - 1]["dur"] - XFADE
             label = f"[v{i}]" if i < len(clips) - 1 else "[vout]"
-            # Transition rotate karo — har cut ek jaisa nahi lagna chahiye.
-            # ⚠️ 'fadeblack' JAAN-BOOJH KAR HATAYA hai: wo beech mein poore kaale
-            # frames banata hai (maine blackdetect se pakda — 2.4s aur 18.4s pe).
-            # Shorts mein kaala frame = darshak ko lagta hai video khatam ho gaya
-            # = scroll. Retention seedha girta hai.
             trans = ["fade", "smoothleft", "fade", "smoothup", "fade", "smoothright"][i % 6]
             chain.append(f"{prev}[{i}:v]xfade=transition={trans}:"
                          f"duration={XFADE}:offset={offset:.3f},format=yuv420p{label}")
             prev = label
 
-        run([*inputs, "-filter_complex", ";".join(chain), "-map", "[vout]",
-             "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
-             "-pix_fmt", "yuv420p", "-r", str(self.fps), "-an", str(out)],
-            what="crossfade concat", timeout=600)
+        try:
+            run([*inputs, "-filter_complex", ";".join(chain), "-map", "[vout]",
+                 "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
+                 "-threads", "1",
+                 "-pix_fmt", "yuv420p", "-r", str(self.fps), "-an", str(out)],
+                what="crossfade concat", timeout=600)
+        except Exception as e:
+            log.warn(f"xfade concat failed ({e}). Falling back to concat demuxer...")
+            self._concat_hard(clips, out)
 
     def _concat_hard(self, clips: list[Path], out: Path):
         """Fallback: bina transition ke jodo (concat demuxer — bahut tez)."""
@@ -442,16 +453,31 @@ class Renderer:
                       "Poora ffmpeg build install karo.")
             vfilter = "[0:v]format=yuv420p[vout]"
 
-        run(["-i", str(video), "-i", str(audio), *extra_inputs,
-             "-filter_complex", f"{vfilter};{_shift_audio_idx(afilter)}",
-             "-map", "[vout]", "-map", "[aout]",
-             "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
-             "-profile:v", "high", "-level", "4.0", "-pix_fmt", "yuv420p",
-             "-r", str(self.fps),
-             "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2",
-             "-movflags", "+faststart",   # IG/YT ke liye — metadata shuru mein
-             "-shortest", str(out)],
-            what="final encode (audio mix + subtitles)", timeout=900)
+        try:
+            run(["-i", str(video), "-i", str(audio), *extra_inputs,
+                 "-filter_complex", f"{vfilter};{_shift_audio_idx(afilter)}",
+                 "-map", "[vout]", "-map", "[aout]",
+                 "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
+                 "-threads", "1",
+                 "-profile:v", "high", "-level", "4.0", "-pix_fmt", "yuv420p",
+                 "-r", str(self.fps),
+                 "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2",
+                 "-movflags", "+faststart",   # IG/YT ke liye — metadata shuru mein
+                 "-shortest", str(out)],
+                what="final encode (audio mix + subtitles)", timeout=900)
+        except Exception as e:
+            log.warn(f"Complex audio mix final encode failed ({e}). Retrying with streamlined mix...")
+            fallback_afilter = "[1:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,volume=1.0[aout]"
+            run(["-i", str(video), "-i", str(audio),
+                 "-filter_complex", f"{vfilter};{fallback_afilter}",
+                 "-map", "[vout]", "-map", "[aout]",
+                 "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
+                 "-threads", "1",
+                 "-pix_fmt", "yuv420p", "-r", str(self.fps),
+                 "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2",
+                 "-movflags", "+faststart",
+                 "-shortest", str(out)],
+                what="fallback final encode", timeout=900)
 
     # ------------------------------------------------------------------
     def _cover(self, video: Path, out: Path):

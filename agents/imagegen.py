@@ -25,8 +25,13 @@ from core.logbook import Logbook, retry
 
 log = Logbook("imagegen")
 
-# Pollinations ko browser jaisa UA chahiye, warna 403 deta hai
-UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 AUTOPILOT/1.0"
+# Pollinations ko browser jaisa UA + Referer chahiye
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+    "Referer": "https://pollinations.ai/",
+}
+UA = HEADERS["User-Agent"]
 
 # 9:16 HD render — crisp, sharp 720x1280 base for 1080x1920 YouTube Shorts.
 GEN_W, GEN_H = 720, 1280
@@ -49,8 +54,8 @@ class ImageGen:
         results = []
         for sc in scenes:
             path = out_dir / sc["file"]
-            # Cache check: agar valid image pehle se maujood hai to reuse karo
-            if path.exists() and path.stat().st_size > 5000:
+            # Cache check: agar valid REAL image maujood hai to reuse karo (ignore tiny placeholder cards)
+            if path.exists() and path.stat().st_size > 42000:
                 log.info(f"Image {sc['file']} already exists ({path.stat().st_size // 1024} KB), reusing.")
                 self.stats["pollinations"]["ok"] += 1
                 results.append({**sc, "path": str(path), "provider": "cached", "seed": sc.get("seed", 42)})
@@ -59,6 +64,8 @@ class ImageGen:
             seed = sc.get("seed") or ((seed_base or 42) + sc["n"])
             provider = self.generate_one(sc["image_prompt"], path, seed=seed)
             results.append({**sc, "path": str(path), "provider": provider, "seed": seed})
+            # Polite delay between consecutive generations to avoid rate limiting
+            time.sleep(3)
         summary = {p: f"{s['ok']}✅/{s['fail']}❌" for p, s in self.stats.items() if s["ok"] or s["fail"]}
         log.ok(f"{len(results)} images ready", providers=summary, folder=str(out_dir))
         return results
@@ -88,21 +95,21 @@ class ImageGen:
         import ssl
         enc = urllib.parse.quote(prompt[:650], safe="")
         url = (f"https://image.pollinations.ai/prompt/{enc}"
-               f"?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true&model=flux")
+               f"?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true")
 
         def _fetch():
-            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            req = urllib.request.Request(url, headers=HEADERS)
             try:
-                with urllib.request.urlopen(req, timeout=60) as r:
+                with urllib.request.urlopen(req, timeout=50) as r:
                     data = r.read()
             except urllib.error.HTTPError as e:
                 if e.code == 429:
+                    time.sleep(5)
                     raise RuntimeError("Pollinations rate-limited (429)") from e
                 raise
             except (ssl.SSLError, urllib.error.URLError) as e:
-                # Retry with unverified SSL context if certificate verification fails
                 unverified_ctx = ssl._create_unverified_context()
-                with urllib.request.urlopen(req, timeout=60, context=unverified_ctx) as r:
+                with urllib.request.urlopen(req, timeout=50, context=unverified_ctx) as r:
                     data = r.read()
             except Exception:
                 raise
@@ -111,16 +118,23 @@ class ImageGen:
             if not (data[:2] == b"\xff\xd8" or data[:8].startswith(b"\x89PNG")):
                 raise RuntimeError(f"JPEG/PNG nahi mila, mila: {data[:40]!r}")
             path.write_bytes(data)
+            try:
+                from PIL import Image
+                with Image.open(path) as img:
+                    img.load()
+                    rgb = img.convert("RGB")
+                    rgb.save(path, "JPEG", quality=95)
+            except Exception as pe:
+                log.debug(f"Pillow image sanitize info: {pe}")
 
-        # Retries with backoff for network/server glitches
+        # Robust retries for diffusion generation (15-40s per image)
         last_err = None
-        for attempt, wait in enumerate([0, 3, 6, 10, 15]):
+        for attempt, wait in enumerate([0, 4, 6, 8]):
             if wait:
                 log.debug(f"Pollinations retry {attempt} — {wait}s wait")
                 time.sleep(wait)
             try:
                 _fetch()
-                time.sleep(1.0)
                 return
             except Exception as e:
                 last_err = e
@@ -174,13 +188,12 @@ class ImageGen:
         # Try pollinations with turbo model
         url = f"https://image.pollinations.ai/prompt/{enc}?width={GEN_W}&height={GEN_H}&seed={seed}&nologo=true&model=turbo"
         req = urllib.request.Request(url, headers={"User-Agent": UA})
-        time.sleep(2)
         try:
-            with urllib.request.urlopen(req, timeout=60) as r:
+            with urllib.request.urlopen(req, timeout=50) as r:
                 data = r.read()
         except (ssl.SSLError, urllib.error.URLError):
             unverified_ctx = ssl._create_unverified_context()
-            with urllib.request.urlopen(req, timeout=60, context=unverified_ctx) as r:
+            with urllib.request.urlopen(req, timeout=50, context=unverified_ctx) as r:
                 data = r.read()
         if len(data) < 1000:
             raise RuntimeError(f"v2 response too small ({len(data)} bytes)")

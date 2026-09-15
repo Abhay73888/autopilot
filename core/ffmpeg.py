@@ -107,7 +107,11 @@ def run(args: list[str], *, what: str = "ffmpeg", timeout: int = 900,
     `args` mein 'ffmpeg' shabd mat daalna — wo khud lag jaata hai.
     """
     cmd = [ffmpeg_bin(), "-y", "-nostdin", "-hide_banner",
-           "-loglevel", "error" if quiet else "info", *args]
+           "-loglevel", "error" if quiet else "info"]
+    # Enforce safe thread count to prevent multi-thread heap corruption / glibc aborts in containerized environments (Render/Docker)
+    if "-threads" not in args:
+        cmd.extend(["-threads", "1"])
+    cmd.extend(args)
     log.debug(f"RUN {what}", cmd=" ".join(cmd[:14]) + (" ..." if len(cmd) > 14 else ""))
     try:
         proc = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=timeout)
@@ -138,6 +142,8 @@ def _explain_ffmpeg(err: str) -> str:
         ("no space left", "Disk full hai. output/ folder saaf karo."),
         ("encoder 'libx264' not found", "Tumhara ffmpeg bina libx264 ke bana hai. "
                                         "Instagram ko H.264 chahiye — dusra build install karo."),
+        ("corrupted double-linked list", "Linux container memory constraint ya filter threading conflict. Single-thread mode (-threads 1) guard lagaya gaya hai."),
+        ("out of memory", "Server RAM limit reach ho gayi. Low-memory rendering mode use karo."),
     ]
     for needle, meaning in pairs:
         if needle in e:

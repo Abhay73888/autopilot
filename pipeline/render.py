@@ -109,12 +109,7 @@ def ken_burns(motion: str, dur: float, w: int, h: int, fps: int,
         log.warn(f"Motion '{motion}' pata nahi — static rakh rahe hain")
         mv = f"crop={w}:{h}:(in_w-{w})/2:(in_h-{h})/2"
 
-    # Colour grade: enhanced contrast + saturation boost for mobile AMOLED punch
-    grade = "eq=contrast=1.08:saturation=1.15:gamma=0.97"
-    # Vignette — dhyan center pe jaata hai (suspense content ke liye zaroori)
-    vig = "vignette=PI/5"
-
-    return f"{base},{mv},{grade},{vig},fps={fps},format=yuv420p"
+    return f"{base},{mv},fps={fps},format=yuv420p"
 
 
 def _even(n: float) -> int:
@@ -353,7 +348,7 @@ class Renderer:
                  "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
                  "-threads", "1",
                  "-pix_fmt", "yuv420p", "-an", str(out)],
-                what=f"scene {sc['n']} render", timeout=300)
+                what=f"scene {sc['n']} render", timeout=60)
         except Exception as e:
             log.warn(f"Cinematic scene {sc['n']} render failed ({e}). Falling back to ultra-safe low-memory scaler...")
             safe_vf = f"scale={self.w}:{self.h}:force_original_aspect_ratio=increase,crop={self.w}:{self.h},fps={self.fps},format=yuv420p"
@@ -362,7 +357,7 @@ class Renderer:
                  "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
                  "-threads", "1",
                  "-pix_fmt", "yuv420p", "-an", str(out)],
-                what=f"scene {sc['n']} safe fallback render", timeout=300)
+                what=f"scene {sc['n']} safe fallback render", timeout=60)
 
     # ------------------------------------------------------------------
     def _concat_xfade(self, clips: list[Path], scenes: list[dict],

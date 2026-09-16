@@ -1090,6 +1090,17 @@ class Handler(BaseHTTPRequestHandler):
         if u.path == "/robots.txt":
             return self._send(200, "text/plain; charset=utf-8", b"User-agent: *\nDisallow: /\n")
 
+        # ---- Uptime / Keep-alive ping endpoints ----
+        # UptimeRobot, Cron-job.org, ya koi bhi monitoring service
+        # in URLs ko ping kar sakti hai taaki Railway/Render deploy
+        # sleep mode mein na jaye.
+        if u.path in ("/ping", "/health", "/healthz", "/wake"):
+            return self._json(200, {
+                "ok": True,
+                "status": "alive",
+                "ts": int(time.time()),
+            })
+
         if u.path == "/":
             return self._send(200, "text/html; charset=utf-8", PAGE.encode("utf-8"))
         if u.path == "/api/data":

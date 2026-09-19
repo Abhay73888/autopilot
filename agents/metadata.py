@@ -94,6 +94,58 @@ class MetadataError(RuntimeError):
     """Metadata validation fail — message mein exact fix likha hota hai."""
 
 
+def format_chapters(chapters: list[dict] | None) -> str:
+    """
+    Format chapters list from script["chapters"] into YouTube timestamp format:
+      00:00 Intro
+      01:32 The Clue
+      ...
+    Rules:
+      - First chapter must strictly start at 00:00
+      - At least 3 chapters
+      - Monotonic timestamps
+    """
+    if not chapters:
+        return ""
+
+    raw_chapters = list(chapters)
+    # Ensure at least 3 chapters
+    if len(raw_chapters) == 1:
+        raw_chapters.append({"title": "Main Story", "start_sec": 30.0})
+        raw_chapters.append({"title": "Conclusion", "start_sec": 60.0})
+    elif len(raw_chapters) == 2:
+        s0 = float(raw_chapters[0].get("start_sec", 0.0))
+        s1 = float(raw_chapters[1].get("start_sec", 60.0))
+        mid = (s0 + s1) / 2 if s1 > s0 + 20 else s1 + 30.0
+        raw_chapters.insert(1, {"title": "Part 2", "start_sec": mid})
+
+    formatted = []
+    for i, ch in enumerate(raw_chapters):
+        sec = float(ch.get("start_sec", 0.0))
+        if i == 0:
+            sec = 0.0
+
+        total_s = int(round(sec))
+        m, s = divmod(total_s, 60)
+        h, m = divmod(m, 60)
+        if h > 0:
+            ts_str = f"{h:02d}:{m:02d}:{s:02d}"
+        else:
+            ts_str = f"{m:02d}:{s:02d}"
+
+        title = str(ch.get("title", f"Chapter {i+1}")).strip()
+        formatted.append((total_s, f"{ts_str} {title}"))
+
+    valid = []
+    last_s = -1
+    for s_val, line in formatted:
+        if s_val > last_s or (last_s == -1 and s_val == 0):
+            valid.append(line)
+            last_s = s_val
+
+    return "\n".join(valid)
+
+
 # =====================================================================
 class MetadataAgent:
     """
@@ -148,32 +200,54 @@ JSON: {{"titles": ["t1", "t2", "t3", "t4", "t5"]}}""")
     # ==================================================================
     def description(self, topic: str, title: str, script_text: str = "",
                     tags: list[str] | None = None,
-                    timestamps: list[tuple[str, str]] | None = None) -> str:
+                    timestamps: list[tuple[str, str]] | list[dict] | str | None = None,
+                    profile: str = "shorts") -> str:
         """
         SEO description: hook para + timestamps + CTA + social links +
-        credits + hashtags. Sab config se aata hai, kuch hardcode nahi.
+        credits + hashtags. Longform avoids #shorts and includes auto chapter timestamps.
         """
-        data = self.llm.json(
-            f"""YouTube video description ka sirf OPENING paragraph likho (2-3 sentences).
+        is_longform = str(profile).lower() == "longform"
+        if is_longform:
+            data = self.llm.json(
+                f"""YouTube video description ka detailed opening summary likho (3-5 sentences).
+TOPIC: {topic}
+TITLE: {title}
+LANGUAGE: {CONFIG.get('language', 'Hindi')}
+Pehli line mein main keyword aaye. Story/documentary ka comprehensive hook do.
+JSON: {{"opening": "..."}}""")
+        else:
+            data = self.llm.json(
+                f"""YouTube video description ka sirf OPENING paragraph likho (2-3 sentences).
 TOPIC: {topic}
 TITLE: {title}
 LANGUAGE: {CONFIG.get('language', 'Hindi')}
 Pehli line mein main keyword aaye (search snippet mein dikhti hai).
 JSON: {{"opening": "..."}}""")
+
         opening = str(data.get("opening") or f"{title} — poori kahani is video mein.").strip()
 
         parts = [opening, ""]
 
-        # ---- timestamps (chapters) — diye ho to hi ----
+        # ---- timestamps (chapters) ----
         if timestamps:
             parts.append("⏱️ Chapters:")
-            for ts, label in timestamps:
-                parts.append(f"{ts} {label}")
+            if isinstance(timestamps, str):
+                parts.append(timestamps)
+            elif isinstance(timestamps, list):
+                if timestamps and isinstance(timestamps[0], dict):
+                    parts.append(format_chapters(timestamps))
+                else:
+                    for ts, label in timestamps:
+                        parts.append(f"{ts} {label}")
             parts.append("")
 
         # ---- CTA ----
-        parts += ["👉 Aisi hi videos ke liye SUBSCRIBE karo aur bell 🔔 dabao!",
-                  "Comment mein batao — aage kaunsi kahani suno-ge?", ""]
+        if is_longform:
+            parts += ["👉 Aisi hi deep-dive videos ke liye SUBSCRIBE karo aur bell 🔔 dabao!",
+                      "Comment section mein batao — kahani ka kaunsa hissa sabse shocking laga?", ""]
+        else:
+            parts += ["👉 Aisi hi videos ke liye SUBSCRIBE karo aur bell 🔔 dabao!",
+                      "Comment mein batao — aage kaunsi kahani suno-ge?", ""]
 
         # ---- social links (config se; TODO-placeholder skip) ----
         links = []
@@ -192,7 +266,8 @@ JSON: {{"opening": "..."}}""")
                   "⚠️ Ye video AI-assisted hai (AI narration/illustration).", ""]
 
         # ---- hashtags (pehle 3 title ke upar dikhte hain) ----
-        tag_line = " ".join(f"#{t.lstrip('#').replace(' ', '')}" for t in (tags or [])[:5])
+        clean_tags = [t for t in (tags or []) if t.lower().lstrip("#") not in ("shorts", "short", "ytshorts")] if is_longform else (tags or [])
+        tag_line = " ".join(f"#{t.lstrip('#').replace(' ', '')}" for t in clean_tags[:5])
         if tag_line:
             parts.append(tag_line)
 
@@ -467,16 +542,32 @@ JSON: {{"category": "exact option text"}}""")
     # BUILD — sab kuch ek saath (upload-ready package)
     # ==================================================================
     def build(self, topic: str, script_text: str = "",
-              timestamps: list[tuple[str, str]] | None = None,
-              save: bool = True) -> dict:
+              timestamps: list[tuple[str, str]] | list[dict] | str | None = None,
+              save: bool = True,
+              script: dict | None = None,
+              profile: str | None = None) -> dict:
         """
         Poora metadata package banao. Har step apna fallback rakhta hai —
         LLM down ho to bhi valid (heuristic) package milta hai.
         """
+        if script:
+            profile = profile or script.get("profile") or CONFIG.get("active_profile", "shorts")
+            if not timestamps and script.get("chapters"):
+                timestamps = format_chapters(script["chapters"])
+            if not script_text and script.get("lines"):
+                script_text = "\n".join(str(l.get("text", "")) for l in script["lines"])
+        profile = profile or CONFIG.get("active_profile", "shorts")
+        is_longform = str(profile).lower() == "longform"
+
         titles = self.titles(topic, script_text)
+        if is_longform:
+            titles = [t.replace("#shorts", "").replace("#Shorts", "").strip() for t in titles]
         title = titles[0]
         tags = self.tags(topic, title, script_text)
-        description = self.description(topic, title, script_text, tags, timestamps)
+        if is_longform:
+            tags = [t for t in tags if t.lower().lstrip("#") not in ("shorts", "short", "ytshorts")]
+
+        description = self.description(topic, title, script_text, tags, timestamps, profile=profile)
         cat_name, cat_id = self.detect_category(topic, title, script_text)
         language = self.detect_language(script_text or f"{topic} {title}")
         thumb = self.thumbnail_meta(topic, title)
@@ -491,6 +582,8 @@ JSON: {{"category": "exact option text"}}""")
             "category_id": cat_id,
             "language": language,
             "thumbnail_meta": thumb,
+            "profile": profile,
+            "chapters": timestamps if isinstance(timestamps, str) else (format_chapters(timestamps) if isinstance(timestamps, list) and timestamps and isinstance(timestamps[0], dict) else ""),
             "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "llm_backend": self.llm.backend.name,
         }

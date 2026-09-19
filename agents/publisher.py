@@ -116,7 +116,8 @@ class YouTubePublisher:
         # ---------- GATE 3: validate ----------
         from pipeline.validate import validate_dir
         rep = validate_dir(path.parent)
-        yt_fatals = [i for i in rep.fatals if i.code != "IG_TOO_LONG"]
+        # YouTube supports standard 16:9 horizontal videos (not just vertical Shorts)
+        yt_fatals = [i for i in rep.fatals if i.code != "IG_TOO_LONG" and not (i.code == "RESOLUTION" and "Horizontal" in i.msg)]
         if yt_fatals:
             fatal = "; ".join(f"[{i.code}] {i.msg}" for i in yt_fatals)
             raise PublishError(f"Video validate fail — publish nahi karenge:\n  {fatal}")
@@ -204,9 +205,26 @@ class YouTubePublisher:
 
         # ---------- thumbnail (thumbnail.jpg ya cover frame, agar bana ho) ----------
         out_dir = path.parent
+        script = json.loads(row["script_json"] or "{}")
+        profile = script.get("profile") or row.get("profile") or CONFIG.get("active_profile", "shorts")
+        is_longform = (profile == "longform") or bool(script.get("chapters"))
+
         thumb = out_dir / "thumbnail.jpg"
         if not thumb.exists():
             thumb = Path(row["cover_path"] or "") if "cover_path" in row.keys() else None
+        if not thumb or not Path(thumb).exists():
+            if (out_dir / "cover.jpg").exists():
+                thumb = out_dir / "cover.jpg"
+            elif is_longform:
+                try:
+                    from agents.metadata import generate_thumbnail
+                    thumb_target = out_dir / "thumbnail.jpg"
+                    base_img = next(out_dir.glob("scene_*.png"), None) or next(out_dir.glob("*.jpg"), None)
+                    generate_thumbnail(thumb_target, title_text=row.get("title") or "Episode", base_image_path=base_img)
+                    thumb = thumb_target
+                except Exception as e:
+                    log.warn(f"Auto thumbnail generation skip: {e}")
+
         if thumb and Path(thumb).exists():
             self.set_thumbnail(yt_id, thumb)
 
@@ -348,23 +366,51 @@ class YouTubePublisher:
     def _build_metadata(self, row, privacy: str, publish_at: str | None) -> dict:
         script = json.loads(row["script_json"] or "{}")
         tags = json.loads(row["hashtags"] or "[]")
-        hashtags = " ".join(t if t.startswith("#") else f"#{t}" for t in tags)
-
-        # Shorts ke liye #shorts description mein helpful hai
-        desc_parts = [
-            script.get("caption") or row["caption"] or "",
-            "",
-            script.get("comment_bait", ""),
-            "",
-            f"{hashtags} #shorts",
-            "",
-            "⚠️ Ye video AI se banaya gaya hai (cartoon illustration + AI narration).",
-        ]
-        description = "\n".join(p for p in desc_parts if p is not None)[:4900]
+        profile = script.get("profile") or row.get("profile") or CONFIG.get("active_profile", "shorts")
+        is_longform = (profile == "longform") or bool(script.get("chapters"))
 
         title = (row["title"] or row["topic"] or "Untitled")[:95]
-        if "#shorts" not in title.lower() and len(title) < 88:
-            title = f"{title} #shorts"
+
+        if is_longform:
+            title = title.replace("#shorts", "").replace("#Shorts", "").strip()[:95]
+            clean_tags = [t for t in tags if t.lower().lstrip("#") not in ("shorts", "short", "ytshorts")]
+            hashtags = " ".join(t if t.startswith("#") else f"#{t}" for t in clean_tags[:5])
+
+            from agents.metadata import format_chapters
+            chapters = script.get("chapters", [])
+            chapter_text = format_chapters(chapters)
+
+            desc_parts = [
+                script.get("caption") or row["caption"] or f"{title} — poori kahani is video mein.",
+                "",
+            ]
+            if chapter_text:
+                desc_parts += ["⏱️ Chapters:", chapter_text, ""]
+
+            desc_parts += [
+                script.get("comment_bait", "Comment section mein apni rai zaroor share karein!"),
+                "",
+                "👉 Aisi hi deep-dive videos ke liye SUBSCRIBE karo aur bell 🔔 dabao!",
+                "",
+                hashtags,
+                "",
+                "⚠️ Ye video AI se banaya gaya hai (illustration + narration).",
+            ]
+            description = "\n".join(p for p in desc_parts if p is not None)[:4900]
+        else:
+            hashtags = " ".join(t if t.startswith("#") else f"#{t}" for t in tags)
+            desc_parts = [
+                script.get("caption") or row["caption"] or "",
+                "",
+                script.get("comment_bait", ""),
+                "",
+                f"{hashtags} #shorts",
+                "",
+                "⚠️ Ye video AI se banaya gaya hai (cartoon illustration + AI narration).",
+            ]
+            description = "\n".join(p for p in desc_parts if p is not None)[:4900]
+            if "#shorts" not in title.lower() and len(title) < 88:
+                title = f"{title} #shorts"
 
         status = {
             "privacyStatus": privacy,
@@ -389,7 +435,7 @@ class YouTubePublisher:
             "snippet": {
                 "title": title,
                 "description": description,
-                "tags": [t.lstrip("#") for t in tags][:15],
+                "tags": [t.lstrip("#") for t in (clean_tags if is_longform else tags)][:30 if is_longform else 15],
                 "categoryId": DEFAULT_CATEGORY,
                 "defaultLanguage": "hi" if str(CONFIG.get("language", "")).lower()
                                    .startswith("hi") else "en",
@@ -418,12 +464,18 @@ class YouTubePublisher:
                          "X-Upload-Content-Length": str(size),
                          "X-Upload-Content-Type": "video/mp4"})
             try:
-                with urllib.request.urlopen(req, timeout=60) as r:
+                with urllib.request.urlopen(req, timeout=120) as r:
                     loc = r.headers.get("Location")
                     if not loc:
                         raise PublishError("Upload session URL nahi mila")
                     return loc
             except urllib.error.HTTPError as e:
+                if e.code == 401:
+                    log.warn("401 Unauthorized mila — token refresh karke retry karenge...")
+                    try:
+                        self.creds.refresh()
+                    except Exception as ref_err:
+                        log.warn(f"Token refresh attempt fail: {ref_err}")
                 raise _yt_error(e) from e
 
         upload_url = retry(_start, tries=3, base_delay=3.0, log=log,
@@ -443,7 +495,7 @@ class YouTubePublisher:
                         headers={"Content-Length": str(len(c)),
                                  "Content-Range": f"bytes {s}-{e}/{size}"})
                     try:
-                        with urllib.request.urlopen(req, timeout=300) as r:
+                        with urllib.request.urlopen(req, timeout=600) as r:
                             return r.status, json.loads(r.read() or b"{}")
                     except urllib.error.HTTPError as err:
                         if err.code == 308:      # "Resume Incomplete" — ye NORMAL hai
@@ -569,7 +621,7 @@ class YouTubePublisher:
                 },
                 method="POST"
             )
-            with urllib.request.urlopen(req, timeout=30) as resp:
+            with urllib.request.urlopen(req, timeout=60) as resp:
                 res = json.loads(resp.read().decode("utf-8"))
                 log.ok(f"✅ Caption uploaded successfully: {language} ({name})", yt_video_id=yt_video_id)
                 return res
@@ -664,7 +716,7 @@ class YouTubePublisher:
             data=p.read_bytes(), method="POST",
             headers={**self.creds.auth_header(), "Content-Type": content_type})
         try:
-            with urllib.request.urlopen(req, timeout=120):
+            with urllib.request.urlopen(req, timeout=180):
                 log.ok("Thumbnail set ho gaya", yt_id=yt_id)
                 return True
         except urllib.error.HTTPError as e:

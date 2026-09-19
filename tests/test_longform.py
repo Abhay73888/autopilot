@@ -370,5 +370,81 @@ class TestValidateLongform(unittest.TestCase):
             shutil.rmtree(td, ignore_errors=True)
 
 
+class TestMetadataChapters(unittest.TestCase):
+    def test_metadata_chapters(self):
+        from agents.metadata import format_chapters, MetadataAgent
+        from agents.publisher import YouTubePublisher
+
+        chapters = [
+            {"title": "Introduction & Hook", "start_sec": 0.0},
+            {"title": "The First Clue", "start_sec": 92.5},
+            {"title": "The Deep Mystery", "start_sec": 245.0},
+            {"title": "The Twist Unfolds", "start_sec": 410.2},
+            {"title": "Final Conclusion", "start_sec": 550.0},
+        ]
+
+        ch_str = format_chapters(chapters)
+        # Rule 1: Starts with 00:00
+        self.assertTrue(ch_str.startswith("00:00"), f"Expected chapter string to start with '00:00', got: {ch_str[:10]}")
+
+        # Rule 2: At least 3 chapters
+        lines = [ln.strip() for ln in ch_str.split("\n") if ln.strip()]
+        self.assertGreaterEqual(len(lines), 3, f"Expected >= 3 chapters, got {len(lines)}")
+
+        # Rule 3: Strictly monotonic timestamps
+        parsed_secs = []
+        for line in lines:
+            ts = line.split()[0]
+            parts = [int(p) for p in ts.split(":")]
+            if len(parts) == 2:
+                s = parts[0] * 60 + parts[1]
+            else:
+                s = parts[0] * 3600 + parts[1] * 60 + parts[2]
+            parsed_secs.append(s)
+
+        self.assertEqual(parsed_secs[0], 0)
+        for i in range(1, len(parsed_secs)):
+            self.assertGreater(parsed_secs[i], parsed_secs[i - 1], f"Chapters not monotonic: {parsed_secs}")
+
+        # Test longform metadata building
+        from core.llm import LLM
+        from core.db import DB
+        meta_agent = MetadataAgent(db=DB(), llm=LLM(force_mock=True))
+        script = {
+            "title": "Secret of the Abandoned Island",
+            "profile": "longform",
+            "chapters": chapters,
+            "lines": [{"text": "Welcome to our 10-minute documentary."}],
+        }
+        pkg = meta_agent.build(
+            topic="Secret Island",
+            script=script,
+            profile="longform",
+            save=False,
+        )
+
+        self.assertNotIn("#shorts", pkg["title"].lower())
+        self.assertNotIn("#shorts", pkg["description"].lower())
+        self.assertIn("00:00", pkg["description"])
+        self.assertIn("⏱️ Chapters:", pkg["description"])
+
+        # Test publisher _build_metadata for longform
+        fake_row = {
+            "title": "Documentary Ep 1",
+            "topic": "History",
+            "caption": "Deep dive into history",
+            "script_json": '{"profile": "longform", "chapters": [{"title": "Intro", "start_sec": 0}, {"title": "Ch1", "start_sec": 100}, {"title": "End", "start_sec": 300}]}',
+            "hashtags": '["history", "mystery", "shorts"]',
+        }
+        pub = YouTubePublisher(dry_run=True)
+        yt_meta = pub._build_metadata(fake_row, privacy="private", publish_at=None)
+
+        self.assertNotIn("#shorts", yt_meta["snippet"]["title"].lower())
+        self.assertNotIn("#shorts", yt_meta["snippet"]["description"].lower())
+        self.assertIn("00:00", yt_meta["snippet"]["description"])
+        # Invariant: comments must never be disabled!
+        self.assertFalse(yt_meta["status"]["selfDeclaredMadeForKids"])
+
+
 if __name__ == "__main__":
     unittest.main()

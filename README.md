@@ -2,7 +2,7 @@
 
 <div align="center">
 
-### **Autonomous 12-Agent Swarm for Viral YouTube Shorts & Instagram Reels**
+### **Autonomous 12-Agent Swarm for Viral YouTube Shorts & Long-Form Video (10–60 Min)**
 **Closed-Loop Bayesian Reinforcement · 60fps Hardware Compositing · Bilingual Cyber Cockpit · Production FastAPI SaaS Gateway**
 
 <br>
@@ -12,9 +12,10 @@
 [![CI Tests](https://img.shields.io/github/actions/workflow/status/Abhay73888/autopilot/tests.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%20Build)](https://github.com/Abhay73888/autopilot/actions)
 [![Python 3.10 | 3.11 | 3.12](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-38BDF8?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Long-Form Ready](https://img.shields.io/badge/Long--Form%20Video-10%20to%2060%20Min-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](#-long-form-mode-10-to-60-minutes)
 [![FFmpeg 60fps](https://img.shields.io/badge/FFmpeg-60fps%20Compositor-22C55E?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org/)
 [![Autonomous Swarm](https://img.shields.io/badge/Autonomous%20Swarm-12%20Agents-A855F7?style=for-the-badge&logo=openai&logoColor=white)](#-12-agent-autonomous-swarm-architecture)
-[![Test Suite](https://img.shields.io/badge/Tests-370%2B%20Passing%20(100%25)-10B981?style=for-the-badge&logo=pytest&logoColor=white)](#-testing--quality-assurance)
+[![Test Suite](https://img.shields.io/badge/Tests-371%20Passing%20(100%25)-10B981?style=for-the-badge&logo=pytest&logoColor=white)](#-testing--quality-assurance)
 [![Health Score](https://img.shields.io/badge/Health%20Score-99%2F100-success?style=for-the-badge&logo=checkmarx&logoColor=white)](#-god-mode-autonomous-audit--release-v260)
 [![Cost](https://img.shields.io/badge/Operating%20Cost-%E2%82%B90%20%2F%20mo%20(Zero--Key%20Safe)-10B981?style=for-the-badge&logo=googlepay&logoColor=white)](#-multimodal-ai--provider-failover-matrix)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge)](LICENSE)
@@ -25,11 +26,11 @@
 
 <br>
 
-**AUTOPILOT** is an enterprise-grade autonomous media operating system engineered to execute the end-to-end lifecycle of short-form vertical video (YouTube Shorts & Instagram Reels). Driven by a decentralized **12-agent AI swarm**, hardware-accelerated **60fps FFmpeg compositing engine**, and **Bayesian Thompson Sampling reinforcement loop**, AUTOPILOT transforms viral topic signals into broadcast-ready media, validates retention metrics at 2h/24h/7d windows, and recursively optimizes narrative pacing with **zero human intervention required**.
+**AUTOPILOT** is an enterprise-grade autonomous media operating system engineered to execute the end-to-end lifecycle of short-form vertical video (YouTube Shorts & Instagram Reels) as well as **10 to 60 minute long-form documentaries**. Driven by a decentralized **12-agent AI swarm**, hardware-accelerated **60fps FFmpeg compositing engine**, and **Bayesian Thompson Sampling reinforcement loop**, AUTOPILOT transforms viral topic signals into broadcast-ready media, validates retention metrics at 2h/24h/7d windows, and recursively optimizes narrative pacing with **zero human intervention required**.
 
 <br>
 
-[⚡ Quickstart](#-quickstart) • [🌐 Live Deployed App](#-live-cloud-deployment) • [🧠 12-Agent Swarm](#-12-agent-autonomous-swarm-architecture) • [🏗️ System Architecture](#%EF%B8%8F-complete-system-architecture) • [🤖 AI Pipeline](#-ai-generation-pipeline) • [🗄️ Database](#%EF%B8%8F-database-architecture) • [🔌 Integrations](#-api--integration-map) • [🛡️ 4-Gate QA](#%EF%B8%8F-4-gate-quality--safety-system) • [📊 Bilingual Cockpit](#-cyber-cockpit--bilingual-control-center)
+[⚡ Quickstart](#-quickstart) • [🎬 Long-Form Mode](#-long-form-mode-10-to-60-minutes) • [🌐 Live Deployed App](#-live-cloud-deployment) • [🧠 12-Agent Swarm](#-12-agent-autonomous-swarm-architecture) • [🏗️ System Architecture](#%EF%B8%8F-complete-system-architecture) • [🤖 AI Pipeline](#-ai-generation-pipeline) • [🗄️ Database](#%EF%B8%8F-database-architecture) • [🔌 Integrations](#-api--integration-map) • [🛡️ 4-Gate QA](#%EF%B8%8F-4-gate-quality--safety-system) • [📊 Bilingual Cockpit](#-cyber-cockpit--bilingual-control-center)
 
 </div>
 
@@ -699,16 +700,20 @@ pip install -r requirements.txt
 ```
 
 ### 2. Verify System Health (Zero-Key Safe)
-Run the built-in diagnostic test suite. All 260 tests execute offline in mock mode with **zero API keys required**:
+Run the built-in diagnostic test suite. All 371 tests execute offline in mock mode with **zero API keys required**:
 ```bash
 python test_all.py
 ```
-> `260/260 tests passed (100% success rate)`
+> `371/371 tests passed (100% success rate)`
 
-### 3. Generate Your First Video (Offline Dry-Run)
+### 3. Generate Your First Video (Shorts or Long-Form)
 Produce a complete test video without spending any quota:
 ```bash
+# 32-second vertical Short (720x1280 9:16)
 python run.py --dry-run
+
+# 10-minute widescreen documentary (1920x1080 16:9)
+python run.py --profile longform --minutes 10 --dry-run
 ```
 Outputs a rendered masterpiece in `output/video_0001/` complete with `final.mp4`, `cover.jpg`, `subtitles.srt`, and `manifest.json`.
 

@@ -31,7 +31,7 @@ from agents.trendscout import TrendScout                # noqa: E402
 from agents.imagegen import ImageGen                   # noqa: E402
 from agents.voice import Voice                         # noqa: E402
 from agents.writer import Writer                       # noqa: E402
-from core.config import CONFIG                         # noqa: E402
+from core.config import CONFIG, get_profile
 from core.db import DB                                 # noqa: E402
 from core.llm import LLM                               # noqa: E402
 from core.logbook import Logbook                       # noqa: E402
@@ -49,10 +49,17 @@ SEED_TOPICS = [
 
 
 def make_video(topic: str | None = None, *, dry_run: bool = False,
-               with_images: bool = True, voice: str | None = None) -> dict:
+               with_images: bool = True, voice: str | None = None,
+               profile: str | None = None, minutes: float | None = None,
+               job_id: str | None = None) -> dict:
     t0 = time.time()
     db = DB()
     llm = LLM(force_mock=True if dry_run else None)
+
+    active_profile = profile or CONFIG.get("active_profile", "shorts")
+    prof = get_profile(active_profile)
+    if job_id:
+        db.update_job_progress(job_id, stage="scripting", percent=5.0, eta=90.0)
 
     # ---------- topic: TrendScout se ----------
     series = None
@@ -80,7 +87,12 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
     # ---------- 1. WRITER ----------
     log.info("✍️  Writer chal raha hai...")
     writer = Writer(db, llm)
-    script = writer.write(topic)
+    if active_profile == "longform":
+        total_sec = int(minutes * 60) if minutes else int(prof.get("length_sec", 600))
+        script = writer.write_longform(topic, total_sec=total_sec)
+    else:
+        script = writer.write(topic)
+    script["profile"] = active_profile
     if series:
         # Section 8: series ka number TITLE mein dikhna chahiye — tabhi darshak
         # ko pata chalta hai ki aur episodes hain (binge behaviour).
@@ -115,6 +127,8 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
     log.info(f"📁 Folder: {out_dir}")
 
     # ---------- 2. ART DIRECTOR ----------
+    if job_id:
+        db.update_job_progress(job_id, stage="art_directing", percent=25.0, eta=70.0)
     log.info("🎨 ArtDirector scenes bana raha hai...")
     ad = ArtDirector(db, llm)
     art = ad.direct(script, video_id=vid)
@@ -123,6 +137,8 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
     log.ok(f"{art['n_scenes']} scenes, template = {art['template_name']}, pacing = {pacing}")
 
     # ---------- 3. VOICE ----------
+    if job_id:
+        db.update_job_progress(job_id, stage="voice_synthesis", percent=45.0, eta=50.0)
     log.info("🎙️  Voice narration bana rahi hai...")
     voice_agent = Voice(db)
     narration = voice_agent.narrate(writer.lines(script), out_dir, profile_id=voice)
@@ -141,6 +157,8 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
         pass
 
     # ---------- 4. IMAGES ----------
+    if job_id:
+        db.update_job_progress(job_id, stage="visuals_generation", percent=60.0, eta=30.0)
     scenes = art["scenes"]
     if with_images:
         log.info(f"🖼️  {len(scenes)} images bana rahe hain (thoda time lagega)...")
@@ -183,7 +201,7 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
         "narration": {k: v for k, v in narration.items() if k != "words"},
         "words": narration["words"],
         "render_spec": {   # Section 5 ka spec — Phase 3 yahi follow karega
-            "resolution": CONFIG["resolution"], "fps": 30, "crf": 21,
+            "resolution": prof.get("resolution", CONFIG["resolution"]), "fps": 30, "crf": 21,
             "vcodec": "libx264", "pix_fmt": "yuv420p",
             "acodec": "aac", "abitrate": "128k", "ar": 44100,
             "loudness_lufs": -14,
@@ -196,6 +214,8 @@ def make_video(topic: str | None = None, *, dry_run: bool = False,
 
     db.set_status(vid, "scripted", note=f"Phase 2 done: {len(scenes)} scenes")
     db.log_event("phase2_done", "chief", vid, folder=str(out_dir))
+    if job_id:
+        db.update_job_progress(job_id, stage="phase2_done", percent=75.0, eta=15.0)
 
     report(manifest, out_dir)
     db.close()
@@ -337,11 +357,14 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="AUTOPILOT Phase 2 runner")
     ap.add_argument("--topic", help="video ka topic (na do to seed list se uthega)")
     ap.add_argument("--voice", help="voice profile (e.g. hi_m_grave, hi_f_calm)")
+    ap.add_argument("--profile", choices=["shorts", "longform"], default=None, help="video profile (shorts | longform)")
+    ap.add_argument("--minutes", type=float, default=10.0, help="duration in minutes for longform")
     ap.add_argument("--dry-run", action="store_true", help="koi network call nahi")
     ap.add_argument("--no-images", action="store_true", help="images skip karo (tez test)")
     a = ap.parse_args()
     try:
-        make_video(a.topic, dry_run=a.dry_run, with_images=not a.no_images, voice=a.voice)
+        make_video(a.topic, dry_run=a.dry_run, with_images=not a.no_images, voice=a.voice,
+                   profile=a.profile, minutes=a.minutes)
     except KeyboardInterrupt:
         log.warn("User ne rok diya")
     except Exception as e:  # noqa: BLE001

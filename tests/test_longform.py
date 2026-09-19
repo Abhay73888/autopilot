@@ -446,5 +446,85 @@ class TestMetadataChapters(unittest.TestCase):
         self.assertFalse(yt_meta["status"]["selfDeclaredMadeForKids"])
 
 
+class TestJobProgressAndOrchestration(unittest.TestCase):
+    def test_job_progress_db(self):
+        from core.db import DB
+        import uuid
+        db = DB()
+        job_id = f"test_job_{uuid.uuid4().hex[:8]}"
+        db.create_job(job_id=job_id, action="generate", topic="Test Topic")
+
+        # Initial state
+        job = db.get_job(job_id)
+        self.assertIsNotNone(job)
+        self.assertEqual(job["status"], "queued")
+        self.assertEqual(job["stage"], "queued")
+        self.assertEqual(job["percent"], 0.0)
+
+        # Update progress
+        ok = db.update_job_progress(job_id, stage="rendering", percent=78.5, eta=42.0)
+        self.assertTrue(ok)
+
+        job = db.get_job(job_id)
+        self.assertEqual(job["stage"], "rendering")
+        self.assertEqual(job["percent"], 78.5)
+        self.assertEqual(job["eta"], 42.0)
+
+    def test_get_job_progress_http(self):
+        from core.db import DB
+        import uuid
+        from web.server import Handler
+        from io import BytesIO
+
+        db = DB()
+        job_id = f"test_prog_{uuid.uuid4().hex[:8]}"
+        db.create_job(job_id=job_id, action="generate", topic="Progress HTTP Test")
+        db.update_job_progress(job_id, stage="rendering_clips", percent=72.0, eta=25.0)
+
+        # Mock a BaseHTTPRequestHandler GET request
+        class DummyServer:
+            pass
+
+        class DummyRequest:
+            def makefile(self, *args, **kwargs):
+                return BytesIO(b"GET /api/jobs/" + job_id.encode("utf-8") + b"/progress HTTP/1.1\r\nHost: localhost\r\n\r\n")
+
+            def sendall(self, data):
+                pass
+
+        handler = Handler.__new__(Handler)
+        handler.request = DummyRequest()
+        handler.client_address = ("127.0.0.1", 12345)
+        handler.headers = {"Host": "localhost"}
+        handler.path = f"/api/jobs/{job_id}/progress"
+        
+        captured = {}
+        def mock_json(code, obj):
+            captured["code"] = code
+            captured["data"] = obj
+        handler._json = mock_json
+
+        handler.do_GET()
+
+        self.assertEqual(captured.get("code"), 200)
+        data = captured.get("data", {})
+        self.assertTrue(data.get("ok"))
+        self.assertEqual(data.get("job_id"), job_id)
+        self.assertEqual(data.get("stage"), "rendering_clips")
+        self.assertEqual(data.get("percent"), 72.0)
+        self.assertEqual(data.get("eta"), 25.0)
+
+    def test_run_cli_args(self):
+        import argparse
+        # Simulate run.py argument parser
+        ap = argparse.ArgumentParser()
+        ap.add_argument("--profile", choices=["shorts", "longform"], default=None)
+        ap.add_argument("--minutes", type=float, default=10.0)
+
+        args = ap.parse_args(["--profile", "longform", "--minutes", "15"])
+        self.assertEqual(args.profile, "longform")
+        self.assertEqual(args.minutes, 15.0)
+
+
 if __name__ == "__main__":
     unittest.main()

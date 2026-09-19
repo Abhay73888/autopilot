@@ -848,12 +848,23 @@ def do_action(action: str, video_id: int, payload: dict) -> dict:
             topic = payload.get("topic")
             dry_run = bool(payload.get("dry_run", CONFIG.get("mock_mode")))
             req_user_id = payload.get("user_id") or "admin_abhay"
+            profile = payload.get("profile")
+            minutes = payload.get("minutes")
+            if minutes is not None:
+                try:
+                    minutes = float(minutes)
+                except (TypeError, ValueError):
+                    minutes = None
             # Use ultrafast on cloud (Render/Railway) to avoid 512MB OOM
             _cloud_preset = "ultrafast" if os.environ.get("PORT") else "veryfast"
+            import uuid
+            job_id = payload.get("job_id") or f"job_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
 
             def _gen(worker_db):
                 from run import one_video
-                manifest = one_video(topic=topic, dry_run=dry_run, with_images=True, preset=_cloud_preset, keep_temp=False, voice=payload.get("voice"))
+                manifest = one_video(topic=topic, dry_run=dry_run, with_images=True, preset=_cloud_preset,
+                                     keep_temp=False, voice=payload.get("voice"),
+                                     profile=profile, minutes=minutes, job_id=job_id)
                 if not manifest:
                     raise RuntimeError("Pipeline failed to generate and render video. Check logs for details.")
                 # one_video now returns the full manifest dict with video_id
@@ -882,7 +893,7 @@ def do_action(action: str, video_id: int, payload: dict) -> dict:
                 }
 
             return run_bg_task("Video Generation", _gen,
-                               job_id=payload.get("job_id"), action="generate",
+                               job_id=job_id, action="generate",
                                topic=topic, idempotency_key=payload.get("idempotency_key"),
                                request_id=payload.get("request_id"),
                                user_id=req_user_id)
@@ -1452,7 +1463,10 @@ class Handler(BaseHTTPRequestHandler):
                         jobs_list.append(d)
                     return self._json(200, {"ok": True, "jobs": jobs_list, "count": len(jobs_list)})
 
-                job_id = u.path[len("/api/jobs/"):].strip("/")
+                raw_subpath = u.path[len("/api/jobs/"):].strip("/")
+                is_progress = raw_subpath.endswith("/progress") or raw_subpath == "progress"
+                job_id = raw_subpath[:-len("/progress")].rstrip("/") if raw_subpath.endswith("/progress") else raw_subpath
+
                 job = db.get_job(job_id)
                 if not job:
                     return self._json(404, {"ok": False, "error": f"Job #{job_id} nahi mila"})
@@ -1462,6 +1476,17 @@ class Handler(BaseHTTPRequestHandler):
                         jdict["result_paths"] = json.loads(jdict["result_paths"])
                     except Exception:
                         pass
+                if is_progress:
+                    return self._json(200, {
+                        "ok": True,
+                        "job_id": job_id,
+                        "status": jdict.get("status"),
+                        "stage": jdict.get("stage", "queued"),
+                        "percent": jdict.get("percent", 0.0),
+                        "eta": jdict.get("eta", 0.0),
+                        "video_id": jdict.get("video_id"),
+                        "error_message": jdict.get("error_message")
+                    })
                 return self._json(200, {"ok": True, "job": jdict})
 
         # ---- Make.com status polling endpoint ----
@@ -3646,6 +3671,11 @@ body::before {
 
       <div class="studio-input-row">
         <input type="text" id="customTopicInput" class="custom-input" placeholder="e.g. Kuldhara gaon ka ansoojha rahasya aur aadhi raat ki dastak">
+        <select id="customProfileSelect" class="ep-select">
+          <option value="shorts" selected>⚡ Shorts (9:16, 32s)</option>
+          <option value="longform">🎬 Long-Form (16:9, 10-60m)</option>
+        </select>
+        <input type="number" id="customMinutesInput" class="ep-select" style="max-width:90px;" min="5" max="60" value="10" placeholder="Mins">
         <select id="customVoiceSelect" class="ep-select">
           <option value="male_deep" id="optVoice1">Voice: Hindi Male (Intense Suspense)</option>
           <option value="female_urgent" id="optVoice2">Voice: Hindi Female (Urgent Thriller)</option>
@@ -5249,9 +5279,44 @@ async function generateOtherSeries(code) {
   load();
 }
 
+async function pollJobProgress(jobId) {
+  if (!jobId) return;
+  const pollInterval = setInterval(async () => {
+    try {
+      const r = await fetch(`/api/jobs/${jobId}/progress`);
+      if (!r.ok) return;
+      const data = await r.json();
+      if (data.ok) {
+        const stage = data.stage || data.status || 'running';
+        const pct = Math.round(data.percent || 0);
+        const eta = Math.round(data.eta || 0);
+        const banner = document.getElementById('currentTaskBanner');
+        if (banner) {
+          banner.innerText = `⏳ [${stage.toUpperCase()}] ${pct}% (ETA: ${eta}s)`;
+        }
+        if (data.status === 'completed' || data.status === 'failed') {
+          clearInterval(pollInterval);
+          load();
+          if (data.status === 'completed') {
+            toast(`🎉 Video generation completed! (#${data.video_id || ''})`);
+          } else {
+            toast(`❌ Video generation failed: ${data.error_message || 'unknown error'}`);
+          }
+        }
+      }
+    } catch(e) {
+      // transient network glitch
+    }
+  }, 2000);
+}
+
 async function generateCustomVideo() {
   const topic = document.getElementById('customTopicInput').value.trim();
   const voice = document.getElementById('customVoiceSelect').value;
+  const profileEl = document.getElementById('customProfileSelect');
+  const minutesEl = document.getElementById('customMinutesInput');
+  const profile = profileEl ? profileEl.value : 'shorts';
+  const minutes = minutesEl ? parseFloat(minutesEl.value) || 10 : 10;
   if (!topic) {
     alert(currentLang==='en' ? 'Please enter a topic or select an idea chip.' : 'Kripya ek topic enter karein ya chip select karein.');
     return;
@@ -5259,7 +5324,13 @@ async function generateCustomVideo() {
   if (typeof audio !== 'undefined' && audio.success) audio.success();
   toast(currentLang==='en' ? '🚀 Video Generation Triggered!' : '🚀 Video Generation Shuru!');
   switchNav('tasks');
-  await sendAction('generate', { topic, voice_id: voice });
+  try {
+    const res = await sendAction('generate', { topic, voice_id: voice, profile, minutes });
+    const data = await res.json();
+    if (data && data.job_id) {
+      pollJobProgress(data.job_id);
+    }
+  } catch(e) {}
   load();
 }
 

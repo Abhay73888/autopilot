@@ -158,6 +158,9 @@ CREATE TABLE IF NOT EXISTS jobs (
     request_id       TEXT,
     idempotency_key  TEXT UNIQUE,
     status           TEXT NOT NULL DEFAULT 'queued',
+    stage            TEXT DEFAULT 'queued',
+    percent          REAL DEFAULT 0.0,
+    eta              REAL DEFAULT 0.0,
     action           TEXT NOT NULL,
     topic            TEXT,
     created_ts       TEXT NOT NULL,
@@ -303,10 +306,16 @@ class DB:
         except sqlite3.OperationalError:
             pass
 
-        try:
-            self.conn.execute("ALTER TABLE users ADD COLUMN tour_completed INTEGER DEFAULT 0")
-        except sqlite3.OperationalError:
-            pass
+        # Jobs progress tracking migrations
+        for col_name, col_type in [
+            ("stage", "TEXT DEFAULT 'queued'"),
+            ("percent", "REAL DEFAULT 0.0"),
+            ("eta", "REAL DEFAULT 0.0"),
+        ]:
+            try:
+                self.conn.execute(f"ALTER TABLE jobs ADD COLUMN {col_name} {col_type}")
+            except sqlite3.OperationalError:
+                pass
 
         self.conn.executescript(SCHEMA)
 
@@ -517,6 +526,7 @@ class DB:
         return self.one("SELECT * FROM jobs WHERE idempotency_key = ? LIMIT 1", (idempotency_key,))
 
     def update_job(self, job_id: str, *, status: str | None = None,
+                   stage: str | None = None, percent: float | None = None, eta: float | None = None,
                    started_ts: str | None = None, completed_ts: str | None = None,
                    video_id: int | None = None, error_message: str | None = None,
                    result_paths: dict | list | str | None = None) -> bool:
@@ -525,6 +535,15 @@ class DB:
         if status is not None:
             sets.append("status = ?")
             vals.append(status)
+        if stage is not None:
+            sets.append("stage = ?")
+            vals.append(stage)
+        if percent is not None:
+            sets.append("percent = ?")
+            vals.append(float(percent))
+        if eta is not None:
+            sets.append("eta = ?")
+            vals.append(float(eta))
         if started_ts is not None:
             sets.append("started_ts = ?")
             vals.append(started_ts)
@@ -544,6 +563,14 @@ class DB:
             return False
         vals.append(job_id)
         cur = self.conn.execute(f"UPDATE jobs SET {', '.join(sets)} WHERE job_id = ?", vals)
+        return cur.rowcount > 0
+
+    def update_job_progress(self, job_id: str, stage: str, percent: float, eta: float = 0.0) -> bool:
+        """Update live execution stage, completion percentage (0-100), and estimated remaining seconds."""
+        cur = self.conn.execute(
+            "UPDATE jobs SET stage = ?, percent = ?, eta = ? WHERE job_id = ?",
+            (stage, float(percent), float(eta), job_id)
+        )
         return cur.rowcount > 0
 
     def list_jobs(self, limit: int = 50, status: str | None = None, user_id: str | None = None) -> list[sqlite3.Row]:

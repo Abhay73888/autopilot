@@ -249,7 +249,8 @@ class Renderer:
 
     # ------------------------------------------------------------------
     def render(self, out_dir: str | Path, *, preset: str = "veryfast",
-               keep_temp: bool = False, resume: bool = True) -> dict:
+               keep_temp: bool = False, resume: bool = True,
+               progress_callback: callable | None = None) -> dict:
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
         checkpoint_dir = out_dir / "checkpoints"
@@ -279,9 +280,19 @@ class Renderer:
                     self._render_clip(sc, cp, preset, is_first=(i == 0))
                     log.info(f"scene {i+1}/{len(scenes)} ({pct}%) ready")
                 clips.append(cp)
+                if progress_callback:
+                    try:
+                        progress_callback("rendering_clips", 65.0 + (pct * 0.20), max(0.0, (len(scenes) - i) * 1.5))
+                    except Exception:
+                        pass
 
             # ---- STEP 2: batched crossfade + concat demuxer ----
             silent = tmp / "video_silent.mp4"
+            if progress_callback:
+                try:
+                    progress_callback("rendering_segments", 86.0, 15.0)
+                except Exception:
+                    pass
             self._concat_xfade_batched(clips, scenes, silent, preset,
                                        checkpoint_dir=checkpoint_dir, resume=resume)
 
@@ -302,6 +313,11 @@ class Renderer:
 
             # ---- STEP 4+5: audio mix + subtitles burn + final encode ----
             final = out_dir / "final.mp4"
+            if progress_callback:
+                try:
+                    progress_callback("final_muxing", 92.0, 5.0)
+                except Exception:
+                    pass
             self._finalize(silent, audio_path, ass, scenes, final, preset)
 
             # ---- STEP 6: cover frame ----

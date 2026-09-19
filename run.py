@@ -25,6 +25,7 @@ import argparse
 import json
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -120,16 +121,30 @@ def preflight() -> bool:
 
 
 def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
-              preset: str, keep_temp: bool, voice: str | None = None) -> dict | None:
+              preset: str, keep_temp: bool, voice: str | None = None,
+              profile: str | None = None, minutes: float | None = None,
+              job_id: str | None = None) -> dict | None:
     t0 = time.time()
+    db = DB()
+
+    if not job_id:
+        import uuid
+        job_id = f"job_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
+        try:
+            db.create_job(job_id=job_id, action="generate", topic=topic)
+        except Exception:
+            pass
 
     # ---------- PHASE 2 ----------
-    manifest = make_video(topic, dry_run=dry_run, with_images=with_images, voice=voice)
+    manifest = make_video(topic, dry_run=dry_run, with_images=with_images, voice=voice,
+                          profile=profile, minutes=minutes, job_id=job_id)
     vid = manifest["video_id"]
     out_dir = Path(CONFIG["_root"]) / "output" / f"video_{vid:04d}"
 
     # ---------- PHASE 3 ----------
     log.info("🎬 Render shuru — ffmpeg kaam kar raha hai, ruko...")
+    if job_id:
+        db.update_job_progress(job_id, stage="rendering", percent=75.0, eta=60.0)
     try:
         from core.discord_service import notify_event
         notify_event("video_rendering_started", {
@@ -141,9 +156,17 @@ def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
         })
     except Exception:
         pass
-    db = DB()
+
+    def _on_render_progress(stage, pct, eta):
+        if job_id:
+            try:
+                db.update_job_progress(job_id, stage=stage, percent=pct, eta=eta)
+            except Exception:
+                pass
+
     try:
-        info = Renderer(manifest).render(out_dir, preset=preset, keep_temp=keep_temp)
+        info = Renderer(manifest).render(out_dir, preset=preset, keep_temp=keep_temp,
+                                        progress_callback=_on_render_progress)
         db.update_video(vid, video_path=info["video_path"],
                         cover_path=info["cover_path"],
                         length_sec=info["duration_sec"], status="rendered")
@@ -151,6 +174,8 @@ def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
     except Exception as e:  # noqa: BLE001
         db.set_status(vid, "failed", note=f"render fail: {str(e)[:200]}")
         db.log_event("render_failed", "chief", vid, error=str(e)[:500])
+        if job_id:
+            db.update_job(job_id, status="failed", error_message=str(e)[:500])
         log.error("Render fail ho gaya", e)
         try:
             from core.discord_service import notify_event
@@ -171,6 +196,8 @@ def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
 
     # ---------- PHASE 4: VALIDATE (publish se pehle gatekeeper) ----------
     log.info("🔍 Validate — format/loudness/spec check...")
+    if job_id:
+        db.update_job_progress(job_id, stage="validating", percent=95.0, eta=5.0)
     rep = validate_dir(out_dir)
     manifest["validation"] = rep.to_dict()
     (out_dir / "manifest.json").write_text(
@@ -188,6 +215,16 @@ def one_video(topic: str | None, *, dry_run: bool, with_images: bool,
         db.set_status(vid, "failed",
                       note=f"validate FAIL: {rep.fatals[0].code}")
     db.log_event("validated", "chief", vid, ok=rep.ok, issues=len(rep.issues))
+
+    if job_id:
+        paths = {
+            "video_path": info["video_path"],
+            "cover_path": info["cover_path"],
+            "manifest_path": str(out_dir / "manifest.json")
+        }
+        db.update_job(job_id, status="completed" if rep.ok or len(rep.fatals) == 0 else "failed",
+                      stage="completed", percent=100.0, eta=0.0,
+                      video_id=vid, result_paths=paths)
     db.close()
 
     try:
@@ -288,6 +325,10 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="AUTOPILOT — ek command se video")
     ap.add_argument("--topic", help="video ka topic")
     ap.add_argument("--voice", help="voice profile (e.g. hi_m_grave, hi_f_calm)")
+    ap.add_argument("--profile", choices=["shorts", "longform"], default=None,
+                    help="video profile: shorts (32s, 9:16) ya longform (10-60m, 16:9)")
+    ap.add_argument("--minutes", type=float, default=10.0,
+                    help="longform duration in minutes (default: 10)")
     ap.add_argument("--count", type=int, default=1, help="kitne videos banane hain")
     ap.add_argument("--dry-run", action="store_true", help="koi network call nahi")
     ap.add_argument("--no-images", action="store_true", help="images skip (tez test)")
@@ -313,7 +354,8 @@ if __name__ == "__main__":
                 if a.count > 1:
                     log.info(f"===== VIDEO {i+1}/{a.count} =====")
                 one_video(a.topic, dry_run=a.dry_run, with_images=not a.no_images,
-                          preset=a.preset, keep_temp=a.keep_temp, voice=a.voice)
+                          preset=a.preset, keep_temp=a.keep_temp, voice=a.voice,
+                          profile=a.profile, minutes=a.minutes)
         if a.dashboard:
             from web.server import serve
             serve()

@@ -74,6 +74,15 @@ def _coerce(value: str):
         return False
     if low in ("null", "none", "~", ""):
         return None
+    if v.startswith("{") and v.endswith("}"):
+        inner = v[1:-1].strip()
+        parsed = {}
+        if inner:
+            for part in inner.split(","):
+                if ":" in part:
+                    ik, _, iv = part.partition(":")
+                    parsed[ik.strip()] = _coerce(iv.strip())
+        return parsed
     try:
         return int(v)
     except ValueError:
@@ -158,6 +167,70 @@ def load(path: str | Path | None = None) -> dict:
     return data
 
 
+DEFAULT_PROFILES = {
+    "shorts": {
+        "length_sec": 32,
+        "resolution": "720x1280",
+        "aspect": "9:16",
+        "sec_per_scene": 4.5,
+        "subtitles": "kinetic",
+    },
+    "longform": {
+        "length_sec": 600,
+        "resolution": "1920x1080",
+        "aspect": "16:9",
+        "sec_per_scene": 6.0,
+        "subtitles": "clean",
+        "chapters": True,
+        "max_length_sec": 3600,
+    },
+}
+
+
+def get_profile(name: str | None = None, cfg: dict | None = None) -> dict:
+    """
+    Get profile dictionary merged over legacy top-level keys.
+
+    Order:
+      1. Explicit `name` argument ('shorts' | 'longform')
+      2. Environment variable AUTOPILOT_ACTIVE_PROFILE / AUTOPILOT_PROFILE
+      3. Active profile in config (default 'shorts')
+    """
+    data = cfg if cfg is not None else CONFIG
+    prof_name = name or os.environ.get("AUTOPILOT_ACTIVE_PROFILE") or os.environ.get("AUTOPILOT_PROFILE") or data.get("active_profile", "shorts")
+    prof_name = str(prof_name).strip().lower()
+
+    # Base profile template
+    base = dict(DEFAULT_PROFILES.get(prof_name, DEFAULT_PROFILES["shorts"]))
+
+    # Overlay custom profiles from config.yaml if present
+    cfg_profiles = data.get("video_profiles", {})
+    if isinstance(cfg_profiles, dict) and prof_name in cfg_profiles:
+        custom_prof = cfg_profiles[prof_name]
+        if isinstance(custom_prof, dict):
+            base.update(custom_prof)
+
+    # Legacy mapping: ensure both new and old keys coexist cleanly
+    res = {
+        "profile_name": prof_name,
+        "length_sec": base.get("length_sec", 32),
+        "video_length_sec": base.get("length_sec", 32),
+        "resolution": base.get("resolution", data.get("resolution", "720x1280")),
+        "aspect": base.get("aspect", "9:16"),
+        "aspect_ratio": base.get("aspect", data.get("aspect_ratio", "9:16")),
+        "sec_per_scene": float(base.get("sec_per_scene", 4.5)),
+        "subtitles": base.get("subtitles", "kinetic"),
+        "subtitles_style": base.get("subtitles", "kinetic"),
+        "chapters": bool(base.get("chapters", False)),
+        "max_length_sec": int(base.get("max_length_sec", 3600)),
+    }
+    for k, v in base.items():
+        if k not in res:
+            res[k] = v
+
+    return res
+
+
 # Poore system ke liye ek hi shared config object
 CONFIG = load()
 
@@ -165,3 +238,6 @@ if __name__ == "__main__":
     # `python core/config.py` chalao to config print hogi — debug ke liye
     for k, v in CONFIG.items():
         print(f"{k:22} = {v!r}")
+    print("\n--- PROFILES ---")
+    print("Shorts profile:", get_profile("shorts"))
+    print("Longform profile:", get_profile("longform"))

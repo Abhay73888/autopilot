@@ -12,7 +12,25 @@ target_audience:  "India, 18-34, mobile-first"
 visual_style:     "flat 2D cartoon, noir shadows, muted teal-orange palette"
 brand_name:       "whop"
 
-# ============ OUTPUT TARGETS ============
+# ============ VIDEO PROFILES ============
+active_profile: shorts
+video_profiles:
+  shorts:
+    length_sec: 32
+    resolution: "720x1280"
+    aspect: "9:16"
+    sec_per_scene: 4.5
+    subtitles: kinetic
+  longform:
+    length_sec: 600
+    resolution: "1920x1080"
+    aspect: "16:9"
+    sec_per_scene: 6.0
+    subtitles: clean
+    chapters: true
+    max_length_sec: 3600
+
+# ============ OUTPUT TARGETS (Legacy) ============
 video_length_sec:  32                     # 22-45s sweet spot
 videos_per_day:    2
 aspect_ratio:      "9:16"
@@ -26,7 +44,7 @@ youtube_channel:   "https://youtube.com/channel/UCOvDjaHzT3kUgJinQV_4vDQ"
 monthly_budget_inr: 0                     # ZERO — sirf free tiers
 
 # ============ AUTONOMY ============
-autonomy: "review_first"                  # review_first | auto_publish
+autonomy: "auto_publish"                  # review_first | auto_publish
 review_first_count: 20                    # pehle 20 video manually approve honge
 
 # ============ RUNTIME ============

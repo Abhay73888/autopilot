@@ -44,12 +44,15 @@ COMEDY_KEYWORDS = {"funny", "galat", "sawal", "chammach", "paheli", "score", "di
 
 
 def _ts(sec: float) -> str:
-    """Seconds -> ASS timestamp H:MM:SS.cc"""
-    sec = max(0.0, sec)
-    h = int(sec // 3600)
-    m = int((sec % 3600) // 60)
-    s = sec % 60
-    return f"{h}:{m:02d}:{s:05.2f}"
+    """Seconds -> ASS timestamp H:MM:SS.cs (centiseconds).
+    Handles durations > 10m / 1hr correctly with proper rollover.
+    """
+    sec = max(0.0, float(sec))
+    cs = int(round(sec * 100))
+    s, cs = divmod(cs, 100)
+    m, s = divmod(s, 60)
+    h, m = divmod(m, 60)
+    return f"{h}:{m:02d}:{s:02d}.{cs:02d}"
 
 
 def _esc(text: str) -> str:
@@ -80,6 +83,12 @@ def build_ass(words: list[dict], hook_text: str, out_path: str | Path,
         outline_w = 6
         shadow_d = 4
         group_size = words_per_group or 2  # 1-2 words per burst
+    elif style == "clean":
+        sub_size = int(height * 0.038)     # Clean, elegant size for longform
+        margin_v = int(height * 0.08)      # Bottom-centered
+        outline_w = 3
+        shadow_d = 2
+        group_size = words_per_group or 7  # 6-8 words per chunk (max 2 lines)
     else:
         sub_size = int(height * 0.039)     # ~74px
         margin_v = 300
@@ -110,12 +119,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     lines = []
 
     # ---------- LAYER 1: hook overlay (pehle 3 second) ----------
-    if hook_text:
+    if hook_text and style != "clean":
         lines.append(
             f"Dialogue: 1,{_ts(0.15)},{_ts(hook_duration)},Hook,,0,0,0,,"
             f"{{\\fad(180,250)}}{_esc(hook_text)}")
 
-    # ---------- LAYER 2: kinetic / karaoke subtitles ----------
+    # ---------- LAYER 2: kinetic / karaoke / clean subtitles ----------
     if not words:
         log.warn("Koi word timing nahi mili — sirf hook overlay banega")
 
@@ -158,6 +167,21 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             lines.append(
                 f"Dialogue: 0,{_ts(start)},{_ts(end + 0.05)},Sub,,0,0,0,,"
                 f"{bounce_tag}{inner_text}"
+            )
+        elif style == "clean":
+            # Clean longform style: bottom-centred, max 2 lines
+            raw_text = " ".join(w["w"] for w in group)
+            words_list = raw_text.split()
+            if len(raw_text) > 42 and len(words_list) > 3:
+                mid = len(words_list) // 2
+                line1 = _esc(" ".join(words_list[:mid]))
+                line2 = _esc(" ".join(words_list[mid:]))
+                display_text = f"{line1}\\N{line2}"
+            else:
+                display_text = _esc(raw_text)
+            lines.append(
+                f"Dialogue: 0,{_ts(start)},{_ts(end + 0.05)},Sub,,0,0,0,,"
+                f"{{\\fad(60,60)}}{display_text}"
             )
         else:
             # Classic Karaoke: bottom-aligned with word-by-word highlight
@@ -230,9 +254,14 @@ def build_dual_srt(lines: list[dict], out_en: str | Path, out_hi: str | Path) ->
 
 
 def _srt_ts(sec: float) -> str:
-    sec = max(0.0, sec)
-    h, m = int(sec // 3600), int((sec % 3600) // 60)
-    s, ms = int(sec % 60), int(round((sec % 1) * 1000))
+    """Seconds -> SRT timestamp HH:MM:SS,mmm (milliseconds).
+    Handles durations > 10m / 1hr correctly with proper rollover.
+    """
+    sec = max(0.0, float(sec))
+    ms = int(round(sec * 1000))
+    s, ms = divmod(ms, 1000)
+    m, s = divmod(s, 60)
+    h, m = divmod(m, 60)
     return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
 
 

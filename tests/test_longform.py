@@ -227,5 +227,62 @@ class TestRenderBatching(unittest.TestCase):
             shutil.rmtree(td, ignore_errors=True)
 
 
+class TestSubtitlesLongform(unittest.TestCase):
+    def test_subtitles_timestamps_rollover(self):
+        from pipeline.subtitles import _ts, _srt_ts
+
+        # Exact 10 minutes = 600s
+        self.assertEqual(_ts(600.0), "0:10:00.00")
+        self.assertEqual(_srt_ts(600.0), "00:10:00,000")
+
+        # 10 minutes 15.42 seconds
+        self.assertEqual(_ts(615.42), "0:10:15.42")
+        self.assertEqual(_srt_ts(615.42), "00:10:15,420")
+
+        # Near minute boundary rollover
+        self.assertEqual(_ts(59.999), "0:01:00.00")
+        self.assertEqual(_srt_ts(59.999), "00:00:59,999")
+        self.assertEqual(_srt_ts(59.9996), "00:01:00,000")
+
+        # 1 hour + (3665.25s)
+        self.assertEqual(_ts(3665.25), "1:01:05.25")
+        self.assertEqual(_srt_ts(3665.25), "01:01:05,250")
+
+    def test_subtitles_clean_style(self):
+        import tempfile
+        import shutil
+        from pathlib import Path
+        from pipeline.subtitles import build_ass
+
+        td = Path(tempfile.mkdtemp(prefix="test_subs_clean_"))
+        try:
+            words = [
+                {"w": "This", "start": 600.0, "end": 600.4},
+                {"w": "is", "start": 600.4, "end": 600.6},
+                {"w": "a", "start": 600.6, "end": 600.8},
+                {"w": "detailed", "start": 600.8, "end": 601.2},
+                {"w": "documentary", "start": 601.2, "end": 601.8},
+                {"w": "narration", "start": 601.8, "end": 602.4},
+                {"w": "scene", "start": 602.4, "end": 602.8},
+                {"w": "with", "start": 602.8, "end": 603.0},
+                {"w": "clean", "start": 603.0, "end": 603.4},
+                {"w": "style.", "start": 603.4, "end": 603.8},
+            ]
+            ass_path = td / "subs.ass"
+            build_ass(words, "", ass_path, width=1920, height=1080, style="clean")
+            content = ass_path.read_text(encoding="utf-8")
+
+            # Clean style assertions:
+            self.assertIn("kinetic subtitles (clean)", content)
+            # Timestamp > 10m formatted properly
+            self.assertIn("0:10:00.00", content)
+            # No kinetic bounce tag
+            self.assertNotIn("\\fscx125", content)
+            # Has fade tag
+            self.assertIn("\\fad(60,60)", content)
+        finally:
+            shutil.rmtree(td, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main()

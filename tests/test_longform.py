@@ -119,5 +119,62 @@ class TestStockFootageProvider(unittest.TestCase):
         self.assertTrue(all(sc["type"] == "image" for sc in updated))
 
 
+class TestVoiceChunkedTTS(unittest.TestCase):
+    def test_voice_chunking(self):
+        from agents.voice import split_sentences, chunk_text, chunk_lines
+
+        long_sample = (
+            "Yeh pehla hissa hai kahani ka jo bahut gehra hai. "
+            "Kya aapne kabhi socha tha ki aisi jagah bhi ho sakti hai? "
+            "Raat ke 3 baje darwaze apne aap khul gaye! "
+            "Aur fir ek aisi aawaz aayi jisne sabko khauf mein daal diya।"
+        )
+        sentences = split_sentences(long_sample)
+        self.assertGreaterEqual(len(sentences), 4)
+
+        # Chunk with a small max_chars to verify splitting
+        chunks = chunk_text(long_sample, max_chars=80)
+        self.assertGreater(len(chunks), 1)
+        for ch in chunks:
+            self.assertLessEqual(len(ch), 80)
+
+        # Test chunk_lines
+        lines_input = [
+            {"speaker": "narrator", "text": "Short line 1."},
+            {"speaker": "narrator", "text": "Very long text. " * 30},
+        ]
+        result_chunks = chunk_lines(lines_input, max_chars=120)
+        self.assertGreater(len(result_chunks), 2)
+        for r in result_chunks:
+            self.assertLessEqual(len(r["text"]), 120)
+
+    def test_voice_narrate_chunked_mock(self):
+        import os
+        import tempfile
+        import shutil
+        from agents.voice import Voice
+
+        os.environ["AUTOPILOT_MOCK_MODE"] = "true"
+        td = tempfile.mkdtemp(prefix="test_voice_chunked_")
+        try:
+            v = Voice()
+            lines = [
+                {"speaker": "narrator", "text": f"Chapter narration line {i}. A strange phenomenon occurred here."}
+                for i in range(15)
+            ]
+            res = v.narrate_chunked(lines, td)
+            self.assertTrue(os.path.exists(res["audio_path"]))
+            self.assertGreater(res["duration_sec"], 0)
+            self.assertGreater(len(res["lines"]), 0)
+            self.assertGreater(len(res["words"]), 0)
+            # Verify cumulative word timing is monotonic
+            words = res["words"]
+            for i in range(len(words) - 1):
+                self.assertLessEqual(words[i]["start"], words[i]["end"])
+                self.assertLessEqual(words[i]["start"], words[i + 1]["start"])
+        finally:
+            shutil.rmtree(td, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -123,6 +123,85 @@ _elevenlabs_quota_exceeded: bool = False
 
 
 
+def split_sentences(text: str) -> list[str]:
+    """Split text at punctuation marks (., !, ?, |, ।, or newlines)."""
+    parts = re.split(r"(?<=[.!?|।\n])\s+", text)
+    return [p.strip() for p in parts if p.strip()]
+
+
+def chunk_text(text: str, max_chars: int = 1200) -> list[str]:
+    """Split text into chunks <= max_chars at sentence boundaries."""
+    sentences = split_sentences(text)
+    if not sentences:
+        return [text.strip()] if text.strip() else []
+    chunks = []
+    current_chunk = []
+    current_len = 0
+    for s in sentences:
+        s_len = len(s)
+        if current_len + s_len + 1 > max_chars and current_chunk:
+            chunks.append(" ".join(current_chunk))
+            current_chunk = [s]
+            current_len = s_len
+        else:
+            current_chunk.append(s)
+            current_len += s_len + 1
+    if current_chunk:
+        chunks.append(" ".join(current_chunk))
+    return chunks
+
+
+def chunk_lines(lines: list[dict | str], max_chars: int = 1200) -> list[dict]:
+    """
+    Given lines from a script (which may be chaptered or multi-speaker),
+    ensure each unit is <= max_chars at sentence boundaries.
+    """
+    out = []
+    idx = 0
+    for item in lines:
+        if isinstance(item, dict):
+            t = item.get("text", "").strip()
+            spk = item.get("speaker", "narrator")
+            em = item.get("emotion", "neutral")
+            role = item.get("role", "body")
+            persona = item.get("persona", "")
+        else:
+            t = str(item).strip()
+            spk = "narrator"
+            em = "neutral"
+            role = "body"
+            persona = ""
+        if len(t) <= max_chars:
+            out.append({"i": idx, "text": t, "speaker": spk, "emotion": em, "role": role, "persona": persona})
+            idx += 1
+        else:
+            sub_chunks = chunk_text(t, max_chars=max_chars)
+            for sc in sub_chunks:
+                out.append({"i": idx, "text": sc, "speaker": spk, "emotion": em, "role": role, "persona": persona})
+                idx += 1
+    return out
+
+
+def probe_duration_sec(path: Path | str) -> float:
+    """Exact duration measured using ffprobe (never guess or trust estimates)."""
+    p = Path(path)
+    if not p.exists() or p.stat().st_size == 0:
+        return 0.0
+    try:
+        cmd = [
+            "ffprobe", "-v", "error", "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1", str(p)
+        ]
+        res = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=15)
+        if res.returncode == 0 and res.stdout.strip():
+            val = float(res.stdout.strip())
+            if val > 0:
+                return val
+    except Exception as e:
+        log.debug(f"ffprobe duration failed ({e}) — falling back to duration_sec")
+    return duration_sec(p)
+
+
 def profiles() -> dict:
     """Config ki language ke hisaab se sahi profile set."""
     return VOICE_PROFILES if str(CONFIG.get("language", "Hindi")).lower().startswith("hi") \
@@ -173,6 +252,12 @@ class Voice:
         Har line ki alag MP3 banao (exact duration mil jaati hai),
         phir un sabko jodkar narration.mp3 + timing JSON banao.
         """
+        total_chars = sum(len(l.get("text", "")) if isinstance(l, dict) else len(str(l)) for l in lines)
+        from core.config import get_profile
+        act_prof = get_profile()
+        if len(lines) > 20 or total_chars > 1500 or act_prof.get("name") == "longform" or act_prof.get("length_sec", 32) > 120:
+            return self.narrate_chunked(lines, out_dir, profile_id=profile_id)
+
         profile_id = profile_id or self.pick_profile()
         prof = dict(self.profiles[profile_id])
         out_dir = Path(out_dir)
@@ -321,9 +406,13 @@ class Voice:
         self._length_check(total)
         return result
 
-    # ------------------------------------------------------------------
-    def _length_check(self, total: float):
-        target = CONFIG["video_length_sec"]
+    def _length_check(self, total: float, is_longform: bool = False):
+        from core.config import get_profile
+        prof = get_profile()
+        if is_longform or total > 120 or prof.get("name") == "longform" or prof.get("length_sec", 32) > 120:
+            log.info(f"Longform narration ready: {total:.1f}s ({total/60:.1f} min)")
+            return
+        target = CONFIG.get("video_length_sec", 32)
         if total > 45:
             log.warn(f"Narration {total:.1f}s — 45s se lamba. YouTube Shorts sweet spot "
                      f"22-45s hai. Writer se chhota script mangwao.")
@@ -332,6 +421,195 @@ class Voice:
                      f"collapse ho gaya. Script lamba karo ya pauses badhao.")
         elif abs(total - target) > 8:
             log.info(f"Narration {total:.1f}s (target {target}s) — range ke andar hai, theek hai.")
+
+    # ------------------------------------------------------------------
+    def narrate_chunked(self, lines: list[dict | str], out_dir: str | Path,
+                        profile_id: str | None = None) -> dict:
+        """
+        Chunked TTS for longform narration (10 - 60 minutes):
+        1. Split narration at sentence boundaries into chunks <= 1200 chars.
+        2. Synthesize each chunk (edge-tts first, keep existing engine order), write WAVs.
+        3. Concat with ffmpeg concat demuxer into single narration track (narration.mp3).
+        4. Measure exact chunk duration with ffprobe and offset word timings cumulatively.
+        5. Re-align with faster-whisper if available, otherwise syllable-weight distribution.
+        """
+        profile_id = profile_id or self.pick_profile()
+        prof = dict(self.profiles[profile_id])
+        out_dir = Path(out_dir)
+        chunks_dir = out_dir / "chunks"
+        chunks_dir.mkdir(parents=True, exist_ok=True)
+
+        chunks = chunk_lines(lines, max_chars=1200)
+        if not chunks:
+            log.warn("Koi lines nahi mili narration ke liye")
+            chunks = [{"i": 0, "text": "Beginning of longform narration.", "speaker": "narrator",
+                       "emotion": "neutral", "role": "hook", "persona": ""}]
+
+        chunk_records = []
+        engines_used = set()
+        for idx, ch in enumerate(chunks):
+            wav_path = chunks_dir / f"chunk_{idx+1:04d}.wav"
+            engine_name = self._synth_chunk_wav(ch, wav_path, prof)
+            if engine_name:
+                engines_used.add(engine_name)
+
+            dur = probe_duration_sec(wav_path)
+            chunk_records.append({
+                "i": idx,
+                "text": ch["text"],
+                "speaker": ch.get("speaker", "narrator"),
+                "path": str(wav_path),
+                "dur": dur,
+                "engine": engine_name or "fallback"
+            })
+
+        merged = out_dir / "narration.mp3"
+        concat_list_file = chunks_dir / "concat_list.txt"
+        with open(concat_list_file, "w", encoding="utf-8") as f:
+            for rec in chunk_records:
+                p_str = Path(rec["path"]).resolve().as_posix()
+                f.write(f"file '{p_str}'\n")
+
+        fb = ffmpeg_bin()
+        cmd = [
+            fb, "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+            "-f", "concat", "-safe", "0", "-i", str(concat_list_file),
+            "-codec:a", "libmp3lame", "-b:a", "128k", "-ar", "44100",
+            str(merged)
+        ]
+        try:
+            subprocess.run(cmd, stdin=subprocess.DEVNULL, check=True, capture_output=True, timeout=300)
+        except Exception as e:
+            log.warn(f"Concat demuxer failed ({e}) — falling back to sequential stream join")
+            try:
+                cmd_fb = [fb, "-y", "-nostdin", "-hide_banner", "-loglevel", "error"]
+                for rec in chunk_records:
+                    cmd_fb.extend(["-i", rec["path"]])
+                filter_str = "".join(f"[{i}:a]" for i in range(len(chunk_records))) + f"concat=n={len(chunk_records)}:v=0:a=1[out]"
+                cmd_fb.extend(["-filter_complex", filter_str, "-map", "[out]", "-codec:a", "libmp3lame", "-b:a", "128k", str(merged)])
+                subprocess.run(cmd_fb, stdin=subprocess.DEVNULL, check=True, capture_output=True, timeout=300)
+            except Exception as e2:
+                log.error(f"Fallback audio concat failed: {e2}")
+
+        cumulative_sec = 0.0
+        timeline = []
+        all_words = []
+
+        for rec in chunk_records:
+            c_dur = probe_duration_sec(rec["path"])
+            start_t = cumulative_sec
+            end_t = cumulative_sec + c_dur
+
+            w_words = _align_words_whisper(rec["path"], rec["text"], start_t, end_t)
+            if not w_words:
+                w_words = _distribute_words(rec["text"], start_t, end_t)
+
+            timeline.append({
+                "i": rec["i"],
+                "text": rec["text"],
+                "speaker": rec["speaker"],
+                "start": round(start_t, 3),
+                "end": round(end_t, 3),
+                "words": w_words,
+                "engine": rec["engine"]
+            })
+            all_words.extend(w_words)
+            cumulative_sec = end_t
+
+        total_dur = round(cumulative_sec, 2)
+        result = {
+            "voice_id": profile_id,
+            "voice": prof.get("voice", "hi-IN-MadhurNeural"),
+            "narrator_voice": prof.get("voice", "hi-IN-MadhurNeural"),
+            "rate": prof.get("rate", "+0%"),
+            "pitch": prof.get("pitch", "+0Hz"),
+            "audio_path": str(merged),
+            "duration_sec": total_dur,
+            "lines": timeline,
+            "words": all_words,
+            "engines_used": sorted(engines_used) if engines_used else ["mock"],
+        }
+        (out_dir / "timing.json").write_text(
+            json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+        log.ok(f"Longform chunked narration ready: {total_dur:.1f}s ({total_dur/60:.1f} min), {len(all_words)} words",
+               voice=profile_id, engines=result["engines_used"])
+        self._length_check(total_dur, is_longform=True)
+        return result
+
+    def _synth_chunk_wav(self, chunk: dict, out_wav: Path, prof: dict) -> str:
+        """Synthesize chunk text into a 24000Hz 16-bit mono WAV using edge-tts first."""
+        text = chunk.get("text", "")
+        engines = ["edge_tts", "gemini_tts", "gtts", "espeak"]
+        if os.environ.get("AUTOPILOT_MOCK_MODE") == "true" or CONFIG.get("mock_mode", False):
+            dur = max(1.2, len(text.split()) / 2.6)
+            cmd = [
+                ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+                "-f", "lavfi", "-t", f"{dur:.3f}",
+                "-i", "anullsrc=channel_layout=mono:sample_rate=24000",
+                "-c:a", "pcm_s16le", str(out_wav)
+            ]
+            try:
+                subprocess.run(cmd, stdin=subprocess.DEVNULL, check=True, capture_output=True, timeout=20)
+                return "mock"
+            except Exception:
+                pass
+
+        tmp_mp3 = out_wav.with_suffix(".tmp.mp3")
+        for engine in engines:
+            try:
+                if engine == "edge_tts":
+                    self._tts_edge_tts(text, tmp_mp3, prof)
+                    if tmp_mp3.exists() and tmp_mp3.stat().st_size > 500:
+                        subprocess.run([
+                            ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+                            "-i", str(tmp_mp3), "-ar", "24000", "-ac", "1", "-c:a", "pcm_s16le", str(out_wav)
+                        ], stdin=subprocess.DEVNULL, check=True, capture_output=True, timeout=30)
+                        tmp_mp3.unlink(missing_ok=True)
+                        if out_wav.exists() and out_wav.stat().st_size > 500:
+                            return "edge_tts"
+                elif engine == "gemini_tts":
+                    pcm = _call_gemini_tts(text, voice_name=prof.get("gemini_voice", "Charon"), db=self.db)
+                    _pcm_to_wav(pcm, out_wav)
+                    if out_wav.exists() and out_wav.stat().st_size > 500:
+                        return "gemini_tts"
+                elif engine == "gtts":
+                    self._tts_gtts(text, tmp_mp3, prof)
+                    if tmp_mp3.exists() and tmp_mp3.stat().st_size > 500:
+                        subprocess.run([
+                            ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+                            "-i", str(tmp_mp3), "-ar", "24000", "-ac", "1", "-c:a", "pcm_s16le", str(out_wav)
+                        ], stdin=subprocess.DEVNULL, check=True, capture_output=True, timeout=30)
+                        tmp_mp3.unlink(missing_ok=True)
+                        if out_wav.exists() and out_wav.stat().st_size > 500:
+                            return "gtts"
+                elif engine == "espeak":
+                    self._tts_espeak(text, tmp_mp3, prof)
+                    if tmp_mp3.exists() and tmp_mp3.stat().st_size > 500:
+                        subprocess.run([
+                            ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+                            "-i", str(tmp_mp3), "-ar", "24000", "-ac", "1", "-c:a", "pcm_s16le", str(out_wav)
+                        ], stdin=subprocess.DEVNULL, check=True, capture_output=True, timeout=30)
+                        tmp_mp3.unlink(missing_ok=True)
+                        if out_wav.exists() and out_wav.stat().st_size > 500:
+                            return "espeak"
+            except Exception as e:
+                log.debug(f"Chunk synth {engine} failed: {e}")
+                tmp_mp3.unlink(missing_ok=True)
+                continue
+
+        # Silent fallback
+        dur = max(1.2, len(text.split()) / 2.6)
+        cmd = [
+            ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+            "-f", "lavfi", "-t", f"{dur:.3f}",
+            "-i", "anullsrc=channel_layout=mono:sample_rate=24000",
+            "-c:a", "pcm_s16le", str(out_wav)
+        ]
+        try:
+            subprocess.run(cmd, stdin=subprocess.DEVNULL, check=True, capture_output=True, timeout=20)
+            return "silence"
+        except Exception:
+            return ""
 
     # ---------------- TTS engines ----------------
     def _synth(self, line_item: dict | str, path: Path, prof: dict) -> str:

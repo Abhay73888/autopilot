@@ -96,5 +96,28 @@ class TestArtDirectorScaling(unittest.TestCase):
         self.assertTrue(plan_res.get("scenes"))
 
 
+class TestStockFootageProvider(unittest.TestCase):
+    def test_stock_footage_fallback(self):
+        from agents.stockfootage import StockFootageProvider
+        provider = StockFootageProvider(pexels_key="", pixabay_key="")
+        self.assertFalse(provider.has_keys)
+
+        # Keyword extraction check
+        kw = provider.extract_keywords("Cinematic wide shot of an ancient abandoned temple in dense dark misty forest, vertical 9:16, no text")
+        self.assertTrue(len(kw) > 0)
+        self.assertNotIn("vertical", kw.lower())
+        self.assertNotIn("text", kw.lower())
+
+        # Graceful fallback: without keys, get_b_roll returns None
+        b_roll = provider.get_b_roll({"beat": "ancient temple discover", "image_prompt": "temple in woods"})
+        self.assertIsNone(b_roll)
+
+        # Manifest assignment marks eligible scenes as type="image" when no keys are available
+        scenes = [{"n": 1, "beat": "hook"}, {"n": 2, "beat": "b-roll nature"}, {"n": 3, "beat": "climax"}]
+        updated = provider.assign_manifest_scenes(scenes)
+        self.assertEqual(len(updated), 3)
+        self.assertTrue(all(sc["type"] == "image" for sc in updated))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import shutil
 import tempfile
 from pathlib import Path
@@ -176,9 +177,10 @@ def build_audio_filter(n_scenes: int, cuts: list[float], total: float,
     inputs += ["-f", "lavfi", "-t", f"{total:.2f}", "-i", "sine=frequency=55:sample_rate=44100"]
     inputs += ["-f", "lavfi", "-t", f"{total:.2f}", "-i", "sine=frequency=110.7:sample_rate=44100"]
 
-    # ---- Layer 3: whoosh per cut ----
+    # ---- Layer 3: whoosh per cut (capped for long-form films) ----
     n_whoosh = 0
-    for c in cuts:
+    max_w = 6 if total > 180 else len(cuts)
+    for c in cuts[:max_w]:
         if 0.3 < c < total - 0.3:
             inputs += ["-f", "lavfi", "-t", "0.7", "-i",
                        "anoisesrc=color=brown:sample_rate=44100:amplitude=0.5"]
@@ -279,8 +281,15 @@ class Renderer:
 
             # ---- STEP 3: subtitles ----
             sub_style = (self.m.get("subtitles") or {}).get("style") or CONFIG.get("subtitle_style", "kinetic")
+            sc_raw = self.m.get("script") or {}
+            if isinstance(sc_raw, str):
+                try:
+                    sc_raw = json.loads(sc_raw)
+                except Exception:
+                    sc_raw = {}
+            hook_ov = sc_raw.get("hook_text_overlay", "") if isinstance(sc_raw, dict) else ""
             ass = build_ass(self.m.get("words", []),
-                            self.m["script"].get("hook_text_overlay", ""),
+                            hook_ov,
                             tmp / "subs.ass", width=self.w, height=self.h,
                             style=sub_style)
             build_srt(self.m.get("words", []), out_dir / "subtitles.srt")
@@ -308,26 +317,41 @@ class Renderer:
         """Manifest ke scenes ko validate karo aur durations theek karo."""
         scenes = []
         for sc in self.m["scenes"]:
-            p = sc.get("path")
+            p = sc.get("path") or sc.get("stock_path")
             if not p or not Path(p).exists():
-                log.warn(f"Scene {sc['n']} ki image nahi mili — scene skip",
+                log.warn(f"Scene {sc['n']} ki media file nahi mili — scene skip",
                          path=p)
                 continue
             dur = float(sc.get("dur") or 0)
             if dur < 0.8:
                 dur = 0.8   # itna chhota scene dikhta hi nahi
-            scenes.append({**sc, "dur": dur + XFADE})  # xfade overlap ke liye extra
+            scenes.append({**sc, "path": str(p), "dur": dur + XFADE})  # xfade overlap ke liye extra
         if not scenes:
             raise RuntimeError(
-                "Ek bhi scene image nahi mili. Phase 2 dobara chalao: "
+                "Ek bhi scene image/video nahi mili. Phase 2 dobara chalao: "
                 "python run_phase2.py")
         if len(scenes) < len(self.m["scenes"]):
             log.warn(f"{len(self.m['scenes']) - len(scenes)} scenes skip hue "
-                     f"(images missing) — video chhota hoga")
+                     f"(images/videos missing) — video chhota hoga")
         return scenes
 
     # ------------------------------------------------------------------
     def _render_clip(self, sc: dict, out: Path, preset: str, is_first: bool = False):
+        cpu_th = str(min(8, os.cpu_count() or 4))
+        is_video = str(sc["path"]).lower().endswith((".mp4", ".mov", ".webm", ".mkv")) or sc.get("type") == "stock"
+        if is_video:
+            vf = f"scale={self.w}:{self.h}:force_original_aspect_ratio=increase,crop={self.w}:{self.h},fps={self.fps},format=yuv420p"
+            try:
+                run(["-stream_loop", "-1", "-t", f"{sc['dur']:.3f}", "-r", str(self.fps),
+                     "-i", str(sc["path"]), "-vf", vf,
+                     "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
+                     "-threads", cpu_th,
+                     "-pix_fmt", "yuv420p", "-an", str(out)],
+                    what=f"scene {sc['n']} stock video render", timeout=90)
+                return
+            except Exception as e:
+                log.warn(f"Stock video render failed for scene {sc['n']} ({e}). Retrying fallback image rendering...")
+
         vis_cfg = (self.m.get("effects") or {}).get("visual") or (CONFIG.get("effects") or {}).get("visual") or {}
         if vis_cfg:
             from pipeline.effects import build_cinematic_scene_filter
@@ -346,7 +370,7 @@ class Renderer:
             run(["-loop", "1", "-t", f"{sc['dur']:.3f}", "-r", str(self.fps),
                  "-i", sc["path"], "-vf", vf,
                  "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
-                 "-threads", "1",
+                 "-threads", cpu_th,
                  "-pix_fmt", "yuv420p", "-an", str(out)],
                 what=f"scene {sc['n']} render", timeout=60)
         except Exception as e:
@@ -355,7 +379,7 @@ class Renderer:
             run(["-loop", "1", "-t", f"{sc['dur']:.3f}", "-r", str(self.fps),
                  "-i", sc["path"], "-vf", safe_vf,
                  "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
-                 "-threads", "1",
+                 "-threads", cpu_th,
                  "-pix_fmt", "yuv420p", "-an", str(out)],
                 what=f"scene {sc['n']} safe fallback render", timeout=60)
 
@@ -369,6 +393,9 @@ class Renderer:
         if len(clips) == 1:
             shutil.copy(clips[0], out)
             return
+        if len(clips) > 20:
+            log.info(f"Long-form film ({len(clips)} scenes): using fast high-stability stream concat")
+            return self._concat_hard(clips, out)
         if not self.caps.get("xfade", True):
             log.warn("xfade filter nahi hai — hard cuts use kar rahe hain "
                      "(video thoda jhatkedaar lagega)")
@@ -448,18 +475,19 @@ class Renderer:
                       "Poora ffmpeg build install karo.")
             vfilter = "[0:v]format=yuv420p[vout]"
 
+        cpu_th = str(min(8, os.cpu_count() or 4))
         try:
             run(["-i", str(video), "-i", str(audio), *extra_inputs,
                  "-filter_complex", f"{vfilter};{_shift_audio_idx(afilter)}",
                  "-map", "[vout]", "-map", "[aout]",
                  "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
-                 "-threads", "1",
+                 "-threads", cpu_th,
                  "-profile:v", "high", "-level", "4.0", "-pix_fmt", "yuv420p",
                  "-r", str(self.fps),
                  "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2",
                  "-movflags", "+faststart",   # IG/YT ke liye — metadata shuru mein
                  "-shortest", str(out)],
-                what="final encode (audio mix + subtitles)", timeout=900)
+                what="final encode (audio mix + subtitles)", timeout=1800)
         except Exception as e:
             log.warn(f"Complex audio mix final encode failed ({e}). Retrying with streamlined mix...")
             fallback_afilter = "[1:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,volume=1.0[aout]"
@@ -467,12 +495,12 @@ class Renderer:
                  "-filter_complex", f"{vfilter};{fallback_afilter}",
                  "-map", "[vout]", "-map", "[aout]",
                  "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
-                 "-threads", "1",
+                 "-threads", cpu_th,
                  "-pix_fmt", "yuv420p", "-r", str(self.fps),
                  "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2",
                  "-movflags", "+faststart",
                  "-shortest", str(out)],
-                what="fallback final encode", timeout=900)
+                what="fallback final encode", timeout=1800)
 
     # ------------------------------------------------------------------
     def _cover(self, video: Path, out: Path):

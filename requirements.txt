@@ -131,3 +131,10 @@ pydantic>=2.9.0
 uvicorn>=0.30.0
 cryptography>=43.0.0
 
+# ---------- OPTIONAL: LONG-FORM AUDIO ALIGNMENT ----------
+# faster-whisper>=1.0.0
+#   ^ Optional offline word alignment for longform chunked narration (agents/voice.py).
+#     If not installed, Voice gracefully falls back to syllable-weighted timing.
+#     Install only if exact speech-to-text timing alignment is desired:
+#     `pip install faster-whisper`
+

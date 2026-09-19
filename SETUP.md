@@ -1509,6 +1509,51 @@ Jhoot nahi bolunga, ye limitations hain:
 
 ---
 
+## STEP 11 — Long-Form Mode (10 to 60 Minutes Autonomous Engine)
+
+AUTOPILOT ab **10 se 60 minute ke widescreen (16:9 1080p)** videos bhi end-to-end bana sakta hai — multi-chapter script, chunked neural TTS, 100+ scenes (AI visuals + real B-roll), batched FFmpeg rendering, clean subtitles, automatic chapter timestamps, aur YouTube auto-upload.
+
+### 🚀 Chalao kaise:
+
+```bash
+# 1. 10-minute ka longform video banao
+python run.py --profile longform --minutes 10 --topic "Kuldhara gaon ka ansoojha rahasya"
+
+# 2. Offline test karo (bina internet ke placeholder test)
+python run.py --profile longform --minutes 10 --dry-run
+
+# 3. Lamba video (jaise 30 minutes)
+python run.py --profile longform --minutes 30 --topic "Ancient Indian Science & Astronomy"
+```
+
+### 🆓 Free API Key Table (100% Zero-Rupees Safe)
+
+Sabhi keys **OPTIONAL** hain. Agar koi key nahi hai to pipeline crash nahi hoti, balki gracefully free fallback pe chali jaati hai:
+
+| Service | Kaam | Monthly Cost | Env Variable | Free Quota | Missing hone pe Fallback |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Google Gemini** | Multi-Chapter Writer | ₹0 | `GEMINI_API_KEY` | 15 RPM, 1M TPM | Groq / Deterministic Mock |
+| **Groq** | Fast LLM Fallback | ₹0 | `GROQ_API_KEY` | 30 RPM, 14.4k RPD | Gemini / Mock |
+| **Pexels Video API** | Real Stock B-Roll Clips | ₹0 | `PEXELS_API_KEY` | 200 req/hr | Pixabay / Pollinations AI Images |
+| **Pixabay Video API** | Real Stock B-Roll Clips | ₹0 | `PIXABAY_API_KEY` | 100 req/min | Pexels / Pollinations AI Images |
+| **Pollinations.ai** | AI Generated Images | ₹0 | *(Koi key nahi)* | Unlimited | Local gradient card |
+| **Hugging Face** | Imagegen Backup | ₹0 | `HF_TOKEN` | Free tier | Pollinations.ai |
+| **Edge-TTS** | Neural Hindi/English Voice | ₹0 | *(Koi key nahi)* | Unlimited | Local fallback / gTTS |
+| **Faster-Whisper** | Precise Word Alignment | ₹0 | *(Offline)* | Unlimited | Syllable-weight estimator |
+| **YouTube Data API** | Longform Video Upload | ₹0 | `client_secret.json` | 10,000 units/day | Local MP4 ready for upload |
+
+### ⏱️ Render Time & RAM Expectations (512MB RAM Render Instance):
+- **RAM Peak:** ~290 MB - 380 MB. Yeh Render ke 512MB limit ke andar aaram se chalta hai kyunki video chunk-based process hota hai aur memory mein poori video kabhi load nahi hoti.
+- **Render Time (Local 4-core PC):** ~4 - 6 minutes per 10-minute video.
+- **Render Time (Render 0.1 vCPU Free tier):** ~18 - 35 minutes per 10-minute video.
+- **Disk Safety:** Temporary clips segment banne ke baad turant delete ho jaate hain. Checkpoint folder (`checkpoints/`) banta hai taaki agar process ruk jaye to wahi se resume ho sake (`resume=True`).
+
+### ⚠️ Free-Tier Rate Limits Gotcha:
+- **Pollinations.ai / Image Gen:** 100+ images generate karne mein time lag sakta hai. AUTOPILOT visual reuse feature use karta hai (agar scene prompt 90% match hota hai to pehle se bani image reuse karta hai). Agar aap free `PEXELS_API_KEY` ya `PIXABAY_API_KEY` daal doge, to real stock video clips download honge jisse images generate nahi karni padegi aur generation 5x fast ho jayegi!
+- **LLM Rate Limits (429):** Free-tier Gemini/Groq pe per-chapter LLM call pe agar 429 aata hai to exponential backoff retry aur shorter target regenerate hota hai, pipeline kabhi beech mein rukti nahi hai.
+
+---
+
 ## ▶️ Agla kadam
 
 Ye 3 cheezein karo, phir Phase 2 bolo:

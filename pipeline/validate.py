@@ -198,14 +198,9 @@ def validate(video_path: str | Path, *, manifest: dict | None = None,
     v = next((s for s in streams if s.get("codec_type") == "video"), None)
     a = next((s for s in streams if s.get("codec_type") == "audio"), None)
 
-    if not v:
-        rep.add("FATAL", "NO_VIDEO", "Video stream hi nahi mili — file corrupt hai",
-                "Dobara render karo: python run.py --render-only <id>")
-        return rep
-
-    dur = float(info.get("format", {}).get("duration", 0) or v.get("duration", 0) or 0)
-    w = int(v.get("width", 0) or 0)
-    h = int(v.get("height", 0) or 0)
+    dur = float(info.get("format", {}).get("duration", 0) or (v.get("duration", 0) if v else 0) or 0)
+    w = int(v.get("width", 0) if v else 0)
+    h = int(v.get("height", 0) if v else 0)
 
     # Determine profile
     prof_name = None
@@ -229,8 +224,14 @@ def validate(video_path: str | Path, *, manifest: dict | None = None,
     limits = get_validation_limits(prof_name)
     rep.facts["profile"] = prof_name
 
+    # ---------- content (manifest) ----------
     if manifest:
         _check_content(rep, manifest, dur=dur, limits=limits)
+
+    if not v:
+        rep.add("FATAL", "NO_VIDEO", "Video stream hi nahi mili — file corrupt hai",
+                "Dobara render karo: python run.py --render-only <id>")
+        return rep
 
     _check_video_stream(rep, v, limits)
     _check_audio_stream(rep, a, v_dur=dur, limits=limits)

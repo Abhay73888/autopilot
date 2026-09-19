@@ -44,7 +44,7 @@ youtube_channel:   "https://youtube.com/channel/UCOvDjaHzT3kUgJinQV_4vDQ"
 monthly_budget_inr: 0                     # ZERO — sirf free tiers
 
 # ============ AUTONOMY ============
-autonomy: "auto_publish"                  # review_first | auto_publish
+autonomy: "review_first"                  # review_first | auto_publish
 review_first_count: 20                    # pehle 20 video manually approve honge
 
 # ============ RUNTIME ============
@@ -86,12 +86,12 @@ effects:
     master_limiter: true
   visual:
     color_grade: true             # Cheap: single color balance pass
-    film_grain: false             # DISABLED: per-frame noise filter kills RAM on 512MB cloud
-    vignette_pulse: false         # DISABLED: sin(t) eval=frame expensive on fractional vCPU
-    camera_shake: false           # DISABLED: per-frame crop math - OOM risk on Render free
+    film_grain: true              # 35mm subtle grain
+    vignette_pulse: true          # Dynamic vignette oscillation
+    camera_shake: true            # Cinematic micro-shake on intense beats
     flash_cut: true               # Cheap: single fade at start
     speed_ramp: false
-    breathing: false              # DISABLED: per-frame scale eval - too heavy for cloud
+    breathing: true               # Subtle organic breathing motion
     layered_scenes: false
     particles: false
   character_consistency:

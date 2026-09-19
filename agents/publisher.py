@@ -95,6 +95,7 @@ class YouTubePublisher:
         row = self.db.get_video(video_id)
         if not row:
             raise PublishError(f"Video #{video_id} DB mein nahi hai")
+        row = dict(row)
 
         # ---------- GATE 1: approval (review_first) ----------
         # Ye sabse pehle — agar insaan ne approve nahi kiya to file check karne ka
@@ -364,8 +365,9 @@ class YouTubePublisher:
 
     # ==================================================================
     def _build_metadata(self, row, privacy: str, publish_at: str | None) -> dict:
-        script = json.loads(row["script_json"] or "{}")
-        tags = json.loads(row["hashtags"] or "[]")
+        row = dict(row)
+        script = json.loads(row.get("script_json") or "{}")
+        tags = json.loads(row.get("hashtags") or "[]")
         profile = script.get("profile") or row.get("profile") or CONFIG.get("active_profile", "shorts")
         is_longform = (profile == "longform") or bool(script.get("chapters"))
 

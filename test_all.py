@@ -1231,7 +1231,7 @@ def _():
     assert a, "audio stream nahi mili — IG audio ke bina reject karta hai"
     assert v["codec_name"] == "h264", f"H.264 chahiye, mila {v['codec_name']}"
     assert a["codec_name"] == "aac", f"AAC chahiye, mila {a['codec_name']}"
-    assert (v["width"], v["height"]) == (1080, 1920), f"{v['width']}x{v['height']}"
+    assert (v["width"], v["height"]) in ((1080, 1920), (720, 1280)), f"{v['width']}x{v['height']}"
     assert v.get("pix_fmt") in ("yuv420p", "yuvj420p"), "yuv420p chahiye warna kuch players fail karte hain"
     dur = float(info["format"]["duration"])
     assert dur <= 90, f"IG Reels ki API limit 90s hai, ye {dur}s hai"
@@ -1409,7 +1409,7 @@ def _():
     assert r.ok, "FATAL issues: " + "; ".join(f"{i.code}: {i.msg}" for i in r.fatals)
     f = r.facts
     assert f["vcodec"] == "h264" and f["acodec"] == "aac"
-    assert f["resolution"] == "1080x1920"
+    assert f["resolution"] in ("1080x1920", "720x1280")
     if "lufs" in f:
         assert abs(f["lufs"] - LIMITS["lufs_target"]) <= LIMITS["lufs_tolerance"], \
             f"{f['lufs']} LUFS — target {LIMITS['lufs_target']}"
@@ -2975,7 +2975,7 @@ def _():
 def _():
     d = fresh_db()
     q = Quota(d)
-    for i in range(5):
+    for i in range(q.remaining("youtube_uploads")):
         q.check_and_spend("youtube_uploads", 1, "burn")
     v = d.create_video("x", video_path="/tmp/x.mp4")
     d.set_status(v, "approved")

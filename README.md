@@ -729,6 +729,86 @@ uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 
 ---
 
+## 🎬 Long-Form Mode (10 to 60 Minutes)
+
+AUTOPILOT supports end-to-end autonomous production of **10 to 60 minute widescreen videos** (default 10 minutes = 600s, 1920x1080 16:9) in addition to 32s Shorts.
+
+### 🚀 Commands to Run Long-Form
+```bash
+# 1. Produce a 10-minute longform video with custom topic
+python run.py --profile longform --minutes 10 --topic "The 1911 Train That Disappeared Into Thin Air"
+
+# 2. Test longform pipeline offline without making network calls (dry-run)
+python run.py --profile longform --minutes 10 --dry-run
+
+# 3. Custom duration (e.g. 25 minutes)
+python run.py --profile longform --minutes 25 --topic "Ancient Indian Astronomy Secrets"
+
+# 4. Generate only phase 2 (script + narration + visuals)
+python run_phase2.py --profile longform --minutes 10 --topic "The Room Untouched for 40 Years"
+```
+
+### 🧠 Autonomous Long-Form Architecture
+1. **Chaptered Multi-Beat Scripting (`agents/writer.py`)**:
+   - Outlining: 1 LLM call designs an outline of $N = \max(5, \text{round}(\text{sec}/90))$ chapters with target seconds and narrative beats.
+   - Chapter Narration: Generates ~2.6 words/sec per chapter with continuity summaries from prior chapters. Keeps prompts small and resilient to context window truncation.
+   - Fault Tolerance: Exponential backoff on free-tier 429 rate limits, auto-fallback to deterministic chapter filler if an LLM is unreachable.
+2. **Scalable Visual Direction & Visual Reuse (`agents/artdirector.py`)**:
+   - 100+ scenes calculated dynamically based on profile (`sec_per_scene: 6.0`), clamped 6..400.
+   - Generates prompts in batches of $\le 12$ scenes with a persistent character visual anchor.
+   - Visual Reuse: skips redundant image generation for scenes $>90\%$ similar to earlier scenes to conserve free API rate limits.
+3. **Free B-Roll Provider (`agents/stockfootage.py`)**:
+   - Queries Pexels Video API and Pixabay Video API (both free, keys optional).
+   - Downloads $\le 1080$p MP4 clips to `data/stock_cache/`.
+   - Seamlessly blends stock video clips with AI generated images, falling back silently if keys are absent.
+4. **Chunked Neural TTS Narration (`agents/voice.py`)**:
+   - Splits script at sentence boundaries into chunks $\le 1200$ characters.
+   - Synthesizes each chunk via Microsoft Edge-TTS (free, zero keys) into WAV chunks.
+   - Measures exact duration of each chunk using `ffprobe` and concatenates them with the FFmpeg concat demuxer.
+   - Optional offline syllable alignment with `faster-whisper` (gracefully falls back if not installed).
+5. **Segmented FFmpeg Compositor (`pipeline/render.py`)**:
+   - Solves the single-filter graph limit by rendering scene clips and crossfading them in batches of 8 into segment files.
+   - Merges segments with `-c copy` using the FFmpeg concat demuxer (zero re-encoding on final join).
+   - Burns bottom-centered "clean" longform subtitles and mixes audio on final pass.
+   - Temporary clips deleted immediately after segment generation to guarantee low disk usage.
+   - Checkpoint directory (`output/video_XXXX/checkpoints/`) enables instant `resume=True`.
+6. **YouTube Longform Metadata & Chapters (`agents/metadata.py` & `agents/publisher.py`)**:
+   - Generates automatic YouTube description timestamps starting with `00:00 Intro` across all chapters.
+   - Strips `#shorts` tags, generates custom 1280x720 cover thumbnails, and sets `thumbnails.set`.
+   - Invariant: YouTube comments are **100% ENABLED** (`selfDeclaredMadeForKids = False`).
+
+### 🆓 100% Free API Key Matrix
+Every single external key is **OPTIONAL**. The pipeline runs without crashing if any or all keys are missing:
+
+| Service | Category | Monthly Cost | Env Variable | Free Limits | Graceful Fallback |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Google Gemini Free** | Script & Direction | **₹0** | `GEMINI_API_KEY` | 15 RPM, 1M TPM | Groq / MockLLM |
+| **Groq Free** | LLM Fallback | **₹0** | `GROQ_API_KEY` | 30 RPM, 14.4k RPD | Gemini / MockLLM |
+| **Pollinations.ai** | AI Visuals | **₹0** | *(None needed)* | Unlimited | Local gradient card |
+| **Hugging Face Free** | Visual Fallback | **₹0** | `HF_TOKEN` | Free inference tier | Pollinations.ai |
+| **Pexels Video API** | Real Stock B-Roll | **₹0** | `PEXELS_API_KEY` | 200 req/hour, 20k/month | Pixabay / AI Imagegen |
+| **Pixabay Video API** | Real Stock B-Roll | **₹0** | `PIXABAY_API_KEY` | 100 req/minute | Pexels / AI Imagegen |
+| **Microsoft Edge-TTS**| Neural Voiceover | **₹0** | *(None needed)* | Unlimited | Local fallback / gTTS |
+| **Faster-Whisper** | Audio Alignment | **₹0** | *(None needed)* | Offline local model | Syllable-weight estimator |
+| **YouTube Data API** | Auto-Publishing | **₹0** | `client_secret.json` | 10,000 units / day | Local MP4 export |
+
+### ⏱️ Performance & RAM Estimates (Render 512MB Free Tier)
+
+| Metric | Shorts (32s) | Long-Form (10m / 600s) | Long-Form (30m / 1800s) |
+| :--- | :--- | :--- | :--- |
+| **Resolution** | 720x1280 (9:16) | 1920x1080 (16:9) | 1920x1080 (16:9) |
+| **Scenes** | 6 - 8 scenes | ~100 scenes | ~300 scenes |
+| **Audio Chunks** | 1 chunk | ~12 - 16 chunks | ~36 - 48 chunks |
+| **Peak RAM** | ~180 MB | **~290 MB - 380 MB** (Well within 512MB limit) | ~340 MB - 420 MB |
+| **Local Render Time (4 cores)** | ~20 seconds | ~4 - 6 minutes | ~12 - 18 minutes |
+| **Render.com Free (0.1 vCPU)** | ~50 seconds | ~18 - 32 minutes | ~55 - 90 minutes |
+| **Disk Temporary Peak** | ~25 MB | ~350 MB (auto-cleaned after segment joins) | ~900 MB |
+
+> [!TIP]
+> **Rate-Limit Pro-Tip**: When generating 100+ scenes on free tiers, Pollinations or LLM free tiers may throttle requests under heavy load. AUTOPILOT handles this transparently with exponential backoff and visual reuse. Adding free `PEXELS_API_KEY` and `PIXABAY_API_KEY` speeds up runs dramatically by downloading instant stock video clips instead of generating 100 separate AI images.
+
+---
+
 ## 💬 Discord Integration & Bot Automation
 
 AUTOPILOT includes an enterprise-grade Discord integration system designed for multi-tenant SaaS operation. It bridges creator communities directly into the autonomous video assembly line via **OAuth2 connection**, **live Discord embeds**, **fallback Webhooks**, and **autonomous Bot slash commands**.

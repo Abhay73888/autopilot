@@ -153,6 +153,27 @@ class MockLLM:
                         "role": "body"
                     })
             return {"lines": lines}
+        if "scene" in p or "image" in p or "art" in p:
+            start_n, end_n = 1, 7
+            m_range = re.search(r"scenes?\s*(\d+)\s*to\s*(\d+)", p)
+            m_count = re.search(r"(\d+)\s*scenes", p)
+            if m_range:
+                start_n, end_n = int(m_range.group(1)), int(m_range.group(2))
+            elif m_count:
+                cnt = min(400, max(1, int(m_count.group(1))))
+                start_n, end_n = 1, cnt
+            return {
+                "character": "a 30-year-old Indian detective in a worn jacket, tired eyes, sharp focus",
+                "setting": "an atmospheric mysterious corridor with dramatic shadows",
+                "scenes": [
+                    {"n": i,
+                     "beat": f"Scene {i} unfolding discovery",
+                     "prompt": f"flat 2D cartoon, noir shadows, teal-orange, scene {i}",
+                     "image_prompt": f"cinematic noir scene {i}, dramatic lighting, character visible, no text",
+                     "motion": ["zoom_in", "pan_left", "zoom_out", "pan_right", "punch_in"][i % 5]}
+                    for i in range(start_n, end_n + 1)
+                ]
+            }
         if "hook" in p or "script" in p or "writer" in p:
             return {
                 "title": f"Wo raat jab sab kuch badal gaya #{h}",
@@ -178,11 +199,6 @@ class MockLLM:
                 "caption": f"Case #{h} — abhi tak unsolved.",
                 "hashtags": ["#unsolvedmystery", "#suspensestory", "#hindistory"],
             }
-        if "scene" in p or "image" in p or "art" in p:
-            return {"scenes": [
-                {"n": i, "prompt": f"flat 2D cartoon, noir shadows, teal-orange, scene {i}",
-                 "motion": ["zoom_in", "pan_left", "zoom_out", "pan_right"][i % 4]}
-                for i in range(1, 7)]}
         return {"mock": True, "hash": h}
 
 

@@ -68,5 +68,33 @@ class TestWriterLongform(unittest.TestCase):
         self.assertEqual(script["lines"][-1]["role"], "ending")
 
 
+class TestArtDirectorScaling(unittest.TestCase):
+    def test_artdirector_scaling(self):
+        from core.db import DB
+        from core.llm import LLM
+        from agents.artdirector import ArtDirector
+
+        db = DB()
+        llm = LLM(force_mock=True)
+        art = ArtDirector(db=db, llm=llm)
+
+        script_600 = {
+            "target_length_sec": 600,
+            "profile": "longform",
+            "lines": [{"speaker": "narrator", "text": f"Line {i} of longform narration."} for i in range(150)],
+            "hook_line": "Opening hook line.",
+            "ending": "Closing ending line."
+        }
+
+        plan_res = art.plan(script_600)
+        n_scenes = plan_res.get("n_scenes") or len(plan_res.get("scenes", []))
+
+        # Assertions: 600s with 6.0 sec/scene -> 100 scenes, definitely not clamped at 8!
+        self.assertGreater(n_scenes, 20, f"Expected >20 scenes for 600s, got {n_scenes} (was clamped!)")
+        self.assertAlmostEqual(n_scenes, 100, delta=10)
+        self.assertTrue(plan_res.get("character"))
+        self.assertTrue(plan_res.get("scenes"))
+
+
 if __name__ == "__main__":
     unittest.main()

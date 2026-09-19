@@ -55,6 +55,18 @@ class ImageGen:
         results = []
         for sc in scenes:
             path = out_dir / sc["file"]
+            # Visual reuse check (>0.9 similarity from earlier scene)
+            if sc.get("reuse_from") and sc.get("reuse_file"):
+                src_path = out_dir / sc["reuse_file"]
+                if src_path.exists() and src_path.stat().st_size > 5000:
+                    import shutil
+                    shutil.copy(src_path, path)
+                    log.info(f"Visual reuse: {sc['reuse_file']} -> {sc['file']}")
+                    self.stats.setdefault("pollinations", {"ok": 0, "fail": 0})
+                    self.stats["pollinations"]["ok"] += 1
+                    results.append({**sc, "path": str(path), "provider": "reused", "seed": sc.get("seed", 42)})
+                    continue
+
             # Cache check: agar valid REAL image maujood hai to reuse karo (ignore tiny placeholder cards)
             if path.exists() and path.stat().st_size > 42000:
                 log.info(f"Image {sc['file']} already exists ({path.stat().st_size // 1024} KB), reusing.")

@@ -17,10 +17,12 @@ Motion directions bhi yahi decide karta hai (Ken Burns) — direction ALTERNATE 
 
 from __future__ import annotations
 
+from difflib import SequenceMatcher
 import json
+import math
 import re
 
-from core.config import CONFIG
+from core.config import CONFIG, get_profile
 from core.db import DB
 from core.llm import LLM
 from core.logbook import Logbook
@@ -171,7 +173,7 @@ class ArtDirector:
 
     # ------------------------------------------------------------------
     def direct(self, script: dict, template_id: str | None = None,
-               n_scenes: int | None = None, pacing: str | None = None,
+               pacing: str | None = None, n_scenes: int | None = None,
                video_id: int | None = None) -> dict:
         """
         Script -> scene list.
@@ -182,12 +184,16 @@ class ArtDirector:
         tpl = TEMPLATES[template_id]
 
         lines = _script_lines(script)
-        # Scene count: har scene ~4-5s. 32s video = ~7 scenes. Clamp 6-8.
+        # Scene count: total_sec / sec_per_scene, clamped 6..400
         if n_scenes is None:
-            n_scenes = max(6, min(8, round(script.get("target_length_sec", 32) / 4.5)))
-        n_scenes = max(6, min(8, n_scenes))
+            total_sec = script.get("target_length_sec") or script.get("est_sec") or CONFIG.get("video_length_sec", 32)
+            prof = get_profile(script.get("profile") or ("longform" if total_sec >= 120 else "shorts"))
+            sec_per_scene = float(prof.get("sec_per_scene", 4.5 if total_sec < 120 else 6.0))
+            n_scenes = math.ceil(total_sec / sec_per_scene)
+        n_scenes = max(6, min(400, int(n_scenes)))
 
-        prompt = f"""Tum ek art director ho jo cartoon suspense shorts banata hai.
+        if n_scenes <= 12:
+            prompt = f"""Tum ek art director ho jo cartoon suspense shorts banata hai.
 
 STORY (spoken lines, kramvaar):
 {json.dumps(lines, ensure_ascii=False, indent=2)}
@@ -218,9 +224,76 @@ Sirf JSON return karo:
       "image_prompt": "English visual description, 25-45 shabd, koi text nahi"}}
   ]
 }}"""
+            data = self.llm.json(prompt)
+        else:
+            # Batch prompt generation: max 12 scenes per LLM call
+            batch_1_count = min(12, n_scenes)
+            prompt_1 = f"""Tum ek art director ho jo longform suspense visual documentary banata hai.
 
-        data = self.llm.json(prompt)
+STORY (first part of spoken lines):
+{json.dumps(lines[:min(len(lines), 20)], ensure_ascii=False, indent=2)}
+
+VISUAL STYLE (har scene mein ye exact style honi chahiye):
+{tpl['style']}
+Lighting: {tpl['lighting']}
+Camera: {tpl['camera']}
+
+KAAM:
+1. Ek MAIN CHARACTER design karo (15-25 shabd ki thos description, umar, kapde, baal).
+2. Setting design karo (8-15 shabd).
+3. First {batch_1_count} scenes generate karo (scenes 1 to {batch_1_count}).
+
+Sirf JSON return karo:
+{{
+  "character": "15-25 shabd character description",
+  "setting": "8-15 shabd setting description",
+  "scenes": [
+    {{"n": 1, "beat": "is scene mein kya ho raha hai", "image_prompt": "English visual description, 25-45 shabd, koi text nahi"}}
+  ]
+}}"""
+            data1 = self.llm.json(prompt_1)
+            character = str(data1.get("character") or "a 30-year-old Indian protagonist in a worn jacket, tired eyes")
+            setting = str(data1.get("setting") or "an atmospheric mysterious setting with dramatic shadows")
+            all_raw_scenes = list(data1.get("scenes") or [])
+
+            # Subsequent batches of max 12 scenes
+            batch_size = 12
+            for b_start in range(13, n_scenes + 1, batch_size):
+                b_end = min(n_scenes, b_start + batch_size - 1)
+                l_start = min(len(lines)-1, int((b_start - 1) / n_scenes * len(lines)))
+                l_end = min(len(lines), int(b_end / n_scenes * len(lines)) + 1)
+                b_lines = lines[l_start:l_end]
+
+                b_prompt = f"""Art director scene generator for longform documentary.
+VISUAL STYLE: {tpl['style']}
+CHARACTER VISUAL ANCHOR: {character}
+SETTING: {setting}
+STORY SEGMENT:
+{json.dumps(b_lines, ensure_ascii=False, indent=2)}
+
+Generate scenes {b_start} to {b_end}. Har scene prompt mein character anchor include karo.
+Sirf JSON return karo:
+{{
+  "scenes": [
+    {{"n": {b_start}, "beat": "scene beat", "image_prompt": "visual description with character anchor, no text"}}
+  ]
+}}"""
+                try:
+                    b_res = self.llm.json(b_prompt)
+                    if isinstance(b_res, dict) and b_res.get("scenes"):
+                        all_raw_scenes.extend(b_res["scenes"])
+                except Exception as e:
+                    log.warn(f"Scene batch {b_start}..{b_end} fail: {e}")
+
+            data = {
+                "character": character,
+                "setting": setting,
+                "scenes": all_raw_scenes
+            }
+
         return self._build(data, script, template_id, n_scenes, lines, pacing=pacing, video_id=video_id)
+
+    plan = direct
 
     # ------------------------------------------------------------------
     def _build(self, data: dict, script: dict, template_id: str,
@@ -353,6 +426,17 @@ Sirf JSON return karo:
             scenes[3]["pacing"] = "fast"
             scenes[4]["pacing"] = "fast"
 
+        # Visual reuse: if a scene prompt is >0.9 similar to an earlier one, mark for reuse
+        for i, sc in enumerate(scenes):
+            p_curr = sc["image_prompt"]
+            for j in range(i):
+                p_prev = scenes[j]["image_prompt"]
+                sim = SequenceMatcher(None, p_curr.lower(), p_prev.lower()).ratio()
+                if sim > 0.9:
+                    sc["reuse_from"] = scenes[j]["n"]
+                    sc["reuse_file"] = scenes[j]["file"]
+                    break
+
         out = {
             "template_id": template_id,
             "template_name": tpl["name"],
@@ -376,6 +460,10 @@ def _clean(text: str) -> str:
 
 
 def _script_lines(script: dict) -> list[str]:
+    if "lines" in script and isinstance(script["lines"], list) and script["lines"]:
+        return [l["text"] if isinstance(l, dict) else str(l)
+                for l in script["lines"]
+                if (l.get("text") if isinstance(l, dict) else str(l)).strip()]
     return [p.strip() for p in [script.get("hook_line", ""),
                                 *(script.get("body") or []),
                                 script.get("ending", "")] if p and p.strip()]

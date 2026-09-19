@@ -32,7 +32,7 @@ from core.logbook import Logbook
 log = Logbook("validate")
 
 # ---------------------------------------------------------------------
-# LIMITS — ye Section 2 ke verified numbers hain, guess nahi
+# LIMITS — verified numbers for Shorts and Longform profiles
 # ---------------------------------------------------------------------
 LIMITS = {
     # Instagram Reels (API)
@@ -50,6 +50,59 @@ LIMITS = {
     "lufs_tolerance": 1.5,     # -15.5 se -12.5 tak theek hai
     "true_peak_max": -0.5,     # isse upar clipping ka risk
 }
+
+SHORTS_LIMITS = {
+    "profile_name": "shorts",
+    "min_sec": 3,
+    "max_sec": 90,
+    "ig_max_sec": 90,
+    "ig_min_sec": 3,
+    "ig_max_mb": 100,
+    "ig_fps_min": 23,
+    "ig_fps_max": 60,
+    "yt_shorts_max_sec": 60,
+    "sweet_min_sec": 22,
+    "sweet_max_sec": 45,
+    "size_warn_mb": 60,
+    "size_max_mb": 100,
+    "lufs_target": -14.0,
+    "lufs_tolerance": 1.5,
+    "true_peak_max": -0.5,
+}
+
+LONGFORM_LIMITS = {
+    "profile_name": "longform",
+    "min_sec": 480,             # min 8 minutes
+    "max_sec": 3600,            # max 60 minutes
+    "size_warn_mb": 1024,       # raised to 1024MB
+    "size_max_mb": 16384,       # 16GB upper bound
+    "fps_min": 23,
+    "fps_max": 60,
+    "lufs_target": -14.0,
+    "lufs_tolerance": 1.5,
+    "true_peak_max": -0.5,
+    "max_silence_gap_sec": 2.0,
+}
+
+
+def get_validation_limits(profile: str | dict | None = None) -> dict:
+    """Return profile-driven validation limits dictionary."""
+    if isinstance(profile, dict):
+        prof_name = profile.get("profile_name") or profile.get("name", "shorts")
+    elif isinstance(profile, str):
+        prof_name = profile
+    else:
+        prof_name = CONFIG.get("active_profile", "shorts")
+
+    prof_name = str(prof_name).strip().lower()
+    if prof_name == "longform":
+        m = dict(LIMITS)
+        m.update(LONGFORM_LIMITS)
+        return m
+    else:
+        m = dict(LIMITS)
+        m.update(SHORTS_LIMITS)
+        return m
 
 
 @dataclass
@@ -118,10 +171,11 @@ class Report:
 
 # =====================================================================
 def validate(video_path: str | Path, *, manifest: dict | None = None,
-             deep: bool = True) -> Report:
+             deep: bool = True, profile: str | dict | None = None) -> Report:
     """
     Ek video ko poori tarah check karo.
-    deep=False -> sirf format check (tez). deep=True -> loudness + black frames bhi.
+    deep=False -> sirf format check (tez). deep=True -> loudness + black frames + silence checks bhi.
+    profile='shorts' | 'longform' (defaults to manifest/config/auto-detect).
     """
     p = Path(video_path)
     rep = Report(path=str(p))
@@ -138,9 +192,6 @@ def validate(video_path: str | Path, *, manifest: dict | None = None,
                 "Render fail hua tha. Logs dekho aur dobara render karo.")
         return rep
 
-    if manifest:
-        _check_content(rep, manifest)
-
     # ---------- container + streams ----------
     info = probe(p)
     streams = info.get("streams", [])
@@ -152,42 +203,88 @@ def validate(video_path: str | Path, *, manifest: dict | None = None,
                 "Dobara render karo: python run.py --render-only <id>")
         return rep
 
-    _check_video_stream(rep, v)
-    _check_audio_stream(rep, a)
-    _check_duration(rep, info, v)
-    _check_size(rep, size_mb)
+    dur = float(info.get("format", {}).get("duration", 0) or v.get("duration", 0) or 0)
+    w = int(v.get("width", 0) or 0)
+    h = int(v.get("height", 0) or 0)
+
+    # Determine profile
+    prof_name = None
+    if isinstance(profile, str):
+        prof_name = profile.lower()
+    elif isinstance(profile, dict):
+        prof_name = profile.get("profile_name") or profile.get("name")
+
+    if not prof_name and manifest:
+        prof_name = manifest.get("profile") or manifest.get("active_profile")
+        if not prof_name and manifest.get("script", {}).get("chapters"):
+            prof_name = "longform"
+
+    # Auto-detect longform if duration >= 480s or 16:9 horizontal with dur >= 180s
+    if not prof_name or prof_name == "shorts":
+        if dur >= 480 or (w > h and dur >= 180):
+            prof_name = "longform"
+        else:
+            prof_name = prof_name or CONFIG.get("active_profile", "shorts")
+
+    limits = get_validation_limits(prof_name)
+    rep.facts["profile"] = prof_name
+
+    if manifest:
+        _check_content(rep, manifest, dur=dur, limits=limits)
+
+    _check_video_stream(rep, v, limits)
+    _check_audio_stream(rep, a, v_dur=dur, limits=limits)
+    _check_duration(rep, info, v, limits)
+    _check_size(rep, size_mb, limits)
     _check_container(rep, p)
 
     if deep:
         _check_loudness(rep, p)
         _check_black_frames(rep, p)
         _check_first_frame(rep, p)
+        _check_silence_gaps(rep, p, limits)
 
     return rep
 
 
 # ---------------------------------------------------------------------
-def _check_video_stream(rep: Report, v: dict):
+def _check_video_stream(rep: Report, v: dict, limits: dict | None = None):
+    limits = limits or LIMITS
+    is_longform = limits.get("profile_name") == "longform"
+
     codec = v.get("codec_name", "?")
     rep.facts["vcodec"] = codec
     if codec != "h264":
         rep.add("FATAL", "IG_CODE_24", 
                 f"Video codec '{codec}' hai, H.264 chahiye. "
-                f"Instagram error code 24 dega (format reject).",
+                f"Platform error code 24 dega (format reject).",
                 "render_spec mein vcodec: libx264 rakho")
 
     w, h = v.get("width", 0), v.get("height", 0)
     rep.facts["resolution"] = f"{w}x{h}"
-    if (w, h) != (1080, 1920):
+
+    if is_longform:
+        if w == 0 or h == 0:
+            rep.add("FATAL", "RESOLUTION", "Video resolution 0 hai")
+        elif h > w:
+            rep.add("FATAL", "RESOLUTION",
+                    f"Resolution {w}x{h} vertical hai. Longform video 16:9 horizontal hona chahiye.",
+                    "render_spec mein resolution: 1920x1080 rakho")
+        elif (w, h) != (1920, 1080) and (w, h) != (1280, 720):
+            rep.add("WARN", "RESOLUTION", f"Resolution {w}x{h} hai, 1920x1080 ya 1280x720 recommended hai")
+        if w and h and abs(w / h - 16 / 9) > 0.05:
+            rep.add("WARN", "ASPECT", f"Aspect ratio {w/h:.3f} hai, 1.778 (16:9) chahiye")
+    else:
         want = CONFIG.get("resolution", "1080x1920")
         level = "FATAL" if (w == 0 or h == 0 or w > h) else "WARN"
-        rep.add(level, "RESOLUTION",
-                f"Resolution {w}x{h} hai, {want} chahiye. "
-                + ("Horizontal video Reels/Shorts mein kaam nahi karta!" if w > h else ""),
-                "config.yaml mein resolution: 1080x1920")
-    if w and h and abs(w / h - 9 / 16) > 0.02:
-        rep.add("WARN", "ASPECT", f"Aspect ratio {w/h:.3f} hai, 0.5625 (9:16) chahiye",
-                "9:16 ke bahar Shorts feed mein crop ya pillarbox hota hai")
+        if (w, h) != (1080, 1920) and (w, h) != (720, 1280):
+            rep.add(level, "RESOLUTION",
+                    f"Resolution {w}x{h} hai, {want} chahiye. "
+                    + ("Horizontal video Reels/Shorts mein kaam nahi karta!" if w > h else ""),
+                    "config.yaml mein resolution: 1080x1920")
+        if w and h and abs(w / h - 9 / 16) > 0.02:
+            rep.add("WARN", "ASPECT", f"Aspect ratio {w/h:.3f} hai, 0.5625 (9:16) chahiye",
+                    "9:16 ke bahar Shorts feed mein crop ya pillarbox hota hai")
 
     if v.get("pix_fmt") and v["pix_fmt"] not in ("yuv420p", "yuvj420p"):
         rep.add("WARN", "PIX_FMT", f"Pixel format '{v['pix_fmt']}' hai, yuv420p chahiye",
@@ -196,70 +293,107 @@ def _check_video_stream(rep: Report, v: dict):
     fps = _parse_fps(v.get("r_frame_rate"))
     if fps:
         rep.facts["fps"] = round(fps, 2)
-        if fps < LIMITS["ig_fps_min"] or fps > LIMITS["ig_fps_max"]:
+        fps_min = limits.get("fps_min", limits.get("ig_fps_min", 23))
+        fps_max = limits.get("fps_max", limits.get("ig_fps_max", 60))
+        if fps < fps_min or fps > fps_max:
             rep.add("FATAL", "IG_FPS",
-                    f"{fps:.1f} fps hai. Instagram sirf "
-                    f"{LIMITS['ig_fps_min']}-{LIMITS['ig_fps_max']} fps leta hai.",
+                    f"{fps:.1f} fps hai. Supported range {fps_min}-{fps_max} fps hai.",
                     "render_spec mein fps: 30 rakho")
 
 
-def _check_audio_stream(rep: Report, a: dict | None):
+def _check_audio_stream(rep: Report, a: dict | None, v_dur: float = 0, limits: dict | None = None):
     if not a:
         rep.add("FATAL", "NO_AUDIO",
-                "Audio stream nahi hai! Instagram bina audio ke Reel reject karta hai, "
-                "aur YouTube pe silent video ki retention zero hoti hai.",
+                "Audio stream nahi hai! Bina audio ke video publish mat karo.",
                 "TTS fail hua hoga — logs dekho, `pip install edge-tts`")
         return
     codec = a.get("codec_name", "?")
     rep.facts["acodec"] = codec
-    if codec != "aac":
+    if codec not in ("aac", "mp3"):
         rep.add("FATAL", "IG_CODE_24",
-                f"Audio codec '{codec}' hai, AAC chahiye. Instagram error code 24 dega.",
+                f"Audio codec '{codec}' hai, AAC chahiye. Platform format reject karega.",
                 "render_spec mein acodec: aac rakho")
     sr = a.get("sample_rate")
     if sr and int(sr) not in (44100, 48000):
         rep.add("WARN", "SAMPLE_RATE", f"Sample rate {sr} Hz hai, 44100 ya 48000 chahiye")
 
+    # New check: audio track present for full duration
+    a_dur_val = a.get("duration")
+    if a_dur_val and v_dur > 0:
+        try:
+            a_dur = float(a_dur_val)
+            rep.facts["audio_duration_sec"] = round(a_dur, 2)
+            if a_dur < (v_dur - 3.0):
+                rep.add("FATAL", "AUDIO_CUTOFF",
+                        f"Audio duration ({a_dur:.1f}s) video duration ({v_dur:.1f}s) se kam hai — audio poori duration tak nahi hai!",
+                        "Narration track aur audio muxing check karo")
+        except (ValueError, TypeError):
+            pass
 
-def _check_duration(rep: Report, info: dict, v: dict):
-    dur = float(info.get("format", {}).get("duration", 0) or 0)
+
+def _check_duration(rep: Report, info: dict, v: dict, limits: dict | None = None):
+    limits = limits or LIMITS
+    is_longform = limits.get("profile_name") == "longform"
+
+    dur = float(info.get("format", {}).get("duration", 0) or v.get("duration", 0) or 0)
     if not dur:
         rep.add("WARN", "NO_DURATION", "Duration detect nahi hui (ffprobe missing?)")
         return
     rep.facts["duration_sec"] = round(dur, 2)
 
-    if dur > LIMITS["ig_max_sec"]:
-        rep.add("FATAL", "IG_TOO_LONG",
-                f"{dur:.1f}s hai. Instagram API ki HARD limit {LIMITS['ig_max_sec']}s hai "
-                f"(app mein 3 min chalta hai, API mein NAHI).",
-                "config.yaml mein video_length_sec kam karo")
-    if dur < LIMITS["ig_min_sec"]:
-        rep.add("FATAL", "TOO_SHORT", f"Sirf {dur:.1f}s — koi platform ye accept nahi karega")
+    if is_longform:
+        min_sec = limits.get("min_sec", 480)
+        max_sec = limits.get("max_sec", 3600)
+        if dur < min_sec:
+            rep.add("FATAL", "TOO_SHORT",
+                    f"Sirf {dur:.1f}s — longform video kam se kam {min_sec}s (8 min) hona chahiye.")
+        elif dur > max_sec:
+            rep.add("FATAL", "TOO_LONG",
+                    f"{dur:.1f}s — maximum supported longform duration {max_sec}s (60 min) hai.")
+    else:
+        if dur > limits["ig_max_sec"]:
+            rep.add("FATAL", "IG_TOO_LONG",
+                    f"{dur:.1f}s hai. Instagram API ki HARD limit {limits['ig_max_sec']}s hai "
+                    f"(app mein 3 min chalta hai, API mein NAHI).",
+                    "config.yaml mein video_length_sec kam karo")
+        if dur < limits["ig_min_sec"]:
+            rep.add("FATAL", "TOO_SHORT", f"Sirf {dur:.1f}s — koi platform ye accept nahi karega")
 
-    if dur > LIMITS["yt_shorts_max_sec"]:
-        rep.add("WARN", "NOT_A_SHORT",
-                f"{dur:.1f}s — 60s se lamba video YouTube pe Short nahi banta, "
-                f"normal video ban jayega (alag algorithm, bilkul alag distribution).",
-                "60s se neeche rakho")
+        if dur > limits["yt_shorts_max_sec"]:
+            rep.add("WARN", "NOT_A_SHORT",
+                    f"{dur:.1f}s — 60s se lamba video YouTube pe Short nahi banta, "
+                    f"normal video ban jayega (alag algorithm, bilkul alag distribution).",
+                    "60s se neeche rakho")
 
-    lo, hi = LIMITS["sweet_min_sec"], LIMITS["sweet_max_sec"]
-    if dur < lo:
-        rep.add("WARN", "BELOW_SWEET_SPOT",
-                f"{dur:.1f}s — sweet spot {lo}-{hi}s hai. Sub-15s content 2026 mein "
-                f"collapse ho gaya (absolute watch-time bar clear nahi hota).",
-                "Writer se lamba script mangwao ya pauses badhao")
-    elif dur > hi:
-        rep.add("INFO", "ABOVE_SWEET_SPOT",
-                f"{dur:.1f}s — {hi}s se upar retention threshold (50%) miss hone lagta hai")
+        lo, hi = limits["sweet_min_sec"], limits["sweet_max_sec"]
+        if dur < lo:
+            rep.add("WARN", "BELOW_SWEET_SPOT",
+                    f"{dur:.1f}s — sweet spot {lo}-{hi}s hai. Sub-15s content 2026 mein "
+                    f"collapse ho gaya (absolute watch-time bar clear nahi hota).",
+                    "Writer se lamba script mangwao ya pauses badhao")
+        elif dur > hi:
+            rep.add("INFO", "ABOVE_SWEET_SPOT",
+                    f"{dur:.1f}s — {hi}s se upar retention threshold (50%) miss hone lagta hai")
 
 
-def _check_size(rep: Report, size_mb: float):
-    if size_mb > LIMITS["ig_max_mb"]:
-        rep.add("FATAL", "TOO_BIG", f"{size_mb:.1f} MB — Instagram upload fail hoga",
-                "CRF badhao (21 -> 24) ya --preset slow use karo")
-    elif size_mb > 60:
-        rep.add("WARN", "LARGE", f"{size_mb:.1f} MB — upload slow hoga, "
-                                 f"aur IG container timeout ho sakta hai")
+def _check_size(rep: Report, size_mb: float, limits: dict | None = None):
+    limits = limits or LIMITS
+    is_longform = limits.get("profile_name") == "longform"
+
+    if is_longform:
+        size_warn = limits.get("size_warn_mb", 1024)
+        size_max = limits.get("size_max_mb", 16384)
+        if size_mb > size_max:
+            rep.add("FATAL", "TOO_BIG", f"{size_mb:.1f} MB — video safe limit ({size_max} MB) se bada hai")
+        elif size_mb > size_warn:
+            rep.add("WARN", "LARGE", f"{size_mb:.1f} MB — 1GB se bada video hai, upload slow ho sakta hai")
+    else:
+        if size_mb > limits["ig_max_mb"]:
+            rep.add("FATAL", "TOO_BIG", f"{size_mb:.1f} MB — Instagram upload fail hoga",
+                    "CRF badhao (21 -> 24) ya --preset slow use karo")
+        elif size_mb > limits.get("size_warn_mb", 60):
+            rep.add("WARN", "LARGE", f"{size_mb:.1f} MB — upload slow hoga, "
+                                     f"aur IG container timeout ho sakta hai")
 
 
 def _check_container(rep: Report, p: Path):
@@ -271,7 +405,7 @@ def _check_container(rep: Report, p: Path):
         if b"moov" not in head and b"ftyp" in head:
             rep.add("WARN", "NO_FASTSTART",
                     "moov atom file ke shuru mein nahi hai (faststart nahi laga). "
-                    "Instagram ko video fetch karne mein zyada time lagega.",
+                    "Video fetch karne mein zyada time lagega.",
                     "ffmpeg mein -movflags +faststart add karo")
     except OSError:
         pass
@@ -372,18 +506,57 @@ def _check_first_frame(rep: Report, p: Path):
         pass
 
 
-def _check_content(rep: Report, m: dict):
+def _check_silence_gaps(rep: Report, p: Path, limits: dict | None = None):
+    """
+    Check for long silence gaps (>2.0s).
+    """
+    limits = limits or LIMITS
+    max_gap = float(limits.get("max_silence_gap_sec", 2.0))
+    try:
+        proc = subprocess.run(
+            [ffmpeg_bin(), "-hide_banner", "-i", str(p),
+             "-af", f"silencedetect=noise=-35dB:d={max_gap}",
+             "-f", "null", "-"],
+            capture_output=True, text=True, timeout=120)
+        durations = re.findall(r"silence_duration:\s*([\d.]+)", proc.stderr)
+        long_gaps = [float(d) for d in durations if float(d) > max_gap]
+        rep.facts["silence_gaps_gt_2s"] = len(long_gaps)
+        if long_gaps:
+            max_g = max(long_gaps)
+            level = "FATAL" if max_g > 10.0 else "WARN"
+            rep.add(level, "SILENCE_GAP",
+                    f"Video audio mein {len(long_gaps)} jagah >{max_gap}s ka silence gap mila "
+                    f"(sabse lamba {max_g:.1f}s). Long silence se viewer drop-off hota hai.",
+                    "Audio narration chunks aur BGM track check karo")
+    except subprocess.TimeoutExpired:
+        rep.add("INFO", "SILENCE_CHECK_TIMEOUT", "Silence check timeout — skip kiya")
+    except Exception as e:  # noqa: BLE001
+        rep.add("INFO", "SILENCE_CHECK_ERR", f"Silence check fail: {str(e)[:80]}")
+
+
+def _check_content(rep: Report, m: dict, dur: float = 0, limits: dict | None = None):
     """Manifest se content-level checks (jo file dekh kar pata nahi chalte)."""
     s = m.get("script", {})
     words = m.get("words", [])
+    limits = limits or LIMITS
+    is_longform = limits.get("profile_name") == "longform"
 
     if not words:
         rep.add("WARN", "NO_SUBTITLES",
                 "Word-level subtitles nahi hain. ~60% log sound OFF pe dekhte hain — "
                 "unke liye ye video samajh hi nahi aayega.",
                 "voice.py se timing.json bana ya nahi, check karo")
+    elif is_longform and dur > 120:
+        # Check subtitle count matches duration (roughly >= 0.5 words/sec)
+        word_count = len(words)
+        min_expected = int(dur * 0.5)
+        if word_count < min_expected:
+            rep.add("WARN", "SUBTITLE_COUNT_MISMATCH",
+                    f"Subtitle count ({word_count}) duration ({dur:.0f}s) se match nahi karta "
+                    f"(kam se kam ~{min_expected} shabd hone chahiye).",
+                    "voice.py chunked generation check karo")
 
-    if not s.get("hook_text_overlay"):
+    if not is_longform and not s.get("hook_text_overlay"):
         rep.add("WARN", "NO_HOOK_OVERLAY",
                 "Hook text overlay nahi hai (3-layer hook ka teesra layer missing)")
 
@@ -394,7 +567,7 @@ def _check_content(rep: Report, m: dict):
                 "(chhote comments algorithm ginta hi nahi)")
 
     tags = s.get("hashtags", [])
-    if len(tags) > 5:
+    if not is_longform and len(tags) > 5:
         rep.add("WARN", "TOO_MANY_TAGS", f"{len(tags)} hashtags — 3 hi kaafi hain")
 
     # placeholder images publish nahi honi chahiye (FATAL by default; WARN on cloud servers with PORT set)
@@ -438,12 +611,12 @@ def _parse_fps(rate: str | None) -> float | None:
 
 
 # =====================================================================
-def validate_dir(video_dir: str | Path, deep: bool = True) -> Report:
+def validate_dir(video_dir: str | Path, deep: bool = True, profile: str | dict | None = None) -> Report:
     """Ek output folder validate karo (manifest ke saath)."""
     d = Path(video_dir)
     mf = d / "manifest.json"
     manifest = json.loads(mf.read_text(encoding="utf-8")) if mf.exists() else None
-    return validate(d / "final.mp4", manifest=manifest, deep=deep)
+    return validate(d / "final.mp4", manifest=manifest, deep=deep, profile=profile)
 
 
 if __name__ == "__main__":

@@ -284,5 +284,91 @@ class TestSubtitlesLongform(unittest.TestCase):
             shutil.rmtree(td, ignore_errors=True)
 
 
+class TestValidateLongform(unittest.TestCase):
+    def test_validate_longform(self):
+        import tempfile
+        import shutil
+        from pathlib import Path
+        from unittest.mock import patch
+        from pipeline.validate import validate
+
+        td = Path(tempfile.mkdtemp(prefix="test_val_long_"))
+        try:
+            fake_video = td / "final.mp4"
+            fake_video.write_bytes(b"x" * 1024 * 1024)
+
+            mock_probe_data = {
+                "format": {"duration": "620.0", "size": str(1024 * 1024)},
+                "streams": [
+                    {
+                        "codec_type": "video",
+                        "codec_name": "h264",
+                        "width": 1920,
+                        "height": 1080,
+                        "r_frame_rate": "30/1",
+                        "pix_fmt": "yuv420p",
+                        "duration": "620.0",
+                    },
+                    {
+                        "codec_type": "audio",
+                        "codec_name": "aac",
+                        "sample_rate": 44100,
+                        "duration": "620.0",
+                    },
+                ],
+            }
+
+            manifest = {
+                "profile": "longform",
+                "words": [{"w": f"word_{i}", "start": i * 0.6, "end": i * 0.6 + 0.5} for i in range(500)],
+                "script": {
+                    "chapters": [
+                        {"title": "Intro", "start_sec": 0.0},
+                        {"title": "Middle", "start_sec": 200.0},
+                        {"title": "Ending", "start_sec": 500.0},
+                    ],
+                    "comment_bait": "What would you do in this mysterious room?",
+                },
+                "scenes": [{"provider": "stock"}],
+                "narration": {"engines_used": ["edge-tts"]},
+            }
+
+            with patch("pipeline.validate.probe", return_value=mock_probe_data):
+                rep = validate(fake_video, manifest=manifest, deep=False)
+
+            self.assertEqual(len(rep.fatals), 0, f"Expected 0 fatals for 620s longform, got: {rep.fatals}")
+            self.assertTrue(rep.ok)
+            codes = [i.code for i in rep.issues]
+            self.assertNotIn("IG_TOO_LONG", codes)
+            self.assertNotIn("NOT_A_SHORT", codes)
+            self.assertNotIn("BELOW_SWEET_SPOT", codes)
+            self.assertNotIn("AUDIO_CUTOFF", codes)
+
+            # Check audio cutoff detection
+            mock_probe_data_cutoff = dict(mock_probe_data)
+            mock_probe_data_cutoff["streams"] = [
+                mock_probe_data["streams"][0],
+                {"codec_type": "audio", "codec_name": "aac", "sample_rate": 44100, "duration": "300.0"},
+            ]
+            with patch("pipeline.validate.probe", return_value=mock_probe_data_cutoff):
+                rep_cutoff = validate(fake_video, manifest=manifest, deep=False)
+            cutoff_codes = [i.code for i in rep_cutoff.fatals]
+            self.assertIn("AUDIO_CUTOFF", cutoff_codes)
+
+            # Check longform min duration (480s)
+            mock_probe_short = dict(mock_probe_data)
+            mock_probe_short["format"] = {"duration": "300.0"}
+            mock_probe_short["streams"] = [
+                dict(mock_probe_data["streams"][0], duration="300.0"),
+                dict(mock_probe_data["streams"][1], duration="300.0"),
+            ]
+            with patch("pipeline.validate.probe", return_value=mock_probe_short):
+                rep_short = validate(fake_video, manifest=manifest, deep=False, profile="longform")
+            short_codes = [i.code for i in rep_short.fatals]
+            self.assertIn("TOO_SHORT", short_codes)
+        finally:
+            shutil.rmtree(td, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main()

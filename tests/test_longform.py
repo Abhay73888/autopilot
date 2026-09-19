@@ -176,5 +176,56 @@ class TestVoiceChunkedTTS(unittest.TestCase):
             shutil.rmtree(td, ignore_errors=True)
 
 
+class TestRenderBatching(unittest.TestCase):
+    def test_render_batching(self):
+        from unittest.mock import patch, MagicMock
+        from pathlib import Path
+        import tempfile
+        import shutil
+        from pipeline.render import Renderer
+
+        td = Path(tempfile.mkdtemp(prefix="test_batch_render_"))
+        try:
+            fake_manifest = {
+                "render_spec": {"resolution": "1920x1080", "fps": 30, "crf": 21},
+                "scenes": [{"n": i + 1, "dur": 6.0, "motion": "pan_left", "path": str(td / f"dummy_{i}.jpg")} for i in range(40)]
+            }
+            renderer = Renderer(fake_manifest)
+
+            # Create 40 fake clip files
+            fake_clips = []
+            for i in range(40):
+                c_path = td / f"clip_{i:04d}.mp4"
+                c_path.write_bytes(b"dummy clip content")
+                fake_clips.append(c_path)
+
+            scenes = fake_manifest["scenes"]
+            out_file = td / "video_silent.mp4"
+
+            run_calls = []
+            def fake_run(cmd, **kw):
+                run_calls.append(cmd)
+                target = cmd[-1]
+                Path(target).write_bytes(b"dummy output mp4")
+                return MagicMock(returncode=0)
+
+            with patch("pipeline.render.run", side_effect=fake_run):
+                renderer._concat_xfade_batched(fake_clips, scenes, out_file, preset="ultrafast", checkpoint_dir=td, resume=False)
+
+            # 40 clips / batch size 8 = 5 segments
+            segment_xfade_calls = [c for c in run_calls if "-filter_complex" in c]
+            self.assertEqual(len(segment_xfade_calls), 5, f"Expected 5 segment xfades, got {len(segment_xfade_calls)}")
+            for call in segment_xfade_calls:
+                input_count = sum(1 for arg in call if arg == "-i")
+                self.assertLessEqual(input_count, 8, f"Segment xfade exceeded batch limit of 8: had {input_count} inputs")
+
+            # Final call must use concat DEMUXER (-f concat -safe 0 ... -c copy)
+            final_calls = [c for c in run_calls if "-f" in c and "concat" in c and "-c" in c and "copy" in c]
+            self.assertTrue(len(final_calls) >= 1, "Final join did not use concat demuxer (-c copy)!")
+            self.assertIn(str(out_file), final_calls[-1])
+        finally:
+            shutil.rmtree(td, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main()

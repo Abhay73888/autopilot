@@ -249,9 +249,11 @@ class Renderer:
 
     # ------------------------------------------------------------------
     def render(self, out_dir: str | Path, *, preset: str = "veryfast",
-               keep_temp: bool = False) -> dict:
+               keep_temp: bool = False, resume: bool = True) -> dict:
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
+        checkpoint_dir = out_dir / "checkpoints"
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
         tmp = Path(tempfile.mkdtemp(prefix="autopilot_render_"))
 
         try:
@@ -266,18 +268,22 @@ class Renderer:
             log.info(f"Render shuru: {len(scenes)} scenes, ~{total:.1f}s, "
                      f"{self.w}x{self.h}@{self.fps}")
 
-            # ---- STEP 1: har scene ka clip ----
+            # ---- STEP 1: har scene ka clip (with checkpoints & progress logging) ----
             clips = []
             for i, sc in enumerate(scenes):
-                cp = tmp / f"clip_{i:02d}.mp4"
-                self._render_clip(sc, cp, preset, is_first=(i == 0))
+                cp = checkpoint_dir / f"clip_{i:04d}.mp4"
+                pct = int((i + 1) / len(scenes) * 100)
+                if resume and cp.exists() and cp.stat().st_size > 5000:
+                    log.info(f"scene {i+1}/{len(scenes)} ({pct}%) [cached]")
+                else:
+                    self._render_clip(sc, cp, preset, is_first=(i == 0))
+                    log.info(f"scene {i+1}/{len(scenes)} ({pct}%) ready")
                 clips.append(cp)
-                log.debug(f"clip {i+1}/{len(scenes)} ready", motion=sc["motion"],
-                          dur=f"{sc['dur']:.2f}s")
 
-            # ---- STEP 2: crossfade se jodo ----
+            # ---- STEP 2: batched crossfade + concat demuxer ----
             silent = tmp / "video_silent.mp4"
-            self._concat_xfade(clips, scenes, silent, preset)
+            self._concat_xfade_batched(clips, scenes, silent, preset,
+                                       checkpoint_dir=checkpoint_dir, resume=resume)
 
             # ---- STEP 3: subtitles ----
             sub_style = (self.m.get("subtitles") or {}).get("style") or CONFIG.get("subtitle_style", "kinetic")
@@ -384,21 +390,54 @@ class Renderer:
                 what=f"scene {sc['n']} safe fallback render", timeout=60)
 
     # ------------------------------------------------------------------
-    def _concat_xfade(self, clips: list[Path], scenes: list[dict],
-                      out: Path, preset: str):
+    def _concat_xfade_batched(self, clips: list[Path], scenes: list[dict],
+                              out: Path, preset: str,
+                              checkpoint_dir: Path | None = None,
+                              resume: bool = True):
         """
-        Sab clips ko crossfade se jodo.
-        xfade filter chain: clip0 x clip1 -> v01, v01 x clip2 -> v02, ...
+        xfade clips in BATCHES of 8 into intermediate segment files,
+        then join segments with the ffmpeg concat DEMUXER using -c copy.
+        Deletes temp clips as soon as their segment is built (disk safety).
         """
         if len(clips) == 1:
             shutil.copy(clips[0], out)
             return
-        if len(clips) > 20:
-            log.info(f"Long-form film ({len(clips)} scenes): using fast high-stability stream concat")
-            return self._concat_hard(clips, out)
+
+        batch_size = 8
+        segments = []
+        seg_dir = checkpoint_dir or out.parent
+
+        for b_idx, start_i in enumerate(range(0, len(clips), batch_size)):
+            end_i = min(len(clips), start_i + batch_size)
+            b_clips = clips[start_i:end_i]
+            b_scenes = scenes[start_i:end_i]
+            seg_file = seg_dir / f"segment_{b_idx:04d}.mp4"
+
+            if resume and seg_file.exists() and seg_file.stat().st_size > 5000:
+                log.info(f"Segment {b_idx+1} [cached checkpoint]")
+            else:
+                self._render_single_segment(b_clips, b_scenes, seg_file, preset)
+                log.info(f"Segment {b_idx+1}/{(len(clips) + batch_size - 1)//batch_size} built ({len(b_clips)} scenes)")
+
+            segments.append(seg_file)
+
+            # Disk safety: delete raw clips as soon as segment is built
+            for c in b_clips:
+                try:
+                    c.unlink(missing_ok=True)
+                except Exception:
+                    pass
+
+        # Join segments with ffmpeg concat DEMUXER (-c copy)
+        self._concat_demuxer(segments, out)
+
+    def _render_single_segment(self, clips: list[Path], scenes: list[dict],
+                               out: Path, preset: str):
+        """Crossfade up to 8 clips into a single segment."""
+        if len(clips) == 1:
+            shutil.copy(clips[0], out)
+            return
         if not self.caps.get("xfade", True):
-            log.warn("xfade filter nahi hai — hard cuts use kar rahe hain "
-                     "(video thoda jhatkedaar lagega)")
             return self._concat_hard(clips, out)
 
         inputs = []
@@ -414,22 +453,35 @@ class Renderer:
                          f"duration={XFADE}:offset={offset:.3f},format=yuv420p{label}")
             prev = label
 
+        cpu_th = str(min(8, os.cpu_count() or 4))
         try:
             run([*inputs, "-filter_complex", ";".join(chain), "-map", "[vout]",
                  "-c:v", "libx264", "-preset", preset, "-crf", str(self.crf),
-                 "-threads", "1",
+                 "-threads", cpu_th,
                  "-pix_fmt", "yuv420p", "-r", str(self.fps), "-an", str(out)],
-                what="crossfade concat", timeout=600)
+                what=f"segment xfade ({len(clips)} clips)", timeout=600)
         except Exception as e:
-            log.warn(f"xfade concat failed ({e}). Falling back to concat demuxer...")
+            log.warn(f"Segment xfade failed ({e}) — falling back to hard concat")
             self._concat_hard(clips, out)
+
+    def _concat_xfade(self, clips: list[Path], scenes: list[dict],
+                      out: Path, preset: str):
+        """Compatibility wrapper: dispatches to _concat_xfade_batched."""
+        return self._concat_xfade_batched(clips, scenes, out, preset)
+
+    def _concat_demuxer(self, files: list[Path], out: Path):
+        """Concat clips/segments using the ffmpeg concat demuxer with -c copy (no re-encode)."""
+        lst = out.parent / f"concat_{out.stem}.txt"
+        with open(lst, "w", encoding="utf-8") as f:
+            for p in files:
+                p_res = Path(p).resolve().as_posix()
+                f.write(f"file '{p_res}'\n")
+        run(["-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(out)],
+            what="concat demuxer copy")
 
     def _concat_hard(self, clips: list[Path], out: Path):
         """Fallback: bina transition ke jodo (concat demuxer — bahut tez)."""
-        lst = out.parent / "concat.txt"
-        lst.write_text("".join(f"file '{c.resolve()}'\n" for c in clips), encoding="utf-8")
-        run(["-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(out)],
-            what="hard concat")
+        return self._concat_demuxer(clips, out)
 
     # ------------------------------------------------------------------
     def _finalize(self, video: Path, audio: Path, ass: Path,

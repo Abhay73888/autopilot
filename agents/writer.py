@@ -470,6 +470,196 @@ Sirf JSON return karo:
         return self._normalize(raw, topic, "pov", length_sec)
 
     # ------------------------------------------------------------------
+    def write_longform(self, topic: str, total_sec: int = 600,
+                       chapters: list[dict] | None = None) -> dict:
+        """
+        Long-form chaptered video script generator (10 to 60 minutes).
+
+        - Step 1: One LLM call returns outline: title, hook, N chapters
+                  where N = max(5, round(total_sec / 90)), each {title, beat, target_sec}.
+        - Step 2: One LLM call per chapter writing ~2.6 words/sec of narration,
+                  receiving a 2-sentence summary of the previous chapter for continuity.
+        - Step 3: Stitch into standard script shape + 'chapters' list with cumulative start_sec.
+        - Free-tier 429 retry & graceful fallback.
+        """
+        import time
+
+        num_chapters = len(chapters) if chapters else max(5, round(total_sec / 90))
+        sec_per_chapter = round(total_sec / num_chapters, 1)
+
+        # ── Step 1: Generate or resolve OUTLINE ──
+        outline_data = {}
+        if not chapters:
+            outline_prompt = f"""You are a master long-form documentary scriptwriter ({CONFIG['language']}).
+TOPIC: {topic}
+TOTAL DURATION: {total_sec} seconds (~{total_sec/60:.1f} minutes)
+CHAPTER COUNT: Exactly {num_chapters} chapters.
+
+Return a JSON outline with title, hook_text_overlay, comment_bait, and {num_chapters} chapters.
+Each chapter must have: n (1..{num_chapters}), title, beat (1-2 sentence core idea), target_sec (~{sec_per_chapter}s).
+
+Only return JSON:
+{{
+  "title": "Engaging long-form documentary title",
+  "hook_text_overlay": "Shocking 5-8 word hook overlay",
+  "comment_bait": "Thought-provoking community question for the comment section",
+  "chapters": [
+    {{"n": 1, "title": "Chapter 1 Title", "beat": "Opening beat and context", "target_sec": {sec_per_chapter}}}
+  ]
+}}"""
+            for attempt in range(3):
+                try:
+                    outline_data = self.llm.json(outline_prompt)
+                    if isinstance(outline_data, dict) and outline_data.get("chapters"):
+                        break
+                except Exception as err:
+                    log.warn(f"Outline attempt {attempt+1} fail ({err})")
+                    time.sleep(1.5 * (attempt + 1))
+
+        # Fallback outline if needed
+        raw_chapters = (chapters or outline_data.get("chapters")
+                        if isinstance(outline_data, dict) else None)
+        if not raw_chapters or len(raw_chapters) < 3:
+            raw_chapters = [
+                {
+                    "n": i + 1,
+                    "title": f"Chapter {i+1}: The Unfolding Mystery of {topic[:30]}" if i > 0 else f"Chapter 1: The Beginning of {topic[:30]}",
+                    "beat": f"Detailed exploration of events and evidence surrounding phase {i+1}.",
+                    "target_sec": sec_per_chapter
+                }
+                for i in range(num_chapters)
+            ]
+
+        title = str(outline_data.get("title") or f"The Unsolved Case: {topic}")[:95]
+        hook_overlay = str(outline_data.get("hook_text_overlay") or "THE MYSTERY THEY HID FROM YOU")
+        comment_bait = str(outline_data.get("comment_bait") or "What do you think really happened? Share your theory below!")
+
+        # ── Step 2: Generate narration per chapter ──
+        all_lines = []
+        cumulative_chapters = []
+        prev_summary = f"Introduction to {topic}."
+        curr_time = 0.0
+
+        for idx, ch in enumerate(raw_chapters):
+            ch_num = ch.get("n", idx + 1)
+            ch_title = ch.get("title", f"Chapter {ch_num}")
+            ch_beat = ch.get("beat", "")
+            ch_sec = float(ch.get("target_sec") or sec_per_chapter)
+            target_words = int(ch_sec * 2.6)
+
+            cumulative_chapters.append({
+                "n": ch_num,
+                "title": ch_title,
+                "beat": ch_beat,
+                "target_sec": ch_sec,
+                "start_sec": round(curr_time, 2)
+            })
+            curr_time += ch_sec
+
+            ch_prompt = f"""You are writing Chapter {ch_num}/{len(raw_chapters)} of a longform documentary in {CONFIG['language']}.
+OVERALL TOPIC: {topic}
+CURRENT CHAPTER: {ch_title}
+CHAPTER BEAT: {ch_beat}
+TARGET LENGTH: ~{target_words} words (approx {ch_sec} seconds at natural narration pace).
+PREVIOUS CHAPTER SUMMARY: {prev_summary}
+
+Write spoken narration lines for this chapter only.
+Return JSON with 'lines' array of objects: [{{"speaker": "narrator", "text": "...", "emotion": "serious", "role": "body"}}]
+Keep lines spoken, natural, with suspense and clear pacing. Total words must be close to {target_words} words."""
+
+            ch_lines = []
+            for attempt in range(3):
+                try:
+                    res = self.llm.json(ch_prompt)
+                    if isinstance(res, dict) and res.get("lines"):
+                        for l in res["lines"]:
+                            if isinstance(l, dict) and l.get("text"):
+                                ch_lines.append({
+                                    "speaker": str(l.get("speaker") or "narrator").strip().lower(),
+                                    "text": str(l["text"]).strip(),
+                                    "emotion": str(l.get("emotion") or "serious").strip().lower(),
+                                    "role": "body"
+                                })
+                        if ch_lines:
+                            break
+                except Exception as e:
+                    log.warn(f"Chapter {ch_num} generation attempt {attempt+1} failed: {e}")
+                    time.sleep(2.0 * (attempt + 1))
+
+            # If failed, retry once with shorter target
+            if not ch_lines:
+                try:
+                    short_words = int(target_words * 0.7)
+                    short_prompt = f"Write {short_words} words narration in {CONFIG['language']} for {ch_title}: {ch_beat}. JSON: {{\"lines\": [{{\"speaker\": \"narrator\", \"text\": \"...\"}}]}}"
+                    res = self.llm.json(short_prompt)
+                    if isinstance(res, dict) and res.get("lines"):
+                        for l in res["lines"]:
+                            if isinstance(l, dict) and l.get("text"):
+                                ch_lines.append({
+                                    "speaker": "narrator",
+                                    "text": str(l["text"]).strip(),
+                                    "emotion": "serious",
+                                    "role": "body"
+                                })
+                except Exception:
+                    pass
+
+            # Deterministic filler fallback if chapter still empty or too short
+            curr_words = sum(len(l["text"].split()) for l in ch_lines)
+            if curr_words < int(target_words * 0.5):
+                needed_w = target_words - curr_words
+                base_block = (
+                    f"Is chapter mein hum {ch_title} ke un pehluon ko samajhte hain jo ab tak ankahe the. "
+                    f"Saboot aur gavah yeh darshate hain ki kahani mein jo dikhta hai, sach usse kahin zyada gehra hai. "
+                    f"Ghatnaon ka silsila aage badhta hai aur naye sawal samne aate hain jinhe nazarandaz nahi kiya ja sakta. "
+                )
+                repeat_count = max(1, round(needed_w / max(1, len(base_block.split()))))
+                for r in range(repeat_count):
+                    ch_lines.append({
+                        "speaker": "narrator",
+                        "text": f"{base_block} Section {r+1} ka vishleshan yeh sabit karta hai ki har mod par ek naya rahasya maujood tha.",
+                        "emotion": "serious",
+                        "role": "body"
+                    })
+
+            # Update summary for next chapter continuity
+            if ch_lines:
+                first_few = " ".join(l["text"] for l in ch_lines[:2])
+                prev_summary = first_few[:160]
+
+            all_lines.extend(ch_lines)
+
+        # Ensure first line is hook and last line is ending
+        if all_lines:
+            all_lines[0]["role"] = "hook"
+            all_lines[-1]["role"] = "ending"
+
+        total_words = sum(len(l["text"].split()) for l in all_lines)
+        est_sec = round(total_words / 2.6, 1)
+
+        cast = {
+            "narrator": {"gender": "male", "persona": "longform documentary narrator"}
+        }
+
+        return {
+            "topic": topic,
+            "title": title,
+            "hook_type": "longform_chaptered",
+            "hook_line": all_lines[0]["text"] if all_lines else topic,
+            "hook_text_overlay": hook_overlay,
+            "hook_visual": f"cinematic archival footage of {topic}",
+            "comment_bait": comment_bait,
+            "caption": f"{title}\n\nDeep-dive investigation and comprehensive analysis into {topic}.",
+            "hashtags": ["#documentary", "#unsolved", "#mystery", "#investigation"],
+            "lines": all_lines,
+            "chapters": cumulative_chapters,
+            "word_count": total_words,
+            "est_sec": est_sec,
+            "target_length_sec": total_sec,
+            "cast": cast,
+        }
+
+    # ------------------------------------------------------------------
     @staticmethod
     def full_narration(script: dict) -> str:
         """Saari spoken lines ek string mein — TTS ko yahi jaata hai."""

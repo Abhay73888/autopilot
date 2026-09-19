@@ -30,12 +30,13 @@ def _read_env_file():
     env_path = os.path.join(CONFIG["_root"], ".env")
     if not os.path.exists(env_path):
         return
-    for line in open(env_path, encoding="utf-8"):
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        k, _, v = line.partition("=")
-        os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+    with open(env_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, _, v = line.partition("=")
+            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 
 _read_env_file()
@@ -99,6 +100,59 @@ class MockLLM:
         if '"opening"' in p:
             return {"opening": f"Ye kahani {h[:4]} — ek aisi raat ki hai jiska "
                                 f"jawab aaj tak nahi mila. Poora sach is video mein."}
+        if "longform outline" in p or ("outline" in p and "chapters" in p):
+            num_ch = 7
+            m = re.search(r"(\d+)\s*chapters", p)
+            if m:
+                try:
+                    num_ch = max(5, int(m.group(1)))
+                except Exception:
+                    pass
+            sec_each = round(600 / num_ch, 1)
+            return {
+                "title": f"The Dark Mystery of Echo Point #{h}",
+                "hook_line": "Do not enter room 404 after midnight.",
+                "hook_text_overlay": "ROOM 404: DO NOT ENTER",
+                "comment_bait": "Would you stay in this room for $10,000? Comment below!",
+                "chapters": [
+                    {"n": i + 1, "title": f"Chapter {i+1}: The Discovery Part {i+1}",
+                     "beat": f"Key mystery unfold event {i+1}", "target_sec": sec_each}
+                    for i in range(num_ch)
+                ]
+            }
+        if "chapter narration" in p or ("chapter" in p and "words" in p and "lines" in p):
+            # Calculate target words from prompt or default to ~223
+            target_w = 223
+            m = re.search(r"(\d+)\s*shabd|(\d+)\s*words", p)
+            if m:
+                val = m.group(1) or m.group(2)
+                try:
+                    target_w = max(50, int(val))
+                except Exception:
+                    pass
+            sample_pool = (
+                "Yeh ghatna us din shuru hui jab gaon ke sabhi darwaze achanak band ho gaye aur ajeeb awazein aane lagi. "
+                "Sabhi log hairan the ki akhir kya hone wala hai aur kisine pucha ki kya kisi ne purani diary check ki hai "
+                "jisme is jagah ke baare mein likha tha. Lekin kisi ke paas jawab nahi tha. "
+                "Andhera badhta gaya aur ek ek karke roshni bujhne lagi, jaise koi anjaan saya unhe dekh raha ho aur unka peecha "
+                "kar raha ho. Us purani haveli se ek aisi thandak nikal rahi thi jo sabhi ke dilon mein khauf bhar rahi thi."
+            ).split()
+            needed_words = []
+            while len(needed_words) < target_w:
+                needed_words.extend(sample_pool)
+            needed_words = needed_words[:target_w]
+            chunk_sz = max(20, len(needed_words) // 4)
+            lines = []
+            for i in range(0, len(needed_words), chunk_sz):
+                sub = " ".join(needed_words[i:i+chunk_sz])
+                if sub:
+                    lines.append({
+                        "speaker": "narrator" if len(lines) % 2 == 0 else "char_a",
+                        "text": sub,
+                        "emotion": "serious",
+                        "role": "body"
+                    })
+            return {"lines": lines}
         if "hook" in p or "script" in p or "writer" in p:
             return {
                 "title": f"Wo raat jab sab kuch badal gaya #{h}",

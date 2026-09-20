@@ -12,6 +12,7 @@ router = APIRouter(prefix="/copilot", tags=["AI Copilot"])
 
 
 @router.post("/execute", response_model=ApiResponse[CopilotActionPlan])
+@router.post("/action", response_model=ApiResponse[CopilotActionPlan])
 async def execute_copilot_command(
     req: CopilotExecuteRequest,
     ctx: TenantContext = Depends(get_current_tenant_context)

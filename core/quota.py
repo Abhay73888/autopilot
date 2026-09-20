@@ -48,7 +48,7 @@ except RuntimeError:
 BUDGETS = {
     "youtube_units":   {"limit": 10000, "window": "day_pacific", "real": 10000,
                         "note": "YouTube Data API v3 daily units"},
-    "youtube_uploads": {"limit": 20,    "window": "day_pacific", "real": 20,
+    "youtube_uploads": {"limit": 30,    "window": "day_pacific", "real": 50,
                         "note": "YouTube daily upload limit cap for shorts series."},
     "youtube_search":  {"limit": 5,     "window": "day_pacific", "real": 100,
                         "note": "search.list = 100 units/call. Bachao! playlistItems (1 unit) use karo."},
@@ -58,7 +58,7 @@ BUDGETS = {
                         "note": "Container polling bhi isi mein ginti hai."},
     "gemini_requests": {"limit": 1200,  "window": "day_pacific", "real": 1500,
                         "note": "Gemini free tier RPD."},
-    "gemini_tts_requests": {"limit": 100, "window": "day_pacific", "real": 100,
+    "gemini_tts_requests": {"limit": 300, "window": "day_pacific", "real": 500,
                             "note": "Gemini TTS daily safety cap."},
     "moonshot_requests": {"limit": 100, "window": "day_pacific", "real": 500,
                           "note": "Moonshot Kimi K3 paid API daily spend-control safety cap (ye API limit nahi, kharcha rokne ke liye hai)."},

@@ -34,8 +34,8 @@ COPY . .
 # Ensure data and logs directories exist
 RUN mkdir -p data logs output
 
-# Expose default dashboard port
-EXPOSE 8765
+# Expose default application port
+EXPOSE 8000
 
-# Start Autopilot Web Dashboard (binds to $HOST:$PORT)
-CMD ["sh", "-c", "python web/server.py --host ${HOST:-0.0.0.0} --port ${PORT:-8765} --no-browser"]
+# Start Autopilot Production SaaS Studio (binds to $HOST:$PORT)
+CMD ["sh", "-c", "python -m uvicorn backend.app.main:app --host ${HOST:-0.0.0.0} --port ${PORT:-8000}"]

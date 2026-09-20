@@ -7,9 +7,14 @@ from pydantic import BaseModel, Field
 
 
 class VideoGenerateRequest(BaseModel):
-    projectId: str
-    scriptId: str
+    projectId: str = "proj_default"
+    scriptId: Optional[str] = None
+    topic: Optional[str] = None
+    title: Optional[str] = None
+    durationSeconds: Optional[float] = 60.0
     voiceId: Optional[str] = "en-US-ChristopherNeural"
+    style: Optional[str] = "cinematic"
+    music: Optional[str] = "cinematic_ambient"
     captionPreset: Optional[str] = "modern_creator"
     resolution: Optional[str] = "1080x1920"
     fps: Optional[int] = 30

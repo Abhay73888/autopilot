@@ -7,13 +7,17 @@ from pydantic import BaseModel, Field
 
 
 class CopilotExecuteRequest(BaseModel):
-    command: str = Field(..., min_length=2, max_length=500)
+    command: Optional[str] = None
+    prompt: Optional[str] = None
 
 
 class CopilotActionPlan(BaseModel):
     intent: str
     summary: str
+    tool: Optional[str] = None
     parameters: Dict[str, Any] = {}
     requiresApproval: bool = False
     estimatedCredits: int = 0
     confirmationToken: Optional[str] = None
+    status: str = "completed"
+    result: Optional[Dict[str, Any]] = None

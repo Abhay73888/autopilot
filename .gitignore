@@ -24,3 +24,8 @@ Thumbs.db
 scratch/
 *.log
 data/*.txt
+data/anime_horror_scenes/
+*.png
+*.jpg
+*.jpeg
+*.webp

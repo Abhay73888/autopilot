@@ -56,6 +56,31 @@ def hash_api_key(api_key: str) -> str:
     return hashlib.sha256(api_key.encode("utf-8")).hexdigest()
 
 
+def hash_password(password: str) -> str:
+    """Securely hashes password using PBKDF2-HMAC-SHA256 with 16-byte random salt."""
+    salt = os.urandom(16).hex()
+    dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 100000).hex()
+    return f"pbkdf2_sha256${salt}${dk}"
+
+
+def verify_password(plain_password: str, password_hash: str) -> bool:
+    """Verifies plain password against stored salt$hash in constant time."""
+    if not password_hash or "$" not in password_hash:
+        return False
+    try:
+        parts = password_hash.split("$")
+        if len(parts) == 3 and parts[0] == "pbkdf2_sha256":
+            salt, expected_dk = parts[1], parts[2]
+        elif len(parts) == 2:
+            salt, expected_dk = parts[0], parts[1]
+        else:
+            return False
+        actual_dk = hashlib.pbkdf2_hmac("sha256", plain_password.encode("utf-8"), salt.encode("utf-8"), 100000).hex()
+        return hmac.compare_digest(actual_dk, expected_dk)
+    except Exception:
+        return False
+
+
 class SecretVault:
     """AES-256-GCM Encryption Engine for OAuth refresh tokens and secrets at rest."""
 

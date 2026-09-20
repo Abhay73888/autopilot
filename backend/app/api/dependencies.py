@@ -4,7 +4,7 @@ backend/app/api/dependencies.py — Security, Authentication & Multi-Tenant Cont
 
 from dataclasses import dataclass
 from typing import Optional
-from fastapi import Header, Request
+from fastapi import Depends, Header, Request
 from core.db_base import clear_tenant_context, set_current_workspace
 from ..core.exceptions import TenantAccessDeniedException, UnauthorizedException
 from ..core.logging import request_id_ctx, workspace_id_ctx
@@ -76,3 +76,23 @@ async def get_current_tenant_context(
         workspace_id=ws_id,
         role=role
     )
+
+
+async def get_authenticated_tenant_context(
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    x_workspace_id: Optional[str] = Header(None)
+) -> TenantContext:
+    """Strictly requires an authenticated Bearer token. Returns 401 if missing."""
+    if not authorization:
+        raise UnauthorizedException("Authentication token is required for this operation")
+    return await get_current_tenant_context(request, authorization, x_workspace_id)
+
+
+async def require_admin_role(
+    ctx: TenantContext = Depends(get_authenticated_tenant_context)
+) -> TenantContext:
+    """Enforces admin authorization (role == 'admin'). Returns 403 Forbidden if not admin."""
+    if ctx.role != "admin":
+        raise TenantAccessDeniedException("Administrative privileges required for this resource")
+    return ctx

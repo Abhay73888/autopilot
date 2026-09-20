@@ -7,7 +7,7 @@ import time
 import uuid
 from pathlib import Path
 from typing import Any, Dict
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -21,10 +21,12 @@ from .api.v1.ideas import router as ideas_router
 from .api.v1.instagram import router as instagram_router
 from .api.v1.integrations_instagram import router as integrations_instagram_router
 from .api.v1.integrations_discord import router as integrations_discord_router
+from .api.v1.integrations_youtube import router as integrations_youtube_router
 from .api.v1.jobs import router as jobs_router
 from .api.v1.projects import router as projects_router
 from .api.v1.publish import router as publish_router
 from .api.v1.scripts import router as scripts_router
+from .api.v1.series import router as series_router
 from .api.v1.videos import router as videos_router
 from .api.v1.workspaces import router as workspaces_router
 from .core.config import settings
@@ -75,6 +77,25 @@ async def request_tracing_middleware(request: Request, call_next):
     response.headers["X-Request-ID"] = req_id
     response.headers["X-Response-Time"] = f"{duration:.4f}s"
     return response
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    """Standardized error handler for HTTP exceptions."""
+    req_id = request_id_ctx.get() or "unknown"
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "success": False,
+            "error": {
+                "code": "HTTP_EXCEPTION",
+                "message": exc.detail,
+                "details": {}
+            },
+            "detail": exc.detail,
+            "meta": {"requestId": req_id}
+        }
+    )
 
 
 @app.exception_handler(AppException)
@@ -134,6 +155,7 @@ async def studio_ui():
 
 # Health Check Endpoints
 @app.get("/health", tags=["Health"])
+@app.get("/healthz", tags=["Health"])
 @app.get("/health/live", tags=["Health"])
 async def health_live():
     return {"status": "ok", "service": "autopilot-api", "version": "1.0.0"}
@@ -156,9 +178,11 @@ app.include_router(workspaces_router, prefix=v1_prefix)
 app.include_router(projects_router, prefix=v1_prefix)
 app.include_router(ideas_router, prefix=v1_prefix)
 app.include_router(scripts_router, prefix=v1_prefix)
+app.include_router(series_router, prefix=v1_prefix)
 app.include_router(videos_router, prefix=v1_prefix)
 app.include_router(jobs_router, prefix=v1_prefix)
 app.include_router(publish_router, prefix=v1_prefix)
+app.include_router(integrations_youtube_router, prefix=v1_prefix)
 app.include_router(integrations_instagram_router, prefix=v1_prefix)
 app.include_router(integrations_discord_router, prefix=v1_prefix)
 app.include_router(instagram_router, prefix=v1_prefix)

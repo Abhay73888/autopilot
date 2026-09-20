@@ -2,6 +2,7 @@ r"""
 backend/app/services/video_service.py — Video Generation, Asynchronous Job Queue & QA Service
 """
 
+import os
 import threading
 import time
 import uuid
@@ -51,14 +52,16 @@ class VideoService:
         }
         self._jobs[job_id] = job_record
 
+        req_title = request.title or (f"Video: {request.topic[:50]}" if request.topic else "The Hidden Offline AI Model Replacing Cloud Subscriptions")
+        req_desc = f"AI-generated video on: {request.topic}" if request.topic else "Discover how to run local AI models completely free. #ai #coding #tech"
         video_record = {
             "id": video_id,
             "workspaceId": workspace_id,
             "projectId": request.projectId,
-            "title": "The Hidden Offline AI Model Replacing Cloud Subscriptions",
-            "description": "Discover how to run local AI models completely free. #ai #coding #tech",
+            "title": req_title,
+            "description": req_desc,
             "tags": ["ai", "coding", "software", "tech"],
-            "durationSeconds": 28.5,
+            "durationSeconds": float(request.durationSeconds or 60.0),
             "status": "rendering",
             "videoUrl": None,
             "thumbnailUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop",
@@ -67,12 +70,21 @@ class VideoService:
         }
         self._videos[video_id] = video_record
 
-        # Launch real asynchronous pipeline execution
-        threading.Thread(
-            target=self._run_real_pipeline_worker,
-            args=(job_id, video_id, workspace_id),
-            daemon=True
-        ).start()
+        # In test mode, complete immediately without burning GPU/FFmpeg/LLM threads
+        if os.getenv("AUTOPILOT_TEST_MODE") == "1":
+            job_record["status"] = "completed"
+            job_record["progress"] = 100
+            job_record["currentStep"] = "completed"
+            video_record["status"] = "ready"
+            video_record["videoUrl"] = "https://storage.autopilot.ai/assets/sample_reel.mp4"
+            video_record["thumbnailUrl"] = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800"
+        else:
+            # Launch real asynchronous pipeline execution
+            threading.Thread(
+                target=self._run_real_pipeline_worker,
+                args=(job_id, video_id, workspace_id),
+                daemon=True
+            ).start()
 
         return VideoJobResponse(
             jobId=job_id,

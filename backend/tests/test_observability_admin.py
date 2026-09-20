@@ -10,6 +10,7 @@ Tests:
 import unittest
 from fastapi.testclient import TestClient
 
+from backend.app.core.security import create_access_token
 from backend.app.main import app
 from backend.app.services.video_service import video_service
 
@@ -17,6 +18,8 @@ from backend.app.services.video_service import video_service
 class TestObservabilityAdmin(unittest.TestCase):
     def setUp(self):
         self.client = TestClient(app)
+        self.admin_token = create_access_token({"sub": "usr_admin_test", "role": "admin", "email": "admin@autopilot.ai"})
+        self.admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
 
     def test_request_id_correlation_header(self):
         """Responses must echo X-Request-ID and X-Response-Time headers."""
@@ -42,7 +45,7 @@ class TestObservabilityAdmin(unittest.TestCase):
         self.assertIn("youtubeApiUnitsRemaining", data["quota"])
 
     def test_admin_overview(self):
-        res = self.client.get("/api/v1/admin/overview")
+        res = self.client.get("/api/v1/admin/overview", headers=self.admin_headers)
         self.assertEqual(res.status_code, 200)
         data = res.json()["data"]
         self.assertIn("totalUsers", data)
@@ -60,13 +63,13 @@ class TestObservabilityAdmin(unittest.TestCase):
         }
 
         # 2. Check DLQ
-        dlq_res = self.client.get("/api/v1/admin/dlq")
+        dlq_res = self.client.get("/api/v1/admin/dlq", headers=self.admin_headers)
         self.assertEqual(dlq_res.status_code, 200)
         dlq_jobs = dlq_res.json()["data"]
         self.assertTrue(any(j["jobId"] == failed_job_id for j in dlq_jobs))
 
         # 3. Replay from DLQ
-        replay_res = self.client.post(f"/api/v1/admin/dlq/replay?job_id={failed_job_id}")
+        replay_res = self.client.post(f"/api/v1/admin/dlq/replay?job_id={failed_job_id}", headers=self.admin_headers)
         self.assertEqual(replay_res.status_code, 200)
         replay_data = replay_res.json()["data"]
         self.assertEqual(replay_data["status"], "replayed")

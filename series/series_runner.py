@@ -88,6 +88,32 @@ KAAL_REKHA_EPISODES: dict[int, dict[str, Any]] = {
             "Colossal cathedral clock tower exploding with brilliant ultraviolet light beams tearing through midnight sky, vertical 9:16, anime climax, no text",
             "Heartbreaking 8k anime shot of Kabir standing alone in silent rain as clock clearly displays 3:18 AM, looking at empty space where Meera stood, vertical 9:16, no text"
         ]
+    },
+
+    # Part 12 — "The Temporal Mirror Maze"
+    # Continuity: Part 11 (English Global) — Times Square froze at 3:17 AM,
+    # Roman III in NYC sky, Pentagon archive: "Loop Origin: Subject KS-001 — Mumbai, India"
+    12: {
+        "title": "Every Mirror in Mumbai Showed 3:17 AM at the Same Moment... ⏳😱 | KAAL-REKHA (Part 12) #Shorts",
+        "caption": "After the Pentagon identified the loop origin as Mumbai — every reflective surface in the city froze at 3:17 AM. Kabir's reflection started moving 3 seconds BEFORE him! Is Kabir the original or the reflection? Comment your theory! 👇⏳",
+        "hook_overlay": "⏳ EVERY MIRROR FROZE AT 3:17 AM! 😱",
+        "comment_bait": "Pentagon called him 'Subject KS-001'. Who IS the real Kabir — the man or his reflection? Drop your theory! 👇⏳",
+        "lines": [
+            {"speaker": "narrator", "text": "After Pentagon exposed Subject KS-001 — every mirror in Mumbai froze at 3:17 AM!", "emotion": "shocked", "role": "hook"},
+            {"speaker": "narrator", "text": "Kabir stood before his bathroom mirror. His reflection paused... then moved three full seconds before he did.", "emotion": "fearful", "role": "body"},
+            {"speaker": "narrator", "text": "The reflection reached into its pocket and placed a folded note against the glass.", "emotion": "mysterious", "role": "body"},
+            {"speaker": "narrator", "text": "Kabir pressed his hand to the glass. The note read: 'You are not the original. You never were. — KS-001 Loop 13.'", "emotion": "chilling", "role": "climax"},
+            {"speaker": "narrator", "text": "Then the reflection smiled, turned its back, and walked away into a darkness that had no wall behind it.", "emotion": "haunted", "role": "climax"},
+            {"speaker": "narrator", "text": "And every mirror in Mumbai showed... 3:17 AM.", "emotion": "cold", "role": "ending"}
+        ],
+        "image_prompts": [
+            "ECU extreme close-up anime shot of hundreds of reflective glass windows across dark Mumbai skyline simultaneously glowing with frozen amber 3:17 AM clock faces, cold teal moonlight, silent dread, vertical 9:16, MAPPA masterpiece, no text",
+            "Low-angle POV anime shot of Kabir in black-tiled bathroom facing tall mirror, cold white fluorescent flicker, reflection standing perfectly still while Kabir trembles, uncanny doppelganger horror, vertical 9:16, no text",
+            "OTS over-the-shoulder anime shot of Kabir's reflection reaching into jacket pocket in slow motion, amber rim light from mirror edges, eerie calm expression, misty cold atmosphere, vertical 9:16, no text",
+            "ECU hyper-detailed anime shot of pale hand pressing against mirror glass from inside, folded glowing temporal ink note visible through glass, condensation droplets, blue-white cold light, vertical 9:16, no text",
+            "Wide dramatic anime shot of Kabir's reflection walking away into endless dark void inside the mirror — no wall, no floor, just infinite darkness — jaw-dropping surreal dread, vertical 9:16, no text",
+            "Cinematic anime bird's eye wide shot of Mumbai city at night, every window and mirror surface lit with the same frozen clock reading 3:17 AM, violet-teal bioluminescent glow, cosmic scale, vertical 9:16, no text"
+        ]
     }
 }
 
@@ -385,5 +411,71 @@ def _synthesize_procedural_episode(series_code: str, episode_num: int) -> dict[s
                 "Dynamic 3D digital countdown timer glowing neon gold 5 4 3 2 1 with comic smoke effects, vertical 9:16, no text",
                 "Whimsical 3D animation showing baby crawling, adult walking, and elder with cane in joyful sunset park, vertical 9:16, no text",
                 "Exciting 3D celebration with confetti exploding around golden trophy and big thumbs up, vertical 9:16, no text"
+            ]
+        }
+    elif series_code == "SERIES_6":
+        # The Observer Files — Analog Horror English series
+        return {
+            "title": f"Something Is Watching You Through Your Own Mirror... 👁️🪞 | THE OBSERVER FILES (Part {episode_num}) #Shorts",
+            "caption": f"The Observer Files Part {episode_num}: The phenomenon continues. Something on the other side of reflective surfaces is synchronising with human movement. This is not a glitch.",
+            "hook_overlay": f"👁️ THE OBSERVER FILES (PART {episode_num}) 🪞",
+            "comment_bait": f"Have you ever felt your reflection move a microsecond before you? Comment your city if this has happened to you! 👁️",
+            "lines": [
+                {"speaker": "narrator", "text": "Do not look into any mirror tonight after 3:00 AM.", "emotion": "urgent", "role": "hook"},
+                {"speaker": "narrator", "text": "Security footage from 14 countries has confirmed the same anomaly: reflections moving independently of their subjects.", "emotion": "mysterious", "role": "body"},
+                {"speaker": "narrator", "text": "In the latest documented case, a researcher's reflection turned to face the camera. The researcher had their back to it.", "emotion": "chilling", "role": "body"},
+                {"speaker": "narrator", "text": "The audio extracted from the room contained one phrase, repeated on a frequency below human hearing: 'We are learning your patterns.'", "emotion": "fearful", "role": "climax"},
+                {"speaker": "narrator", "text": "And the answer to what is watching you through your own reflection begins when...", "emotion": "cold", "role": "ending"}
+            ],
+            "image_prompts": [
+                "ECU close-up of dimly lit bathroom mirror at 3:00 AM showing a reflection that is 2 seconds ahead of normal movement, cold fluorescent flicker, uncanny dread, analog horror aesthetic, vertical 9:16, no text",
+                "Grainy CCTV timestamp 03:00 AM footage of empty international airport restroom with fogged mirrors, green emergency sign glow, eerie silence made visible, vertical 9:16, no text",
+                "Spine-chilling psychological horror shot of person standing with back to mirror, but reflection facing camera with sinister calm smile, vertical 9:16, analog horror VHS grain, no text",
+                "ECU of mirror reflection pressing hand against inside of glass, subtle crack forming, red mist leaking from seam, cinematic horror still, vertical 9:16, no text",
+                "Dark bedroom POV at 3:17 AM, phone screen off, and in the wall mirror across the room a second shadowy figure standing behind where no one is, vertical 9:16, analog horror, no text"
+            ]
+        }
+    elif series_code == "SERIES_7":
+        # Roblox Vault — Secrets, Pro Techniques & Gaming Lore
+        return {
+            "title": f"99% Of Roblox Players Missed This Hidden Vault! 🎮🔒 | ROBLOX VAULT (Ep {episode_num}) #Shorts",
+            "caption": f"Roblox Vault Episode {episode_num}: The secret location that was never patched. Try this before Roblox updates! Drop your favourite game below! 👇🎮",
+            "hook_overlay": f"🔒 ROBLOX SECRET #{episode_num} 🎮",
+            "comment_bait": "Did you know about this secret room? Comment your Roblox username below! 👇🎮",
+            "lines": [
+                {"speaker": "narrator", "text": "Ninety-nine percent of Roblox players walk past this secret room every single day without noticing.", "emotion": "shocked", "role": "hook"},
+                {"speaker": "narrator", "text": "Head directly behind the main spawn and look for the third concrete pillar with the misaligned texture.", "emotion": "mysterious", "role": "body"},
+                {"speaker": "narrator", "text": "If you toggle shift lock and walk backwards while jumping, your avatar clips right through the wall.", "emotion": "urgent", "role": "body"},
+                {"speaker": "narrator", "text": "Inside is an unpatched developer test room with secret badges and hidden sound effects from 2012.", "emotion": "intense", "role": "climax"},
+                {"speaker": "narrator", "text": "And the reason the developers never deleted this secret room is because...", "emotion": "curious", "role": "ending"}
+            ],
+            "image_prompts": [
+                "Cinematic high-octane 8k render of a stylized Roblox avatar in glowing neon cyan hoodie discovering a secret hidden underground vault door, vertical 9:16, hyper-detailed, ray tracing, unreal engine 5, no text",
+                "Close up high-tech Roblox interface glowing with secret coordinates and classified blueprint overlays on a dark cyber gaming background, vertical 9:16, neon green accent, no text",
+                "Action shot of Roblox avatar performing wall clip shift lock glitch through concrete wall with blue electric spark particles, vertical 9:16, dynamic angle, no text",
+                "Atmospheric reveal shot of a dusty forgotten 2012 Roblox developer archive room with vintage golden trophies and floating glowing orbs, vertical 9:16, cinematic volumetric lighting, no text",
+                "Dramatic cliffhanger shot of glowing mysterious portal opening inside Roblox vault with question mark hologram, vertical 9:16, high contrast neon, no text"
+            ]
+        }
+    else:
+        # Generic fallback
+        return {
+            "title": f"The Secret You Weren't Supposed To Know! ⚠️ | {series_code} (Part {episode_num}) #Shorts",
+            "caption": f"{series_code} Part {episode_num}: Uncovering the mysteries. Watch till the end! 👇",
+            "hook_overlay": f"⚠️ {series_code} PART {episode_num} ⚠️",
+            "comment_bait": "What do you think really happened? Comment below! 👇",
+            "lines": [
+                {"speaker": "narrator", "text": "What they didn't tell you about this story will completely change your perspective.", "emotion": "shocked", "role": "hook"},
+                {"speaker": "narrator", "text": "Deep in the archives, a single classified file revealed the exact truth.", "emotion": "mysterious", "role": "body"},
+                {"speaker": "narrator", "text": "Every single detail matches what happened on that fateful night.", "emotion": "urgent", "role": "body"},
+                {"speaker": "narrator", "text": "And the most shocking revelation was discovered just moments ago.", "emotion": "intense", "role": "climax"},
+                {"speaker": "narrator", "text": "Subscribe for the next chapter!", "emotion": "curious", "role": "ending"}
+            ],
+            "image_prompts": [
+                "Cinematic 8k dramatic scene with neon lighting and high tension, vertical 9:16, masterpiece, no text",
+                "Atmospheric mysterious corridor with glowing dramatic shadows, vertical 9:16, cinematic, no text",
+                "Dramatic reveal shot with intense cinematic contrast, vertical 9:16, no text",
+                "Shocking climactic moment with dynamic visual effects, vertical 9:16, no text",
+                "Cliffhanger ending scene with captivating glowing aura, vertical 9:16, no text"
             ]
         }

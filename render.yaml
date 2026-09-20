@@ -3,11 +3,20 @@ services:
     name: autopilot-swarm
     runtime: docker
     dockerfilePath: ./Dockerfile
-    plan: free
+    plan: starter          # $7/mo — no sleep, 512MB dedicated RAM, background threads stable
+    healthCheckPath: /healthz
     envVars:
       - key: HOST
         value: "0.0.0.0"
+      - key: PORT
+        value: "8000"
+      - key: RENDER
+        value: "true"
       - key: GEMINI_API_KEY
+        sync: false
+      - key: YOUTUBE_CLIENT_ID
+        sync: false
+      - key: YOUTUBE_CLIENT_SECRET
         sync: false
       - key: MAKE_WEBHOOK_SECRET
         generateValue: true

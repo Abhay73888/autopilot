@@ -49,6 +49,11 @@
   * Title: *Why Did Every Clock in New York Freeze at 3:17 AM?! ⏳😱 | KAAL-REKHA (Part 11) #Shorts*
   * Status: **PUBLISHED ✅** (YouTube Shorts: `HnDMmZlFR9M`, https://youtube.com/shorts/HnDMmZlFR9M, 35.3s)
   * Major Evolution: Global / US Audience Edition in English. Dual American neural voices (`en-US-ChristopherNeural` + `en-US-JennyNeural`), Times Square temporal freeze, Roman Numeral III in Manhattan sky, Pentagon archive reveal, and 38Hz Braam Hit + Suspense BGM. Comments 100% ON with auto first comment bait.
+* **Part 12 (Episode 12 — THE TEMPORAL MIRROR MAZE)**:
+  * Title: *Every Mirror in Mumbai Showed 3:17 AM at the Same Moment... ⏳😱 | KAAL-REKHA (Part 12) #Shorts*
+  * Status: **PENDING — Next to Generate 🔄** (10X Batch: `generate_next_all_series_10x.py`)
+  * Continuity: Pentagon archive from Ep 11 identifies "Loop Origin: Subject KS-001 — Mumbai, India". Every mirror in Mumbai freezes at 3:17 AM simultaneously. Kabir's reflection moves 3 seconds BEFORE him and leaves a note: "You are not the original. — KS-001 Loop 13."
+  * 10X Upgrades: ML-Gated script selection, Super-Hook (<9 words), Infinity Loop ending, Hyper-specific prompts (ECU+lighting+emotion+atmosphere), AGENTS.md policy locked.
 
 ---
 

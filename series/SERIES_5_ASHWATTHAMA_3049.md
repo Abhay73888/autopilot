@@ -22,8 +22,8 @@ Inside lies **Ashwatthama**, the immortal warrior son of Dronacharya, cursed by 
 ---
 
 ## 📺 Episode Blueprint
-- **Episode 1**: The Awakening at 20,000 Feet (20,000 फीट नीचे महायोद्धा जाग उठा!)
-- **Episode 2**: The Brahmashira Code (ब्रह्मशिरा का गुप्त कोड)
-- **Episode 3**: The Attack on Kailash Station (कैलाश स्टेशन पर हमला)
-- **Episode 4**: The Lost Celestial Gem (खोई हुई दिव्य मणि)
+- **Episode 1**: The Awakening at 20,000 Feet (20,000 फीट नीचे महायोद्धा जाग उठा!) — **PUBLISHED ✅** (`WJxxx`)
+- **Episode 2**: The Brahmashira Code (ब्रह्मशिरा का गुप्त कोड) — **PUBLISHED ✅**
+- **Episode 3**: The Celestial Wrath of the Astra (कैलाश स्टेशन पर हमला) — **PUBLISHED ✅** — Ashwatthama destroys entire AI orbital fleet using Brahmashira chakra. Ends: "Kahan hai Kalki?!"
+- **Episode 4**: The Lost Celestial Gem (खोई हुई दिव्य मणि) — **PENDING 🔄** (10X Batch: `generate_next_all_series_10x.py`) — Divya Mani signal traced to biotech lab; twist: Mani IS Kalki's consciousness. Dr. Kabir Varma revealed as ONLINE.
 - **Episode 5**: The Search for Kalki Begins (कल्कि की खोज)

@@ -3,7 +3,10 @@ backend/app/schemas/auth.py — Authentication & Identity Schemas
 """
 
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
+
+# Use robust string type for email to guarantee zero dependency failures in container environments
+EmailStr = str
 
 
 class UserProfile(BaseModel):

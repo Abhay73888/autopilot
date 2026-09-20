@@ -40,16 +40,16 @@
 
 | Dimension | Specification & Grounded Details |
 | :--- | :--- |
-| **🎯 Core Mission** | Fully autonomous, closed-loop media production pipeline generating high-retention 9:16 vertical video from trend research to published YouTube Shorts and Instagram Reels. |
-| **👥 Target Users** | Media enterprises, automated channel networks, growth marketers, indie creators, and AI engineers researching autonomous agent orchestration. |
-| **⚡ Core Runtime** | Python 3.10+ stdlib-first core (zero-bloat) + Production FastAPI SaaS Gateway (`backend/app`) with Pydantic v2 validation. |
-| **🤖 AI & Swarm** | 12 Specialized Agents: Chief Orchestrator, TrendScout, ScriptWriter, NeuralVoice, ArtDirector, ImageGen, Metadata Strategist, YouTube Publisher, Instagram Publisher, MetricsAnalyst, ScienceLab, and Copilot Swarm Commander. |
-| **🧠 Multi-Tier LLM** | Google Gemini (`gemini-2.0-flash`), Moonshot/Kimi (`kimi-k3`), Claude 3.5 Sonnet, Groq (`llama-3.3-70b-versatile`), with instant deterministic heuristics and `MockLLM` offline mode. |
-| **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized pitch/rate neural profiles), ElevenLabs Neural, Gemini TTS, paired with custom 38Hz Braam sub-bass procedural audio FX. |
-| **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic Devanagari/Latin karaoke `.ass` subtitles, and ITU-R BS.1770 -14 LUFS normalization. |
-| **🗄️ Persistence** | WAL-mode SQLite state machine (`autopilot.db`) with relational integrity + Production PostgreSQL schema with Row-Level Security (RLS) and multi-tenancy. |
-| **🔌 Social & APIs** | Resumable chunked YouTube Data API v3 (308 resume protocol) + Meta Graph API v21.0 3-step Reels container flow + HMAC-SHA256 signed webhooks for Make.com/n8n. |
-| **☁️ Deployment** | Docker multi-stage container, Render Cloud Blueprint (`render.yaml`), Railway (`railway.json`), and zero-setup HTTPS reverse tunneling (`tunnel.py`). |
+| **🎯 Core Mission** | Production-grade, multi-user AI Video & Content Studio SaaS generating high-retention vertical videos, episodic series, autonomous AI command execution, and direct channel publishing. |
+| **👥 Multi-Tenancy** | True workspace & tenant data isolation: User A cannot see, query, or publish User B's videos, series, episodes, or OAuth credentials. |
+| **⚡ Core Runtime** | Python 3.10+ stdlib-first rendering core + Production FastAPI SaaS Gateway (`backend/app`) with Pydantic v2, PBKDF2 password security & HS256 JWT sessions. |
+| **🤖 AI & Swarm** | 12 Specialized Agents + Autonomous Copilot executing 16 natural language tools for scripting, voice synthesis, thumbnail generation, series continuation, and publishing. |
+| **📺 Series Franchises** | Continuous episodic memory: Kaal-Rekha (Sci-Fi Loop), Ashwatthama 3049 AD, Jab Pyaar Online Tha, Chintu 3D, Mind Riddles, The Observer Files, Roblox Vault. |
+| **▶️ YouTube OAuth** | Per-workspace Google OAuth 2.0 with AES-256-GCM encrypted tokens, live channel status inspection, YouTube Upload Guard, and AGENTS.md Zero Comment Lock Policy enforcement. |
+| **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized neural profiles), ElevenLabs Neural, Gemini TTS, paired with sub-bass procedural audio FX & EBU R128 loudness normalization. |
+| **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic karaoke subtitles, scaling from 30s shorts to 10m longform videos. |
+| **🗄️ Persistence** | Dual SQLite / PostgreSQL engine (`core/db_base.py`) with thread-local ContextVar tenant isolation, relational users, workspaces, series, and encrypted integration vaults. |
+| **☁️ Deployment** | Docker containerized deployment, Render Cloud Blueprint (`render.yaml`), Railway, and zero-setup HTTPS tunneling (`tunnel.py`). |
 
 ---
 
@@ -103,8 +103,8 @@ A self-sufficient production studio running on a local machine, VPS, or cloud co
 | **4-Gate Quality Assurance** | `pipeline/validate.py` | Enforces 3s hook strength score, strict 20s–58s duration, -14 LUFS loudness standard, and API quota limits before release. |
 | **Resumable YouTube Publisher** | `agents/publisher.py` (`urllib`) | Implements YouTube Data API v3 chunked upload with HTTP 308 resume protocol and mandatory synthetic AI disclosures. |
 | **Meta Graph API Reels Publisher** | `agents/ig_publisher.py` (v21.0) | Automated 3-step Reels upload: container initialization, video byte upload, status polling, and feed publishing. |
-| **Bayesian Thompson Sampling** | `core/stats.py` + `agents/scientist.py` | Autonomous A/B testing framework optimizing hook styles, voice profiles, and pacing using Welch's t-test and continued fractions math. |
-| **Enterprise FastAPI SaaS Gateway** | `backend/app` (FastAPI + Pydantic v2) | Production REST API on port `8000` with JWT auth, workspaces, credit ledger, request tracing, and OpenAPI documentation. |
+| **Production SaaS Studio ("GOD MODE")** | `backend/app/static/index.html` + `core/db_base.py` | Multi-user studio with 5-step onboarding, per-workspace YouTube OAuth 2.0 with AES-256 token vault, YouTube Upload Guard, Zero Comment Lock policy, and episodic series continuity. |
+| **Enterprise FastAPI SaaS Gateway** | `backend/app` (FastAPI + Pydantic v2) | Production REST API with PBKDF2 password security, JWT auth, workspace isolation, credit ledger, request tracing, and OpenAPI `/docs`. |
 | **Zero-Setup Remote Access** | `tunnel.py` | Instant, free public HTTPS tunnel via SSH reverse proxy without requiring port forwarding or third-party accounts. |
 
 ---
@@ -960,12 +960,46 @@ When enabled, AUTOPILOT emits beautifully formatted rich embeds with interactive
 ## ☁️ Cloud Deployment
 
 ### 1. Render Cloud Deployment (Recommended)
-This repository includes a native [`render.yaml`](render.yaml) blueprint:
-1. Fork or push this repository to your GitHub account.
+This repository includes a production-ready [`render.yaml`](render.yaml) blueprint and optimized [`Dockerfile`](Dockerfile):
+
+#### Step 1: Deploy via Blueprint (Automatic)
+1. Fork or push this repository to your GitHub account (`Abhay73888/autopilot`).
 2. Log in to [Render.com](https://render.com) $\rightarrow$ Click **New +** $\rightarrow$ **Blueprint**.
-3. Select this repository. Render will automatically read `render.yaml` and configure the Docker Web Service.
-4. Add your optional API keys (`GEMINI_API_KEY`, `MAKE_WEBHOOK_SECRET`) in the Render dashboard.
-5. Access your live instance at: `https://<your-app>.onrender.com`.
+3. Select this repository. Render automatically loads `render.yaml` and configures the Docker Web Service.
+
+#### Step 2: Manual Web Service Setup (Alternative)
+If creating a Web Service directly on the Render Dashboard:
+- **Environment**: Select `Docker` (recommended for bundled FFmpeg & fonts)
+- **Dockerfile Path**: `./Dockerfile`
+- **Health Check Path**: `/healthz` (or `/health`)
+- **Port**: `10000` (Render default web port)
+
+#### Step 3: Configure Environment Variables
+Under **Service Settings $\rightarrow$ Environment**:
+| Variable | Value / Description | Required? |
+| :--- | :--- | :---: |
+| `PORT` | `10000` (Injected automatically by Render) | Auto |
+| `HOST` | `0.0.0.0` | Recommended |
+| `RENDER` | `true` | Recommended |
+| `SECRET_KEY` | Random 64-char string (for JWT & session encryption) | **Yes** |
+| `GEMINI_API_KEY` | Your Google Gemini API Key | Recommended |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID (for YouTube connection) | Optional |
+| `GOOGLE_CLIENT_SECRET`| Google OAuth Client Secret | Optional |
+| `GOOGLE_REDIRECT_URI` | `https://<your-app>.onrender.com/api/v1/integrations/youtube/callback` | Optional |
+
+#### 🛠️ Common Render Issues & Troubleshooting
+* **Issue: "Timed out waiting for port"**:
+  - *Cause*: Render sends traffic to port `10000` by default. If your service binds to a different port or has a port mismatch, Render cannot route traffic.
+  - *Fix*: The updated `Dockerfile` dynamically binds to `${PORT:-10000}`. Ensure Render's **Port** setting is empty or set to `10000`.
+* **Issue: "Health check failed at /healthz"**:
+  - *Cause*: Service crashed before completing startup or health check path was wrong.
+  - *Fix*: Both `/health` and `/healthz` endpoints are registered in `backend/app/main.py` and `web/server.py` returning `{"status": "ok", "service": "autopilot-api"}` with HTTP 200.
+* **Issue: "ModuleNotFoundError: pydantic_settings"**:
+  - *Cause*: Pydantic v2 splits settings into a dedicated package.
+  - *Fix*: `pydantic-settings>=2.5.0` is pinned in `requirements.txt`.
+* **Issue: Old UI or 404 on API endpoints**:
+  - *Cause*: Render is executing the old start command (`python web/server.py`).
+  - *Fix*: Verify Docker `CMD` runs `python -m uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-10000}`. If deploying as a native Python service, set **Start Command** to `python -m uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT`.
 
 ### 2. Docker Self-Hosted
 ```bash

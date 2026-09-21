@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-09-21T17:58:17.903535+00:00",
+  "exported_at": "2026-09-21T18:02:54.093987+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
@@ -11,20 +11,20 @@
     "events": 5099,
     "characters": 1,
     "jobs": 99,
-    "organizations": 92,
-    "workspaces": 1318,
+    "organizations": 95,
+    "workspaces": 1333,
     "credit_accounts": 0,
-    "usage_ledger": 511,
+    "usage_ledger": 516,
     "video_jobs": 0,
-    "channel_credentials": 60,
+    "channel_credentials": 61,
     "platform_accounts": 280,
     "publishing_jobs": 137,
     "credit_transactions": 0,
     "templates": 4,
-    "users": 108,
+    "users": 111,
     "discord_connections": 0,
-    "series": 59,
-    "episodes": 56
+    "series": 61,
+    "episodes": 58
   },
   "data": {
     "videos": [
@@ -65720,6 +65720,27 @@
         "slug": "org-usr_96d1",
         "billing_email": "onboarding_test_1790012604590@autopilot.ai",
         "created_at": "2026-09-21 17:43:24"
+      },
+      {
+        "id": "org_usr_dd503b57d499",
+        "name": "Alex Studio",
+        "slug": "org-usr_dd50",
+        "billing_email": "signup_test_1790013765759@autopilot.ai",
+        "created_at": "2026-09-21 18:02:45"
+      },
+      {
+        "id": "org_usr_0747b239b672",
+        "name": "Login Test User's Studio",
+        "slug": "org-usr_0747",
+        "billing_email": "login_test_1790013765982@autopilot.ai",
+        "created_at": "2026-09-21 18:02:46"
+      },
+      {
+        "id": "org_usr_6a39880380d2",
+        "name": "Onboarding User's Studio",
+        "slug": "org-usr_6a39",
+        "billing_email": "onboarding_test_1790013766335@autopilot.ai",
+        "created_at": "2026-09-21 18:02:46"
       }
     ],
     "workspaces": [
@@ -84174,6 +84195,216 @@
         "plan_tier": "starter",
         "credits_balance": 100,
         "created_ts": null
+      },
+      {
+        "id": "ws_usr_dd503b57d499",
+        "organization_id": "org_usr_dd503b57d499",
+        "name": "Alex Studio",
+        "slug": "ws-usr_dd50",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:45",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_usr_0747b239b672",
+        "organization_id": "org_usr_0747b239b672",
+        "name": "Login Test User's Studio",
+        "slug": "ws-usr_0747",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:46",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_usr_6a39880380d2",
+        "organization_id": "org_usr_6a39880380d2",
+        "name": "Onboarding User's Studio",
+        "slug": "ws-usr_6a39",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:46",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_alice_1790013767175",
+        "organization_id": "org_alice_1790013767175",
+        "name": "Alice Studio",
+        "slug": "alice-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_bob_1790013767175",
+        "organization_id": "org_bob_1790013767175",
+        "name": "Bob Studio",
+        "slug": "bob-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_alice_1790013767291",
+        "organization_id": "org_alice_1790013767291",
+        "name": "Alice Studio",
+        "slug": "alice-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_bob_1790013767291",
+        "organization_id": "org_bob_1790013767291",
+        "name": "Bob Studio",
+        "slug": "bob-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_alice_1790013767360",
+        "organization_id": "org_alice_1790013767360",
+        "name": "Alice Studio",
+        "slug": "alice-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_bob_1790013767360",
+        "organization_id": "org_bob_1790013767360",
+        "name": "Bob Studio",
+        "slug": "bob-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_alice_1790013767414",
+        "organization_id": "org_alice_1790013767414",
+        "name": "Alice Studio",
+        "slug": "alice-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_bob_1790013767414",
+        "organization_id": "org_bob_1790013767414",
+        "name": "Bob Studio",
+        "slug": "bob-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_alice_1790013767480",
+        "organization_id": "org_alice_1790013767480",
+        "name": "Alice Studio",
+        "slug": "alice-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_bob_1790013767480",
+        "organization_id": "org_bob_1790013767480",
+        "name": "Bob Studio",
+        "slug": "bob-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_alice_1790013767539",
+        "organization_id": "org_alice_1790013767539",
+        "name": "Alice Studio",
+        "slug": "alice-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
+      },
+      {
+        "id": "ws_bob_1790013767539",
+        "organization_id": "org_bob_1790013767539",
+        "name": "Bob Studio",
+        "slug": "bob-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:02:47",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
       }
     ],
     "credit_accounts": [],
@@ -89287,6 +89518,56 @@
         "raw_cost_usd": 0.001,
         "credits_debited": 10,
         "created_at": "2026-09-21T17:43:25.122861+00:00"
+      },
+      {
+        "id": "led_1bf3b9ee77ab40e0",
+        "organization_id": "org_a_1790013766719",
+        "workspace_id": "ws_a_1790013766719",
+        "operation_type": "video_full_standard",
+        "units_consumed": 1.0,
+        "raw_cost_usd": 0.001,
+        "credits_debited": 10,
+        "created_at": "2026-09-21T18:02:46.731470+00:00"
+      },
+      {
+        "id": "led_4add35d01a4e4e75",
+        "organization_id": "org_a_1790013766757",
+        "workspace_id": "ws_a_1790013766757",
+        "operation_type": "video_full_standard",
+        "units_consumed": 1.0,
+        "raw_cost_usd": 0.001,
+        "credits_debited": 10,
+        "created_at": "2026-09-21T18:02:46.820258+00:00"
+      },
+      {
+        "id": "led_77cae3970d31410f",
+        "organization_id": "org_a_1790013766757",
+        "workspace_id": "ws_a_1790013766757",
+        "operation_type": "video_full_standard",
+        "units_consumed": 1.0,
+        "raw_cost_usd": 0.001,
+        "credits_debited": 10,
+        "created_at": "2026-09-21T18:02:46.868881+00:00"
+      },
+      {
+        "id": "led_baea64f0ccaf48fa",
+        "organization_id": "org_a_1790013766938",
+        "workspace_id": "ws_a_1790013766938",
+        "operation_type": "video_full_standard",
+        "units_consumed": 1.0,
+        "raw_cost_usd": 0.001,
+        "credits_debited": 10,
+        "created_at": "2026-09-21T18:02:46.993644+00:00"
+      },
+      {
+        "id": "led_d90bed5e20814e9d",
+        "organization_id": "org_a_1790013766938",
+        "workspace_id": "ws_a_1790013766938",
+        "operation_type": "video_full_standard",
+        "units_consumed": 1.0,
+        "raw_cost_usd": 0.001,
+        "credits_debited": 10,
+        "created_at": "2026-09-21T18:02:47.031167+00:00"
       }
     ],
     "video_jobs": [],
@@ -89890,6 +90171,16 @@
         "encrypted_token": "xVnERAfJtY8IFrf9jdpcslr/S6lBPKdT5haomPym329cDOBTpGX+qkWBSxufNN8Cvne4PYBMbD9txqxuE0NJ3qhoB96f01W4hA4u/pg=",
         "token_metadata": "{}",
         "created_at": "2026-09-21T17:43:25.303723+00:00"
+      },
+      {
+        "id": "cred_1ee70ac378af",
+        "workspace_id": "ws_alice_1790013767175",
+        "platform": "youtube",
+        "channel_id": "UC_alice_channel_01",
+        "channel_name": "Alice True Crime Stories",
+        "encrypted_token": "vugSfCJk2Wz2WLZYuj6HqrEkg/tR87vBxqmRFFkAOlDpyjMvKtKKpNF5a6ywG1DVhqQBPHfNKw6lTB9UvV4C9wv6Zt3JYM2l/9owEtY=",
+        "token_metadata": "{}",
+        "created_at": "2026-09-21T18:02:47.230838+00:00"
       }
     ],
     "platform_accounts": [
@@ -99445,6 +99736,54 @@
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T17:43:24.639792+00:00"
+      },
+      {
+        "id": 111,
+        "user_id": "usr_dd503b57d499",
+        "email": "signup_test_1790013765759@autopilot.ai",
+        "password_hash": "pbkdf2_sha256$6d1b03c5b39539f4cfe15ffbb18006f5$d045bf81188055c00d71b6b1fec608157f8999bed8f72bf260ab3f3c225671fc",
+        "name": "Alex Test Creator",
+        "role": "user",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-09-21T18:02:45.899511+00:00",
+        "tour_completed": 0,
+        "full_name": "Alex Test Creator",
+        "is_onboarded": 0,
+        "preferences_json": "{}",
+        "created_at": "2026-09-21T18:02:45.899511+00:00"
+      },
+      {
+        "id": 112,
+        "user_id": "usr_0747b239b672",
+        "email": "login_test_1790013765982@autopilot.ai",
+        "password_hash": "pbkdf2_sha256$41bcc67e383f6ba961705dc8b81b189b$4edab1ac98c8b81f3064e47f1f090df404b18f3d1636069c423dae9c9c47a09f",
+        "name": "Login Test User",
+        "role": "user",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-09-21T18:02:46.090389+00:00",
+        "tour_completed": 0,
+        "full_name": "Login Test User",
+        "is_onboarded": 0,
+        "preferences_json": "{}",
+        "created_at": "2026-09-21T18:02:46.090389+00:00"
+      },
+      {
+        "id": 113,
+        "user_id": "usr_6a39880380d2",
+        "email": "onboarding_test_1790013766335@autopilot.ai",
+        "password_hash": "pbkdf2_sha256$6e779af97919b69215a7cf99a362c756$072c61cb48f6be99a8925e306ad722846f596ecbf65645e072e85a04c4f321cd",
+        "name": "Onboarding User",
+        "role": "user",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-09-21T18:02:46.396629+00:00",
+        "tour_completed": 1,
+        "full_name": "Onboarding User",
+        "is_onboarded": 1,
+        "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
+        "created_at": "2026-09-21T18:02:46.396629+00:00"
       }
     ],
     "discord_connections": [],
@@ -100038,6 +100377,26 @@
         "tone": "suspense",
         "cast_json": "{}",
         "created_at": "2026-09-21T17:43:24.864004+00:00"
+      },
+      {
+        "id": "ser_ed6e8e9f3ff4",
+        "workspace_id": "ws_a_1790013766535",
+        "title": "Alice Franchise",
+        "description": "Secret narrative bible",
+        "genre": "mystery",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T18:02:46.541939+00:00"
+      },
+      {
+        "id": "ser_379872dbd407",
+        "workspace_id": "ws_a_1790013766757",
+        "title": "Jab Pyaar Online Tha",
+        "description": "Romantic drama between Aarav and Meera.",
+        "genre": "mystery",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T18:02:46.765322+00:00"
       }
     ],
     "episodes": [
@@ -100812,9 +101171,37 @@
         "created_at": "2026-09-21T17:43:24.942907+00:00"
       },
       {
-        "id": "ep_e8064c94b20b",
+        "id": "ep_c23b12ef2863",
+        "series_id": "ser_379872dbd407",
+        "workspace_id": "ws_a_1790013766757",
+        "episode_number": 1,
+        "title": "The First Notification",
+        "recap": "The origin story begins in Jab Pyaar Online Tha.",
+        "conflict": "Aarav receives a DM from a mysterious girl.",
+        "cliffhanger": "Next episode dekhne ke liye comment karein!",
+        "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
+        "status": "rendering",
+        "video_id": "vid_65a0ee747430",
+        "created_at": "2026-09-21T18:02:46.799233+00:00"
+      },
+      {
+        "id": "ep_7a86eef4be17",
+        "series_id": "ser_379872dbd407",
+        "workspace_id": "ws_a_1790013766757",
+        "episode_number": 2,
+        "title": "The Voice Note",
+        "recap": "In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.",
+        "conflict": "Meera reveals she knows Aarav's dark past.",
+        "cliffhanger": "Next episode dekhne ke liye comment karein!",
+        "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
+        "status": "rendering",
+        "video_id": "vid_53f9b23175fe",
+        "created_at": "2026-09-21T18:02:46.865075+00:00"
+      },
+      {
+        "id": "ep_bd6eb4c03e3b",
         "series_id": "ser_default_ws_a_1",
-        "workspace_id": "ws_a_1790012605012",
+        "workspace_id": "ws_a_1790013766938",
         "episode_number": 5,
         "title": "Series 1 Ep 5",
         "recap": "Context from Episode 4",
@@ -100822,8 +101209,8 @@
         "cliffhanger": "Dramatic cliffhanger CTA",
         "script_json": "{\"title\": \"Series 1 Ep 5\", \"topic\": \"Episode 5 of Series 1\", \"recap\": \"Context from Episode 4\", \"conflict\": \"Core confrontation\", \"cliffhanger\": \"Dramatic cliffhanger CTA\"}",
         "status": "rendering",
-        "video_id": "vid_fd785db7fbb9",
-        "created_at": "2026-09-21T17:43:25.119428+00:00"
+        "video_id": "vid_be999bf0c9fc",
+        "created_at": "2026-09-21T18:02:47.027238+00:00"
       }
     ]
   }

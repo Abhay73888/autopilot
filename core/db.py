@@ -297,7 +297,7 @@ class DB:
                 pass
 
         # Multi-tenancy migrations for existing tables
-        for tbl in ("videos", "jobs"):
+        for tbl in ("videos", "jobs", "discord_connections"):
             try:
                 self.conn.execute(f"ALTER TABLE {tbl} ADD COLUMN user_id TEXT DEFAULT 'admin_abhay'")
             except sqlite3.OperationalError:
@@ -326,13 +326,17 @@ class DB:
             ("stage", "TEXT DEFAULT 'queued'"),
             ("percent", "REAL DEFAULT 0.0"),
             ("eta", "REAL DEFAULT 0.0"),
+            ("user_id", "TEXT DEFAULT 'admin_abhay'"),
         ]:
             try:
                 self.conn.execute(f"ALTER TABLE jobs ADD COLUMN {col_name} {col_type}")
             except sqlite3.OperationalError:
                 pass
 
-        self.conn.executescript(SCHEMA)
+        try:
+            self.conn.executescript(SCHEMA)
+        except sqlite3.OperationalError as schema_err:
+            log.warn(f"Schema executescript warning: {schema_err}")
 
         try:
             self.conn.execute("CREATE INDEX IF NOT EXISTS idx_workspaces_key ON workspaces(api_key)")

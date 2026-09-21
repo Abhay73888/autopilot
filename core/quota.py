@@ -86,13 +86,21 @@ class QuotaExceeded(Exception):
 
 class Quota:
     def __init__(self, db: DB | None = None, budgets: dict | None = None):
-        self.db = db or DB()
-        self._own_db = db is None
+        try:
+            self.db = db or DB()
+            self._own_db = db is None
+        except Exception as e:
+            log.warn(f"Failed to initialize DB for Quota, disabling local quota enforcement: {e}")
+            self.db = None
+            self._own_db = False
         self.budgets = budgets or BUDGETS
 
     def close(self):
-        if self._own_db:
-            self.db.close()
+        if self._own_db and self.db:
+            try:
+                self.db.close()
+            except Exception:
+                pass
 
     # ---------- window ka start time nikalo ----------
     def _window_start(self, window: str) -> datetime:
@@ -110,11 +118,16 @@ class Quota:
 
     # ---------- kitna use ho chuka ----------
     def used(self, bucket: str) -> int:
+        if not self.db:
+            return 0
         cfg = self._cfg(bucket)
         start = self._window_start(cfg["window"]).isoformat(timespec="seconds")
-        row = self.db.one("SELECT COALESCE(SUM(amount),0) s FROM quota_usage WHERE bucket=? AND ts>=?",
-                          (bucket, start))
-        return int(row["s"] if row else 0)
+        try:
+            row = self.db.one("SELECT COALESCE(SUM(amount),0) s FROM quota_usage WHERE bucket=? AND ts>=?",
+                              (bucket, start))
+            return int(row["s"] if row else 0)
+        except Exception:
+            return 0
 
     def remaining(self, bucket: str) -> int:
         return max(0, self._cfg(bucket)["limit"] - self.used(bucket))
@@ -127,6 +140,8 @@ class Quota:
     # ---------- main API ----------
     def can_spend(self, bucket: str, amount: int = 1) -> bool:
         """Har API call se PEHLE ye poochho."""
+        if not self.db:
+            return True
         ok = self.remaining(bucket) >= amount
         if not ok:
             log.warn(f"BLOCKED: '{bucket}' ka budget khatam", used=self.used(bucket),
@@ -136,14 +151,19 @@ class Quota:
 
     def spend(self, bucket: str, amount: int = 1, reason: str = "") -> None:
         """API call SAFAL hone ke baad ye call karo (ya check_and_spend use karo)."""
-        self.db.conn.execute(
-            "INSERT INTO quota_usage (ts,bucket,amount,reason) VALUES (?,?,?,?)",
-            (datetime.now(timezone.utc).isoformat(timespec="seconds"), bucket, amount, reason))
-        used, limit = self.used(bucket), self._cfg(bucket)["limit"]
-        pct = 100 * used / limit if limit else 0
-        if pct >= 80:  # Section 2: "80% cross ho to slow down"
-            log.warn(f"'{bucket}' {pct:.0f}% use ho gaya — dheere chalo",
-                     used=used, limit=limit, reset=self.reset_in_human(bucket))
+        if not self.db:
+            return
+        try:
+            self.db.conn.execute(
+                "INSERT INTO quota_usage (ts,bucket,amount,reason) VALUES (?,?,?,?)",
+                (datetime.now(timezone.utc).isoformat(timespec="seconds"), bucket, amount, reason))
+            used, limit = self.used(bucket), self._cfg(bucket)["limit"]
+            pct = 100 * used / limit if limit else 0
+            if pct >= 80:  # Section 2: "80% cross ho to slow down"
+                log.warn(f"'{bucket}' {pct:.0f}% use ho gaya — dheere chalo",
+                         used=used, limit=limit, reset=self.reset_in_human(bucket))
+        except Exception as e:
+            log.warn(f"Could not record quota spend: {e}")
         else:
             log.debug(f"spent {amount} {bucket}", used=used, limit=limit, reason=reason)
 

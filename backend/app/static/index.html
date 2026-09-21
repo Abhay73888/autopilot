@@ -2742,6 +2742,9 @@
       localStorage.setItem('autopilot_user', JSON.stringify(user));
       localStorage.setItem('autopilot_workspace_id', state.workspaceId);
       updateUserUI();
+      if (user && user.role === 'admin') {
+        loadMasterVault();
+      }
     }
 
     function logoutUser() {
@@ -4026,12 +4029,19 @@
     async function loadMasterVault() {
       if (!state.token) {
         showToast('Please log in as Administrator to access Master Data Vault');
+        renderVaultLoginPrompt();
         return;
       }
       try {
         const res = await apiFetch('/api/v1/admin/vault');
+        if (res.status === 401 || res.status === 403) {
+          renderVaultLoginPrompt();
+          showToast('Admin session required to load historical videos');
+          return;
+        }
         const data = await res.json();
         if (!data.success) {
+          renderVaultLoginPrompt();
           showToast(data.error?.message || 'Failed to load master vault');
           return;
         }
@@ -4069,6 +4079,38 @@
         console.error('Master vault error:', err);
         showToast('Error loading master vault: ' + err.message);
       }
+    }
+
+    function renderVaultLoginPrompt() {
+      const grid = document.getElementById('vaultVideosGrid');
+      if (!grid) return;
+      grid.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 48px 24px; background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 12px; margin: 20px 0;">
+          <div style="font-size: 40px; margin-bottom: 12px;">🔐</div>
+          <h3 style="color: #FBBF24; font-size: 18px; margin-bottom: 8px;">Admin Login Required to View Video Catalog</h3>
+          <p style="color: var(--text-muted); font-size: 14px; max-width: 480px; margin: 0 auto 18px auto; line-height: 1.6;">
+            Aapka <strong>367 historical videos</strong>, <strong>57 series</strong>, aur <strong>54 episodes</strong> ka data database mein 100% surakshit hai. Master Vault ke sabhi videos ko screen par dekhne ke liye Admin ID se login karein.
+          </p>
+          <button class="btn btn-primary" style="padding: 10px 24px;" onclick="promptAdminLogin()">👑 Click to Login as Admin (admin_abhay)</button>
+        </div>
+      `;
+    }
+
+    function promptAdminLogin() {
+      state.authMode = 'login';
+      const tabLogin = document.getElementById('tabAuthLogin');
+      const tabSignup = document.getElementById('tabAuthSignup');
+      const fields = document.getElementById('authSignupFields');
+      if (tabLogin) tabLogin.classList.add('active');
+      if (tabSignup) tabSignup.classList.remove('active');
+      if (fields) fields.style.display = 'none';
+      const title = document.getElementById('authModalTitle');
+      if (title) title.innerText = 'Admin Login';
+      const emailInput = document.getElementById('authEmail');
+      const pwdInput = document.getElementById('authPassword');
+      if (emailInput) emailInput.value = 'admin_abhay';
+      if (pwdInput) pwdInput.value = 'admin_autopilot_2026';
+      toggleAuthModal();
     }
 
     function renderVaultVideos(videos) {

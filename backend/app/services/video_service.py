@@ -156,8 +156,8 @@ class VideoService:
         try:
             db = DB()
             if is_admin:
-                # Admin has access to all admin-owned videos
-                rows = db.q("SELECT * FROM videos WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY id DESC LIMIT 100")
+                # Admin has access to all admin-owned videos (up to 500)
+                rows = db.q("SELECT * FROM videos WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY id DESC LIMIT 500")
             elif effective_user_id:
                 # Normal user strictly sees their own records
                 rows = db.q("SELECT * FROM videos WHERE user_id = ? ORDER BY id DESC LIMIT 50", (effective_user_id,))

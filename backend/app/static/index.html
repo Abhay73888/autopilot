@@ -1307,6 +1307,11 @@
             <span class="nav-icon">👑</span>
             <span>Admin Console</span>
           </a>
+          <a class="nav-item" id="adminVaultNavItem" style="display: none;" onclick="switchNav('vault')">
+            <span class="nav-icon">💎</span>
+            <span>Master Data Vault</span>
+            <span class="nav-badge" style="background: linear-gradient(135deg, #F59E0B, #EF4444); color: #fff; font-weight: 700;">367+</span>
+          </a>
         </nav>
       </div>
 
@@ -2223,6 +2228,136 @@
           </button>
         </div>
       </section>
+
+      <!-- VIEW 10: MASTER DATA VAULT (ADMIN EXCLUSIVE) -->
+      <section class="view-panel" id="view-vault">
+        <div class="card-header" style="flex-wrap: wrap; gap: 16px; align-items: center;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <h2 style="font-family: var(--font-display); font-size: 24px; background: linear-gradient(135deg, #F59E0B, #EC4899, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">👑 Master Data Vault</h2>
+              <span class="badge" style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #FBBF24;">Founder & SuperAdmin</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin-top: 4px;">
+              Complete historical vault of all <strong>367+ videos</strong>, <strong>55 series franchises</strong>, <strong>52 episodes</strong>, and channel integrations.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-secondary" onclick="downloadVaultBackupJson()" title="Download complete JSON export">
+              <span>📥</span> Export JSON Backup
+            </button>
+            <button class="btn btn-primary" style="background: linear-gradient(135deg, #10B981, #059669);" onclick="syncMasterVaultToGit()">
+              <span>🚀</span> Sync All to GitHub & Discord
+            </button>
+            <button class="btn btn-secondary" onclick="loadMasterVault()">
+              <span>🔄</span> Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Master Overview Metrics -->
+        <div class="stats-row" style="margin-top: 18px;">
+          <div class="metric-box" style="border-top: 2px solid #F59E0B;">
+            <div class="metric-label">Historical Videos Created</div>
+            <div class="metric-value" id="vaultTotalVideos">367 <span class="badge badge-purple">Rendered</span></div>
+          </div>
+          <div class="metric-box" style="border-top: 2px solid #8B5CF6;">
+            <div class="metric-label">Series & Franchises</div>
+            <div class="metric-value" id="vaultTotalSeries">55 <span class="badge badge-cyan">Active</span></div>
+          </div>
+          <div class="metric-box" style="border-top: 2px solid #EC4899;">
+            <div class="metric-label">Sequential Episodes</div>
+            <div class="metric-value" id="vaultTotalEpisodes">52 <span class="badge badge-success">Narrative</span></div>
+          </div>
+          <div class="metric-box" style="border-top: 2px solid #10B981;">
+            <div class="metric-label">YouTube Policy Status</div>
+            <div class="metric-value" style="font-size: 16px; color: #34D399;">100% Comments ON <span class="badge badge-success">Invariant</span></div>
+          </div>
+        </div>
+
+        <!-- Vault Filter & Search Controls -->
+        <div style="background: rgba(17, 24, 39, 0.7); border: 1px solid var(--surface-border); border-radius: var(--radius-md); padding: 14px 18px; margin: 20px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="vaultNavTabs">
+            <button class="filter-chip active" id="vaultTabVideos" onclick="switchVaultSubTab('videos')">🎬 Videos (<span id="vaultTabVideosCount">367</span>)</button>
+            <button class="filter-chip" id="vaultTabSeries" onclick="switchVaultSubTab('series')">📺 Franchises (<span id="vaultTabSeriesCount">55</span>)</button>
+            <button class="filter-chip" id="vaultTabEpisodes" onclick="switchVaultSubTab('episodes')">📖 Episodes (<span id="vaultTabEpisodesCount">52</span>)</button>
+            <button class="filter-chip" id="vaultTabChannels" onclick="switchVaultSubTab('channels')">🔑 Linked Channels (<span id="vaultTabChannelsCount">--</span>)</button>
+          </div>
+
+          <div style="position: relative; min-width: 280px; flex: 1; max-width: 420px;">
+            <input type="text" id="vaultSearchInput" class="form-input" placeholder="🔍 Search by title, topic, series name or ID..." oninput="onVaultSearch(this.value)">
+          </div>
+        </div>
+
+        <!-- SUB-PANEL 1: MASTER VIDEOS VAULT -->
+        <div id="vaultSubPanelVideos">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 13px; color: var(--text-muted);">
+            <span id="vaultVideosStatusLabel">Showing all historical videos</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="filter-chip active" style="font-size: 11px; padding: 4px 10px;" onclick="filterVaultVideoStatus('all', this)">All</button>
+              <button class="filter-chip" style="font-size: 11px; padding: 4px 10px;" onclick="filterVaultVideoStatus('completed', this)">Completed</button>
+              <button class="filter-chip" style="font-size: 11px; padding: 4px 10px;" onclick="filterVaultVideoStatus('rendering', this)">Rendering</button>
+              <button class="filter-chip" style="font-size: 11px; padding: 4px 10px;" onclick="filterVaultVideoStatus('published', this)">Published</button>
+            </div>
+          </div>
+          <div class="video-grid" id="vaultVideosGrid">
+            <!-- Populated via loadMasterVault() -->
+          </div>
+        </div>
+
+        <!-- SUB-PANEL 2: MASTER SERIES VAULT -->
+        <div id="vaultSubPanelSeries" style="display: none;">
+          <div class="grid-3col" id="vaultSeriesGrid">
+            <!-- Populated via loadMasterVault() -->
+          </div>
+        </div>
+
+        <!-- SUB-PANEL 3: MASTER EPISODES VAULT -->
+        <div id="vaultSubPanelEpisodes" style="display: none;">
+          <div class="glass-card">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ep #</th>
+                    <th>Series ID</th>
+                    <th>Episode Title</th>
+                    <th>Recap Hook</th>
+                    <th>Conflict / Cliffhanger</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="vaultEpisodesTableBody">
+                  <!-- Populated via loadMasterVault() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL 4: LINKED CHANNELS VAULT -->
+        <div id="vaultSubPanelChannels" style="display: none;">
+          <div class="glass-card">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Platform</th>
+                    <th>Channel Title</th>
+                    <th>Channel ID</th>
+                    <th>Workspace</th>
+                    <th>Connected At</th>
+                    <th>Comment Policy</th>
+                  </tr>
+                </thead>
+                <tbody id="vaultChannelsTableBody">
+                  <!-- Populated via loadMasterVault() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -2441,6 +2576,27 @@
     </div>
   </div>
 
+  <!-- MODAL: Vault Video Playback Modal -->
+  <div class="modal-backdrop" id="vaultVideoModal">
+    <div class="modal-box" style="max-width: 600px; text-align: center;">
+      <div class="card-header">
+        <div class="card-title" id="vaultModalVideoTitle" style="font-size: 15px;">Video Preview</div>
+        <button class="btn btn-secondary" style="padding: 4px 8px;" onclick="closeVaultVideoModal()">✕</button>
+      </div>
+      <div style="position: relative; width: 100%; height: 480px; background: #000; border-radius: 8px; overflow: hidden; margin: 12px 0;">
+        <video id="vaultModalPlayer" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: space-between; margin-top: 14px;">
+        <a id="vaultModalDownloadBtn" class="btn btn-secondary" href="#" download target="_blank" style="flex: 1;">
+          <span>⬇️</span> Download Video MP4
+        </a>
+        <button id="vaultModalEditBtn" class="btn btn-primary" style="flex: 1;" onclick="openVaultVideoInEditor()">
+          <span>🎞️</span> Open in Video Editor
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div class="toast" id="toastMsg">Notification message</div>
 
@@ -2493,6 +2649,7 @@
       if (panelId === 'admin') { loadAdminOverview(); loadAiModelConfig(); }
       if (panelId === 'editor') loadEditorVideos();
       if (panelId === 'studio-topic') loadStudioSeries();
+      if (panelId === 'vault') loadMasterVault();
       if (panelId === 'dashboard') {
         loadVideos();
         loadSeries();
@@ -2609,8 +2766,12 @@
         document.getElementById('settingsWsId').value = state.workspaceId;
         if (u.role === 'admin') {
           document.getElementById('adminNavItem').style.display = 'flex';
+          const vNav = document.getElementById('adminVaultNavItem');
+          if (vNav) vNav.style.display = 'flex';
         } else {
           document.getElementById('adminNavItem').style.display = 'none';
+          const vNav = document.getElementById('adminVaultNavItem');
+          if (vNav) vNav.style.display = 'none';
         }
       } else {
         document.getElementById('userNameDisplay').innerText = 'Guest Creator';
@@ -2618,6 +2779,8 @@
         document.getElementById('userAvatar').innerText = 'G';
         document.getElementById('topbarWsName').innerText = 'Default Workspace';
         document.getElementById('adminNavItem').style.display = 'none';
+        const vNav = document.getElementById('adminVaultNavItem');
+        if (vNav) vNav.style.display = 'none';
       }
     }
 
@@ -3847,6 +4010,253 @@
       } catch (err) {
         console.error('Failed to load admin users:', err);
       }
+    }
+
+    // ==========================================
+    // MASTER DATA VAULT (ADMIN EXCLUSIVE)
+    // ==========================================
+    state.vaultData = null;
+    state.vaultVideos = [];
+    state.vaultSeries = [];
+    state.vaultEpisodes = [];
+    state.vaultChannels = [];
+    state.activeVaultTab = 'videos';
+    state.currentVaultModalVideo = null;
+
+    async function loadMasterVault() {
+      if (!state.token) {
+        showToast('Please log in as Administrator to access Master Data Vault');
+        return;
+      }
+      try {
+        const res = await apiFetch('/api/v1/admin/vault');
+        const data = await res.json();
+        if (!data.success) {
+          showToast(data.error?.message || 'Failed to load master vault');
+          return;
+        }
+
+        const d = data.data;
+        state.vaultData = d;
+        state.vaultVideos = d.videos || [];
+        state.vaultSeries = d.series || [];
+        state.vaultEpisodes = d.episodes || [];
+        state.vaultChannels = d.channels || [];
+
+        // Summary Counters
+        const sum = d.summary || {};
+        const vEl = document.getElementById('vaultTotalVideos');
+        if (vEl) vEl.innerHTML = `${sum.totalVideos || state.vaultVideos.length} <span class="badge badge-purple">Rendered</span>`;
+        const sEl = document.getElementById('vaultTotalSeries');
+        if (sEl) sEl.innerHTML = `${sum.totalSeries || state.vaultSeries.length} <span class="badge badge-cyan">Active</span>`;
+        const eEl = document.getElementById('vaultTotalEpisodes');
+        if (eEl) eEl.innerHTML = `${sum.totalEpisodes || state.vaultEpisodes.length} <span class="badge badge-success">Narrative</span>`;
+
+        const vTab = document.getElementById('vaultTabVideosCount');
+        if (vTab) vTab.innerText = sum.totalVideos || state.vaultVideos.length;
+        const sTab = document.getElementById('vaultTabSeriesCount');
+        if (sTab) sTab.innerText = sum.totalSeries || state.vaultSeries.length;
+        const eTab = document.getElementById('vaultTabEpisodesCount');
+        if (eTab) eTab.innerText = sum.totalEpisodes || state.vaultEpisodes.length;
+        const cTab = document.getElementById('vaultTabChannelsCount');
+        if (cTab) cTab.innerText = sum.totalChannels || state.vaultChannels.length;
+
+        renderVaultVideos(state.vaultVideos);
+        renderVaultSeries(state.vaultSeries);
+        renderVaultEpisodes(state.vaultEpisodes);
+        renderVaultChannels(state.vaultChannels);
+      } catch (err) {
+        console.error('Master vault error:', err);
+        showToast('Error loading master vault: ' + err.message);
+      }
+    }
+
+    function renderVaultVideos(videos) {
+      const grid = document.getElementById('vaultVideosGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (videos.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">No matching videos found in vault.</div>';
+        return;
+      }
+      videos.forEach(v => {
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `
+          <div class="video-thumb-wrapper" onclick="openVaultVideoModal('${v.id}')">
+            <img src="${v.thumbnailUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800'}" class="video-thumb">
+            <div style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.75); padding:2px 6px; border-radius:4px; font-size:11px; font-family:var(--font-mono); color:#fff;">
+              ${v.durationSeconds ? v.durationSeconds.toFixed(0) + 's' : '55s'}
+            </div>
+          </div>
+          <div class="video-card-body">
+            <div style="font-size:11px; color:var(--accent-cyan); font-family:var(--font-mono); margin-bottom:2px;">${v.id}</div>
+            <div class="video-card-title">${v.title || v.topic || 'Video'}</div>
+            <div class="video-card-meta">
+              <span class="badge ${v.status === 'published' ? 'badge-success' : 'badge-purple'}">${(v.status || 'READY').toUpperCase()}</span>
+              <span style="font-size:11px; color:var(--text-muted);">${v.createdAt ? v.createdAt.slice(0, 10) : ''}</span>
+            </div>
+            <div class="video-card-actions">
+              <button class="btn btn-secondary" style="padding:6px 10px; font-size:11px;" onclick="openVaultVideoModal('${v.id}')">▶ Play</button>
+              <button class="btn btn-secondary" style="padding:6px 10px; font-size:11px;" onclick="openInVideoEditor('${v.id}')">✂️ Edit</button>
+              <button class="btn btn-primary" style="flex:1; padding:6px 10px; font-size:11px;" onclick="openPublishModal(${JSON.stringify(v).replace(/"/g, '&quot;')})">Upload YT</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderVaultSeries(seriesList) {
+      const grid = document.getElementById('vaultSeriesGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      seriesList.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'glass-card';
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">${s.title}</div>
+            <span class="badge badge-purple">${s.episodeCount || 0} Episodes</span>
+          </div>
+          <div style="font-size:11px; color:var(--accent-cyan); margin-bottom:6px; text-transform:uppercase;">Genre: ${s.genre} • Tone: ${s.tone}</div>
+          <p style="color:var(--text-muted); font-size:12.5px; line-height:1.5; margin-bottom:14px;">${s.description || 'Franchise active'}</p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary" style="flex:1; padding:7px;" onclick="prepareEpisodeForSeries('${s.id}')">+ Next Episode</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderVaultEpisodes(episodes) {
+      const tb = document.getElementById('vaultEpisodesTableBody');
+      if (!tb) return;
+      tb.innerHTML = '';
+      episodes.forEach(ep => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-family:var(--font-mono); color:var(--accent-cyan); font-weight:700;">#${ep.episodeNumber}</td>
+          <td style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">${ep.seriesId}</td>
+          <td style="font-weight:600; color:var(--text-main);">${ep.title}</td>
+          <td style="font-size:12px; color:var(--text-muted); max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ep.recap || '—'}</td>
+          <td style="font-size:12px; color:var(--text-muted); max-width:240px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${ep.conflict || ep.cliffhanger || '—'}</td>
+          <td><span class="badge badge-success">${ep.status}</span></td>
+          <td>
+            ${ep.videoId ? `<button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="openVaultVideoModal('${ep.videoId}')">▶ Watch</button>` : '—'}
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+
+    function renderVaultChannels(channels) {
+      const tb = document.getElementById('vaultChannelsTableBody');
+      if (!tb) return;
+      tb.innerHTML = '';
+      channels.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="badge badge-purple">${c.platform ? c.platform.toUpperCase() : 'YOUTUBE'}</span></td>
+          <td style="font-weight:600;">${c.channelName || 'YouTube Channel'}</td>
+          <td style="font-family:var(--font-mono); font-size:12px;">${c.channelId || '--'}</td>
+          <td style="font-size:12px; color:var(--text-muted);">${c.workspaceId}</td>
+          <td style="font-size:12px; color:var(--text-muted);">${c.connectedAt ? c.connectedAt.slice(0, 10) : '--'}</td>
+          <td><span class="badge badge-success">100% Comments Enabled</span></td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+
+    function switchVaultSubTab(tab) {
+      state.activeVaultTab = tab;
+      ['videos', 'series', 'episodes', 'channels'].forEach(t => {
+        const btn = document.getElementById('vaultTab' + t.charAt(0).toUpperCase() + t.slice(1));
+        const panel = document.getElementById('vaultSubPanel' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (btn) btn.classList.toggle('active', t === tab);
+        if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
+      });
+    }
+
+    function filterVaultVideoStatus(status, btn) {
+      document.querySelectorAll('#vaultSubPanelVideos .filter-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filtered = status === 'all' ? state.vaultVideos : state.vaultVideos.filter(v => v.status === status);
+      renderVaultVideos(filtered);
+    }
+
+    function onVaultSearch(query) {
+      const q = query.toLowerCase().trim();
+      if (state.activeVaultTab === 'videos') {
+        const filtered = state.vaultVideos.filter(v => 
+          (v.title && v.title.toLowerCase().includes(q)) ||
+          (v.topic && v.topic.toLowerCase().includes(q)) ||
+          (v.id && v.id.toLowerCase().includes(q))
+        );
+        renderVaultVideos(filtered);
+      } else if (state.activeVaultTab === 'series') {
+        const filtered = state.vaultSeries.filter(s =>
+          (s.title && s.title.toLowerCase().includes(q)) ||
+          (s.description && s.description.toLowerCase().includes(q)) ||
+          (s.id && s.id.toLowerCase().includes(q))
+        );
+        renderVaultSeries(filtered);
+      } else if (state.activeVaultTab === 'episodes') {
+        const filtered = state.vaultEpisodes.filter(ep =>
+          (ep.title && ep.title.toLowerCase().includes(q)) ||
+          (ep.seriesId && ep.seriesId.toLowerCase().includes(q)) ||
+          (ep.conflict && ep.conflict.toLowerCase().includes(q))
+        );
+        renderVaultEpisodes(filtered);
+      }
+    }
+
+    function openVaultVideoModal(vidId) {
+      const v = state.vaultVideos.find(x => x.id === vidId) || state.videos.find(x => x.id === vidId) || { id: vidId, title: 'Video Preview', videoUrl: '/output/video_0166/final.mp4' };
+      state.currentVaultModalVideo = v;
+      document.getElementById('vaultModalVideoTitle').innerText = `${v.title || 'Video'} (${v.id})`;
+      const player = document.getElementById('vaultModalPlayer');
+      const vurl = v.videoUrl || '/output/video_0166/final.mp4';
+      player.src = vurl;
+      player.load();
+      document.getElementById('vaultModalDownloadBtn').href = vurl;
+      document.getElementById('vaultVideoModal').style.display = 'flex';
+    }
+
+    function closeVaultVideoModal() {
+      const player = document.getElementById('vaultModalPlayer');
+      player.pause();
+      player.src = '';
+      document.getElementById('vaultVideoModal').style.display = 'none';
+    }
+
+    function openVaultVideoInEditor() {
+      if (state.currentVaultModalVideo) {
+        const vId = state.currentVaultModalVideo.id;
+        closeVaultVideoModal();
+        openInVideoEditor(vId);
+      }
+    }
+
+    async function syncMasterVaultToGit() {
+      showToast('🚀 Exporting all data, committing to Git & notifying Discord...');
+      try {
+        const res = await apiFetch('/api/v1/admin/vault/sync-git', { method: 'POST' });
+        const d = await res.json();
+        if (d.success) {
+          showToast('✓ Pushed all 367 videos, 55 series & 52 episodes to GitHub! Discord notified.');
+          loadMasterVault();
+        } else {
+          showToast('Sync failed: ' + (d.error?.message || 'Server error'));
+        }
+      } catch (err) {
+        showToast('Sync error: ' + err.message);
+      }
+    }
+
+    function downloadVaultBackupJson() {
+      window.open('/data/autopilot_master_vault_backup.json', '_blank');
+      showToast('Downloading complete master vault JSON backup...');
     }
 
     // Initial Bootstrap

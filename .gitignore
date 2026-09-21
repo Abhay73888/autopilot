@@ -5,9 +5,11 @@ client_secret.json
 *.db-wal
 *.db-shm
 data/*.db
+!data/autopilot.db
 data/*.db-wal
 data/*.db-shm
 data/*.json
+!data/autopilot_master_vault_backup.json
 data/backup/
 *.backup_*
 data/*.backup_*

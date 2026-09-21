@@ -65,7 +65,7 @@ class TestEditorMangaAIModels(unittest.TestCase):
         # Unauthorized non-admin user trying to access admin video
         # Insert a video owned by admin_abhay
         DB_ENGINE.execute_mutation(
-            "INSERT OR REPLACE INTO videos (id, created_ts, updated_ts, user_id, workspace_id, title, topic, length_sec, status) VALUES (?, datetime('now'), datetime('now'), ?, ?, ?, ?, ?, ?)",
+            "INSERT OR REPLACE INTO videos (id, created_ts, updated_ts, user_id, workspace_id, title, topic, length_sec, status) VALUES (?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?)",
             (9999, "admin_abhay", "ws_admin_abhay", "Admin Exclusive", "Topic", 30.0, "ready")
         )
 

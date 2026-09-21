@@ -68,12 +68,14 @@ CREATE TABLE IF NOT EXISTS videos (
     published_ts  TEXT,
     ai_disclosed  INTEGER DEFAULT 1, -- hard constraint #4: hamesha 1
     user_id       TEXT DEFAULT 'admin_abhay', -- Multi-tenant creator isolation (Admin = 'admin_abhay')
+    workspace_id  TEXT DEFAULT 'ws_admin_abhay', -- Multi-tenant workspace isolation
     notes         TEXT,
     FOREIGN KEY (experiment_id) REFERENCES experiments(id)
 );
 CREATE INDEX IF NOT EXISTS idx_videos_status ON videos(status);
 CREATE INDEX IF NOT EXISTS idx_videos_sched  ON videos(scheduled_ts);
 CREATE INDEX IF NOT EXISTS idx_videos_user   ON videos(user_id);
+CREATE INDEX IF NOT EXISTS idx_videos_ws     ON videos(workspace_id);
 
 CREATE TABLE IF NOT EXISTS metrics (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -303,6 +305,11 @@ class DB:
 
         try:
             self.conn.execute("ALTER TABLE videos ADD COLUMN scene_pacing TEXT DEFAULT 'standard'")
+        except sqlite3.OperationalError:
+            pass
+
+        try:
+            self.conn.execute("ALTER TABLE videos ADD COLUMN workspace_id TEXT DEFAULT 'ws_admin_abhay'")
         except sqlite3.OperationalError:
             pass
 

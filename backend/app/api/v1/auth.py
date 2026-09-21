@@ -70,13 +70,13 @@ async def login(req: LoginRequest):
     else:
         # Auto-provision on first login for seamless test compatibility & first-run dev
         user_id = f"usr_{uuid.uuid4().hex[:12]}"
-        role = "admin" if email_clean.startswith("admin") else "user"
+        role = "admin" if identifier.startswith("admin") else "user"
         pw_hash = hash_password(req.password)
-        full_name = email_clean.split("@")[0].capitalize()
+        full_name = identifier.split("@")[0].capitalize()
         is_onboarded = False
         DB_ENGINE.create_user(
             user_id=user_id,
-            email=email_clean,
+            email=identifier,
             password_hash=pw_hash,
             full_name=full_name,
             role=role,

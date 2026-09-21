@@ -9,6 +9,7 @@ import uuid
 import json
 import shutil
 import asyncio
+import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks

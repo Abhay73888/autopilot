@@ -11,7 +11,7 @@ Provides deterministic, offline emulation of Meta Graph API v21.0 responses:
 from __future__ import annotations
 
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from .base import ContainerStatus, PublishingProvider, PublishResult, ValidationResult
 

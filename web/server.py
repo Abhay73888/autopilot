@@ -46,7 +46,9 @@ import webbrowser
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+import urllib
+import urllib.parse
+from urllib.parse import parse_qs, urlparse, quote
 
 # Ensure project root is in sys.path when executed as a script (python web/server.py)
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))

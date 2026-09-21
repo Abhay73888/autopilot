@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="/static/js/copilot_3d.js"></script>
   <style>
     :root {
       --bg-base: #080A0F;
@@ -1241,6 +1243,375 @@
       text-align: center;
       margin-bottom: 24px;
     }
+
+    /* =====================================================================
+       3D HUMANOID AI COPILOT STYLES
+       ===================================================================== */
+    .copilot-container {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 20px;
+      min-height: 640px;
+      height: calc(100vh - 160px);
+    }
+    @media (max-width: 1024px) {
+      .copilot-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+    .copilot-stage-card {
+      background: linear-gradient(180deg, rgba(14, 18, 27, 0.95) 0%, rgba(8, 10, 15, 0.98) 100%);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    }
+    .copilot-stage-header {
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--surface-border);
+      background: rgba(14, 18, 27, 0.6);
+      backdrop-filter: blur(12px);
+      z-index: 2;
+    }
+    .copilot-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.28);
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+    .copilot-status-badge.thinking {
+      background: rgba(139, 92, 246, 0.18);
+      color: #C084FC;
+      border-color: rgba(139, 92, 246, 0.45);
+      animation: pulseGlow 1.4s infinite;
+    }
+    .copilot-status-badge.speaking {
+      background: rgba(6, 182, 212, 0.22);
+      color: #38BDF8;
+      border-color: rgba(6, 182, 212, 0.55);
+      animation: pulseGlow 0.8s infinite;
+    }
+    .copilot-status-badge.success {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .copilot-status-badge.error {
+      background: rgba(244, 63, 94, 0.15);
+      color: #FB7185;
+      border-color: rgba(244, 63, 94, 0.4);
+    }
+    .copilot-canvas-area {
+      flex: 1;
+      min-height: 380px;
+      position: relative;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 40%, rgba(6, 182, 212, 0.14) 0%, rgba(139, 92, 246, 0.08) 45%, transparent 75%);
+    }
+    .copilot-canvas-area:active { cursor: grabbing; }
+    .copilot-canvas-area canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      outline: none;
+    }
+    .copilot-stage-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--surface-border);
+      background: rgba(14, 18, 27, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 2;
+    }
+    .copilot-action-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .copilot-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 5px 9px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .copilot-chip:hover {
+      background: rgba(6, 182, 212, 0.14);
+      border-color: rgba(6, 182, 212, 0.4);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .copilot-chat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    }
+    .copilot-chat-top {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(20, 26, 39, 0.5);
+    }
+    .copilot-lang-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .copilot-lang-select {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+    .copilot-feed {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .copilot-msg {
+      display: flex;
+      gap: 12px;
+      max-width: 88%;
+      animation: fadeIn 0.3s ease;
+    }
+    .copilot-msg.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    .copilot-msg.bot {
+      align-self: flex-start;
+    }
+    .copilot-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .copilot-msg.user .copilot-avatar {
+      background: linear-gradient(135deg, var(--accent-primary), #6366F1);
+      color: #fff;
+    }
+    .copilot-msg.bot .copilot-avatar {
+      background: linear-gradient(135deg, #06B6D4, #3B82F6);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(6, 182, 212, 0.4);
+    }
+    .copilot-bubble {
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+    .copilot-msg.user .copilot-bubble {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(99, 102, 241, 0.25));
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      color: #fff;
+      border-top-right-radius: 2px;
+    }
+    .copilot-msg.bot .copilot-bubble {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--surface-border);
+      color: var(--text-main);
+      border-top-left-radius: 2px;
+    }
+    .copilot-bubble pre {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      margin: 8px 0;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #38BDF8;
+    }
+    .copilot-bubble code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #F472B6;
+    }
+    .copilot-action-banner {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: var(--radius-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .copilot-input-bar {
+      padding: 14px 18px;
+      border-top: 1px solid var(--surface-border);
+      background: rgba(14, 18, 27, 0.9);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn-voice-stt {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--surface-border);
+      color: var(--text-main);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn-voice-stt:hover {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: rgba(6, 182, 212, 0.4);
+      color: var(--accent-cyan);
+    }
+    .btn-voice-stt.listening {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: #EF4444;
+      color: #F87171;
+      animation: pulseGlow 1s infinite;
+    }
+    /* Floating Global Copilot Dock Button */
+    .floating-copilot-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: linear-gradient(135deg, #06B6D4, #8B5CF6);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: var(--font-display);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+      z-index: 999;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .floating-copilot-btn:hover {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 12px 30px rgba(6, 182, 212, 0.6);
+    }
+    /* 2D Fallback Avatar */
+    .copilot-2d-avatar-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 24px;
+    }
+    .avatar-robot-ring {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 3px solid #06B6D4;
+      box-shadow: 0 0 25px rgba(6, 182, 212, 0.5), inset 0 0 25px rgba(6, 182, 212, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulseGlow 2s infinite;
+    }
+    .avatar-robot-face {
+      width: 90px;
+      height: 80px;
+      background: #0E121B;
+      border: 2px solid #8B5CF6;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .avatar-eye {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #06B6D4;
+      box-shadow: 0 0 10px #06B6D4;
+      display: inline-block;
+      margin: 0 8px;
+    }
+    .avatar-mouth {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      height: 12px;
+    }
+    .avatar-mouth .mouth-bar {
+      width: 4px;
+      height: 4px;
+      background: #06B6D4;
+      border-radius: 2px;
+      animation: pulseGlow 1s infinite alternate;
+    }
+    .avatar-state-tag {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--accent-cyan);
+      letter-spacing: 1px;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(0.97); }
+    }
   </style>
 </head>
 <body>
@@ -1279,8 +1650,8 @@
           </a>
           <a class="nav-item" onclick="switchNav('studio-agent')">
             <span class="nav-icon">🤖</span>
-            <span>AI Agent Command</span>
-            <span class="nav-badge">PRO</span>
+            <span>3D AI Copilot</span>
+            <span class="nav-badge" style="background: linear-gradient(135deg, #06B6D4, #8B5CF6); color: #fff; font-weight: 700;">3D AI</span>
           </a>
 
           <div class="nav-group-label">Content</div>
@@ -1905,35 +2276,96 @@
         </div>
       </section>
 
-      <!-- VIEW 4: STUDIO - AI AGENT COMMAND CONSOLE -->
+      <!-- VIEW 4: STUDIO - 3D HUMANOID AI COPILOT WORKSTATION -->
       <section class="view-panel" id="view-studio-agent">
-        <div class="glass-card">
-          <div class="card-header">
-            <div class="card-title"><span>🤖</span> Autonomous AI Agent Command Console</div>
-            <span class="badge badge-cyan">Natural Language Dispatcher</span>
+        <div class="copilot-container">
+          <!-- Left: 3D Humanoid Robot Stage -->
+          <div class="copilot-stage-card">
+            <div class="copilot-stage-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 18px;">🤖</span>
+                <div>
+                  <div style="font-family: var(--font-display); font-weight: 700; font-size: 14px; color: #fff;">AI COPILOT 3D</div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Humanoid Autonomous Assistant</div>
+                </div>
+              </div>
+              <div class="copilot-status-badge" id="robotStatusBadge">
+                <span class="dot" style="background: currentColor;"></span>
+                <span id="robotStatusText">ONLINE — IDLE</span>
+              </div>
+            </div>
+
+            <!-- 3D Canvas Container -->
+            <div class="copilot-canvas-area" id="robot3dCanvasContainer">
+              <!-- Rendered via Three.js in copilot_3d.js -->
+            </div>
+
+            <!-- Action Chips & Quick Commands -->
+            <div class="copilot-stage-footer">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Recommended Prompts</span>
+                <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 10px;" onclick="stopCopilotSpeech()">⏹ Stop Voice</button>
+              </div>
+              <div class="copilot-action-chips">
+                <button class="copilot-chip" onclick="askCopilot('Explain database normalization.')">"Explain database normalization"</button>
+                <button class="copilot-chip" onclick="askCopilot('Machine learning kya hai?')">"Machine learning kya hai?"</button>
+                <button class="copilot-chip" onclick="askCopilot('Machine learning ka ba?')">"Machine learning ka ba?"</button>
+                <button class="copilot-chip" onclick="askCopilot('Open video editor')">"Open video editor"</button>
+                <button class="copilot-chip" onclick="askCopilot('Show my videos')">"Show my videos"</button>
+                <button class="copilot-chip" onclick="askCopilot('Create a new series')">"Create a new series"</button>
+                <button class="copilot-chip" onclick="askCopilot('Check YouTube status')">"Check YouTube status"</button>
+              </div>
+            </div>
           </div>
 
-          <div class="agent-console">
-            <div class="agent-feed" id="agentFeed">
-              <div class="agent-msg bot">
-                <div class="agent-avatar">⚡</div>
-                <div class="agent-bubble">
-                  Hello! I am your <strong>Autopilot Autonomous Studio Agent</strong>. Tell me what to produce, manage, or publish in natural language.
+          <!-- Right: Interactive Copilot Chat Workstation -->
+          <div class="copilot-chat-card">
+            <div class="copilot-chat-top">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="copilot-lang-pill">
+                  <span>🌐 Language:</span>
+                  <select id="copilotLangSelect" class="copilot-lang-select" onchange="onCopilotLangChange(this.value)">
+                    <option value="auto">Auto Detect</option>
+                    <option value="en">English</option>
+                    <option value="hi">Hindi (हिंदी)</option>
+                    <option value="bho">Bhojpuri (भोजपुरी)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="openVoiceSettingsModal()">
+                  <span>⚙️</span> Voice Settings
+                </button>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="clearCopilotChat()">
+                  <span>🗑️</span> Clear
+                </button>
+              </div>
+            </div>
+
+            <!-- Chat Messages Feed -->
+            <div class="copilot-feed" id="copilotFeed">
+              <div class="copilot-msg bot">
+                <div class="copilot-avatar">🤖</div>
+                <div class="copilot-bubble">
+                  <strong>Greetings, Creator!</strong> I am your interactive <strong>3D Humanoid AI Copilot</strong>.
                   <br><br>
-                  <em>Try commands like:</em>
-                  <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="filter-chip" onclick="setAgentCommand('Create a 5 minute video about AI Agents')">"Create a 5 minute video about AI Agents"</button>
-                    <button class="filter-chip" onclick="setAgentCommand('Generate Episode 5 of Series 1')">"Generate Episode 5 of Series 1"</button>
-                    <button class="filter-chip" onclick="setAgentCommand('Show my video library')">"Show my video library"</button>
-                    <button class="filter-chip" onclick="setAgentCommand('Check my YouTube channel status')">"Check YouTube status"</button>
-                  </div>
+                  I can answer general questions about databases, algorithms, code, and machine learning, speak fluent <strong>English, Hindi, and Bhojpuri</strong>, or command Autopilot's video production engine.
+                  <br><br>
+                  <em>Ask me anything below, or click any prompt on the left!</em>
                 </div>
               </div>
             </div>
 
-            <div class="agent-input-bar">
-              <input type="text" id="agentInputText" class="form-input" placeholder="Give Autopilot an instruction... (e.g. 'Generate a 5 minute video about Quantum Computing')" onkeydown="if(event.key==='Enter') sendAgentCommand()">
-              <button class="btn btn-primary" onclick="sendAgentCommand()">Send</button>
+            <!-- Input Bar -->
+            <div class="copilot-input-bar">
+              <button class="btn-voice-stt" id="btnCopilotVoiceInput" onclick="toggleCopilotVoiceInput()" title="Voice Input via Microphone">
+                <span id="voiceInputIcon">🎤</span>
+                <span id="voiceInputLabel">Voice</span>
+              </button>
+              <input type="text" id="copilotInputText" class="form-input" style="flex: 1;" placeholder="Ask me anything... (e.g. 'Explain database normalization' or 'Open video editor')" onkeydown="if(event.key==='Enter') sendCopilotChat()">
+              <button class="btn btn-primary" onclick="sendCopilotChat()" style="padding: 10px 18px;">
+                <span>🚀</span> Send
+              </button>
             </div>
           </div>
         </div>
@@ -2595,6 +3027,65 @@
         </button>
       </div>
     </div>
+  <!-- Floating Global 3D Copilot Button -->
+  <button class="floating-copilot-btn" id="floatingCopilotBtn" onclick="switchNav('studio-agent')" title="Open 3D Humanoid AI Copilot">
+    <span>🤖</span>
+    <span>3D Copilot</span>
+  </button>
+
+  <!-- MODAL: Copilot Voice Settings Modal -->
+  <div class="modal-backdrop" id="copilotVoiceModal">
+    <div class="modal-box" style="max-width: 480px;">
+      <div class="card-header">
+        <div class="card-title"><span>🎙️</span> Copilot Voice & Emotion Settings</div>
+        <button class="btn btn-secondary" style="padding: 4px 8px;" onclick="closeVoiceSettingsModal()">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Voice Persona</label>
+        <select id="copilotVoicePersona" class="form-select">
+          <option value="en-US-ChristopherNeural">English - Christopher (Deep Cinematic Male)</option>
+          <option value="en-US-JennyNeural">English - Jenny (Expressive Female)</option>
+          <option value="hi-IN-MadhurNeural" selected>Hindi / Bhojpuri - Madhur (Engaging Male)</option>
+          <option value="hi-IN-SwaraNeural">Hindi / Bhojpuri - Swara (Warm Female)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Emotion Tone</label>
+        <select id="copilotVoiceEmotion" class="form-select">
+          <option value="auto" selected>Auto-Detect from Response Context</option>
+          <option value="conversational">Conversational & Clear</option>
+          <option value="serious">Slightly Serious & Authoritative</option>
+          <option value="energetic">Energetic & Excited</option>
+          <option value="expressive">Expressive Storyteller</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Speaking Speed: <strong id="valVoiceSpeedLabel">1.0x</strong></label>
+          <input type="range" id="copilotVoiceSpeed" min="70" max="140" value="100" class="form-input" style="padding: 0;" oninput="document.getElementById('valVoiceSpeedLabel').innerText = (this.value/100).toFixed(1) + 'x'">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pitch: <strong id="valVoicePitchLabel">0Hz</strong></label>
+          <select id="copilotVoicePitch" class="form-select" onchange="document.getElementById('valVoicePitchLabel').innerText = this.value">
+            <option value="-4Hz">-4Hz (Deeper)</option>
+            <option value="+0Hz" selected>0Hz (Natural)</option>
+            <option value="+4Hz">+4Hz (Higher)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-top: 14px;">
+        <label class="form-label" style="margin-bottom: 0;">Audio Speech Output</label>
+        <input type="checkbox" id="chkCopilotVoiceEnabled" checked style="width: 18px; height: 18px; accent-color: var(--accent-cyan); cursor: pointer;">
+      </div>
+
+      <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button class="btn btn-primary" style="flex: 1;" onclick="closeVoiceSettingsModal()">Save & Apply</button>
+      </div>
+    </div>
   </div>
 
   <!-- Toast Notification -->
@@ -2649,6 +3140,7 @@
       if (panelId === 'admin') { loadAdminOverview(); loadAiModelConfig(); }
       if (panelId === 'editor') loadEditorVideos();
       if (panelId === 'studio-topic') loadStudioSeries();
+      if (panelId === 'studio-agent') initOrResumeCopilot();
       if (panelId === 'vault') loadMasterVault();
       if (panelId === 'dashboard') {
         loadVideos();
@@ -3911,67 +4403,358 @@
       }
     }
 
-    // AI Agent Command Console
-    function setAgentCommand(cmd) {
-      document.getElementById('agentInputText').value = cmd;
-      sendAgentCommand();
+    // =========================================================================
+    // 3D HUMANOID AI COPILOT CONTROLLER
+    // =========================================================================
+    let copilotState = {
+      robot: null,
+      language: 'auto',
+      voiceSettings: {
+        voice_id: 'hi-IN-MadhurNeural',
+        emotion: 'auto',
+        speed: 1.0,
+        pitch: '+0Hz',
+        enabled: true
+      },
+      isListening: false,
+      speechRecognition: null,
+      history: []
+    };
+
+    function initOrResumeCopilot() {
+      if (!copilotState.robot) {
+        const container = document.getElementById('robot3dCanvasContainer');
+        if (container) {
+          copilotState.robot = new HumanoidRobot3D(container, {
+            onStateChange: (newState) => {
+              updateRobotStatusBadge(newState);
+            }
+          });
+        }
+      } else if (copilotState.robot.state !== 'SPEAKING') {
+        copilotState.robot.setState('IDLE');
+      }
     }
 
-    async function sendAgentCommand() {
-      const inp = document.getElementById('agentInputText');
+    function updateRobotStatusBadge(stateName) {
+      const badge = document.getElementById('robotStatusBadge');
+      const text = document.getElementById('robotStatusText');
+      if (!badge || !text) return;
+
+      badge.className = 'copilot-status-badge ' + stateName.toLowerCase();
+      switch (stateName) {
+        case 'IDLE':
+          text.innerText = 'ONLINE — IDLE';
+          break;
+        case 'LISTENING':
+          text.innerText = 'LISTENING...';
+          break;
+        case 'THINKING':
+          text.innerText = 'THINKING...';
+          break;
+        case 'SPEAKING':
+          text.innerText = 'SPEAKING';
+          break;
+        case 'SUCCESS':
+          text.innerText = 'ACTION COMPLETED';
+          break;
+        case 'ERROR':
+          text.innerText = 'ATTENTION';
+          break;
+        default:
+          text.innerText = stateName;
+      }
+    }
+
+    function onCopilotLangChange(lang) {
+      copilotState.language = lang;
+      showToast('Copilot Language set to: ' + lang.toUpperCase());
+    }
+
+    function stopCopilotSpeech() {
+      if (copilotState.robot) {
+        copilotState.robot.stopSpeech();
+        copilotState.robot.setState('IDLE');
+      }
+    }
+
+    function clearCopilotChat() {
+      const feed = document.getElementById('copilotFeed');
+      if (feed) {
+        feed.innerHTML = `
+          <div class="copilot-msg bot">
+            <div class="copilot-avatar">🤖</div>
+            <div class="copilot-bubble">
+              Chat cleared. Ask me any question or give an instruction!
+            </div>
+          </div>
+        `;
+      }
+      stopCopilotSpeech();
+    }
+
+    function askCopilot(promptText) {
+      const inp = document.getElementById('copilotInputText');
+      if (inp) {
+        inp.value = promptText;
+        sendCopilotChat();
+      }
+    }
+
+    // Backward-compatibility aliases
+    function setAgentCommand(cmd) { askCopilot(cmd); }
+    function sendAgentCommand() { sendCopilotChat(); }
+
+    async function sendCopilotChat() {
+      const inp = document.getElementById('copilotInputText');
       const text = inp.value.trim();
       if (!text) return;
       inp.value = '';
 
-      const feed = document.getElementById('agentFeed');
-      // Append user msg
+      initOrResumeCopilot();
+
+      const feed = document.getElementById('copilotFeed');
+      if (!feed) return;
+
+      // Append user bubble
       const uMsg = document.createElement('div');
-      uMsg.className = 'agent-msg user';
+      uMsg.className = 'copilot-msg user';
       uMsg.innerHTML = `
-        <div class="agent-avatar">U</div>
-        <div class="agent-bubble">${text}</div>
+        <div class="copilot-avatar">U</div>
+        <div class="copilot-bubble">${escapeHtml(text)}</div>
       `;
       feed.appendChild(uMsg);
       feed.scrollTop = feed.scrollHeight;
 
-      // Bot loading placeholder
+      // Set robot to thinking
+      if (copilotState.robot) {
+        copilotState.robot.setState('THINKING');
+      }
+
+      // Placeholder bot message
       const bMsg = document.createElement('div');
-      bMsg.className = 'agent-msg bot';
+      bMsg.className = 'copilot-msg bot';
       bMsg.innerHTML = `
-        <div class="agent-avatar">⚡</div>
-        <div class="agent-bubble"><em>Analyzing intent and executing tools...</em></div>
+        <div class="copilot-avatar">🤖</div>
+        <div class="copilot-bubble">
+          <em>Synthesizing answer & analyzing intent...</em>
+        </div>
       `;
       feed.appendChild(bMsg);
       feed.scrollTop = feed.scrollHeight;
 
+      // Context
+      const appContext = {
+        active_view: document.querySelector('.view-panel.active')?.id?.replace('view-', '') || 'dashboard',
+        workspace_id: state.workspaceId,
+        series_count: state.series ? state.series.length : 0,
+        video_count: state.videos ? state.videos.length : 0
+      };
+
       try {
-        const res = await apiFetch('/api/v1/copilot/action', {
+        const payload = {
+          message: text,
+          language: copilotState.language,
+          context: appContext,
+          voice_settings: {
+            speed: copilotState.voiceSettings.speed,
+            pitch: copilotState.voiceSettings.pitch,
+            emotion: copilotState.voiceSettings.emotion,
+            voice_id: copilotState.voiceSettings.voice_id
+          },
+          generate_speech: copilotState.voiceSettings.enabled
+        };
+
+        const res = await apiFetch('/api/v1/copilot/chat', {
           method: 'POST',
-          body: JSON.stringify({ prompt: text })
+          body: JSON.stringify(payload)
         });
-        const data = await res.json();
-        if (data.success && data.data) {
-          const plan = data.data;
-          bMsg.querySelector('.agent-bubble').innerHTML = `
-            <div class="agent-tool-tag">TOOL: ${plan.tool || 'intent_dispatch'}</div>
-            <div><strong>Status:</strong> ${plan.status || 'executed'}</div>
-            <div style="margin-top: 6px;">${plan.summary || 'Action completed.'}</div>
-            ${plan.steps ? `<ul style="margin-top: 8px; padding-left: 18px; font-size: 12px; color: var(--text-muted);">${plan.steps.map(s => `<li>${s}</li>`).join('')}</ul>` : ''}
-          `;
-          if (plan.tool === 'connect_youtube' || plan.tool === 'get_youtube_status') {
-            checkYouTubeStatus();
+        const d = await res.json();
+
+        if (d.success && d.data) {
+          const resp = d.data;
+          const formattedReply = formatMarkdownReply(resp.reply);
+
+          let actionBannerHtml = '';
+          if (resp.tool) {
+            actionBannerHtml = `
+              <div class="copilot-action-banner">
+                <div>
+                  <span style="font-size: 11px; font-weight: 700; color: var(--accent-cyan);">⚡ ACTION: ${resp.tool.toUpperCase()}</span>
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Executed safely for this workspace.</div>
+                </div>
+                ${resp.action_data && resp.action_data.route ? `<button class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;" onclick="switchNav('${resp.action_data.route}')">Open Now</button>` : ''}
+              </div>
+            `;
           }
-          if (plan.tool === 'create_video' || plan.tool === 'render_video') {
+
+          bMsg.querySelector('.copilot-bubble').innerHTML = `
+            <div style="font-size: 11px; color: var(--accent-cyan); margin-bottom: 6px; font-weight: 600;">
+              🌐 ${resp.language_display || 'English'}
+            </div>
+            <div>${formattedReply}</div>
+            ${actionBannerHtml}
+          `;
+
+          // Handle automatic navigation if route requested
+          if (resp.action_data && resp.action_data.route) {
+            setTimeout(() => {
+              showToast('Copilot navigating to ' + resp.action_data.route);
+              switchNav(resp.action_data.route);
+            }, 1800);
+          }
+
+          // Trigger video library refresh if video was created or rendered
+          if (resp.tool === 'create_video' || resp.tool === 'render_video') {
             loadVideos();
           }
+
+          // Handle speech playback with 3D lip-sync
+          if (resp.audio_base64 && copilotState.robot && copilotState.voiceSettings.enabled) {
+            copilotState.robot.playSpeechAudio(resp.audio_base64, () => {
+              if (copilotState.robot) copilotState.robot.setState('IDLE');
+            });
+          } else {
+            if (copilotState.robot) copilotState.robot.setState(resp.robot_state || 'SUCCESS');
+          }
+
         } else {
-          bMsg.querySelector('.agent-bubble').innerText = data.error?.message || 'Unable to execute command.';
+          const errDetail = d.error?.message || 'Unable to generate response.';
+          bMsg.querySelector('.copilot-bubble').innerText = errDetail;
+          if (copilotState.robot) copilotState.robot.setState('ERROR');
         }
       } catch (err) {
-        bMsg.querySelector('.agent-bubble').innerText = 'Error executing command: ' + err.message;
+        bMsg.querySelector('.copilot-bubble').innerText = 'Copilot communication error: ' + err.message;
+        if (copilotState.robot) copilotState.robot.setState('ERROR');
       }
+
       feed.scrollTop = feed.scrollHeight;
     }
+
+    function formatMarkdownReply(raw) {
+      if (!raw) return '';
+      let text = escapeHtml(raw);
+      // Code blocks
+      text = text.replace(/```([a-zA-Z0-9_]*)\n([\s\S]*?)```/g, function(match, lang, code) {
+        return `<pre><code>${code.trim()}</code></pre>`;
+      });
+      // Inline code
+      text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+      // Bold
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Bullet points
+      text = text.replace(/^\s*[-*]\s+(.*)$/gm, '<li style="margin-left: 18px;">$1</li>');
+      // Newlines
+      text = text.replace(/\n/g, '<br>');
+      return text;
+    }
+
+    function escapeHtml(string) {
+      const entityMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      };
+      return String(string).replace(/[&<>"']/g, function (s) {
+        return entityMap[s];
+      });
+    }
+
+    // Voice Input via Web Speech API (Microphone)
+    function toggleCopilotVoiceInput() {
+      const btn = document.getElementById('btnCopilotVoiceInput');
+      const icon = document.getElementById('voiceInputIcon');
+      const label = document.getElementById('voiceInputLabel');
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Speech recognition not supported in this browser. Please type your message.');
+        return;
+      }
+
+      if (copilotState.isListening && copilotState.speechRecognition) {
+        copilotState.speechRecognition.stop();
+        copilotState.isListening = false;
+        btn.classList.remove('listening');
+        icon.innerText = '🎤';
+        label.innerText = 'Voice';
+        if (copilotState.robot) copilotState.robot.setState('IDLE');
+        return;
+      }
+
+      try {
+        const recognition = new SpeechRecognition();
+        copilotState.speechRecognition = recognition;
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        // Set recognition language based on selection
+        if (copilotState.language === 'hi' || copilotState.language === 'bho') {
+          recognition.lang = 'hi-IN';
+        } else {
+          recognition.lang = 'en-US';
+        }
+
+        recognition.onstart = () => {
+          copilotState.isListening = true;
+          btn.classList.add('listening');
+          icon.innerText = '🔴';
+          label.innerText = 'Listening...';
+          initOrResumeCopilot();
+          if (copilotState.robot) copilotState.robot.setState('LISTENING');
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          if (transcript) {
+            document.getElementById('copilotInputText').value = transcript;
+            sendCopilotChat();
+          }
+        };
+
+        recognition.onerror = (err) => {
+          console.warn('[Copilot3D] Speech recognition error:', err);
+          showToast('Microphone error: ' + (err.error || 'Check browser permissions.'));
+        };
+
+        recognition.onend = () => {
+          copilotState.isListening = false;
+          btn.classList.remove('listening');
+          icon.innerText = '🎤';
+          label.innerText = 'Voice';
+        };
+
+        recognition.start();
+      } catch (err) {
+        showToast('Voice input unavailable: ' + err.message);
+      }
+    }
+
+    // Voice Settings Modal Controls
+    function openVoiceSettingsModal() {
+      document.getElementById('copilotVoiceModal').style.display = 'flex';
+      document.getElementById('copilotVoicePersona').value = copilotState.voiceSettings.voice_id;
+      document.getElementById('copilotVoiceEmotion').value = copilotState.voiceSettings.emotion;
+      document.getElementById('copilotVoiceSpeed').value = Math.round(copilotState.voiceSettings.speed * 100);
+      document.getElementById('valVoiceSpeedLabel').innerText = copilotState.voiceSettings.speed.toFixed(1) + 'x';
+      document.getElementById('copilotVoicePitch').value = copilotState.voiceSettings.pitch;
+      document.getElementById('valVoicePitchLabel').innerText = copilotState.voiceSettings.pitch;
+      document.getElementById('chkCopilotVoiceEnabled').checked = copilotState.voiceSettings.enabled;
+    }
+
+    function closeVoiceSettingsModal() {
+      copilotState.voiceSettings.voice_id = document.getElementById('copilotVoicePersona').value;
+      copilotState.voiceSettings.emotion = document.getElementById('copilotVoiceEmotion').value;
+      copilotState.voiceSettings.speed = parseFloat(document.getElementById('copilotVoiceSpeed').value) / 100.0;
+      copilotState.voiceSettings.pitch = document.getElementById('copilotVoicePitch').value;
+      copilotState.voiceSettings.enabled = document.getElementById('chkCopilotVoiceEnabled').checked;
+
+      document.getElementById('copilotVoiceModal').style.display = 'none';
+      showToast('Copilot Voice Settings saved.');
+    }
+
 
     // Admin Console
     async function loadAdminOverview() {

@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-09-21T11:30:07.437287+00:00",
+  "exported_at": "2026-09-21T17:15:15.815403+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
@@ -7,7 +7,7 @@
     "metrics": 28,
     "experiments": 4,
     "learnings": 0,
-    "quota_usage": 1467,
+    "quota_usage": 1470,
     "events": 5099,
     "characters": 1,
     "jobs": 99,
@@ -22204,6 +22204,27 @@
         "bucket": "gemini_tts_requests",
         "amount": 1,
         "reason": "tts:gemini"
+      },
+      {
+        "id": 1468,
+        "ts": "2026-09-21T17:09:28+00:00",
+        "bucket": "gemini_requests",
+        "amount": 1,
+        "reason": "generate:gemini-3.6-flash"
+      },
+      {
+        "id": 1469,
+        "ts": "2026-09-21T17:10:13+00:00",
+        "bucket": "gemini_requests",
+        "amount": 1,
+        "reason": "generate:gemini-3.6-flash"
+      },
+      {
+        "id": 1470,
+        "ts": "2026-09-21T17:10:21+00:00",
+        "bucket": "gemini_requests",
+        "amount": 1,
+        "reason": "generate:gemini-3.6-flash"
       }
     ],
     "events": [

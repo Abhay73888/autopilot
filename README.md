@@ -96,8 +96,7 @@ A self-sufficient production studio running on a local machine, VPS, or cloud co
 | :--- | :--- | :--- |
 | **12-Agent Swarm Coordination** | `agents/*.py` (Python stdlib) | Decentralized worker agents communicating via structured JSON contracts and SQLite lock coordination. |
 | **4 Serialized Story Franchises** | `series/series_runner.py` | 1-Click production engines for *Kaal-Rekha (Sci-Fi Loop)*, *Jab Pyaar Online Tha (Romance)*, *Chintu (3D Kids)*, and *Dimag Ka Dahi (Riddles)*. |
-| **Bilingual Cyber Cockpit** | `web/server.py` (`ThreadingHTTPServer`) | Zero-dependency native web UI on port `8765` featuring a **1-click language toggle (Hindi / 100% Pure English)** with `localStorage` persistence. |
-| **AI Copilot & Swarm Commander** | `agents/assistant.py` + Web Speech API | Interactive voice-enabled assistant that understands natural Hindi/English commands, queries telemetry, and runs 1-click auto-fixes. |
+| **🤖 3D Humanoid AI Copilot** | `backend/app/static/js/copilot_3d.js` + Three.js + Web Audio API | Interactive 3D cybernetic humanoid assistant with real-time audio-driven lip sync, trilingual speech (English, Hindi, Bhojpuri), action routing, and Gemini 3.6 Flash reasoning. |
 | **Hardware-Accelerated 60fps Compositor** | `pipeline/render.py` (FFmpeg) | Renders vertical 1080x1920 video at 60fps with Ken Burns pan/zoom, motion blur, and cinematic color grading. |
 | **Kinetic Karaoke Subtitles** | `pipeline/subtitles.py` (libass) | Syllable-level synchronized Advanced SubStation Alpha (`.ass`) typography with glowing highlight effects and Devanagari font rendering. |
 | **Procedural Sound Design** | `pipeline/sound.py` + Web Audio API | Generates 38Hz Braam sub-bass tension hits, transitional risers, and intelligent ducking under speech. |
@@ -211,6 +210,23 @@ flowchart TD
 ### 8. 🧪 Comprehensive Verification Suite
 * **Full Backend Test Suite**: **61/61 tests passed (100% OK)** in `backend/tests/`.
 * Dedicated test coverage for editor scoping, manga file validation, AI model secret masking, and RBAC authorization in `backend/tests/test_editor_manga_ai_models.py`.
+
+### 9. 🤖 3D Humanoid AI Copilot Workstation
+* **Procedural 3D Humanoid Robot (`backend/app/static/js/copilot_3d.js`)**:
+  - Realistic Three.js cybernetic mesh featuring dark metallic armor, illuminated visor display, digital ocular eyes with natural blinking and cursor gaze tracking, 7-bar audio-reactive mouth aperture, shoulder pauldrons, chest armor, and a pulsing arc reactor core.
+  - Orbiting holographic particle halo activating during LLM processing.
+  - Automatic WebGL capability detection with smooth 2D animated canvas HUD fallback.
+* **Audio-Driven Lip Sync (Web Audio API)**:
+  - Real-time `AnalyserNode` frequency spectrum sampling drives mouth openness and conversational head nods based on live audio amplitude.
+* **Trilingual Consistency (English, Hindi, Bhojpuri)**:
+  - Language selector (`[ English | Hindi | Bhojpuri | Auto Detect ]`).
+  - Native Hindi and authentic Bhojpuri script generation (`"प्रणाम रउआ के!..."`) paired with high-fidelity Indic neural speech (`hi-IN-MadhurNeural`), ensuring Bhojpuri text is never flattened or converted to English.
+* **Action-Aware Intent Routing (`backend/app/services/copilot_service.py`)**:
+  - Directly opens the Video Editor (`NAVIGATE_EDITOR`), Video Library (`NAVIGATE_LIBRARY`), Settings (`NAVIGATE_SETTINGS`), Series Hub (`NAVIGATE_SERIES`), and launches generation pipelines from natural conversation.
+  - General Q&A (DBMS normalization, ML, coding algorithms, manga lore) served live via `Gemini 3.6 Flash`.
+* **Microphone Voice Input & Persona Customization**:
+  - Integrated Web Speech API speech-to-text with one-click voice dictation.
+  - Voice settings modal with adjustable speech speed (`0.5x` - `2.0x`), pitch (`-10Hz` to `+10Hz`), and emotion presets (*Conversational*, *Serious*, *Energetic*, *Storyteller*).
 
 ---
 

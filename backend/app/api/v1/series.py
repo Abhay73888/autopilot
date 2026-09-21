@@ -47,10 +47,16 @@ class GenerateEpisodeRequest(BaseModel):
 
 @router.get("", response_model=ApiResponse[List[Dict[str, Any]]])
 async def list_workspace_series(ctx: TenantContext = Depends(get_current_tenant_context)):
-    """Lists all episodic franchises owned by current workspace."""
-    series_list = DB_ENGINE.list_series(ctx.workspace_id)
+    """Lists all episodic franchises owned by current workspace or all if administrator."""
+    is_admin = ctx.role == "admin" or ctx.user_id in ("admin_abhay", "usr_admin")
+    if is_admin:
+        rows = DB_ENGINE.execute_query("SELECT * FROM series ORDER BY created_at DESC")
+        series_list = [dict(r) for r in rows]
+    else:
+        series_list = DB_ENGINE.list_series(ctx.workspace_id)
+
     # Seed default benchmark franchises if workspace has none yet
-    if not series_list:
+    if not series_list and not is_admin:
         default_franchises = [
             {
                 "id": f"ser_kaalrekha_{ctx.workspace_id[:8]}",
@@ -84,9 +90,14 @@ async def list_workspace_series(ctx: TenantContext = Depends(get_current_tenant_
     # Attach episode counts
     results = []
     for s in series_list:
-        episodes = DB_ENGINE.list_episodes(ctx.workspace_id, s["id"])
+        if is_admin:
+            ep_rows = DB_ENGINE.execute_query("SELECT count(*) as count FROM episodes WHERE series_id = %s", (s["id"],))
+            ep_count = ep_rows[0]["count"] if ep_rows else 0
+        else:
+            episodes = DB_ENGINE.list_episodes(ctx.workspace_id, s["id"])
+            ep_count = len(episodes)
         s_data = dict(s)
-        s_data["episodeCount"] = len(episodes)
+        s_data["episodeCount"] = ep_count
         results.append(s_data)
 
     return ApiResponse(success=True, data=results)
@@ -112,14 +123,23 @@ async def create_series(req: CreateSeriesRequest, ctx: TenantContext = Depends(g
 @router.get("/{series_id}", response_model=ApiResponse[Dict[str, Any]])
 async def get_series_details(series_id: str, ctx: TenantContext = Depends(get_current_tenant_context)):
     """Fetches series bible, characters, and chronological episode timeline."""
+    is_admin = ctx.role == "admin" or ctx.user_id in ("admin_abhay", "usr_admin")
     series = DB_ENGINE.get_series(ctx.workspace_id, series_id)
     if not series:
-        rows = DB_ENGINE.execute_query("SELECT id FROM series WHERE id = %s", (series_id,))
+        rows = DB_ENGINE.execute_query("SELECT * FROM series WHERE id = %s", (series_id,))
         if rows:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cross-tenant access forbidden.")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Series franchise not found.")
+            if is_admin:
+                series = dict(rows[0])
+            else:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cross-tenant access forbidden.")
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Series franchise not found.")
 
-    episodes = DB_ENGINE.list_episodes(ctx.workspace_id, series_id)
+    if is_admin:
+        ep_rows = DB_ENGINE.execute_query("SELECT * FROM episodes WHERE series_id = %s ORDER BY episode_number ASC", (series_id,))
+        episodes = [dict(r) for r in ep_rows]
+    else:
+        episodes = DB_ENGINE.list_episodes(ctx.workspace_id, series_id)
     res = dict(series)
     res["episodes"] = episodes
     res["episodeCount"] = len(episodes)
@@ -129,14 +149,23 @@ async def get_series_details(series_id: str, ctx: TenantContext = Depends(get_cu
 @router.get("/{series_id}/episodes", response_model=ApiResponse[List[Dict[str, Any]]])
 async def list_series_episodes(series_id: str, ctx: TenantContext = Depends(get_current_tenant_context)):
     """Lists all sequential episodes of the franchise with recap hooks and statuses."""
+    is_admin = ctx.role == "admin" or ctx.user_id in ("admin_abhay", "usr_admin")
     series = DB_ENGINE.get_series(ctx.workspace_id, series_id)
     if not series:
-        rows = DB_ENGINE.execute_query("SELECT id FROM series WHERE id = %s", (series_id,))
+        rows = DB_ENGINE.execute_query("SELECT * FROM series WHERE id = %s", (series_id,))
         if rows:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cross-tenant access forbidden.")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Series franchise not found.")
+            if is_admin:
+                series = dict(rows[0])
+            else:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cross-tenant access forbidden.")
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Series franchise not found.")
 
-    episodes = DB_ENGINE.list_episodes(ctx.workspace_id, series_id)
+    if is_admin:
+        ep_rows = DB_ENGINE.execute_query("SELECT * FROM episodes WHERE series_id = %s ORDER BY episode_number ASC", (series_id,))
+        episodes = [dict(r) for r in ep_rows]
+    else:
+        episodes = DB_ENGINE.list_episodes(ctx.workspace_id, series_id)
     return ApiResponse(success=True, data=episodes)
 
 
@@ -153,14 +182,24 @@ async def generate_series_episode(
     3. Prompts Writer agent to craft dramatic continuity screenplay
     4. Dispatches asynchronous rendering pipeline
     """
+    is_admin = ctx.role == "admin" or ctx.user_id in ("admin_abhay", "usr_admin")
     series = DB_ENGINE.get_series(ctx.workspace_id, series_id)
     if not series:
-        rows = DB_ENGINE.execute_query("SELECT id FROM series WHERE id = %s", (series_id,))
+        rows = DB_ENGINE.execute_query("SELECT * FROM series WHERE id = %s", (series_id,))
         if rows:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cross-tenant access forbidden.")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Series franchise not found.")
+            if is_admin:
+                series = dict(rows[0])
+            else:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cross-tenant access forbidden.")
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Series franchise not found.")
 
-    previous_episodes = DB_ENGINE.list_episodes(ctx.workspace_id, series_id)
+    ws_for_ep = series.get("workspace_id") or ctx.workspace_id
+    if is_admin:
+        ep_rows = DB_ENGINE.execute_query("SELECT * FROM episodes WHERE series_id = %s ORDER BY episode_number ASC", (series_id,))
+        previous_episodes = [dict(r) for r in ep_rows]
+    else:
+        previous_episodes = DB_ENGINE.list_episodes(ctx.workspace_id, series_id)
     next_ep_num = req.episodeNumber or (len(previous_episodes) + 1)
 
     # Establish story continuity from previous episode
@@ -229,7 +268,7 @@ async def generate_series_episode(
     DB_ENGINE.create_episode(
         episode_id=episode_id,
         series_id=series_id,
-        workspace_id=ctx.workspace_id,
+        workspace_id=ws_for_ep,
         episode_number=next_ep_num,
         title=ep_title,
         recap=recap,

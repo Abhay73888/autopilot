@@ -155,17 +155,34 @@ class VideoService:
             elif is_admin:
                 effective_user_id = "admin_abhay"
 
-        # In-memory session videos scoped to caller's workspace
-        results = [VideoResponse(**v) for v in self._videos.values() if v.get("workspaceId") == workspace_id]
+        # In-memory session videos scoped to caller's workspace (only confirmed YouTube uploads)
+        results = [
+            VideoResponse(**v) for v in self._videos.values()
+            if v.get("workspaceId") == workspace_id and v.get("status") == "published" and v.get("youtubeVideoId")
+        ]
         
         try:
             db = DB()
+            # STRICT INVARIANT: Only return videos confirmed as uploaded to YouTube
             if is_admin:
-                # Admin has access to all admin-owned videos (up to 500)
-                rows = db.q("SELECT * FROM videos WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY id DESC LIMIT 500")
+                # Admin has access to all admin-owned confirmed YouTube videos (up to 500)
+                rows = db.q(
+                    "SELECT * FROM videos "
+                    "WHERE (user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '') "
+                    "  AND status = 'published' "
+                    "  AND yt_video_id IS NOT NULL AND yt_video_id != '' "
+                    "ORDER BY id DESC LIMIT 500"
+                )
             elif effective_user_id:
-                # Normal user strictly sees their own records
-                rows = db.q("SELECT * FROM videos WHERE user_id = ? ORDER BY id DESC LIMIT 50", (effective_user_id,))
+                # Normal user strictly sees their own confirmed YouTube records
+                rows = db.q(
+                    "SELECT * FROM videos "
+                    "WHERE user_id = ? "
+                    "  AND status = 'published' "
+                    "  AND yt_video_id IS NOT NULL AND yt_video_id != '' "
+                    "ORDER BY id DESC LIMIT 500",
+                    (effective_user_id,)
+                )
             else:
                 rows = []
 
@@ -175,6 +192,8 @@ class VideoService:
                     continue
                 vpath = r["video_path"]
                 cpath = r["cover_path"]
+                yt_id = r["yt_video_id"]
+                yt_url = f"https://www.youtube.com/watch?v={yt_id}" if yt_id else None
                 video_url = None
                 thumb_url = None
                 if vpath and Path(vpath).exists():
@@ -183,6 +202,9 @@ class VideoService:
                 if cpath and Path(cpath).exists():
                     cp = Path(cpath)
                     thumb_url = f"/output/{cp.parent.name}/{cp.name}"
+                elif yt_id:
+                    thumb_url = f"https://i.ytimg.com/vi/{yt_id}/hqdefault.jpg"
+
                 tags = []
                 if r["hashtags"]:
                     try:
@@ -207,6 +229,8 @@ class VideoService:
                             score=98,
                             checks={"audioLevels": {"status": "passed", "lufs": -14.0}}
                         ),
+                        youtubeVideoId=yt_id,
+                        youtubeUrl=yt_url,
                         createdAt=r["created_ts"] or r["updated_ts"] or datetime.now(timezone.utc).isoformat()
                     )
                 )
@@ -277,6 +301,11 @@ class VideoService:
                     except Exception:
                         tags = [str(row["hashtags"])]
 
+                yt_id = row["yt_video_id"]
+                yt_url = f"https://www.youtube.com/watch?v={yt_id}" if yt_id else None
+                if not thumb_url and yt_id:
+                    thumb_url = f"https://i.ytimg.com/vi/{yt_id}/hqdefault.jpg"
+
                 return VideoResponse(
                     id=f"vid_{row['id']}",
                     workspaceId=workspace_id,
@@ -293,6 +322,8 @@ class VideoService:
                         score=98,
                         checks={"audioLevels": {"status": "passed", "lufs": -14.0}}
                     ),
+                    youtubeVideoId=yt_id,
+                    youtubeUrl=yt_url,
                     createdAt=row["created_ts"] or row["updated_ts"] or datetime.now(timezone.utc).isoformat()
                 )
         except TenantAccessDeniedException:

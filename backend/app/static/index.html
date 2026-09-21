@@ -2294,20 +2294,39 @@
       <!-- VIEW 4: STUDIO - 3D HUMANOID AI COPILOT WORKSTATION -->
       <section class="view-panel" id="view-studio-agent">
         <div class="copilot-container">
-          <!-- Left: 3D Anime Humanoid Robot Stage -->
+          <!-- Left: 3D Anime Humanoid Robot Stage & Character Studio -->
           <div class="copilot-stage-card">
             <div class="copilot-stage-header">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 20px;">🥷</span>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 24px; filter: drop-shadow(0 0 8px rgba(225, 29, 72, 0.8));">🥷</span>
                 <div>
-                  <div style="font-family: var(--font-display); font-weight: 700; font-size: 14.5px; background: linear-gradient(135deg, #e11d48, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ANIME AI COPILOT</div>
-                  <div style="font-size: 10px; color: var(--text-muted);">Humanoid AI Companion</div>
+                  <div style="font-family: var(--font-display); font-weight: 800; font-size: 15px; background: linear-gradient(135deg, #e11d48 0%, #a855f7 50%, #38bdf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px;">ANIME AI COPILOT & CHARACTER STUDIO</div>
+                  <div style="font-size: 10.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                    <span>Identity Swap & Dual-Reference Engine</span>
+                    <span style="font-size: 8px; color: #10B981; background: rgba(16, 185, 129, 0.15); padding: 1px 5px; border-radius: 4px; font-weight: 700;">PRO ENGINE</span>
+                  </div>
                 </div>
               </div>
-              <div class="copilot-status-badge" id="robotStatusBadge">
-                <span class="dot" style="background: currentColor;"></span>
-                <span id="robotStatusText">ANIME COPILOT — IDLE</span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="copilot-status-badge" id="robotStatusBadge">
+                  <span class="dot" style="background: currentColor;"></span>
+                  <span id="robotStatusText">ANIME COPILOT — IDLE</span>
+                </div>
               </div>
+            </div>
+
+            <!-- Character Swap & Dual-Reference Live Studio Strip -->
+            <div style="padding: 10px 14px; background: linear-gradient(90deg, rgba(225, 29, 72, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%); border-bottom: 1px solid rgba(225, 29, 72, 0.25); display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 11.5px;">
+              <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <span style="font-weight: 700; color: #F43F5E; display: flex; align-items: center; gap: 4px;">⚔️ Active Target:</span>
+                <span style="color: #F8FAFC; font-weight: 600;">Muzan Kibutsuji</span>
+                <span style="color: var(--text-subtle);">|</span>
+                <span style="color: var(--accent-cyan);">Motion Ref:</span>
+                <span style="color: var(--text-muted); font-family: var(--font-mono); font-size: 10.5px;" title="generate_the_again_and_i_want.mp4">generate_the_again.mp4</span>
+              </div>
+              <button class="btn btn-primary" style="padding: 3px 10px; font-size: 10.5px; background: linear-gradient(135deg, #E11D48, #9333EA); border: none;" onclick="askCopilot('us baddhe se character ko hata kr is type character ko integrate kr do yrr')">
+                🚀 Swap Character Now
+              </button>
             </div>
 
             <!-- 3D Canvas Container -->
@@ -2318,18 +2337,19 @@
             <!-- Action Chips & Quick Commands -->
             <div class="copilot-stage-footer">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Recommended Prompts</span>
+                <span style="font-size: 11px; font-weight: 700; color: #F43F5E; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px;">
+                  <span>⚡</span> Character Swap & Motion Workflows
+                </span>
                 <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 10px;" onclick="stopCopilotSpeech()">⏹ Stop Voice</button>
               </div>
               <div class="copilot-action-chips">
-                <button class="copilot-chip" onclick="askCopilot('What is machine learning?')">"What is machine learning?"</button>
-                <button class="copilot-chip" onclick="askCopilot('Explain neural networks simply.')">"Explain neural networks simply"</button>
-                <button class="copilot-chip" onclick="askCopilot('Machine learning kya hota hai?')">"Machine learning kya hota hai?"</button>
+                <button class="copilot-chip" style="background: rgba(225, 29, 72, 0.18); border-color: #F43F5E; color: #FECDD3; font-weight: 700;" onclick="askCopilot('us baddhe se character ko hata kr is type character ko integrate kr do yrr')">"🔥 Swap Old Character with Muzan (Half-Body)"</button>
+                <button class="copilot-chip" style="background: rgba(245, 158, 11, 0.15); border-color: #F59E0B; color: #FDE68A; font-weight: 600;" onclick="askCopilot('Use this Muzan image and this video as reference. Make only half body visible and keep the same effects and camera.')">"🥷 Muzan Half-Body from Video Ref"</button>
+                <button class="copilot-chip" style="background: rgba(139, 92, 246, 0.15); border-color: #8B5CF6; color: #C4B5FD;" onclick="askCopilot('Keep the camera movement and effects from reference video with chest upward framing.')">"🎥 Keep Camera & Effects (Half-Body)"</button>
+                <button class="copilot-chip" onclick="askCopilot('Generate Muzan video with 1.75cm scale and massive red demon aura.')">"⚡ Muzan 1.75cm Miniature Scale"</button>
                 <button class="copilot-chip" onclick="askCopilot('Autopilot mein video kaise generate karu?')">"Autopilot mein video kaise generate karu?"</button>
-                <button class="copilot-chip" onclick="askCopilot('Ee machine learning ka hola?')">"Ee machine learning ka hola?"</button>
-                <button class="copilot-chip" onclick="askCopilot('Video kaise bani?')">"Video kaise bani?"</button>
-                <button class="copilot-chip" onclick="askCopilot('Open my video editor')">"Open my video editor"</button>
                 <button class="copilot-chip" onclick="askCopilot('Show my videos')">"Show my videos"</button>
+                <button class="copilot-chip" onclick="askCopilot('Open my video editor')">"Open my video editor"</button>
                 <button class="copilot-chip" onclick="askCopilot('Create a new series')">"Create a new series"</button>
               </div>
             </div>
@@ -2343,8 +2363,8 @@
                   <span>🌐 Language:</span>
                   <select id="copilotLangSelect" class="copilot-lang-select" onchange="onCopilotLangChange(this.value)">
                     <option value="auto">Auto Detect</option>
+                    <option value="hi" selected>Hindi (हिंदी)</option>
                     <option value="en">English</option>
-                    <option value="hi">Hindi (हिंदी)</option>
                     <option value="bho">Bhojpuri (भोजपुरी)</option>
                   </select>
                 </div>
@@ -2364,11 +2384,11 @@
               <div class="copilot-msg bot">
                 <div class="copilot-avatar">🥷</div>
                 <div class="copilot-bubble">
-                  <strong>Greetings, Creator!</strong> I am your <strong>Anime Humanoid AI Copilot & Companion</strong>.
+                  <strong>नमस्ते क्रिएटर!</strong> मैं आपका <strong>Anime AI Copilot & Character Studio Engine</strong> हूँ।
                   <br><br>
-                  I understand deep technical questions, software engineering, databases, and machine learning across <strong>English, Hindi, and Bhojpuri</strong>, or I can directly orchestrate Autopilot's video production engine.
+                  🎬 <strong>नया फीचर सक्रिय (New Feature Active):</strong> आप किसी भी रेफरेंस वीडियो के पुराने कैरेक्टर को हटाकर <strong>मुज़ान किबुत्सुजी (Muzan Kibutsuji)</strong> के हाफ-बॉडी कैरेक्टर को सीधे इंटीग्रेट कर सकते हैं — पूरा बैकग्राउंड, कैमरा मोशन और सुपरनैचुरल ऑरा 100% सुरक्षित रहेगा!
                   <br><br>
-                  <em>Ask me any question below, or select a prompt on the left!</em>
+                  <em>नीचे टाइप करें या बाईं तरफ के ऐक्शन चिप पर क्लिक करके तुरंत कैरेक्टर स्वैप शुरू करें!</em>
                 </div>
               </div>
             </div>
@@ -4770,7 +4790,51 @@
           }
 
           let actionBannerHtml = '';
-          if (resp.tool) {
+          if (resp.tool === 'generate_character_swap' && resp.action_data) {
+            const outUrl = resp.action_data.outputUrl || resp.action_data.videoUrl;
+            actionBannerHtml = `
+              <div class="copilot-action-banner" style="flex-direction: column; align-items: stretch; gap: 12px; background: linear-gradient(135deg, rgba(225, 29, 72, 0.15) 0%, rgba(147, 51, 234, 0.12) 100%); border: 1px solid rgba(225, 29, 72, 0.4); border-radius: 12px; padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span style="font-size: 12px; font-weight: 800; color: #F43F5E; letter-spacing: 0.5px;">⚔️ CHARACTER IDENTITY SWAP COMPLETE</span>
+                      <span style="font-size: 9px; background: #E11D48; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 700;">100% PRESERVED VFX</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">
+                      Replaced old character with <strong>Muzan Kibutsuji</strong> · Half-body (Chest Upward) · 1.75cm Scale · Camera & Aura Preserved
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="navigator.clipboard.writeText(JSON.stringify(${escapeHtml(JSON.stringify(resp.video_model_instruction || {}))})); showToast('Model prompt copied to clipboard!');">📋 Copy Prompt</button>
+                    <button class="btn btn-primary" style="padding: 4px 10px; font-size: 11px; background: #E11D48; border-color: #E11D48;" onclick="switchNav('library')">View in Library</button>
+                  </div>
+                </div>
+                ${outUrl ? `
+                  <div style="border-radius: 8px; overflow: hidden; background: #000; border: 1px solid rgba(225, 29, 72, 0.3); max-height: 280px; text-align: center; position: relative;">
+                    <video src="${outUrl}" controls autoplay loop muted style="max-height: 270px; width: auto; max-width: 100%; border-radius: 6px; display: inline-block;"></video>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          } else if (resp.tool === 'generate_reference_video' && resp.action_data) {
+            const outUrl = resp.action_data.outputUrl || resp.action_data.videoUrl;
+            actionBannerHtml = `
+              <div class="copilot-action-banner" style="flex-direction: column; align-items: stretch; gap: 10px; background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span style="font-size: 11px; font-weight: 700; color: #F59E0B;">⚡ DUAL-REFERENCE VIDEO GENERATED</span>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Half-Body Framing (Chest Upward) · 1.75cm Scale · Push-in Camera</div>
+                  </div>
+                  <button class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;" onclick="switchNav('library')">View in Library</button>
+                </div>
+                ${outUrl ? `
+                  <div style="border-radius: 8px; overflow: hidden; background: #000; border: 1px solid var(--surface-border); max-height: 240px; text-align: center;">
+                    <video src="${outUrl}" controls autoplay loop muted style="max-height: 230px; width: auto; max-width: 100%; border-radius: 6px;"></video>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          } else if (resp.tool) {
             actionBannerHtml = `
               <div class="copilot-action-banner">
                 <div>
@@ -4799,7 +4863,7 @@
           }
 
           // Trigger video library refresh if video was created or rendered
-          if (resp.tool === 'create_video' || resp.tool === 'render_video') {
+          if (resp.tool === 'create_video' || resp.tool === 'render_video' || resp.tool === 'generate_reference_video' || resp.tool === 'generate_character_swap') {
             loadVideos();
           }
 

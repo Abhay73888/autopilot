@@ -167,7 +167,7 @@ class YouTubePublisher:
         try:
             yt_id = self._resumable_upload(path, meta)
         except Exception as e:
-            self.db.set_status(video_id, "approved",
+            self.db.set_status(video_id, "failed",
                                note=f"upload fail: {str(e)[:180]}")
             self.db.log_event("publish_failed", "publisher", video_id, error=str(e)[:500])
             try:

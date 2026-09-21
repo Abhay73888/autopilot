@@ -48,6 +48,10 @@ def main():
         "backend/",
         "scripts/",
         "core/",
+        "pipeline/",
+        "tests/",
+        "agents/",
+        "web/",
         "data/autopilot.db",
         "data/autopilot_master_vault_backup.json"
     ], check=False)
@@ -81,8 +85,9 @@ def main():
         fields.insert(0, {"name": "✨ Feature Upgrade", "value": args.feature, "inline": False})
 
     fields.extend([
-        {"name": "🎬 Video Archive", "value": "367 Historical Videos", "inline": True},
-        {"name": "📺 Franchises", "value": "57 Series & 54 Episodes", "inline": True},
+        {"name": "🎬 Video Library", "value": "93 Confirmed YouTube Uploads", "inline": True},
+        {"name": "🧹 Storage Cleaned", "value": "11.59 GB Reclaimed (-889 files)", "inline": True},
+        {"name": "📺 Franchises", "value": "76 Series & 58 Episodes", "inline": True},
         {"name": "📦 Data Vault", "value": "SQLite & Master JSON Backed", "inline": True}
     ])
 

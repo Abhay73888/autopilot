@@ -47,15 +47,28 @@ async def get_user_dashboard(ctx: TenantContext = Depends(get_current_tenant_con
 
     db = DB()
 
-    # 2. User-scoped Videos
+    # 2. User-scoped Videos: STRICT YouTube Confirmation
     if is_admin:
-        video_rows = db.q("SELECT * FROM videos WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY id DESC LIMIT 500")
+        video_rows = db.q(
+            "SELECT * FROM videos "
+            "WHERE (user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '') "
+            "  AND status = 'published' "
+            "  AND yt_video_id IS NOT NULL AND yt_video_id != '' "
+            "ORDER BY id DESC LIMIT 500"
+        )
     else:
-        video_rows = db.q("SELECT * FROM videos WHERE user_id = ? ORDER BY id DESC LIMIT 50", (effective_user_id,))
+        video_rows = db.q(
+            "SELECT * FROM videos "
+            "WHERE user_id = ? "
+            "  AND status = 'published' "
+            "  AND yt_video_id IS NOT NULL AND yt_video_id != '' "
+            "ORDER BY id DESC LIMIT 500",
+            (effective_user_id,)
+        )
 
     total_videos = len(video_rows)
-    published_videos = sum(1 for v in video_rows if v["status"] == "published")
-    rendered_videos = sum(1 for v in video_rows if v["status"] in ("rendered", "validated", "published"))
+    published_videos = total_videos
+    rendered_videos = total_videos
 
     # 3. User-scoped Series & Episodes
     if is_admin:
@@ -150,8 +163,10 @@ async def get_user_dashboard(ctx: TenantContext = Depends(get_current_tenant_con
             "status": r["status"],
             "durationSeconds": float(r["length_sec"] or 60.0),
             "videoUrl": video_url,
-            "thumbnailUrl": thumb_url or "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800",
+            "thumbnailUrl": thumb_url or (f"https://i.ytimg.com/vi/{r['yt_video_id']}/hqdefault.jpg" if r["yt_video_id"] else "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800"),
             "seriesName": r["series_name"],
+            "youtubeVideoId": r["yt_video_id"],
+            "youtubeUrl": f"https://www.youtube.com/watch?v={r['yt_video_id']}" if r["yt_video_id"] else None,
             "createdAt": r["created_ts"] or r["updated_ts"]
         })
 

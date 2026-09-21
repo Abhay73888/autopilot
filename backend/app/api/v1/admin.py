@@ -34,10 +34,16 @@ async def get_admin_system_overview(ctx: TenantContext = Depends(require_admin_r
     except Exception:
         pass
 
+    total_confirmed_yt = 0
+    total_unuploaded = 0
     try:
-        v_rows = DB_ENGINE.execute_query("SELECT COUNT(*) as cnt FROM videos")
+        v_rows = DB_ENGINE.execute_query("SELECT COUNT(*) as cnt FROM videos WHERE status = 'published' AND yt_video_id IS NOT NULL AND yt_video_id != ''")
         if v_rows:
-            total_videos = v_rows[0].get("cnt", 0)
+            total_confirmed_yt = v_rows[0].get("cnt", 0)
+        u_rows = DB_ENGINE.execute_query("SELECT COUNT(*) as cnt FROM videos WHERE status != 'published' OR yt_video_id IS NULL OR yt_video_id = ''")
+        if u_rows:
+            total_unuploaded = u_rows[0].get("cnt", 0)
+        total_videos = total_confirmed_yt
     except Exception:
         pass
 
@@ -57,6 +63,8 @@ async def get_admin_system_overview(ctx: TenantContext = Depends(require_admin_r
             "totalUsers": total_users,
             "activeWorkspaces": active_workspaces,
             "totalVideos": total_videos,
+            "confirmedYouTubeVideos": total_confirmed_yt,
+            "unuploadedVideos": total_unuploaded,
             "totalSeries": total_series,
             "activeRenderJobs": len(active_jobs),
             "renderWorkerLoadPercent": min(100, len(active_jobs) * 20),
@@ -357,6 +365,11 @@ async def get_admin_master_vault(ctx: TenantContext = Depends(require_admin_role
             except Exception:
                 tags = [str(r["hashtags"])]
 
+        yt_id = r.get("yt_video_id")
+        yt_url = f"https://www.youtube.com/watch?v={yt_id}" if yt_id else None
+        if not thumb_url and yt_id:
+            thumb_url = f"https://i.ytimg.com/vi/{yt_id}/hqdefault.jpg"
+
         videos.append({
             "id": f"vid_{r['id']}",
             "dbId": r["id"],
@@ -367,6 +380,8 @@ async def get_admin_master_vault(ctx: TenantContext = Depends(require_admin_role
             "status": r.get("status") or "completed",
             "videoUrl": video_url,
             "thumbnailUrl": thumb_url or "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800",
+            "youtubeVideoId": yt_id,
+            "youtubeUrl": yt_url,
             "tags": tags if isinstance(tags, list) else [],
             "workspaceId": r.get("workspace_id") or "ws_admin_abhay",
             "createdAt": str(r.get("created_ts") or r.get("updated_ts") or "")
@@ -427,11 +442,15 @@ async def get_admin_master_vault(ctx: TenantContext = Depends(require_admin_role
             "connectedAt": str(c.get("connected_at") or "")
         })
 
+    confirmed_yt_count = sum(1 for v in videos if v.get("status") == "published" and v.get("youtubeVideoId"))
+
     return ApiResponse(
         success=True,
         data={
             "summary": {
                 "totalVideos": len(videos),
+                "confirmedYouTubeVideos": confirmed_yt_count,
+                "unuploadedVideos": len(videos) - confirmed_yt_count,
                 "totalSeries": len(series_list),
                 "totalEpisodes": len(episodes_list),
                 "totalChannels": len(creds_list),

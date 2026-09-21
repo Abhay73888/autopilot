@@ -199,9 +199,9 @@ def gather(user_id: str | None = None, view_all: bool = False) -> dict:
         # ---- recently published + unke metrics ----
         published = []
         if filter_user:
-            p_rows = db.q("SELECT * FROM videos WHERE user_id = ? AND status='published' ORDER BY id DESC LIMIT 10", (filter_user,))
+            p_rows = db.q("SELECT * FROM videos WHERE user_id = ? AND status='published' AND yt_video_id IS NOT NULL AND yt_video_id != '' ORDER BY id DESC LIMIT 10", (filter_user,))
         else:
-            p_rows = db.q("SELECT * FROM videos WHERE status='published' ORDER BY id DESC LIMIT 10")
+            p_rows = db.q("SELECT * FROM videos WHERE status='published' AND yt_video_id IS NOT NULL AND yt_video_id != '' ORDER BY id DESC LIMIT 10")
 
         for r in p_rows:
             mets = {m["window"]: dict(m) for m in db.get_metrics(r["id"])}

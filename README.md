@@ -49,7 +49,7 @@
 | **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized neural profiles), ElevenLabs Neural, Gemini TTS, paired with sub-bass procedural audio FX & EBU R128 loudness normalization. |
 | **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic karaoke subtitles, scaling from 30s shorts to 10m longform videos. |
 | **🗄️ Persistence** | Dual SQLite / PostgreSQL engine (`core/db_base.py`) with thread-local ContextVar tenant isolation, relational users, workspaces, series, and encrypted integration vaults. |
-| **💎 Master Data Vault** | SuperAdmin historical archive interface browsing all 367+ historical videos, 55 franchises, 52 episodes, with instant video player, JSON export, and automated Git/Discord synchronization (`scripts/git_autosync_notify.py`). |
+| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays the 93 confirmed live YouTube videos (`status = 'published'`, non-empty `yt_video_id`). Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
 | **☁️ Deployment** | Docker containerized deployment, Render Cloud Blueprint (`render.yaml`), Railway, and zero-setup HTTPS tunneling (`tunnel.py`). |
 
 ---
@@ -170,6 +170,56 @@ flowchart TD
 ### 4. 👑 Administrative User Inspection (`/api/v1/admin/users`)
 * **Role-Based Access Control**: Standard creators attempting to access `/api/v1/admin/users` or inspect other users receive **403 Forbidden**.
 * **Read-Only Audit Modal**: Administrators can click **Inspect 🔍** on any user to review their registration timestamp, series list, recent videos, YouTube connection, and production activity.
+
+---
+
+## 🎬 YouTube Upload Confirmation Source-of-Truth & Production Cleanup (v2.9.0)
+
+AUTOPILOT v2.9.0 establishes the connected YouTube channel as the **absolute source of truth** for all video asset management and presentation. Normal video libraries and dashboards strictly contain, manage, and display **only confirmed YouTube-uploaded videos**.
+
+```mermaid
+flowchart TD
+    subgraph Audit["🔍 Live Channel Audit & Reconciliation"]
+        YT["YouTube Data API (Playlist UUOvDjaHzT3kUgJinQV_4vDQ)<br/><b>94 Live Channel Items</b>"]
+        CONFIRM["93 Confirmed AUTOPILOT Videos<br/><i>(1 legacy pre-autopilot video isolated)</i>"]
+        YT --> CONFIRM
+    end
+
+    subgraph Pruning["🧹 Database & Filesystem Cleanup"]
+        DB_BACKUP["Full DB Snapshot & JSON Archive<br/><code>data/backup/</code>"]
+        DB_PRUNE["Pruned 277 Draft/Failed/Orphan DB Rows<br/><b>93 Confirmed Published Rows Retained</b>"]
+        FS_CLEAN["Deleted 889 Intermediate Video Chunks<br/><b>Reclaimed 11.59 GB Disk Space</b>"]
+        CONFIRM --> DB_BACKUP --> DB_PRUNE
+        CONFIRM --> FS_CLEAN
+    end
+
+    subgraph Service["⚡ Backend Query Enforcement"]
+        LIST["<code>video_service.list_videos()</code><br/><i>WHERE status='published' AND yt_video_id IS NOT NULL</i>"]
+        RESP["<code>VideoResponse</code><br/><i>Populates youtubeVideoId and youtubeUrl</i>"]
+        DASH["<code>GET /api/v1/dashboard</code><br/><i>Displays only confirmed YouTube videos</i>"]
+        DB_PRUNE --> LIST --> RESP --> DASH
+    end
+```
+
+### 1. 🔍 Root Cause of Unwanted Media Artifacts
+* **Unfiltered Library Queries**: Prior releases queried `SELECT * FROM videos WHERE user_id = ?` without enforcing `status = 'published'` or verifying `yt_video_id`, causing draft, planned, or interrupted renders to clutter the video library.
+* **Intermediate Step Chunks**: Slicing and rendering engines generated step chunks (`checkpoints/step_*.mp4`) and raw renders (`unsubbed.mp4`) that were never garbage-collected after upload, accumulating 11.59 GB of dead storage.
+
+### 2. 🛡️ Pre-Flight Safety & Complete Backups
+* **Database Snapshot**: Byte-for-byte copy saved at `data/backup/autopilot.db.backup_pre_cleanup_20260921_200810`.
+* **Full Archive**: Complete 367-video JSON archive exported to `data/backup/videos_pre_cleanup_archive_20260921_200810.json`.
+* **Verified Manifest**: 93 confirmed videos documented in `scratch/confirmed_93_youtube_videos.json`.
+
+### 3. 🧹 Production Cleanup & Disk Space Reclaimed
+* **Database Reconciled**: Reconciled 3 standalone uploads (`7Slt4Pry6lM`, `VXC5JTRkBDs`, `g6GemTgMNDM`) and pruned 277 unconfirmed/failed records. Exactly 93 published records remain.
+* **Storage Freed**: Removed 786 checkpoint chunks, 16 raw renders, and 87 orphan renders. Reclaimed **11.59 GB** of storage.
+* **Database Indexes Added**: `idx_videos_yt_video_id`, `idx_videos_status`, `idx_videos_user_id`, `idx_videos_workspace_id`.
+
+### 4. 🚀 Backend API & Schema Enforcement
+* **`backend/app/services/video_service.py`**: Queries strictly filter by `status = 'published' AND yt_video_id IS NOT NULL AND yt_video_id != ''`.
+* **`backend/app/schemas/video.py`**: Enriched `VideoResponse` with `youtubeVideoId` and `youtubeUrl`.
+* **`backend/app/api/v1/admin.py`**: Overview and Vault endpoints explicitly segregate confirmed YouTube uploads from unuploaded or queued jobs.
+* **`agents/publisher.py`**: Upload failure handler sets status to `"failed"` instead of leaving misleading `"approved"` status.
 
 ---
 

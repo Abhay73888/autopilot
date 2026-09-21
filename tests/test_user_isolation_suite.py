@@ -64,17 +64,21 @@ class TestUserIsolationAndProductionSecurity(unittest.TestCase):
         })
 
     def test_01_database_integrity_and_abhay_ownership(self):
-        """Verify real production data in database has 0 orphaned records and Abhay owns all historical assets."""
+        """Verify real production data in database has 0 orphaned records and Abhay owns all confirmed YouTube videos."""
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
 
         c.execute("SELECT COUNT(*) FROM videos")
         total_videos = c.fetchone()[0]
-        self.assertGreaterEqual(total_videos, 367, "Must contain all 367 historical videos")
+        self.assertEqual(total_videos, 93, "Must contain exactly the 93 confirmed YouTube videos")
 
         c.execute("SELECT COUNT(*) FROM videos WHERE user_id = 'admin_abhay'")
         abhay_videos = c.fetchone()[0]
         self.assertEqual(abhay_videos, total_videos, "All videos must be owned by canonical admin_abhay")
+
+        c.execute("SELECT COUNT(*) FROM videos WHERE status = 'published' AND yt_video_id IS NOT NULL AND yt_video_id != ''")
+        confirmed_yt_videos = c.fetchone()[0]
+        self.assertEqual(confirmed_yt_videos, 93, "All 93 videos must be confirmed published YouTube videos")
 
         c.execute("SELECT COUNT(*) FROM series")
         total_series = c.fetchone()[0]
@@ -108,13 +112,13 @@ class TestUserIsolationAndProductionSecurity(unittest.TestCase):
         self.assertEqual(data_b["role"], "creator")
 
     def test_03_dashboard_user_isolation(self):
-        """Verify Abhay sees 367 videos, 76 series, YouTube connected; User B sees 0 videos, YouTube disconnected."""
+        """Verify Abhay sees 93 confirmed YouTube videos, 76 series, YouTube connected; User B sees 0 videos, YouTube disconnected."""
         # Abhay Dashboard
         res_a = self.client.get("/api/v1/dashboard", headers={"Authorization": f"Bearer {self.token_abhay}"})
         self.assertEqual(res_a.status_code, 200)
         d_a = res_a.json()["data"]
         stats_a = d_a["stats"]
-        self.assertEqual(stats_a["total_videos"], 367)
+        self.assertEqual(stats_a["total_videos"], 93)
         self.assertEqual(stats_a["total_series"], 76)
         self.assertEqual(stats_a["total_episodes"], 58)
         self.assertEqual(d_a["youtube"]["is_connected"], True)
@@ -212,7 +216,7 @@ class TestUserIsolationAndProductionSecurity(unittest.TestCase):
         # Verify admin_abhay record in user list
         abhay_entry = next((u for u in users if u["id"] == "admin_abhay"), None)
         self.assertIsNotNone(abhay_entry)
-        self.assertEqual(abhay_entry["video_count"], 367)
+        self.assertEqual(abhay_entry["video_count"], 93)
         self.assertEqual(abhay_entry["series_count"], 76)
         self.assertEqual(abhay_entry["youtube_connected"], True)
 
@@ -223,6 +227,26 @@ class TestUserIsolationAndProductionSecurity(unittest.TestCase):
         self.assertEqual(data_insp["profile"]["id"], "usr_test_user_b")
         self.assertEqual(data_insp["counts"]["videos"], 0)
         self.assertEqual(data_insp["youtube"]["connected"], False)
+
+    def test_08_only_confirmed_youtube_videos_in_library(self):
+        """Verify /api/v1/videos strictly returns confirmed YouTube videos with youtubeVideoId and youtubeUrl."""
+        # Abhay lists videos
+        res = self.client.get("/api/v1/videos", headers={"Authorization": f"Bearer {self.token_abhay}"})
+        self.assertEqual(res.status_code, 200)
+        videos = res.json()["data"]
+        self.assertEqual(len(videos), 93, "Video library must contain exactly the 93 confirmed YouTube uploads")
+
+        for v in videos:
+            self.assertEqual(v["status"], "published")
+            self.assertIsNotNone(v.get("youtubeVideoId"))
+            self.assertTrue(len(v["youtubeVideoId"]) > 0)
+            self.assertIn("youtube.com/watch?v=", v.get("youtubeUrl", ""))
+
+        # User B lists videos -> 0 videos
+        res_b = self.client.get("/api/v1/videos", headers={"Authorization": f"Bearer {self.token_user_b}"})
+        self.assertEqual(res_b.status_code, 200)
+        self.assertEqual(len(res_b.json()["data"]), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

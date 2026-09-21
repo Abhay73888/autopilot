@@ -46,4 +46,6 @@ class VideoResponse(BaseModel):
     videoUrl: Optional[str] = None
     thumbnailUrl: Optional[str] = None
     qaReport: Optional[QACheckReport] = None
+    youtubeVideoId: Optional[str] = None
+    youtubeUrl: Optional[str] = None
     createdAt: str

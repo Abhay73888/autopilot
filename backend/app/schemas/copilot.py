@@ -9,6 +9,10 @@ from pydantic import BaseModel, Field
 class CopilotExecuteRequest(BaseModel):
     command: Optional[str] = None
     prompt: Optional[str] = None
+    character_image_path: Optional[str] = None
+    motion_video_path: Optional[str] = None
+    composition: Optional[str] = "half_body"
+    character_scale_cm: Optional[float] = 1.75
 
 
 class CopilotActionPlan(BaseModel):
@@ -21,6 +25,7 @@ class CopilotActionPlan(BaseModel):
     confirmationToken: Optional[str] = None
     status: str = "completed"
     result: Optional[Dict[str, Any]] = None
+    video_model_instruction: Optional[Dict[str, Any]] = None
 
 
 class CopilotVoiceSettings(BaseModel):
@@ -37,6 +42,10 @@ class CopilotChatRequest(BaseModel):
     history: Optional[List[Dict[str, str]]] = None  # multi-turn conversation memory
     voice_settings: Optional[CopilotVoiceSettings] = None
     generate_speech: bool = True
+    character_image_path: Optional[str] = None
+    motion_video_path: Optional[str] = None
+    composition: Optional[str] = "half_body"
+    character_scale_cm: Optional[float] = 1.75
 
 
 class CopilotChatResponse(BaseModel):
@@ -48,6 +57,7 @@ class CopilotChatResponse(BaseModel):
     intent: str = "CONVERSATION"
     tool: Optional[str] = None
     action_data: Optional[Dict[str, Any]] = None
+    video_model_instruction: Optional[Dict[str, Any]] = None
     robot_state: str = "SUCCESS"
 
 

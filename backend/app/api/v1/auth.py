@@ -82,6 +82,15 @@ async def login(req: LoginRequest):
             role=role,
             is_onboarded=0
         )
+        user = {
+            "id": user_id,
+            "user_id": user_id,
+            "email": identifier,
+            "role": role,
+            "full_name": full_name,
+            "is_onboarded": 0,
+            "password_hash": pw_hash,
+        }
 
     org_id = f"org_{user_id}"
     ws_id = f"ws_{user_id}"
@@ -98,7 +107,7 @@ async def login(req: LoginRequest):
     except Exception:
         pass
 
-    user_email = user.get("email") or identifier
+    user_email = (user.get("email") if user else identifier) or identifier
     token_payload = {
         "sub": user_id,
         "email": user_email,

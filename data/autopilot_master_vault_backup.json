@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-09-21T18:02:54.093987+00:00",
+  "exported_at": "2026-09-21T18:32:13.023334+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
@@ -12,7 +12,7 @@
     "characters": 1,
     "jobs": 99,
     "organizations": 95,
-    "workspaces": 1333,
+    "workspaces": 1334,
     "credit_accounts": 0,
     "usage_ledger": 516,
     "video_jobs": 0,
@@ -21,10 +21,11 @@
     "publishing_jobs": 137,
     "credit_transactions": 0,
     "templates": 4,
-    "users": 111,
+    "users": 112,
     "discord_connections": 0,
-    "series": 61,
-    "episodes": 58
+    "series": 77,
+    "episodes": 58,
+    "uploaded_assets": 0
   },
   "data": {
     "videos": [
@@ -11310,7 +11311,7 @@
         "notes": null,
         "scene_pacing": "standard",
         "user_id": "admin_abhay",
-        "workspace_id": null
+        "workspace_id": "ws_admin_abhay"
       },
       {
         "id": 10001,
@@ -11341,7 +11342,7 @@
         "notes": "Phase 2 done: 4 scenes",
         "scene_pacing": "standard",
         "user_id": "admin_abhay",
-        "workspace_id": null
+        "workspace_id": "ws_admin_abhay"
       },
       {
         "id": 10002,
@@ -11372,7 +11373,7 @@
         "notes": null,
         "scene_pacing": "standard",
         "user_id": "admin_abhay",
-        "workspace_id": null
+        "workspace_id": "ws_admin_abhay"
       },
       {
         "id": 10004,
@@ -11403,7 +11404,7 @@
         "notes": null,
         "scene_pacing": "standard",
         "user_id": "admin_abhay",
-        "workspace_id": null
+        "workspace_id": "ws_admin_abhay"
       }
     ],
     "metrics": [
@@ -84405,6 +84406,20 @@
         "plan_tier": "starter",
         "credits_balance": 100,
         "created_ts": null
+      },
+      {
+        "id": "ws_abhay_maurya_d1ed3d",
+        "organization_id": "org_admin_abhay",
+        "name": "Abhay Creator Studio",
+        "slug": "abhay-creator-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-09-21 18:17:36",
+        "api_key": null,
+        "owner_email": "shivpuran2803@gmail.com",
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
       }
     ],
     "credit_accounts": [],
@@ -89576,11 +89591,12 @@
         "id": "cred_58d51bac5606",
         "workspace_id": "ws_alice_1788970957580",
         "platform": "youtube",
-        "channel_id": "UC_alice_channel_01",
-        "channel_name": "Alice True Crime Stories",
-        "encrypted_token": "6bkHmek56Avr63zX/8HWoRtSFPL7z4WVFAa0yPDNNjrKRkOmJPh24JcHgT6f9HcPjjj1MbUElMRsHSmTUieIi8dTGq1+9bQZeAJbJfs=",
-        "token_metadata": "{}",
-        "created_at": "2026-09-09T16:22:37.664007+00:00"
+        "channel_id": "UC_a20684ba9b5b4e54",
+        "channel_name": "Connected YouTube Channel",
+        "encrypted_token": "5HHVkWUKEr5bEdk5xnVEswrpZ/uHXMPRaWIJjVCsCnuipfx1l/fvN+mZN4dDxobuWgCJ4cgLPjn7MAHi2/HJp77/OLq5ueI5gX58YjB5TuqsWDansJdhR3m7Er+bmWxWmWt9GbrH14IX1OGzgfnOIZUx5XCT2rVgIBLS87oCMJHRIAZvS+UD4T+0S1iDpjSZHVTAKwJW6kMM74aT+4lEmQMdWooBGvDN6HQNzf3upEkpVAmCuSR9T4gMaJrIGlChGBOCgwfuNpy/uSI+tLPlUuOL+fJfoy1skMpJl3P7t/03CMzLIrWhvWXi0Q35DlDtPgW8bpxDjioZCnUOm7ONKbipp8QFcANtrnlT7bXP3blWA1Zt1vIgFZSYMO8EiQl/vXC4sSt7GfDCPP8ial7gBktO3G3dJaD7aUh/wLcuBxFYFbQZDw7ulKL5AgsCp8rR+duTVdoCEwty3jOnYpJUBPe5iAjmrq88LAd0aq52qSX9lPkXFE/nY83hJpd9asmoOpVWrA4q5z/BVoRHdUmeOJBpjfHrdbW2OT7HHXOscVPvsvOyzEaq5CTWX+VK7uRW1bLYeXE4CdqS2HTbU4OqMZzQxrsQPtIA1ktP50IgG6tf02qERMhjo8vyy5oucMSq0M5J1s9ejuudWDOCbFgX+dZjvUZM33nTFxId49eIGa7/CaWiktaAIDalqTGQ9PEGaQ7lY0Qv7EoDv7axL9jcxs+pG5fHOhoDpAYyufLXUz2U3iBc3hncSPC8bz/8OTlw5ESxfo4VtOleSC1HkE3uhHIVhtSrVWXKWfq5xEGmMN2zDqSa9zrUwVJRGom1LPHL4cRlBQYlC+ZTuM8WN4yqjeNn8R45IALleFOeQElkxAnDAqvtz8pipDZlaqOkR3vr3lfAULNU1/l7skB2",
+        "token_metadata": "{\"channel_id\": \"UC_a20684ba9b5b4e54\", \"title\": \"Connected YouTube Channel\", \"custom_url\": \"@creator\", \"thumbnail_url\": \"https://www.youtube.com/img/desktop/yt_1200.png\", \"subscriber_count\": 0, \"video_count\": 0}",
+        "created_at": "2026-09-09T16:22:37.664007+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_b46ab49e5beb",
@@ -89590,7 +89606,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "52YqVAzzD01gywpff6qQFZHZU98+iIcrdxVfhOXLSn6gpum7zr488OrHES4nmhXZUyWV",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:23:21.149839+00:00"
+        "created_at": "2026-09-09T16:23:21.149839+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_9de7f325fb85",
@@ -89600,7 +89617,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "ZcVeDhL6U7sFYPC0PrMXjm6BpOVk8Pd2GLF9NxR+7ZMpvMI7QQuDJAxv0u2KMIx90WiW",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:25:34.134895+00:00"
+        "created_at": "2026-09-09T16:25:34.134895+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_ff8dc9d820ce",
@@ -89610,7 +89628,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "FHAbbefoWTxPUa1VmI7oiGlHCc1vRBRJCZSfgvBOPVzrVcreO7zjUOtbDL1TB5xFi061XyR1xLbnAMaV/AQbyRPZentrUGCK48PepHA=",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:25:34.770941+00:00"
+        "created_at": "2026-09-09T16:25:34.770941+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_efed124c53e9",
@@ -89620,7 +89639,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "OWtEQBwM+Qk6MqUeOs3Uj+Xgppn141qOegRwugGTBOuZ7wK4ZFrzvXJ1nQnVatRJzIxg",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:26:43.167396+00:00"
+        "created_at": "2026-09-09T16:26:43.167396+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_1b00c52d7421",
@@ -89630,7 +89650,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "vODIA+ecsRtY2SQrL4i39qhinS0J4WP7MfjVH8nC93KHZleoiJjBGmiQ2Kw2R6WIBZhp/XbtCWzw9zIKQajsrYIAGMD+KDr1D8K/HhY=",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:26:43.670048+00:00"
+        "created_at": "2026-09-09T16:26:43.670048+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_0c5128d0165e",
@@ -89640,7 +89661,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "RF7ifLS/hL9QMK2g9HFhJbjP95m4J8bHiGldd3ju3XDO9NB0PjWCSDCHqFx4PQ+pctTg",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:28:30.778704+00:00"
+        "created_at": "2026-09-09T16:28:30.778704+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_b2147dd189f7",
@@ -89650,7 +89672,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "kuUstsjzluCHW46v0rdNC5eNnFZqa2FfrSsfpXEREbibEOhYJ88qd+nnko/svU2qM4t8PzvaEJ7h1O2/2M+8MRm6N5ndR1HZ+SzqIu8=",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:28:31.364255+00:00"
+        "created_at": "2026-09-09T16:28:31.364255+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_0fef0731fbef",
@@ -89660,7 +89683,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "pOHXsUT5QPvMgPCnLnsSlp+xZOPSxTgj/f09ofbnk+SJcpOfn1XldtmvRw7zTtMIRR4q",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:34:17.771652+00:00"
+        "created_at": "2026-09-09T16:34:17.771652+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_8f3fa4cc8fbe",
@@ -89670,7 +89694,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "8HovdPy1q3+fw88rtJJoirWee2PwgNaXOvg14W+tyuX4xvvi1fS6Kg8lBgqg+8o23PDGv+ftqZd2mA1Kd2jErwHDhQmBwB7480yb+wc=",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:34:18.370113+00:00"
+        "created_at": "2026-09-09T16:34:18.370113+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_6aa49ca7cc09",
@@ -89680,7 +89705,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "QlyU46y3tq61D4xrW525REno5sX0Hzh6xO07KJr2OqR4zdioKUe+uYgnHhYd7N+RlLjD",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:37:00.388245+00:00"
+        "created_at": "2026-09-09T16:37:00.388245+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_c88b9d097555",
@@ -89690,7 +89716,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "rXm4pL9xDZq5ds2+IQZy0NOgAvKnSFq8Z4pS6tGO9I/wQpBiyoQMtZloDaZPF90rp8xZ4N2Jk+GyKljoVAQcJt/vINUoJ5PADOuh2eM=",
         "token_metadata": "{}",
-        "created_at": "2026-09-09T16:37:04.449840+00:00"
+        "created_at": "2026-09-09T16:37:04.449840+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_d219a84be999",
@@ -89700,7 +89727,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "xQdWuQ2zuQwBOwT4aw8fQiT0aH2n504Umr8y8RoHfZ6eQfmm9iCI4ALI6DegCodFI0Rt",
         "token_metadata": "{}",
-        "created_at": "2026-09-10T18:33:26.024094+00:00"
+        "created_at": "2026-09-10T18:33:26.024094+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_86887dd4975c",
@@ -89710,7 +89738,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "J4JGYjZvK9QiyWAzut9QisCzDzaz4Vh8n35QnQvTYQzzz9kUBx9D3Y0k/tJIMLVDo3z/+cVukuV9dER4fuehxfCZdHYORVBudmqSn4Q=",
         "token_metadata": "{}",
-        "created_at": "2026-09-10T18:33:31.583126+00:00"
+        "created_at": "2026-09-10T18:33:31.583126+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_8f525abbd161",
@@ -89720,7 +89749,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "9AH5mei/c4oAYFBF8sUwOTvNKt9RhVeAVFvGUUcDNz9mqcyJlz914tp6SCUFVTM9OfVN",
         "token_metadata": "{}",
-        "created_at": "2026-09-10T18:37:23.364271+00:00"
+        "created_at": "2026-09-10T18:37:23.364271+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_dbaf89211ec5",
@@ -89730,7 +89760,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "mV/vMyZDpZBltFSFzHpFi44m4b0f/rzeLvm0WKrTqc+w9+scUI3Gu3s2QffFyNFdio3sqVXq+zhs/bLklaWSlGpy1ze+XuxcSQqN4NU=",
         "token_metadata": "{}",
-        "created_at": "2026-09-10T18:37:28.315356+00:00"
+        "created_at": "2026-09-10T18:37:28.315356+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_fce419146f50",
@@ -89740,7 +89771,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "cqdCd4wiR8psOXCkNn+vl+EiVzc+4Su8huUuFKi5Tsc9EvVBi8ZeHhAWaQfW8tT9hRDr",
         "token_metadata": "{}",
-        "created_at": "2026-09-10T18:40:19.567759+00:00"
+        "created_at": "2026-09-10T18:40:19.567759+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_bbd80e04ab97",
@@ -89750,7 +89782,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "ufMZWSl7R4a2+zAtFjeKP8xh6BzdIBCZMTuYzZOyIFr9ngZk4YN/UHCLSX7nBfbWiWuTLOBd6Ln6fZ9F9Rm8cHPOEQrbLiOnf9C4ldc=",
         "token_metadata": "{}",
-        "created_at": "2026-09-10T18:40:25.096124+00:00"
+        "created_at": "2026-09-10T18:40:25.096124+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_bd9bc6b7879e",
@@ -89760,7 +89793,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "HsfaDcwKg+bx33gEC1UJ2P3xABfaqShfYA1jlvTkY2Zh0/IBOV/3dPLYEBieDA1jMrNCY/fW+BfGGhbbUoGRNR1Lm7wPI+Gm6CJlqPI=",
         "token_metadata": "{}",
-        "created_at": "2026-09-15T02:15:28.982853+00:00"
+        "created_at": "2026-09-15T02:15:28.982853+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_0f93490a0245",
@@ -89770,7 +89804,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "ySoUXzdFkwoM1w6pMM+7PQPrwH7gAeR9aV4VXdfKhCUECxZT2NlVD8ycBr/EuduvFcn4",
         "token_metadata": "{}",
-        "created_at": "2026-09-15T02:18:06.193802+00:00"
+        "created_at": "2026-09-15T02:18:06.193802+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_2f1f6232c7aa",
@@ -89780,7 +89815,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "j/Cq/TeXzjsWdL/Ga5mFVH58YjuGPuvopB3QaElFaQJyAPko1hHHyB7frR1330x2OixE",
         "token_metadata": "{}",
-        "created_at": "2026-09-15T02:34:48.233477+00:00"
+        "created_at": "2026-09-15T02:34:48.233477+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_ac0e06683f54",
@@ -89790,7 +89826,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "+mMJ6CYD+bFU6Tsa54PSkQuGuICg1tINHQDKOqHMFHNePXtTlzk3aemc4GEj+ZLPz79/gT8FVC7odpkNd3I1619Gws1SfgZT78m4Q5I=",
         "token_metadata": "{}",
-        "created_at": "2026-09-15T02:34:55.183096+00:00"
+        "created_at": "2026-09-15T02:34:55.183096+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_44bafe73d3b8",
@@ -89800,7 +89837,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "sAZudx16YwzP+xfb7QPbuzSsdNdFpo1+Ef0OHEsvU6xO9YzMgo+KRynmNq7+g/2WlXhy",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:14:13.243015+00:00"
+        "created_at": "2026-09-20T15:14:13.243015+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_41d6d7c0f86d",
@@ -89810,7 +89848,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "Cy67b6tOZZr3ZUIkCOoBhDCdUZs+cWNaZVtOER4vw3fgEcjp2Z1RifeMpAwGCJc5UtDfcUShw3Ykry9yC8j5PzJthnDMfGw7Ssh/ZjM=",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:14:18.336801+00:00"
+        "created_at": "2026-09-20T15:14:18.336801+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_5bb6350cc4bf",
@@ -89820,7 +89859,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "kyIFjimM3UidaGA+RNFvwhf+bgliuisPi83+9dJZM/Z3ZvZGeXAk+0Bah1v+sC+xS1M9",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:16:53.510254+00:00"
+        "created_at": "2026-09-20T15:16:53.510254+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_fad77b8be4d7",
@@ -89830,7 +89870,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "csLtomsX0h8ZNvefJsO6QI4ivfe+2rCTWEOMbg4PzuigawadVtn4zbsiD25stKberSI5GcN6EflEqeS9xWGs6qz2GVE0cJTVUboD8uk=",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:16:58.603275+00:00"
+        "created_at": "2026-09-20T15:16:58.603275+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_9fdffbf1418b",
@@ -89840,7 +89881,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "NR76Dd0Jh3NpCunNEHLE6Q1NW8zCWCG2gKpffM1Kwl6Ml2DrPrDtPXasTeDPjj4eMqag",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:17:38.297248+00:00"
+        "created_at": "2026-09-20T15:17:38.297248+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_c0e61f5cc50c",
@@ -89850,7 +89892,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "SXXofAxK+51XGfgf9es7uuwWsOwBAnyndlBYJDlh6ojABJArCLZNpbFdpfnVj1wJ0b5rTSLSR/XMB7upuD706jycO1WHkMgMkFoKbro=",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:17:43.379086+00:00"
+        "created_at": "2026-09-20T15:17:43.379086+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_1bfe383397c4",
@@ -89860,7 +89903,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "/WhengFQBJuS+oloYxk6tH5jcvDO/Vu9eXsfH7cjXLg2nUKchF9piwlkr6drUWHgylqe",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:19:26.291238+00:00"
+        "created_at": "2026-09-20T15:19:26.291238+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_c948519598cb",
@@ -89870,7 +89914,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "9RYdxqhEIrA/TmY1xgi22SLN7/KK+NcoxJw0SxmF3n/cr21Zz2bY4wDEYa1UiyRez2Vxlmw2jl38OLGWcr5s+Ni1U57N06Kvqowq86Y=",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:19:30.838056+00:00"
+        "created_at": "2026-09-20T15:19:30.838056+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_599de54c1eb3",
@@ -89880,7 +89925,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "fsrg/cSUXkE1ErO0VrXjbyB68MC/+WFTmzlAYAdgWdwZIj97UWGYX3ivXBKvkIZwcKOG",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:35:48.227850+00:00"
+        "created_at": "2026-09-20T15:35:48.227850+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_fb1f254ae9ab",
@@ -89890,7 +89936,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "/Wh37732TvhTSNnu5M7r9/AfAcFSglcyp7eu4zrwiB9Y3R55zeZCZurYPZ71QeAD3grl8+u1bB5z8olnxdIAc/3JQqtXYSEyE9vPhpI=",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:35:52.601308+00:00"
+        "created_at": "2026-09-20T15:35:52.601308+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_5898753c6cb1",
@@ -89900,7 +89947,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "67Z5HtQE5ZC3SLJlZoXPK4MEGswci4v0RvnndHDgv6+9vKqF5G3B/JzISPP/LCAPm5F/",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:37:24.749555+00:00"
+        "created_at": "2026-09-20T15:37:24.749555+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_d5e826a4beb4",
@@ -89910,7 +89958,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "XZxpLcrS03lf9bU6mRu8WdX+Ka5ItiyaE3y7z05cn+22xghBajFDoJ3OeZ0Joon7BhXV0uMqm5fNVzwc58AJO8QPMY4MPm1i0zmuZJ4=",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T15:37:29.050375+00:00"
+        "created_at": "2026-09-20T15:37:29.050375+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_59c7f0383fea",
@@ -89920,7 +89969,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "LEyR7oQzn7y2GGiAeLE4cqvuVmqIYS7lZf3kOTtP4NxNT3SKcrvqwxIMQQwGDv+2Nvtv",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T17:53:29.689866+00:00"
+        "created_at": "2026-09-20T17:53:29.689866+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_ffeebc748009",
@@ -89930,7 +89980,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "DWxnKJ5A/h0SY+rRxfMbzag8jASYXrtqBa97CKReSKv0um/biYUOgvEsGgX1L2x+xwS8ddwR1Ncg+BfCoGrc/+hH8TwMHht1ZL+p2n8=",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T17:53:35.139114+00:00"
+        "created_at": "2026-09-20T17:53:35.139114+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_0fcf85396a85",
@@ -89940,7 +89991,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "SxdKtN7bLqajeWcueugMix6mK8fccUzMJ5FjghDSHb6HgApKoOwrjvGeE9dmzgSFLzeo",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T18:00:02.646490+00:00"
+        "created_at": "2026-09-20T18:00:02.646490+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_28c105909d86",
@@ -89950,7 +90002,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "uX30L4RU8CEq9zK8sP/6wIRf+9Iyh6MlMotSPLiGgziPTTND4vcroDPQl0fvEMJTq+iUgb6jazl1wJJNZOAG6MReQR8Dnokn6x7AJrs=",
         "token_metadata": "{}",
-        "created_at": "2026-09-20T18:00:07.257324+00:00"
+        "created_at": "2026-09-20T18:00:07.257324+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_da248b2b5809",
@@ -89960,7 +90013,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "NAqUB/Rx32deOvs4pild4d2G3txyMbdt9H+b8JV3sIPmaL4ls9vaxkPU9Nc8t4UJ6VwBib7dRWODws/IPT3hZtSksRZu1nSUvej/jLk=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:20:07.614771+00:00"
+        "created_at": "2026-09-21T09:20:07.614771+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_a4e6897492f3",
@@ -89970,7 +90024,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "h+M8s4j+d/PORD1s2ynmz7FBrAZ1HPjTFL6l7j0VnLKttEtpTs6/5YGPMc6SIFmsbXir",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:29:06.542536+00:00"
+        "created_at": "2026-09-21T09:29:06.542536+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_92ce7991775f",
@@ -89980,7 +90035,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "cmo5bkH54hpf3jkjppykk70TaaPcxl2jo9wqf2IvKFItdDSJIJyJb9Nfy75ElgTQFC/8H5mmuP88ZNZX0B12vnuiEhap1Si3ludkYXw=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:29:10.853767+00:00"
+        "created_at": "2026-09-21T09:29:10.853767+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_f9c41404b6c8",
@@ -89990,7 +90046,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "yWrHMaVsyIkte2kUA4nkjIuTOACM8k2XExwxumROSZFIPoAj5Si2B3ltka6+LdyZBzPG",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:31:37.403059+00:00"
+        "created_at": "2026-09-21T09:31:37.403059+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_80644ba93889",
@@ -90000,7 +90057,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "sOhDiLg2B97lmvV0AbgSe6YwfKVArHdh2P2nTGHALukub4Il7QtvrE4hCPsmudZ5nQoc1Ran480n/Lcs+Y4dCQVBal1LQpd0UPb2YRU=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:31:41.797431+00:00"
+        "created_at": "2026-09-21T09:31:41.797431+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_d7bd51ed9879",
@@ -90010,7 +90068,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "8S/9oMtmRBc6Jo3clkIgTDsjeRscGAIh1Vbym05vPHtsDCgTy+5PCn4TJHFV7C5A+KPX",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:50:56.280267+00:00"
+        "created_at": "2026-09-21T09:50:56.280267+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_5c5d3dd5d37e",
@@ -90020,7 +90079,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "mzKjZbzq65H5G+8Q2lL98rsEVs6j79yhdHfyTauTGUpnX++aizZxpejRgU1Fk4wJjjJWjCD3f6b3gyLTII4xSIZo4ntKSpJ92WpHfT8=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:51:00.616359+00:00"
+        "created_at": "2026-09-21T09:51:00.616359+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_a5627972d59e",
@@ -90030,7 +90090,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "VTKg4C5GtkF/LV5MAJ1i2jkbtQdajWlMj7l/p5uluEZq3QskhxRo6hm9y26lpsoU0bMu",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:55:13.072168+00:00"
+        "created_at": "2026-09-21T09:55:13.072168+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_6cbac9fca163",
@@ -90040,7 +90101,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "rVFhS1EWapSi3jfNjTknS5S1enU6o9pXfzPMkm17NP9dblUiS2AmR3lc/T5LbES+vZx7NCsz32/lTbUv0NBWtvzNK9tceF6YB8IlXd8=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:55:17.369538+00:00"
+        "created_at": "2026-09-21T09:55:17.369538+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_4856c8fdb0df",
@@ -90050,7 +90112,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "gMRXslzXt2PWWAjLJ2nr6r2//K6A9rCp+f11r32mQ4vJrx7olzj6YRVPMp3H24Km6WlH",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:56:22.639171+00:00"
+        "created_at": "2026-09-21T09:56:22.639171+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_8b30c86db04f",
@@ -90060,7 +90123,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "QarfZZWUFBD1u8R505+4cmUEqdL69UDpIZK2YSJsmy91HkjfIPqLRhaaqa9lBM6BFOiUFTcxFVtCNtAnbHVmqJUinbqeLho4ZbUMCi4=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:56:27.538393+00:00"
+        "created_at": "2026-09-21T09:56:27.538393+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_23be0f5eb86d",
@@ -90070,7 +90134,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "XkhLnJGaXRNH7nuzM5cC0lzPAA/INWV0OpFnXVGO2/3PZkW+zke2hASDOrM+IvXnP4n/",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:56:53.065744+00:00"
+        "created_at": "2026-09-21T09:56:53.065744+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_82fca0fbe2af",
@@ -90080,7 +90145,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "ZXhqZxvxrEXJGw/ERE5R8+Cv957kdWCoOUk92+IS+l1SSSuhVBZVrqmBqZBRiGgMPAwVG0t2sSEz1i8/OoWXphOx5e6bzKJYRWvl9BE=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:56:57.992518+00:00"
+        "created_at": "2026-09-21T09:56:57.992518+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_4c50ecb110a1",
@@ -90090,7 +90156,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "+PZrS14LXuKw8M4nveWSqSy68Tbz6qqUpvG8SJ9S6FYAfwlmpjepGR7aeKEMsTguZRMY",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:59:19.649029+00:00"
+        "created_at": "2026-09-21T09:59:19.649029+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_b524bba6c3c7",
@@ -90100,7 +90167,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "UKaGDZd0jcmHS/Bul4zho6YuEmvmI5KOusxVmN5Y9B8pqQEhuCiIfi5sTXDJkPphQOgvVodyQEkDDhhJGeujwD/E6JGXVlaR+suFFUM=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T09:59:23.934533+00:00"
+        "created_at": "2026-09-21T09:59:23.934533+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_c509666c7806",
@@ -90110,7 +90178,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "LgKWrz2j4AA50jMW7pwB4XfwTT2wlINY/fx98XmjWnqowirky/7JeK5CMbDYPNYvWESm",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T10:08:35.495596+00:00"
+        "created_at": "2026-09-21T10:08:35.495596+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_0a2ef79664c7",
@@ -90120,7 +90189,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "i9k79dTtH2mZa2qG5L0CDwWskQsNsVT2UgPitSARtocZ1Bi8Ikkgs4TYQL9tojFYs0lvRRjNAgAdwRhoSRzpY/QRhSFOSDqr2Zv68n4=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T10:08:40.023140+00:00"
+        "created_at": "2026-09-21T10:08:40.023140+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_0a84bcf9faf0",
@@ -90130,7 +90200,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "7BtwrsT1TfbQCNrhCOg67oeDj84AJ4ITKLABag70OaNUl+X/XOFnPSXcJCGWmoAKiqti",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T10:09:25.768915+00:00"
+        "created_at": "2026-09-21T10:09:25.768915+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_3f171cc991d8",
@@ -90140,7 +90211,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "Ed5Nb6yGE3HKjcdwYwmVszt5BJmN/j8VOAdp8KReNCxnXEY7fTjLgou/BigoUZ68CnFS+2+CgHEXMyj/mt88xbeWVji/NCCH8jXfNbE=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T10:09:30.095169+00:00"
+        "created_at": "2026-09-21T10:09:30.095169+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_a14bab32427a",
@@ -90150,7 +90222,8 @@
         "channel_name": "Test Poller Channel",
         "encrypted_token": "551f4/DXIIBtO1hPUvm+ysrZmNS0z6AAULmWt60FmaTf9q9iQGOcCQKylNOAHc2DPhAh",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T10:33:47.025893+00:00"
+        "created_at": "2026-09-21T10:33:47.025893+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_7f8b1aa1bffb",
@@ -90160,7 +90233,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "OlrO8XjWlkpJpSf4i/7eS4qPxwSaewlJnXGtVOY6bH3alVn+IiY7Y1y1nxrMun9Z3T0q1Eyx6m0nAkXlc7KEIt8xvx2sMNEfAjbW290=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T10:33:51.497306+00:00"
+        "created_at": "2026-09-21T10:33:51.497306+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_fd1d98ac8566",
@@ -90170,7 +90244,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "xVnERAfJtY8IFrf9jdpcslr/S6lBPKdT5haomPym329cDOBTpGX+qkWBSxufNN8Cvne4PYBMbD9txqxuE0NJ3qhoB96f01W4hA4u/pg=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T17:43:25.303723+00:00"
+        "created_at": "2026-09-21T17:43:25.303723+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "cred_1ee70ac378af",
@@ -90180,7 +90255,8 @@
         "channel_name": "Alice True Crime Stories",
         "encrypted_token": "vugSfCJk2Wz2WLZYuj6HqrEkg/tR87vBxqmRFFkAOlDpyjMvKtKKpNF5a6ywG1DVhqQBPHfNKw6lTB9UvV4C9wv6Zt3JYM2l/9owEtY=",
         "token_metadata": "{}",
-        "created_at": "2026-09-21T18:02:47.230838+00:00"
+        "created_at": "2026-09-21T18:02:47.230838+00:00",
+        "user_id": "admin_abhay"
       }
     ],
     "platform_accounts": [
@@ -98021,7 +98097,7 @@
         "created_ts": "2026-09-12T21:01:51+00:00",
         "tour_completed": 1,
         "full_name": "Abhay Maurya (Founder & Admin)",
-        "is_onboarded": 0,
+        "is_onboarded": 1,
         "preferences_json": "{}",
         "created_at": null
       },
@@ -98205,9 +98281,9 @@
         "id": 15,
         "user_id": "abhay_maurya_d1ed3d",
         "email": "shivpuran2803@gmail.com",
-        "password_hash": "123456",
+        "password_hash": "pbkdf2_sha256$d94459b12d7eb9e3c516d8c52af317b0$5b0b22d9f9a5416cdfd2f10c25a2e13c63929557a7c57eda6434753bc51a5367",
         "name": "Abhay Maurya",
-        "role": "creator",
+        "role": "admin",
         "tier": "starter",
         "credits": 100,
         "created_ts": "2026-09-20T09:44:07+00:00",
@@ -99784,6 +99860,22 @@
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T18:02:46.396629+00:00"
+      },
+      {
+        "id": 114,
+        "user_id": "usr_test_user_b",
+        "email": "user_b@autopilot.ai",
+        "password_hash": "$2b$12$userbhashedpasswordplaceholder",
+        "name": "Test Creator B",
+        "role": "creator",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-03-09",
+        "tour_completed": 0,
+        "full_name": null,
+        "is_onboarded": 1,
+        "preferences_json": "{}",
+        "created_at": null
       }
     ],
     "discord_connections": [],
@@ -99796,7 +99888,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:24:35.013882+00:00"
+        "created_at": "2026-09-20T15:24:35.013882+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_f1b5ab208965",
@@ -99806,7 +99899,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:24:35.194802+00:00"
+        "created_at": "2026-09-20T15:24:35.194802+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_1541b9c2925a",
@@ -99816,7 +99910,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:26:29.198741+00:00"
+        "created_at": "2026-09-20T15:26:29.198741+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_55d235adbc47",
@@ -99826,7 +99921,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:26:29.518689+00:00"
+        "created_at": "2026-09-20T15:26:29.518689+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_812328dd0e09",
@@ -99836,7 +99932,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:27:42.171092+00:00"
+        "created_at": "2026-09-20T15:27:42.171092+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_cf6e7b813e8e",
@@ -99846,7 +99943,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:27:42.615444+00:00"
+        "created_at": "2026-09-20T15:27:42.615444+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_9527a90e6486",
@@ -99856,7 +99954,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:28:07.607868+00:00"
+        "created_at": "2026-09-20T15:28:07.607868+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_1524af63e522",
@@ -99866,7 +99965,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:28:07.799669+00:00"
+        "created_at": "2026-09-20T15:28:07.799669+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_7dbbaa77c1a4",
@@ -99876,7 +99976,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:30:28.856138+00:00"
+        "created_at": "2026-09-20T15:30:28.856138+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_cc545f645b3f",
@@ -99886,7 +99987,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:30:29.182471+00:00"
+        "created_at": "2026-09-20T15:30:29.182471+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_d169aa29c081",
@@ -99896,7 +99998,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:31:20.809356+00:00"
+        "created_at": "2026-09-20T15:31:20.809356+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_9a99871769e0",
@@ -99906,7 +100009,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:31:21.012379+00:00"
+        "created_at": "2026-09-20T15:31:21.012379+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_d5c4870d9ea5",
@@ -99916,7 +100020,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:31:47.280719+00:00"
+        "created_at": "2026-09-20T15:31:47.280719+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_30266b8fda53",
@@ -99926,7 +100031,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:31:47.477524+00:00"
+        "created_at": "2026-09-20T15:31:47.477524+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_2172d6c41876",
@@ -99936,7 +100042,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:33:04.997101+00:00"
+        "created_at": "2026-09-20T15:33:04.997101+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_10c1d521b1f2",
@@ -99946,7 +100053,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:33:05.338619+00:00"
+        "created_at": "2026-09-20T15:33:05.338619+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_7c12b2743803",
@@ -99956,7 +100064,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:33:39.286189+00:00"
+        "created_at": "2026-09-20T15:33:39.286189+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_b1db043038d9",
@@ -99966,7 +100075,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:33:39.545262+00:00"
+        "created_at": "2026-09-20T15:33:39.545262+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_efe95ebb4330",
@@ -99976,7 +100086,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:33:58.495453+00:00"
+        "created_at": "2026-09-20T15:33:58.495453+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_0ac6e4e819e0",
@@ -99986,7 +100097,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:33:58.832928+00:00"
+        "created_at": "2026-09-20T15:33:58.832928+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_2b235c22e1dc",
@@ -99996,7 +100108,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:34:59.331114+00:00"
+        "created_at": "2026-09-20T15:34:59.331114+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_c5c99793c63d",
@@ -100006,7 +100119,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:34:59.575877+00:00"
+        "created_at": "2026-09-20T15:34:59.575877+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_22256f62b75f",
@@ -100016,7 +100130,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:35:27.723421+00:00"
+        "created_at": "2026-09-20T15:35:27.723421+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_3ec32739dc66",
@@ -100026,7 +100141,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:35:28.093949+00:00"
+        "created_at": "2026-09-20T15:35:28.093949+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_6588b63ae8e5",
@@ -100036,7 +100152,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:35:53.878128+00:00"
+        "created_at": "2026-09-20T15:35:53.878128+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_d94aae7471b2",
@@ -100046,7 +100163,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:35:54.108541+00:00"
+        "created_at": "2026-09-20T15:35:54.108541+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_fa1830feda14",
@@ -100056,7 +100174,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:37:30.375376+00:00"
+        "created_at": "2026-09-20T15:37:30.375376+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_7d91a429261f",
@@ -100066,7 +100185,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:37:30.618370+00:00"
+        "created_at": "2026-09-20T15:37:30.618370+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_f7f7bd81cf53",
@@ -100076,7 +100196,8 @@
         "genre": "Tech / AI",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T15:42:08.668299+00:00"
+        "created_at": "2026-09-20T15:42:08.668299+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_e71b7fd403b3",
@@ -100086,7 +100207,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T17:53:36.165536+00:00"
+        "created_at": "2026-09-20T17:53:36.165536+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_944d72114edf",
@@ -100096,7 +100218,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T17:53:36.399975+00:00"
+        "created_at": "2026-09-20T17:53:36.399975+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_81bf2eed2c5d",
@@ -100106,7 +100229,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T18:00:08.377247+00:00"
+        "created_at": "2026-09-20T18:00:08.377247+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_58691dc47dcb",
@@ -100116,7 +100240,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-20T18:00:08.615605+00:00"
+        "created_at": "2026-09-20T18:00:08.615605+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_f90c056f92fc",
@@ -100126,7 +100251,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:16:39.562340+00:00"
+        "created_at": "2026-09-21T09:16:39.562340+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_2e5b0c096107",
@@ -100136,7 +100262,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:16:39.802173+00:00"
+        "created_at": "2026-09-21T09:16:39.802173+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_eb6d9b45bdd8",
@@ -100146,7 +100273,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:19:56.240242+00:00"
+        "created_at": "2026-09-21T09:19:56.240242+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_3e8f061822a8",
@@ -100156,7 +100284,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:19:56.469276+00:00"
+        "created_at": "2026-09-21T09:19:56.469276+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_5f3b682fc1d1",
@@ -100166,7 +100295,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:29:11.984286+00:00"
+        "created_at": "2026-09-21T09:29:11.984286+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_883bc19a8030",
@@ -100176,7 +100306,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:29:12.179781+00:00"
+        "created_at": "2026-09-21T09:29:12.179781+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_672ad87ca8e1",
@@ -100186,7 +100317,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:31:42.775621+00:00"
+        "created_at": "2026-09-21T09:31:42.775621+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_567f3fb92419",
@@ -100196,7 +100328,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:31:42.966387+00:00"
+        "created_at": "2026-09-21T09:31:42.966387+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_e359a35cca6f",
@@ -100206,7 +100339,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:51:01.551543+00:00"
+        "created_at": "2026-09-21T09:51:01.551543+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_2959b8ed9191",
@@ -100216,7 +100350,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:51:01.725170+00:00"
+        "created_at": "2026-09-21T09:51:01.725170+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_0b1be3d0faca",
@@ -100226,7 +100361,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:55:18.314215+00:00"
+        "created_at": "2026-09-21T09:55:18.314215+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_2f523b3bc36f",
@@ -100236,7 +100372,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:55:18.498669+00:00"
+        "created_at": "2026-09-21T09:55:18.498669+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_cef9e9d67031",
@@ -100246,7 +100383,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:56:28.827330+00:00"
+        "created_at": "2026-09-21T09:56:28.827330+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_9b7be9c93665",
@@ -100256,7 +100394,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:56:29.022471+00:00"
+        "created_at": "2026-09-21T09:56:29.022471+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_57c7b737e4a4",
@@ -100266,7 +100405,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:56:58.980940+00:00"
+        "created_at": "2026-09-21T09:56:58.980940+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_a3f76aa973a2",
@@ -100276,7 +100416,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:56:59.157995+00:00"
+        "created_at": "2026-09-21T09:56:59.157995+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_06285c339bd2",
@@ -100286,7 +100427,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:59:24.859866+00:00"
+        "created_at": "2026-09-21T09:59:24.859866+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_d03d4fa24746",
@@ -100296,7 +100438,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T09:59:25.075011+00:00"
+        "created_at": "2026-09-21T09:59:25.075011+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_c18406810675",
@@ -100306,7 +100449,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T10:08:41.051399+00:00"
+        "created_at": "2026-09-21T10:08:41.051399+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_6cb9b1679b25",
@@ -100316,7 +100460,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T10:08:41.243448+00:00"
+        "created_at": "2026-09-21T10:08:41.243448+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_83f7dfb4214f",
@@ -100326,7 +100471,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T10:09:31.084318+00:00"
+        "created_at": "2026-09-21T10:09:31.084318+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_7558677fdf84",
@@ -100336,7 +100482,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T10:09:31.262972+00:00"
+        "created_at": "2026-09-21T10:09:31.262972+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_bb6ffa597500",
@@ -100346,7 +100493,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T10:33:52.578468+00:00"
+        "created_at": "2026-09-21T10:33:52.578468+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_4858a0a0ff85",
@@ -100356,7 +100504,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T10:33:52.768978+00:00"
+        "created_at": "2026-09-21T10:33:52.768978+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_3ee626869695",
@@ -100366,7 +100515,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T17:43:24.734320+00:00"
+        "created_at": "2026-09-21T17:43:24.734320+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_c6f17c4809ff",
@@ -100376,7 +100526,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T17:43:24.864004+00:00"
+        "created_at": "2026-09-21T17:43:24.864004+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_ed6e8e9f3ff4",
@@ -100386,7 +100537,8 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T18:02:46.541939+00:00"
+        "created_at": "2026-09-21T18:02:46.541939+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ser_379872dbd407",
@@ -100396,7 +100548,184 @@
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T18:02:46.765322+00:00"
+        "created_at": "2026-09-21T18:02:46.765322+00:00",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_512dc6fe00dc",
+        "workspace_id": "ws_admin_abhay",
+        "title": "Case",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_4f1222776d71",
+        "workspace_id": "ws_admin_abhay",
+        "title": "Series 1: Kaal-Rekha",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_0cefdd2d803b",
+        "workspace_id": "ws_admin_abhay",
+        "title": "Series 2: Jab Pyaar Online Tha",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_7926d0fa1f2a",
+        "workspace_id": "ws_admin_abhay",
+        "title": "Series 3: Chintu Ki Jadui Duniya",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_824f005d7eee",
+        "workspace_id": "ws_admin_abhay",
+        "title": "Series 4: Dimag Ka Dahi",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_73a2fac90f9a",
+        "workspace_id": "ws_admin_abhay",
+        "title": "SERIES_1",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_33da2261658a",
+        "workspace_id": "ws_admin_abhay",
+        "title": "SERIES_5",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_bc2fbb6b6fce",
+        "workspace_id": "ws_admin_abhay",
+        "title": "SERIES_2",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_33526d9aa179",
+        "workspace_id": "ws_admin_abhay",
+        "title": "SERIES_3",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_d881ddcfdfca",
+        "workspace_id": "ws_admin_abhay",
+        "title": "SERIES_4",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_79b0c02a3007",
+        "workspace_id": "ws_admin_abhay",
+        "title": "THE OBSERVER FILES",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_a7cd04a077bf",
+        "workspace_id": "ws_admin_abhay",
+        "title": "SERIES_6",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_ed8efab95b15",
+        "workspace_id": "ws_admin_abhay",
+        "title": "SERIES_7",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_26cae0f3a422",
+        "workspace_id": "ws_admin_abhay",
+        "title": "SOLO_LEVELING_RAGNAROK",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_64023cdb9ca4",
+        "workspace_id": "ws_admin_abhay",
+        "title": "solo_leveling_ragnarok",
+        "description": "Official franchise series produced by Autopilot.",
+        "genre": "action_thriller",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T23:47:36Z",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ser_65f28142737a",
+        "workspace_id": "ws_usr_test_user_b",
+        "title": "User B Solo Anime",
+        "description": "Independent franchise for User B",
+        "genre": "mystery",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-09-21T18:31:00.110015+00:00",
+        "user_id": "usr_test_user_b"
       }
     ],
     "episodes": [
@@ -100412,7 +100741,8 @@
         "script_json": "{\"topic\": \"Jab Pyaar Online Tha \\u2014 Episode 1\", \"hook_type\": \"pov\", \"target_length_sec\": 60, \"title\": \"Jab Pyaar Online Tha Ep 1 | The Mysterious DM\", \"hook_text_overlay\": \"Ep 1: Ek DM ne sab badal diya!\", \"hook_visual\": \"cinematic macro shot of a phone screen glowing in a dark room with a dangerous DM notification\", \"comment_bait\": \"Aapko kya lagta hai Aarav ko DM karne wali yeh mysterious ladki kaun hai aur wo uske baare mein itna sab kaise jaanti hai? Apni theory comment karein!\", \"caption\": \"Jab Pyaar Online Tha Episode 1: Ek \\u0905\\u0928\\u091c\\u093e\\u0928 DM aur ek gehra raaz! Agla episode jald hi. Like & Comment for Ep 2!\", \"cast\": {\"narrator\": {\"gender\": \"female\", \"persona\": \"dramatic web series narrator\"}, \"char_a\": {\"name\": \"Aarav\", \"gender\": \"male\", \"persona\": \"anxious, shocked\"}}, \"lines\": [{\"speaker\": \"narrator\", \"text\": \"Episode 1 mein sab badal gaya, jab ek shaam Aarav ke phone par ek aise unknown account se DM aaya jissne uski raaton ki neend uda di!\", \"emotion\": \"urgent\", \"role\": \"hook\"}, {\"speaker\": \"char_a\", \"text\": \"Yeh kaun hai? Isne meri 3 saal purani secretive photo kyun bheji hai... aur niche likha hai 'I know what you did'?\", \"emotion\": \"panicked\", \"role\": \"body\"}, {\"speaker\": \"narrator\", \"text\": \"Aarav ne ise koi prank samajhkar ignore karna chaha, lekin thik 5 second baad ek aur message aaya.\", \"emotion\": \"neutral\", \"role\": \"body\"}, {\"speaker\": \"char_a\", \"text\": \"Wait... 'Pardey mat girao Aarav, tum abhi apne bedroom ki window ke paas khade ho'? What the hell! Yeh ladki mujhe live dekh rahi hai?!\", \"emotion\": \"neutral\", \"role\": \"twist\"}, {\"speaker\": \"narrator\", \"text\": \"Yeh koi aam stalker nahi thi, balki wo mysterious ladki thi jo Aarav ke sabse gehre raaz se waqif thi.\", \"emotion\": \"serious\", \"role\": \"reveal\"}, {\"speaker\": \"char_a\", \"text\": \"Tum kaun ho aur chahti kya ho mere se?! Tumhe mera naam kaise pata?!\", \"emotion\": \"neutral\", \"role\": \"cliffhanger\"}, {\"speaker\": \"narrator\", \"text\": \"Kya yeh online pyaar ki shuruaat hai ya kisi khatarnak trap ki? Next episode dekhne ke liye comment karein!\", \"emotion\": \"urgent\", \"role\": \"ending\"}], \"hook_line\": \"Episode 1 mein sab badal gaya, jab ek shaam Aarav ke phone par ek aise unknown account se DM aaya jissne uski raaton ki neend uda di!\", \"body\": [\"Yeh kaun hai? Isne meri 3 saal purani secretive photo kyun bheji hai... aur niche likha hai 'I know what you did'?\", \"Aarav ne ise koi prank samajhkar ignore karna chaha, lekin thik 5 second baad ek aur message aaya.\", \"Wait... 'Pardey mat girao Aarav, tum abhi apne bedroom ki window ke paas khade ho'? What the hell! Yeh ladki mujhe live dekh rahi hai?!\", \"Yeh koi aam stalker nahi thi, balki wo mysterious ladki thi jo Aarav ke sabse gehre raaz se waqif thi.\", \"Tum kaun ho aur chahti kya ho mere se?! Tumhe mera naam kaise pata?!\"], \"ending\": \"Kya yeh online pyaar ki shuruaat hai ya kisi khatarnak trap ki? Next episode dekhne ke liye comment karein!\", \"hashtags\": [\"#jabpyaaronlinetha\", \"#webseries\", \"#thriller\"], \"warnings\": [\"Hook line 1.5s mein nahi bol\\u0456 ja sakegi \\u2014 chhoti karo\"], \"word_count\": 145, \"est_sec\": 55.8}",
         "status": "rendering",
         "video_id": "vid_ae4fd506bce9",
-        "created_at": "2026-09-20T15:26:47.077174+00:00"
+        "created_at": "2026-09-20T15:26:47.077174+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_b3ec89e27b7c",
@@ -100426,7 +100756,8 @@
         "script_json": "{\"topic\": \"Jab Pyaar Online Tha \\u2014 Episode 2\", \"hook_type\": \"pov\", \"target_length_sec\": 60, \"title\": \"Jab Pyaar Online Tha Ep 2 | Dark Secret Revealed\", \"hook_text_overlay\": \"Ep 2: Episode 2 mein sab badal gaya...\", \"hook_visual\": \"Cinematic dark room, glowing phone screen showing haunting text message with high tension macro shot\", \"comment_bait\": \"Aapko kya lagta hai, kya Meera sach mein zinda hai ya ye kisi ki saazish hai? Apni theory comment mein batayein!\", \"caption\": \"Jab Pyaar Online Tha - Episode 2. Meera knows everything! Next episode dekhne ke liye comment karein!\", \"cast\": {\"narrator\": {\"gender\": \"male\", \"persona\": \"dramatic suspense narrator\"}, \"char_a\": {\"name\": \"Meera\", \"gender\": \"female\", \"persona\": \"mysterious, cold, vengeful\"}}, \"lines\": [{\"speaker\": \"narrator\", \"text\": \"Episode 2 mein sab badal gaya! Jise Aarav sirf ek pyaari online dost samajh raha tha, usne ek aisa message bheja jisse Aarav ke hosh ud gaye.\", \"emotion\": \"urgent\", \"role\": \"hook\"}, {\"speaker\": \"char_a\", \"text\": \"Aarav, tumhein laga tum 3 saal purana wo kaala raaz chhupa loge? Mujhe pata hai us raat tumne kya kiya tha.\", \"emotion\": \"neutral\", \"role\": \"body\"}, {\"speaker\": \"narrator\", \"text\": \"Aarav ki saansein tham gayi! Wo anjaan ladki Aarav ka sabse gehra dard aur dark past achhe se jaanti thi.\", \"emotion\": \"neutral\", \"role\": \"body\"}, {\"speaker\": \"char_a\", \"text\": \"Agar chahte ho ki tumhara sach duniya ke samne na aaye, toh wahi karo jo main kehti hoon.\", \"emotion\": \"neutral\", \"role\": \"reveal\"}, {\"speaker\": \"narrator\", \"text\": \"Lekin sabse bada jhatka toh tab laga jab Aarav ne uski profile dhyan se dekhi... ye wahi ladki thi jiski us accident mein maut ho chuki thi!\", \"emotion\": \"neutral\", \"role\": \"reveal\"}, {\"speaker\": \"narrator\", \"text\": \"Kya Meera zinda hai ya koi aur Aarav se badla le raha hai? Next episode dekhne ke liye comment karein!\", \"emotion\": \"urgent\", \"role\": \"ending\"}], \"hook_line\": \"Episode 2 mein sab badal gaya! Jise Aarav sirf ek pyaari online dost samajh raha tha, usne ek aisa message bheja jisse Aarav ke hosh ud gaye.\", \"body\": [\"Aarav, tumhein laga tum 3 saal purana wo kaala raaz chhupa loge? Mujhe pata hai us raat tumne kya kiya tha.\", \"Aarav ki saansein tham gayi! Wo anjaan ladki Aarav ka sabse gehra dard aur dark past achhe se jaanti thi.\", \"Agar chahte ho ki tumhara sach duniya ke samne na aaye, toh wahi karo jo main kehti hoon.\", \"Lekin sabse bada jhatka toh tab laga jab Aarav ne uski profile dhyan se dekhi... ye wahi ladki thi jiski us accident mein maut ho chuki thi!\"], \"ending\": \"Kya Meera zinda hai ya koi aur Aarav se badla le raha hai? Next episode dekhne ke liye comment karein!\", \"hashtags\": [\"#jabpyaaronlinetha\", \"#webseries\", \"#cliffhanger\"], \"warnings\": [\"Hook line 1.5s mein nahi bol\\u0456 ja sakegi \\u2014 chhoti karo\"], \"word_count\": 133, \"est_sec\": 51.2}",
         "status": "rendering",
         "video_id": "vid_b77752b201c4",
-        "created_at": "2026-09-20T15:27:00.483169+00:00"
+        "created_at": "2026-09-20T15:27:00.483169+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_99fbaf7c006a",
@@ -100440,7 +100771,8 @@
         "script_json": "{\"topic\": \"Jab Pyaar Online Tha \\u2014 Episode 1\", \"hook_type\": \"pov\", \"target_length_sec\": 60, \"title\": \"Jab Pyaar Online Tha Ep 1 | The Mysterious DM\", \"hook_text_overlay\": \"Ep 1: Ek DM ne sab badal diya!\", \"hook_visual\": \"Cinematic suspense macro shot of a dark room, glowing phone screen reflecting shock on protagonist's face\", \"comment_bait\": \"Aapke hisaab se Aarav ko DM bhejne wali ladki kaun ho sakti hai? Apni theory kam se kam 3 words mein comment karein!\", \"caption\": \"Jab Pyaar Online Tha Episode 1! Ek raat, ek mysterious DM aur sab khatam... Next part ke liye abhi comment karein! \\ud83d\\udcf1\\ud83d\\ude31\", \"cast\": {\"narrator\": {\"gender\": \"female\", \"persona\": \"dramatic thriller web series narrator\"}, \"char_a\": {\"name\": \"Aarav\", \"gender\": \"male\", \"persona\": \"shocked, anxious protagonist\"}}, \"lines\": [{\"speaker\": \"narrator\", \"text\": \"Episode 1 mein sab badal gaya... jab raat ke 12 baje Aarav ke phone par ek aisa DM aaya jisne uski neend uda di!\", \"emotion\": \"urgent\", \"role\": \"hook\"}, {\"speaker\": \"char_a\", \"text\": \"Yeh... yeh profile pic mere teen saal purane accident ki kaise ho sakti hai? Aur yeh mysterious ladki keh rahi hai ki main akele nahi hoon room mein?\", \"emotion\": \"neutral\", \"role\": \"body\"}, {\"speaker\": \"narrator\", \"text\": \"Aarav ne socha koi prank hai, par agle hi second uske room ki lights off ho gayi aur phone par ek audio note aaya.\", \"emotion\": \"neutral\", \"role\": \"body\"}, {\"speaker\": \"char_a\", \"text\": \"Wait! Audio note ke background mein mere hi saans lene ki aawaaz hai... Yeh audio 10 second pehle isi kamre mein record hua hai!\", \"emotion\": \"panicked\", \"role\": \"twist\"}, {\"speaker\": \"narrator\", \"text\": \"Aarav ne peeche dekha toh chat par agla message aaya\\u2014'Main tumhare theek peeche khadi hoon'.\", \"emotion\": \"neutral\", \"role\": \"reveal\"}, {\"speaker\": \"narrator\", \"text\": \"Kya yeh mysterious ladki koi bhoot hai ya Aarav ke past ka koi khatarnak raaz? Next episode dekhne ke liye comment karein!\", \"emotion\": \"serious\", \"role\": \"ending\"}], \"hook_line\": \"Episode 1 mein sab badal gaya... jab raat ke 12 baje Aarav ke phone par ek aisa DM aaya jisne uski neend uda di!\", \"body\": [\"Yeh... yeh profile pic mere teen saal purane accident ki kaise ho sakti hai? Aur yeh mysterious ladki keh rahi hai ki main akele nahi hoon room mein?\", \"Aarav ne socha koi prank hai, par agle hi second uske room ki lights off ho gayi aur phone par ek audio note aaya.\", \"Wait! Audio note ke background mein mere hi saans lene ki aawaaz hai... Yeh audio 10 second pehle isi kamre mein record hua hai!\", \"Aarav ne peeche dekha toh chat par agla message aaya\\u2014'Main tumhare theek peeche khadi hoon'.\"], \"ending\": \"Kya yeh mysterious ladki koi bhoot hai ya Aarav ke past ka koi khatarnak raaz? Next episode dekhne ke liye comment karein!\", \"hashtags\": [\"#jabpyaaronlinetha\", \"#webseries\", \"#thriller\"], \"warnings\": [\"Hook line 1.5s mein nahi bol\\u0456 ja sakegi \\u2014 chhoti karo\"], \"word_count\": 137, \"est_sec\": 52.7}",
         "status": "rendering",
         "video_id": null,
-        "created_at": "2026-09-20T15:27:56.523183+00:00"
+        "created_at": "2026-09-20T15:27:56.523183+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_0ad8f78d05ac",
@@ -100454,7 +100786,8 @@
         "script_json": "{\"topic\": \"Jab Pyaar Online Tha \\u2014 Episode 1\", \"hook_type\": \"pov\", \"target_length_sec\": 60, \"title\": \"Jab Pyaar Online Tha \\u2014 Episode 1\", \"hook_text_overlay\": \"Sach ab tak chhupa hai\", \"hook_visual\": \"close-up of a locked door, harsh shadow\", \"comment_bait\": \"Tumhe kya lagta hai iska asli reason kya tha? Detail mein batao.\", \"caption\": \"Jab Pyaar Online Tha \\u2014 Episode 1\", \"cast\": {\"narrator\": {\"gender\": \"male\", \"persona\": \"gambhir crime-doc narrator, dheemi awaaz\"}}, \"lines\": [{\"speaker\": \"narrator\", \"text\": \"Jab Pyaar Online Tha \\u2014 Episode 1 \\u2014 sach kuch aur hai.\", \"emotion\": \"curious\", \"role\": \"hook\"}, {\"speaker\": \"narrator\", \"text\": \"Us raat kya hua, koi nahi jaanta.\", \"emotion\": \"serious\", \"role\": \"body\"}, {\"speaker\": \"narrator\", \"text\": \"Jo saboot mile, wo ulta sawaal khada karte the.\", \"emotion\": \"serious\", \"role\": \"body\"}, {\"speaker\": \"narrator\", \"text\": \"Aur jawab aaj tak nahi mila.\", \"emotion\": \"serious\", \"role\": \"ending\"}], \"hook_line\": \"Jab Pyaar Online Tha \\u2014 Episode 1 \\u2014 sach kuch aur hai.\", \"body\": [\"Us raat kya hua, koi nahi jaanta.\", \"Jo saboot mile, wo ulta sawaal khada karte the.\"], \"ending\": \"Aur jawab aaj tak nahi mila.\", \"hashtags\": [\"#unsolvedmystery\", \"#suspense\", \"#storytime\"], \"warnings\": [\"Script chhoti hai (~13s vs target 60s)\"], \"word_count\": 34, \"est_sec\": 13.1}",
         "status": "rendering",
         "video_id": "vid_f01008adf930",
-        "created_at": "2026-09-20T15:28:33.881977+00:00"
+        "created_at": "2026-09-20T15:28:33.881977+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_2cad8edad254",
@@ -100468,7 +100801,8 @@
         "script_json": "{\"topic\": \"Jab Pyaar Online Tha \\u2014 Episode 2\", \"hook_type\": \"pov\", \"target_length_sec\": 60, \"title\": \"Jab Pyaar Online Tha \\u2014 Episode 2\", \"hook_text_overlay\": \"Sach ab tak chhupa hai\", \"hook_visual\": \"close-up of a locked door, harsh shadow\", \"comment_bait\": \"Tumhe kya lagta hai iska asli reason kya tha? Detail mein batao.\", \"caption\": \"Jab Pyaar Online Tha \\u2014 Episode 2\", \"cast\": {\"narrator\": {\"gender\": \"male\", \"persona\": \"gambhir crime-doc narrator, dheemi awaaz\"}}, \"lines\": [{\"speaker\": \"narrator\", \"text\": \"Jab Pyaar Online Tha \\u2014 Episode 2 \\u2014 sach kuch aur hai.\", \"emotion\": \"curious\", \"role\": \"hook\"}, {\"speaker\": \"narrator\", \"text\": \"Us raat kya hua, koi nahi jaanta.\", \"emotion\": \"serious\", \"role\": \"body\"}, {\"speaker\": \"narrator\", \"text\": \"Jo saboot mile, wo ulta sawaal khada karte the.\", \"emotion\": \"serious\", \"role\": \"body\"}, {\"speaker\": \"narrator\", \"text\": \"Aur jawab aaj tak nahi mila.\", \"emotion\": \"serious\", \"role\": \"ending\"}], \"hook_line\": \"Jab Pyaar Online Tha \\u2014 Episode 2 \\u2014 sach kuch aur hai.\", \"body\": [\"Us raat kya hua, koi nahi jaanta.\", \"Jo saboot mile, wo ulta sawaal khada karte the.\"], \"ending\": \"Aur jawab aaj tak nahi mila.\", \"hashtags\": [\"#unsolvedmystery\", \"#suspense\", \"#storytime\"], \"warnings\": [\"Script chhoti hai (~13s vs target 60s)\"], \"word_count\": 34, \"est_sec\": 13.1}",
         "status": "rendering",
         "video_id": "vid_abaa1ac5623e",
-        "created_at": "2026-09-20T15:29:09.861827+00:00"
+        "created_at": "2026-09-20T15:29:09.861827+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_784aeb5cb72f",
@@ -100482,7 +100816,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_f82cc8fae27f",
-        "created_at": "2026-09-20T15:31:21.044245+00:00"
+        "created_at": "2026-09-20T15:31:21.044245+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_c81a4b851fa1",
@@ -100496,7 +100831,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_0d60188a2557",
-        "created_at": "2026-09-20T15:31:21.121029+00:00"
+        "created_at": "2026-09-20T15:31:21.121029+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_71def48f2dee",
@@ -100510,7 +100846,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_6599cd39335b",
-        "created_at": "2026-09-20T15:31:23.762662+00:00"
+        "created_at": "2026-09-20T15:31:23.762662+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_ba78287e6587",
@@ -100524,7 +100861,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_e683a12db8d7",
-        "created_at": "2026-09-20T15:31:47.511605+00:00"
+        "created_at": "2026-09-20T15:31:47.511605+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_6e3fe57ded05",
@@ -100538,7 +100876,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_e958aad00296",
-        "created_at": "2026-09-20T15:31:47.585751+00:00"
+        "created_at": "2026-09-20T15:31:47.585751+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_9e471e51a951",
@@ -100552,7 +100891,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_70530a7b3b56",
-        "created_at": "2026-09-20T15:31:51.264902+00:00"
+        "created_at": "2026-09-20T15:31:51.264902+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_123cbc08e6d4",
@@ -100566,7 +100906,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_623e129c2f7d",
-        "created_at": "2026-09-20T15:33:05.386798+00:00"
+        "created_at": "2026-09-20T15:33:05.386798+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_45aab180bf0b",
@@ -100580,7 +100921,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_40bfa895b40b",
-        "created_at": "2026-09-20T15:33:05.493650+00:00"
+        "created_at": "2026-09-20T15:33:05.493650+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_547157f9d05a",
@@ -100594,7 +100936,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_411236114635",
-        "created_at": "2026-09-20T15:33:39.580554+00:00"
+        "created_at": "2026-09-20T15:33:39.580554+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_594f09060075",
@@ -100608,7 +100951,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_0053476f0e63",
-        "created_at": "2026-09-20T15:33:39.686176+00:00"
+        "created_at": "2026-09-20T15:33:39.686176+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_e0e596fea121",
@@ -100622,7 +100966,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_cf3d0b2595fa",
-        "created_at": "2026-09-20T15:33:58.881009+00:00"
+        "created_at": "2026-09-20T15:33:58.881009+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_5b487ca0cb08",
@@ -100636,7 +100981,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_9e88833c0d65",
-        "created_at": "2026-09-20T15:33:58.986178+00:00"
+        "created_at": "2026-09-20T15:33:58.986178+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_a8e9539d0d33",
@@ -100650,7 +100996,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_2e6923f8b144",
-        "created_at": "2026-09-20T15:34:59.611474+00:00"
+        "created_at": "2026-09-20T15:34:59.611474+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_546652189afc",
@@ -100664,7 +101011,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_5b2f2270618c",
-        "created_at": "2026-09-20T15:34:59.688651+00:00"
+        "created_at": "2026-09-20T15:34:59.688651+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_9a410ad79152",
@@ -100678,7 +101026,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_a563fa4ce623",
-        "created_at": "2026-09-20T15:35:28.129121+00:00"
+        "created_at": "2026-09-20T15:35:28.129121+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_73c163b79b08",
@@ -100692,7 +101041,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_8025a3a178fb",
-        "created_at": "2026-09-20T15:35:28.210168+00:00"
+        "created_at": "2026-09-20T15:35:28.210168+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_924c4261e30a",
@@ -100706,7 +101056,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_2b3daf1fd3ba",
-        "created_at": "2026-09-20T15:35:54.147972+00:00"
+        "created_at": "2026-09-20T15:35:54.147972+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_f002956075f2",
@@ -100720,7 +101071,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_a1b9b60d3387",
-        "created_at": "2026-09-20T15:35:54.231504+00:00"
+        "created_at": "2026-09-20T15:35:54.231504+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_f5cfe9efd256",
@@ -100734,7 +101086,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_35693b46ba48",
-        "created_at": "2026-09-20T15:37:30.657333+00:00"
+        "created_at": "2026-09-20T15:37:30.657333+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_59d4843741bf",
@@ -100748,7 +101101,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_11db07a3607b",
-        "created_at": "2026-09-20T15:37:30.750264+00:00"
+        "created_at": "2026-09-20T15:37:30.750264+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_807759b843ed",
@@ -100762,7 +101116,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_88a4f963b9fb",
-        "created_at": "2026-09-20T17:53:36.434084+00:00"
+        "created_at": "2026-09-20T17:53:36.434084+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_a54fd43a3e4c",
@@ -100776,7 +101131,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_4a344a5005e0",
-        "created_at": "2026-09-20T17:53:36.516109+00:00"
+        "created_at": "2026-09-20T17:53:36.516109+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_ef322c491d4c",
@@ -100790,7 +101146,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_11a56b5b1ccb",
-        "created_at": "2026-09-20T18:00:08.644782+00:00"
+        "created_at": "2026-09-20T18:00:08.644782+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_e9f57ae54ca2",
@@ -100804,7 +101161,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_f68c9a363b8a",
-        "created_at": "2026-09-20T18:00:08.717149+00:00"
+        "created_at": "2026-09-20T18:00:08.717149+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_1c93022c5064",
@@ -100818,7 +101176,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_922fe0b677da",
-        "created_at": "2026-09-21T09:16:39.832774+00:00"
+        "created_at": "2026-09-21T09:16:39.832774+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_9f023f5fef3f",
@@ -100832,7 +101191,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_0dcb4f87088b",
-        "created_at": "2026-09-21T09:16:39.911298+00:00"
+        "created_at": "2026-09-21T09:16:39.911298+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_e54c7028d789",
@@ -100846,7 +101206,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_8d73f63168f0",
-        "created_at": "2026-09-21T09:19:56.500667+00:00"
+        "created_at": "2026-09-21T09:19:56.500667+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_5264804953d1",
@@ -100860,7 +101221,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_5ce8a70849f7",
-        "created_at": "2026-09-21T09:19:56.579336+00:00"
+        "created_at": "2026-09-21T09:19:56.579336+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_9ab8bc1c4ccf",
@@ -100874,7 +101236,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_e9713574667b",
-        "created_at": "2026-09-21T09:29:12.211950+00:00"
+        "created_at": "2026-09-21T09:29:12.211950+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_8fed0fad72d4",
@@ -100888,7 +101251,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_7d8d8cc6b591",
-        "created_at": "2026-09-21T09:29:12.291409+00:00"
+        "created_at": "2026-09-21T09:29:12.291409+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_a076b3631842",
@@ -100902,7 +101266,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_871217cafb2f",
-        "created_at": "2026-09-21T09:31:42.997553+00:00"
+        "created_at": "2026-09-21T09:31:42.997553+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_73cac495d3a1",
@@ -100916,7 +101281,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_462c589a8dca",
-        "created_at": "2026-09-21T09:31:43.060813+00:00"
+        "created_at": "2026-09-21T09:31:43.060813+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_dfc32f7cc46a",
@@ -100930,7 +101296,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_92968a8d4c74",
-        "created_at": "2026-09-21T09:51:01.748769+00:00"
+        "created_at": "2026-09-21T09:51:01.748769+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_274fdb225fd9",
@@ -100944,7 +101311,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_0f2258b789de",
-        "created_at": "2026-09-21T09:51:01.804845+00:00"
+        "created_at": "2026-09-21T09:51:01.804845+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_597eb8c37b3a",
@@ -100958,7 +101326,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_bc2e42ae289a",
-        "created_at": "2026-09-21T09:55:18.525312+00:00"
+        "created_at": "2026-09-21T09:55:18.525312+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_7e3cc20f8fee",
@@ -100972,7 +101341,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_aa4035392d88",
-        "created_at": "2026-09-21T09:55:18.576326+00:00"
+        "created_at": "2026-09-21T09:55:18.576326+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_6c2002d91ba6",
@@ -100986,7 +101356,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_6f26423ae0ce",
-        "created_at": "2026-09-21T09:56:29.052143+00:00"
+        "created_at": "2026-09-21T09:56:29.052143+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_8aae0bce21d6",
@@ -101000,7 +101371,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_b613d27d0419",
-        "created_at": "2026-09-21T09:56:29.107009+00:00"
+        "created_at": "2026-09-21T09:56:29.107009+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_8181d8b20850",
@@ -101014,7 +101386,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_d3f4df343831",
-        "created_at": "2026-09-21T09:56:59.181888+00:00"
+        "created_at": "2026-09-21T09:56:59.181888+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_22128a85fb52",
@@ -101028,7 +101401,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_e73462b13448",
-        "created_at": "2026-09-21T09:56:59.240871+00:00"
+        "created_at": "2026-09-21T09:56:59.240871+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_f20720ac7296",
@@ -101042,7 +101416,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_93ca31b8ba42",
-        "created_at": "2026-09-21T09:59:25.109551+00:00"
+        "created_at": "2026-09-21T09:59:25.109551+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_8c17c7d6f0c3",
@@ -101056,7 +101431,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_9c51c49b3b7f",
-        "created_at": "2026-09-21T09:59:25.179552+00:00"
+        "created_at": "2026-09-21T09:59:25.179552+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_ecd57addf2b4",
@@ -101070,7 +101446,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_a15affbe8820",
-        "created_at": "2026-09-21T10:08:41.275947+00:00"
+        "created_at": "2026-09-21T10:08:41.275947+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_8cf63179477a",
@@ -101084,7 +101461,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_45e2ed94d596",
-        "created_at": "2026-09-21T10:08:41.345072+00:00"
+        "created_at": "2026-09-21T10:08:41.345072+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_e04c2fc6c7c1",
@@ -101098,7 +101476,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_1a785624fd84",
-        "created_at": "2026-09-21T10:09:31.298252+00:00"
+        "created_at": "2026-09-21T10:09:31.298252+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_ad17dbdb8245",
@@ -101112,7 +101491,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_6fc67bbb3962",
-        "created_at": "2026-09-21T10:09:31.362945+00:00"
+        "created_at": "2026-09-21T10:09:31.362945+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_52bdf3468255",
@@ -101126,7 +101506,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_4c742ad88291",
-        "created_at": "2026-09-21T10:33:52.801486+00:00"
+        "created_at": "2026-09-21T10:33:52.801486+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_189d7bab861e",
@@ -101140,7 +101521,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_561b40b2c142",
-        "created_at": "2026-09-21T10:33:52.875554+00:00"
+        "created_at": "2026-09-21T10:33:52.875554+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_3ddb2555c580",
@@ -101154,7 +101536,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_1201a8c6f680",
-        "created_at": "2026-09-21T17:43:24.888753+00:00"
+        "created_at": "2026-09-21T17:43:24.888753+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_4e06c0bf6ce6",
@@ -101168,7 +101551,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_5c48f4cb6e31",
-        "created_at": "2026-09-21T17:43:24.942907+00:00"
+        "created_at": "2026-09-21T17:43:24.942907+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_c23b12ef2863",
@@ -101182,7 +101566,8 @@
         "script_json": "{\"title\": \"The First Notification\", \"topic\": \"Episode 1 of Jab Pyaar Online Tha\", \"recap\": \"The origin story begins in Jab Pyaar Online Tha.\", \"conflict\": \"Aarav receives a DM from a mysterious girl.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: The origin story begins in Jab Pyaar Online Tha....\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Aarav receives a DM from a mysterious girl....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_65a0ee747430",
-        "created_at": "2026-09-21T18:02:46.799233+00:00"
+        "created_at": "2026-09-21T18:02:46.799233+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_7a86eef4be17",
@@ -101196,7 +101581,8 @@
         "script_json": "{\"title\": \"The Voice Note\", \"topic\": \"Episode 2 of Jab Pyaar Online Tha\", \"recap\": \"In Episode 1, Aarav receives a DM from a mysterious girl. leading to: Next episode dekhne ke liye comment karein!.\", \"conflict\": \"Meera reveals she knows Aarav's dark past.\", \"cliffhanger\": \"Next episode dekhne ke liye comment karein!\", \"scenes\": [{\"scene_num\": 1, \"narration\": \"Pichhle episode mein: In Episode 1, Aarav receives a DM from a mysteriou...\", \"duration_sec\": 4.0}, {\"scene_num\": 2, \"narration\": \"Aur ab: Meera reveals she knows Aarav's dark past....\", \"duration_sec\": 6.0}, {\"scene_num\": 3, \"narration\": \"Next episode dekhne ke liye comment karein!\", \"duration_sec\": 4.0}], \"total_duration_sec\": 60.0, \"hashtags\": [\"series\", \"cliffhanger\", \"viral\"]}",
         "status": "rendering",
         "video_id": "vid_53f9b23175fe",
-        "created_at": "2026-09-21T18:02:46.865075+00:00"
+        "created_at": "2026-09-21T18:02:46.865075+00:00",
+        "user_id": "admin_abhay"
       },
       {
         "id": "ep_bd6eb4c03e3b",
@@ -101210,8 +101596,10 @@
         "script_json": "{\"title\": \"Series 1 Ep 5\", \"topic\": \"Episode 5 of Series 1\", \"recap\": \"Context from Episode 4\", \"conflict\": \"Core confrontation\", \"cliffhanger\": \"Dramatic cliffhanger CTA\"}",
         "status": "rendering",
         "video_id": "vid_be999bf0c9fc",
-        "created_at": "2026-09-21T18:02:47.027238+00:00"
+        "created_at": "2026-09-21T18:02:47.027238+00:00",
+        "user_id": "admin_abhay"
       }
-    ]
+    ],
+    "uploaded_assets": []
   }
 }

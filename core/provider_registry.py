@@ -144,7 +144,190 @@ class CloudflareR2StorageProvider(BaseStorageProvider):
 
 
 # =====================================================================
-# 4. Storage Provider Factory
+# 4. Vision & Multimodal Provider Interface
+# =====================================================================
+class BaseVisionProvider(abc.ABC):
+    @abc.abstractmethod
+    def analyze_image(self, image_path: str, prompt: str) -> str:
+        """Analyzes an image and returns textual understanding."""
+        pass
+
+    @abc.abstractmethod
+    def is_available(self) -> bool:
+        pass
+
+
+class GeminiVisionProvider(BaseVisionProvider):
+    def analyze_image(self, image_path: str, prompt: str) -> str:
+        api_key = os.getenv("GEMINI_API_KEY", "")
+        if not api_key:
+            return "Vision analysis unavailable: GEMINI_API_KEY missing."
+        try:
+            from google import genai
+            from PIL import Image
+            client = genai.Client(api_key=api_key)
+            img = Image.open(image_path)
+            res = client.models.generate_content(
+                model=os.getenv("VISION_MODEL", "gemini-2.5-flash"),
+                contents=[img, prompt]
+            )
+            return res.text or ""
+        except Exception as e:
+            return f"Vision analysis note: {e}"
+
+    def is_available(self) -> bool:
+        return bool(os.getenv("GEMINI_API_KEY"))
+
+
+# =====================================================================
+# 5. OCR Provider Interface
+# =====================================================================
+class BaseOCRProvider(abc.ABC):
+    @abc.abstractmethod
+    def extract_text(self, image_path: str) -> str:
+        """Extracts text, dialogue, and coordinates from panel images."""
+        pass
+
+    @abc.abstractmethod
+    def is_available(self) -> bool:
+        pass
+
+
+class PyMuPDFOCRProvider(BaseOCRProvider):
+    def extract_text(self, image_path: str) -> str:
+        try:
+            import fitz
+            doc = fitz.open(image_path)
+            text = ""
+            for page in doc:
+                text += page.get_text() + "\n"
+            return text.strip()
+        except Exception:
+            return ""
+
+    def is_available(self) -> bool:
+        return True
+
+
+# =====================================================================
+# 6. Music & SFX Provider Interface
+# =====================================================================
+class BaseMusicProvider(abc.ABC):
+    @abc.abstractmethod
+    def get_music_track(self, mood: str, duration_sec: float, output_path: str) -> str:
+        """Generates or selects procedural background music matching scene mood."""
+        pass
+
+    @abc.abstractmethod
+    def is_available(self) -> bool:
+        pass
+
+
+class ProceduralMusicProvider(BaseMusicProvider):
+    def get_music_track(self, mood: str, duration_sec: float, output_path: str) -> str:
+        from core.ffmpeg import ffmpeg_bin
+        import subprocess
+        d = round(duration_sec, 2)
+        # Procedural synthesizers for different moods
+        flt_map = {
+            "romance": f"aevalsrc='0.15*sin(2*PI*130.81*t)+0.10*sin(2*PI*164.81*t)+0.08*sin(2*PI*196.00*t)':d={d}:s=44100,volume=0.22",
+            "action": f"aevalsrc='0.25*sin(2*PI*55*t)+0.18*sin(2*PI*82.4*t)+0.12*sin(2*PI*110*t)':d={d}:s=44100,volume=0.35",
+            "suspense": f"aevalsrc='0.20*sin(2*PI*45*t)+0.14*sin(2*PI*65*t)':d={d}:s=44100,volume=0.25",
+            "sad": f"aevalsrc='0.12*sin(2*PI*110*t)+0.08*sin(2*PI*130.81*t)':d={d}:s=44100,volume=0.20",
+        }
+        flt = flt_map.get(mood.lower(), flt_map["suspense"])
+        subprocess.run([
+            ffmpeg_bin(), "-y", "-nostdin", "-hide_banner", "-loglevel", "error",
+            "-f", "lavfi", "-i", flt,
+            "-c:a", "aac", "-b:a", "192k",
+            output_path
+        ], check=True)
+        return output_path
+
+    def is_available(self) -> bool:
+        return True
+
+
+# =====================================================================
+# 7. Video Compositor Provider Interface
+# =====================================================================
+class BaseVideoProvider(abc.ABC):
+    @abc.abstractmethod
+    def render_scene(self, image_path: str, duration_sec: float, output_mp4: str, motion_type: str = "zoom_in") -> str:
+        pass
+
+    @abc.abstractmethod
+    def is_available(self) -> bool:
+        pass
+
+
+class FFmpegVideoProvider(BaseVideoProvider):
+    def render_scene(self, image_path: str, duration_sec: float, output_mp4: str, motion_type: str = "zoom_in") -> str:
+        from core.ffmpeg import ffmpeg_bin
+        import subprocess
+        dur = max(1.0, round(duration_sec, 2))
+        w, h = 1080, 1920
+        flt = f"[0:v]scale={w}:{h}:force_original_aspect_ratio=increase,crop={w}:{h},scale=w='2*floor({w}*(1.01+0.04*t/{dur:.2f})/2)':h='2*floor({h}*(1.01+0.04*t/{dur:.2f})/2)':eval=frame,crop={w}:{h}:(in_w-{w})/2:(in_h-{h})/2,format=yuv420p[v]"
+        cmd = [
+            ffmpeg_bin(), "-y", "-loop", "1", "-t", str(dur), "-i", str(image_path),
+            "-filter_complex", flt, "-map", "[v]",
+            "-c:v", "libx264", "-preset", "ultrafast", "-crf", "20",
+            "-pix_fmt", "yuv420p", str(output_mp4)
+        ]
+        subprocess.run(cmd, check=True)
+        return output_mp4
+
+    def is_available(self) -> bool:
+        return True
+
+
+# =====================================================================
+# 8. AI Model Configuration Manager (Modular & Secure)
+# =====================================================================
+class AIModelConfigManager:
+    """Manages active AI models and provider credentials securely server-side."""
+
+    @staticmethod
+    def get_config() -> Dict[str, Any]:
+        return {
+            "llmProvider": os.getenv("LLM_PROVIDER", "gemini"),
+            "llmModel": os.getenv("LLM_MODEL", "gemini-2.5-pro"),
+            "hasLlmApiKey": bool(os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY")),
+            "llmApiKeyMasked": "••••••••" if (os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY")) else "",
+            "visionModel": os.getenv("VISION_MODEL", "gemini-2.5-flash"),
+            "ocrModel": os.getenv("OCR_MODEL", "pymupdf_ocr"),
+            "ttsProvider": os.getenv("TTS_PROVIDER", "gemini_neural"),
+            "voiceModel": os.getenv("VOICE_MODEL", "Fenrir"),
+            "musicProvider": os.getenv("MUSIC_PROVIDER", "procedural_mood"),
+            "videoProvider": os.getenv("VIDEO_PROVIDER", "ffmpeg_hardware")
+        }
+
+    @staticmethod
+    def update_config(data: Dict[str, Any]) -> Dict[str, Any]:
+        env_updates = {}
+        if "llmProvider" in data:
+            env_updates["LLM_PROVIDER"] = data["llmProvider"]
+        if "llmModel" in data:
+            env_updates["LLM_MODEL"] = data["llmModel"]
+        if "llmApiKey" in data and data["llmApiKey"] and not data["llmApiKey"].startswith("•"):
+            env_updates["GEMINI_API_KEY"] = data["llmApiKey"]
+        if "visionModel" in data:
+            env_updates["VISION_MODEL"] = data["visionModel"]
+        if "ocrModel" in data:
+            env_updates["OCR_MODEL"] = data["ocrModel"]
+        if "ttsProvider" in data:
+            env_updates["TTS_PROVIDER"] = data["ttsProvider"]
+        if "voiceModel" in data:
+            env_updates["VOICE_MODEL"] = data["voiceModel"]
+
+        for k, v in env_updates.items():
+            os.environ[k] = str(v)
+
+        return AIModelConfigManager.get_config()
+
+
+# =====================================================================
+# 9. Storage Provider Factory & Singletons
 # =====================================================================
 def get_storage_provider() -> BaseStorageProvider:
     provider_type = os.getenv("STORAGE_PROVIDER", "local").lower()
@@ -159,3 +342,8 @@ def get_storage_provider() -> BaseStorageProvider:
 # Global Singleton Instances
 STORAGE = get_storage_provider()
 LLM_ROUTER = LLMFailoverRouter()
+VISION_PROVIDER = GeminiVisionProvider()
+OCR_PROVIDER = PyMuPDFOCRProvider()
+MUSIC_PROVIDER = ProceduralMusicProvider()
+VIDEO_PROVIDER = FFmpegVideoProvider()
+

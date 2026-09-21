@@ -35,7 +35,7 @@ async def get_admin_system_overview(ctx: TenantContext = Depends(require_admin_r
         pass
 
     try:
-        v_rows = DB_ENGINE.execute_query("SELECT COUNT(*) as cnt FROM video_projects")
+        v_rows = DB_ENGINE.execute_query("SELECT COUNT(*) as cnt FROM videos")
         if v_rows:
             total_videos = v_rows[0].get("cnt", 0)
     except Exception:
@@ -145,4 +145,21 @@ async def replay_dead_letter_jobs(job_id: str = None, ctx: TenantContext = Depen
             "replayedJobIds": replayed
         }
     )
+
+
+@router.get("/ai-models", response_model=ApiResponse[Dict[str, Any]])
+async def get_ai_models_configuration(ctx: TenantContext = Depends(require_admin_role)):
+    """Fetches current server-side AI model config with masked API credentials."""
+    from core.provider_registry import AIModelConfigManager
+    cfg = AIModelConfigManager.get_config()
+    return ApiResponse(success=True, data=cfg)
+
+
+@router.post("/ai-models", response_model=ApiResponse[Dict[str, Any]])
+async def update_ai_models_configuration(payload: Dict[str, Any], ctx: TenantContext = Depends(require_admin_role)):
+    """Saves updated AI model configuration securely on the server without leaking keys."""
+    from core.provider_registry import AIModelConfigManager
+    updated = AIModelConfigManager.update_config(payload)
+    return ApiResponse(success=True, data=updated)
+
 

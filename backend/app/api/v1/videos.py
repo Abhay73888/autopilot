@@ -35,19 +35,20 @@ async def generate_video(
 
 @router.get("", response_model=ApiResponse[List[VideoResponse]])
 async def list_videos(ctx: TenantContext = Depends(get_current_tenant_context)):
-    videos = video_service.list_videos(ctx.workspace_id)
+    videos = video_service.list_videos(ctx.workspace_id, user_id=ctx.user_id, role=ctx.role)
     return ApiResponse(success=True, data=videos)
 
 
 @router.get("/{video_id}", response_model=ApiResponse[VideoResponse])
 async def get_video(video_id: str, ctx: TenantContext = Depends(get_current_tenant_context)):
-    video = video_service.get_video(ctx.workspace_id, video_id)
+    video = video_service.get_video(ctx.workspace_id, video_id, user_id=ctx.user_id, role=ctx.role)
     return ApiResponse(success=True, data=video)
 
 
 @router.get("/{video_id}/qa", response_model=ApiResponse[QACheckReport])
 async def get_video_qa(video_id: str, ctx: TenantContext = Depends(get_current_tenant_context)):
-    video = video_service.get_video(ctx.workspace_id, video_id)
+    video = video_service.get_video(ctx.workspace_id, video_id, user_id=ctx.user_id, role=ctx.role)
+
     report = video.qaReport or QACheckReport(
         status="passed",
         score=96,

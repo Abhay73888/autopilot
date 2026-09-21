@@ -28,6 +28,8 @@ from .api.v1.publish import router as publish_router
 from .api.v1.scripts import router as scripts_router
 from .api.v1.series import router as series_router
 from .api.v1.videos import router as videos_router
+from .api.v1.editor import router as editor_router
+from .api.v1.manga import router as manga_router
 from .api.v1.workspaces import router as workspaces_router
 from .core.config import settings
 from .core.exceptions import AppException
@@ -140,6 +142,7 @@ OUTPUT_DIR = Path(__file__).resolve().parent.parent.parent / "output"
 
 if OUTPUT_DIR.exists():
     app.mount("/output", StaticFiles(directory=str(OUTPUT_DIR)), name="output")
+    app.mount("/media", StaticFiles(directory=str(OUTPUT_DIR)), name="media")
 
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -180,6 +183,10 @@ app.include_router(ideas_router, prefix=v1_prefix)
 app.include_router(scripts_router, prefix=v1_prefix)
 app.include_router(series_router, prefix=v1_prefix)
 app.include_router(videos_router, prefix=v1_prefix)
+app.include_router(editor_router, prefix=v1_prefix)
+app.include_router(editor_router, prefix="/api")
+app.include_router(manga_router, prefix=v1_prefix)
+app.include_router(manga_router, prefix="/api")
 app.include_router(jobs_router, prefix=v1_prefix)
 app.include_router(publish_router, prefix=v1_prefix)
 app.include_router(integrations_youtube_router, prefix=v1_prefix)

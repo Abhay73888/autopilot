@@ -96,3 +96,8 @@ async def require_admin_role(
     if ctx.role != "admin":
         raise TenantAccessDeniedException("Administrative privileges required for this resource")
     return ctx
+
+
+# Convenience alias for endpoints requiring authenticated tenant context
+require_tenant_context = get_authenticated_tenant_context
+

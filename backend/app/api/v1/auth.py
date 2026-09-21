@@ -33,20 +33,40 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/login", response_model=ApiResponse[SessionResponse])
 async def login(req: LoginRequest):
-    email_clean = req.email.strip().lower()
-    user = DB_ENGINE.get_user_by_email(email_clean)
+    identifier = (req.email or req.username or "").strip().lower()
+    if not identifier:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email or username is required."
+        )
+    user = DB_ENGINE.get_user_by_email(identifier)
+    if not user:
+        user = DB_ENGINE.get_user_by_id(identifier)
 
     if user:
-        # Verify password against stored PBKDF2 hash
-        if not verify_password(req.password, user.get("password_hash", "")):
+        # Verify password against stored PBKDF2 hash (or legacy plaintext fallback)
+        stored_hash = user.get("password_hash", "")
+        if not verify_password(req.password, stored_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password. Please verify your credentials and try again."
             )
-        user_id = user["id"]
+        # Auto-upgrade legacy hash to PBKDF2 if needed
+        if not stored_hash.startswith("pbkdf2_sha256$"):
+            new_hash = hash_password(req.password)
+            try:
+                DB_ENGINE.execute_mutation(
+                    "UPDATE users SET password_hash = %s WHERE id = %s OR user_id = %s",
+                    (new_hash, user.get("id"), user.get("user_id"))
+                )
+            except Exception:
+                pass
+
+        user_id = str(user.get("user_id") or user.get("id"))
         role = user.get("role", "user")
-        full_name = user.get("full_name", "Creator User")
+        full_name = user.get("full_name") or user.get("name") or "Creator User"
         is_onboarded = bool(user.get("is_onboarded", 0))
+
     else:
         # Auto-provision on first login for seamless test compatibility & first-run dev
         user_id = f"usr_{uuid.uuid4().hex[:12]}"
@@ -78,9 +98,10 @@ async def login(req: LoginRequest):
     except Exception:
         pass
 
+    user_email = user.get("email") or identifier
     token_payload = {
         "sub": user_id,
-        "email": email_clean,
+        "email": user_email,
         "org_id": org_id,
         "role": role,
         "is_onboarded": is_onboarded
@@ -90,7 +111,7 @@ async def login(req: LoginRequest):
 
     user_profile = UserProfile(
         id=user_id,
-        email=email_clean,
+        email=user_email,
         fullName=full_name,
         name=full_name,
         role=role,

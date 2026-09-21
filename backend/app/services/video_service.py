@@ -131,13 +131,39 @@ class VideoService:
             raise TenantAccessDeniedException(f"Cross-tenant access forbidden for job '{job_id}'")
         return job
 
-    def list_videos(self, workspace_id: str) -> List[VideoResponse]:
+    def list_videos(self, workspace_id: str, user_id: Optional[str] = None, role: Optional[str] = None) -> List[VideoResponse]:
         from pathlib import Path
         from core.db import DB
+        
+        # Determine whether caller is administrator
+        is_admin = (
+            role == "admin" or
+            user_id in ("admin_abhay", "usr_admin") or
+            workspace_id in ("ws_admin_abhay", "ws_default_creator")
+        )
+        
+        # Effective user_id for filtering
+        effective_user_id = user_id
+        if not effective_user_id:
+            if workspace_id.startswith("ws_usr_"):
+                effective_user_id = workspace_id[3:]
+            elif is_admin:
+                effective_user_id = "admin_abhay"
+
+        # In-memory session videos scoped to caller's workspace
         results = [VideoResponse(**v) for v in self._videos.values() if v.get("workspaceId") == workspace_id]
+        
         try:
             db = DB()
-            rows = db.q("SELECT * FROM videos ORDER BY id DESC LIMIT 50")
+            if is_admin:
+                # Admin has access to all admin-owned videos
+                rows = db.q("SELECT * FROM videos WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY id DESC LIMIT 100")
+            elif effective_user_id:
+                # Normal user strictly sees their own records
+                rows = db.q("SELECT * FROM videos WHERE user_id = ? ORDER BY id DESC LIMIT 50", (effective_user_id,))
+            else:
+                rows = []
+
             for r in rows:
                 vid_id = f"vid_{r['id']}"
                 if any(x.id == vid_id for x in results):
@@ -182,40 +208,90 @@ class VideoService:
         except Exception:
             pass
 
-        if not results:
-            now = datetime.now(timezone.utc).isoformat()
-            default_vid = VideoResponse(
-                id="vid_default_01",
-                workspaceId=workspace_id,
-                projectId="proj_default",
-                title="The Offline AI Tool Replacing Cloud Subscriptions",
-                description="Discover how to run local AI models completely free. #ai #coding #tech",
-                tags=["ai", "coding", "software", "tech"],
-                durationSeconds=28.5,
-                status="published",
-                videoUrl="/output/video_0166/final.mp4",
-                thumbnailUrl="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop",
-                qaReport=QACheckReport(
-                    status="passed",
-                    score=98,
-                    checks={"audioLevels": {"status": "passed", "lufs": -14.1}}
-                ),
-                createdAt=now
-            )
-            return [default_vid]
         return results
 
-    def get_video(self, workspace_id: str, video_id: str) -> VideoResponse:
+    def get_video(self, workspace_id: str, video_id: str, user_id: Optional[str] = None, role: Optional[str] = None) -> VideoResponse:
+        from ..core.exceptions import TenantAccessDeniedException, ResourceNotFoundException
+        from pathlib import Path
+        from core.db import DB
+
+        is_admin = (
+            role == "admin" or
+            user_id in ("admin_abhay", "usr_admin") or
+            workspace_id in ("ws_admin_abhay", "ws_default_creator")
+        )
+        effective_user_id = user_id
+        if not effective_user_id and workspace_id.startswith("ws_usr_"):
+            effective_user_id = workspace_id[3:]
+
+        # 1. Check in-memory session videos
         if video_id in self._videos:
             vid = self._videos[video_id]
-            if vid.get("workspaceId") != workspace_id:
-                from ..core.exceptions import TenantAccessDeniedException
+            if vid.get("workspaceId") != workspace_id and not is_admin:
                 raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
             return VideoResponse(**vid)
-        videos = self.list_videos(workspace_id)
-        if videos and videos[0].id == video_id:
-            return videos[0]
+
+        # 2. Check persistent database
+        db_id = video_id
+        if db_id.startswith("vid_"):
+            db_id = db_id[4:]
+        
+        try:
+            db = DB()
+            if db_id.isdigit():
+                row = db.one("SELECT * FROM videos WHERE id = ?", (int(db_id),))
+            else:
+                row = db.one("SELECT * FROM videos WHERE id = ? OR yt_video_id = ?", (db_id, db_id))
+            
+            if row:
+                video_owner = row["user_id"] or "admin_abhay"
+                # Check authorization
+                if not is_admin and video_owner != effective_user_id:
+                    raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
+                
+                vpath = row["video_path"]
+                cpath = row["cover_path"]
+                video_url = None
+                thumb_url = None
+                if vpath and Path(vpath).exists():
+                    p = Path(vpath)
+                    video_url = f"/output/{p.parent.name}/{p.name}"
+                if cpath and Path(cpath).exists():
+                    cp = Path(cpath)
+                    thumb_url = f"/output/{cp.parent.name}/{cp.name}"
+                tags = []
+                if row["hashtags"]:
+                    try:
+                        import json
+                        tags = json.loads(row["hashtags"])
+                    except Exception:
+                        tags = [str(row["hashtags"])]
+
+                return VideoResponse(
+                    id=f"vid_{row['id']}",
+                    workspaceId=workspace_id,
+                    projectId="proj_default",
+                    title=row["title"] or row["topic"] or f"Video #{row['id']}",
+                    description=row["caption"] or row["topic"],
+                    tags=tags if isinstance(tags, list) else [],
+                    durationSeconds=float(row["length_sec"] or 55.0),
+                    status=row["status"],
+                    videoUrl=video_url,
+                    thumbnailUrl=thumb_url or "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop",
+                    qaReport=QACheckReport(
+                        status="passed",
+                        score=98,
+                        checks={"audioLevels": {"status": "passed", "lufs": -14.0}}
+                    ),
+                    createdAt=row["created_ts"] or row["updated_ts"] or datetime.now(timezone.utc).isoformat()
+                )
+        except TenantAccessDeniedException:
+            raise
+        except Exception:
+            pass
+
         raise ResourceNotFoundException("Video", video_id)
+
 
     def create_video(self, workspace_id: str, title: str, topic: str = "", video_url: Optional[str] = None) -> Dict[str, Any]:
         video_id = f"vid_{uuid.uuid4().hex[:12]}"

@@ -826,6 +826,421 @@
         display: block;
       }
     }
+
+    /* ==========================================================================
+       GOD-LEVEL MINI VIDEO EDITOR & STUDIO UPGRADE STYLES
+       ========================================================================== */
+    .editor-container {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+      margin-top: 8px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      .editor-container { grid-template-columns: 1fr; }
+    }
+    .editor-preview-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .editor-viewport-wrap {
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 9 / 16;
+      background: #05070d;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      margin-bottom: 14px;
+    }
+    #editorVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .editor-hook-overlay {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 86%;
+      text-align: center;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 1.25;
+      color: #ffeb3b;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 2px #000;
+      background: rgba(0, 0, 0, 0.75);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 235, 59, 0.4);
+      pointer-events: none;
+      display: none;
+      z-index: 10;
+    }
+    .editor-hook-overlay.pos-top { top: 12%; }
+    .editor-hook-overlay.pos-center { top: 50%; transform: translate(-50%, -50%); }
+    .editor-hook-overlay.pos-bottom { bottom: 14%; }
+    .editor-transport {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .editor-transport-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .editor-transport-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: var(--accent-primary);
+    }
+    .editor-timecode {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+    .editor-workstation {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .editor-panel {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      backdrop-filter: blur(14px);
+    }
+    .editor-panel-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .timeline-track-container {
+      background: #060911;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 12px;
+      position: relative;
+    }
+    .timeline-ruler {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-subtle);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      margin-bottom: 6px;
+      padding: 0 4px;
+    }
+    .timeline-scrubber {
+      height: 48px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      position: relative;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .timeline-scenes-filmstrip {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0.55;
+    }
+    .timeline-scene-thumb {
+      height: 100%;
+      flex: 1;
+      object-fit: cover;
+      border-right: 1px solid rgba(0, 0, 0, 0.5);
+    }
+    .timeline-active-range {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 0%; width: 100%;
+      background: rgba(139, 92, 246, 0.25);
+      border-left: 2px solid var(--accent-primary);
+      border-right: 2px solid var(--accent-primary);
+      pointer-events: none;
+    }
+    .timeline-playhead {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 0%;
+      width: 2px;
+      background: #00f2fe;
+      box-shadow: 0 0 10px #00f2fe;
+      z-index: 5;
+      pointer-events: none;
+      transition: left 0.05s linear;
+    }
+    .timeline-controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .trim-input-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .trim-input-group label {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .trim-input-group input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      width: 52px;
+      outline: none;
+      text-align: right;
+    }
+    .filter-presets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+    }
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+      padding: 9px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-chip:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .filter-chip.active {
+      background: rgba(139, 92, 246, 0.18);
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 14px rgba(139, 92, 246, 0.3);
+    }
+    .filter-chip-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .filter-chip-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .hook-tool-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .hook-text-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+    .hook-text-input:focus {
+      border-color: var(--accent-primary);
+    }
+    .pos-btn-group {
+      display: flex;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .pos-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: none;
+      color: var(--text-muted);
+      padding: 7px 11px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .pos-btn.active {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+    .audio-mixer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .mixer-item label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .mixer-item input[type=range] {
+      width: 100%;
+      accent-color: var(--accent-primary);
+    }
+    .export-result-card {
+      display: none;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-top: 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .export-result-card.active { display: flex; }
+
+    /* Source Tabs in Central Generate Video Studio */
+    .source-tabs {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 5px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      margin-bottom: 18px;
+    }
+    .source-tab-btn {
+      flex: 1;
+      padding: 9px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .source-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .source-tab-btn.active {
+      background: var(--accent-primary);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+    }
+    .manga-dropzone {
+      border: 2px dashed rgba(139, 92, 246, 0.35);
+      border-radius: 14px;
+      padding: 28px;
+      text-align: center;
+      background: rgba(139, 92, 246, 0.03);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .manga-dropzone:hover {
+      border-color: var(--accent-primary);
+      background: rgba(139, 92, 246, 0.08);
+    }
+    .manga-page-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .manga-page-thumb {
+      aspect-ratio: 3/4;
+      border-radius: 8px;
+      object-fit: cover;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Live Checklist Progress */
+    .checklist-container {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 18px;
+    }
+    .checklist-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .checklist-row:last-child { border-bottom: none; }
+    .checklist-row.done { color: #34D399; }
+    .checklist-row.active { color: var(--accent-cyan); font-weight: 600; }
+    .checklist-icon {
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-left: 8px;
+    }
+
+    /* Empty state card for new users */
+    .empty-workspace-hero {
+      grid-column: 1 / -1;
+      background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.15), transparent 70%), var(--bg-surface-elevated);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: var(--radius-xl);
+      padding: 38px 28px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
   </style>
 </head>
 <body>
@@ -853,6 +1268,10 @@
           <a class="nav-item" onclick="switchNav('studio-topic')">
             <span class="nav-icon">🎬</span>
             <span>Generate Video</span>
+          </a>
+          <a class="nav-item" onclick="switchNav('editor')">
+            <span class="nav-icon">🎞️</span>
+            <span>Video Editor</span>
           </a>
           <a class="nav-item" onclick="switchNav('studio-series')">
             <span class="nav-icon">🍿</span>
@@ -1018,25 +1437,152 @@
       </section>
 
       <!-- VIEW 2: STUDIO - TOPIC VIDEO GENERATOR -->
+      <!-- VIEW 2: CENTRAL GENERATE VIDEO STUDIO -->
       <section class="view-panel" id="view-studio-topic">
         <div class="grid-2col">
           <div class="glass-card">
             <div class="card-header">
-              <div class="card-title"><span>🎬</span> Topic Video Generator</div>
-              <span class="badge badge-purple">Autonomous Pipeline</span>
+              <div class="card-title"><span>🎬</span> Generate Video Studio</div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="openInVideoEditor()">
+                  <span>🎞️</span> Open in Video Editor
+                </button>
+                <span class="badge badge-purple">God Mode 20X</span>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label class="form-label">Video Title / Hook Premise</label>
-              <input type="text" id="topicInputTitle" class="form-input" value="The Hidden Offline AI Model Replacing Cloud Subscriptions">
+            <!-- Project / Series Hierarchy -->
+            <div class="form-row" style="margin-bottom: 14px;">
+              <div class="form-group">
+                <label class="form-label">Project / Series Franchise</label>
+                <select id="genSeriesSelect" class="form-select" onchange="onStudioSeriesChanged()">
+                  <option value="">Standalone Video (No Series)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Episode / Part</label>
+                <input type="number" id="genEpisodeNumber" class="form-input" value="1" min="1">
+              </div>
             </div>
 
-            <div class="form-group">
-              <label class="form-label">Topic Details & Research Guidance</label>
-              <textarea id="topicInputPrompt" class="form-textarea" placeholder="Explain the key points to cover...">Deep dive into local LLM runtimes, quantized inference on everyday hardware, and how anyone can run AI completely offline without subscriptions.</textarea>
+            <!-- Upload Source Switcher Tabs -->
+            <label class="form-label" style="margin-bottom: 8px;">Upload Source</label>
+            <div class="source-tabs">
+              <button class="source-tab-btn active" id="srcTabScript" onclick="switchSourceTab('script')">
+                <span>📝</span> Script
+              </button>
+              <button class="source-tab-btn" id="srcTabManga" onclick="switchSourceTab('manga')">
+                <span>📖</span> Manga PDF
+              </button>
+              <button class="source-tab-btn" id="srcTabImages" onclick="switchSourceTab('images')">
+                <span>🖼️</span> Images
+              </button>
+              <button class="source-tab-btn" id="srcTabText" onclick="switchSourceTab('text')">
+                <span>📄</span> Text
+              </button>
             </div>
 
+            <!-- Panel A: Script -->
+            <div id="srcPanelScript">
+              <div class="form-group">
+                <label class="form-label">Video Title / Hook Premise</label>
+                <input type="text" id="topicInputTitle" class="form-input" value="The Rise of the Demon King Chapter 5">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Topic Details / Script Guidance</label>
+                <textarea id="topicInputPrompt" class="form-textarea" placeholder="Explain the key points to cover, dramatic pacing, and cliffhanger twist...">Manhwa Chapter 5 narrative: rising demonic aura, character confrontations, dramatic revelations, and cinematic pacing.</textarea>
+              </div>
+            </div>
+
+            <!-- Panel B: Manga PDF / CBZ -->
+            <div id="srcPanelManga" style="display: none;">
+              <div class="manga-dropzone" onclick="document.getElementById('mangaFileInput').click()">
+                <input type="file" id="mangaFileInput" accept=".pdf,.cbz,.zip,image/*" style="display: none;" onchange="handleMangaFileUpload(this.files[0])">
+                <div style="font-size: 34px; margin-bottom: 6px;">📂</div>
+                <div style="font-size: 14px; font-weight: 600; color: #fff;" id="mangaUploadStatusText">Click or Drop Manga PDF / CBZ / Images</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">PyMuPDF OCR + Contour Panel Detection + Character Dialogue Mapping</div>
+              </div>
+              <div id="mangaPagesPreviewSection" style="display: none; margin-top: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 6px;">
+                  <span id="mangaExtractedInfo">0 Pages Extracted</span>
+                  <span class="badge badge-success" id="mangaPanelCountBadge">0 Panels Detected</span>
+                </div>
+                <div class="manga-page-preview-grid" id="mangaPagesGrid"></div>
+              </div>
+            </div>
+
+            <!-- Panel C: Images -->
+            <div id="srcPanelImages" style="display: none;">
+              <div class="manga-dropzone" onclick="document.getElementById('imageSequenceInput').click()">
+                <input type="file" id="imageSequenceInput" multiple accept="image/*" style="display: none;" onchange="handleImageSequenceUpload(this.files)">
+                <div style="font-size: 32px; margin-bottom: 6px;">🖼️</div>
+                <div style="font-size: 14px; font-weight: 600;" id="imageUploadStatusText">Upload Multiple Scene Images</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Ken Burns dynamic motion + depth zoom applied to every shot.</div>
+              </div>
+              <div class="manga-page-preview-grid" id="imageSequencePreview"></div>
+            </div>
+
+            <!-- Panel D: Raw Text -->
+            <div id="srcPanelText" style="display: none;">
+              <div class="form-group">
+                <label class="form-label">Raw Chapter Story / Dialogue Text</label>
+                <textarea id="rawStoryText" class="form-textarea" style="height: 120px;" placeholder="Paste raw text, novel dialogue, or chapter summary to convert to full cinematic video..."></textarea>
+              </div>
+            </div>
+
+            <!-- Human-Like / Humanoid Voice Controls -->
+            <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 14px; margin: 16px 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+                  <span>🗣️</span> Humanoid Voiceover (Neural Acting & Emotion)
+                </div>
+                <span class="badge badge-purple">High-Emotion Neural TTS</span>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Voice Persona</label>
+                  <select id="topicInputVoice" class="form-select">
+                    <option value="hi-IN-MadhurNeural">Hindi (Madhur - Intense Mystery & Acting)</option>
+                    <option value="en-US-ChristopherNeural">English (Christopher - Deep Cinematic Narrator)</option>
+                    <option value="en-US-JennyNeural">English (Jenny - Emotionally Expressive)</option>
+                    <option value="hi-IN-SwaraNeural">Hindi (Swara - Engaging Storyteller)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Emotion Delivery</label>
+                  <select id="voiceEmotionSelect" class="form-select">
+                    <option value="auto">Auto-Detect from Scene Context</option>
+                    <option value="mysterious">Mysterious / Suspenseful</option>
+                    <option value="excited">Energetic / Action Climax</option>
+                    <option value="sad">Soft / Emotional Drama</option>
+                    <option value="romantic">Romantic / Warm</option>
+                    <option value="calm">Calm Documentary</option>
+                  </select>
+                </div>
+              </div>
+              <div class="audio-mixer-grid" style="margin-top: 8px;">
+                <div class="mixer-item">
+                  <label><span>Acting Intensity</span><span id="labelVoiceIntensity">1.0x</span></label>
+                  <input type="range" id="sliderVoiceIntensity" min="50" max="150" value="100" oninput="document.getElementById('labelVoiceIntensity').innerText = (this.value/100).toFixed(1) + 'x'">
+                </div>
+                <div class="mixer-item">
+                  <label><span>Speaking Speed</span><span id="labelVoiceSpeed">1.0x</span></label>
+                  <input type="range" id="sliderVoiceSpeed" min="75" max="140" value="100" oninput="document.getElementById('labelVoiceSpeed').innerText = (this.value/100).toFixed(1) + 'x'">
+                </div>
+              </div>
+            </div>
+
+            <!-- Style & Resolution -->
             <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Visual Style</label>
+                <select id="topicInputStyle" class="form-select">
+                  <option value="manhwa">Manhwa Cinematic (Living Motion)</option>
+                  <option value="anime">Anime Vivid 4K</option>
+                  <option value="cinematic">Cinematic Noir / Film</option>
+                  <option value="cyberpunk">Cyberpunk Neon</option>
+                </select>
+              </div>
               <div class="form-group">
                 <label class="form-label">Target Duration</label>
                 <select id="topicInputDuration" class="form-select">
@@ -1047,67 +1593,56 @@
                   <option value="600">10 Minutes (Full Documentary)</option>
                 </select>
               </div>
-              <div class="form-group">
-                <label class="form-label">Aspect Ratio</label>
-                <select id="topicInputRatio" class="form-select">
-                  <option value="1080x1920">9:16 Vertical (Shorts / Reels)</option>
-                  <option value="1920x1080">16:9 Landscape (YouTube Feature)</option>
-                </select>
-              </div>
             </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Voiceover & Persona</label>
-                <select id="topicInputVoice" class="form-select">
-                  <option value="en-US-ChristopherNeural">English (Christopher - Deep Cinematic)</option>
-                  <option value="en-US-JennyNeural">English (Jenny - Expressive & Energetic)</option>
-                  <option value="hi-IN-MadhurNeural">Hindi (Madhur - Intense Mystery)</option>
-                  <option value="hi-IN-SwaraNeural">Hindi (Swara - Clear Documentary)</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Visual Style</label>
-                <select id="topicInputStyle" class="form-select">
-                  <option value="cinematic">Cinematic 4K Dramatic</option>
-                  <option value="anime">Anime Dark Fantasy</option>
-                  <option value="cyberpunk">Cyberpunk Neon Noir</option>
-                  <option value="minimalist">Minimalist Modern Documentary</option>
-                </select>
-              </div>
-            </div>
-
+            <!-- Background Music with Auto-Ducking -->
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Background Music</label>
                 <select id="topicInputMusic" class="form-select">
+                  <option value="auto">Auto Mood Detection (Procedural BGM)</option>
                   <option value="cinematic_ambient">Cinematic Ambient Tension</option>
                   <option value="synthwave">Dark Synthwave Pulse</option>
                   <option value="lofi">Lo-Fi Thoughtful</option>
-                  <option value="epic_orchestral">Epic Orchestral Rise</option>
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label">Captions & Typography</label>
-                <select id="topicInputCaptions" class="form-select">
-                  <option value="modern_creator">Modern Creator (Pop Animated)</option>
-                  <option value="karaoke">Kinetic Karaoke Glow</option>
-                  <option value="classic">Subtle Cinematic Lower-Third</option>
-                </select>
+                <label class="form-label">Audio Auto-Ducking</label>
+                <div style="display: flex; align-items: center; gap: 8px; height: 42px;">
+                  <input type="checkbox" id="checkAutoDucking" checked style="accent-color: var(--accent-primary); width: 18px; height: 18px;">
+                  <span style="font-size: 12px; color: var(--text-muted);">Ducks BGM volume when voice speaks</span>
+                </div>
               </div>
             </div>
 
-            <div style="margin-top: 24px;">
-              <button class="btn btn-primary" style="width: 100%; padding: 14px;" onclick="triggerTopicRender()">
-                <span>🚀</span> Generate Video (Full 5-10m Pipeline)
+            <!-- Primary Generate Action -->
+            <div style="margin-top: 20px;">
+              <button class="btn btn-primary" id="btnMainGenerate" style="width: 100%; padding: 14px; font-size: 15px;" onclick="handleMainStudioGenerate()">
+                <span>🚀</span> GENERATE VIDEO
               </button>
+            </div>
+
+            <!-- Real-Time Progress Checklist (Live Status from Backend) -->
+            <div id="studioLiveChecklistCard" style="display: none;" class="checklist-container">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <strong style="font-size: 14px; color: #fff;" id="checklistStatusTitle">Generating Video...</strong>
+                <span class="badge badge-purple" id="checklistPctBadge">0%</span>
+              </div>
+              <div class="checklist-row" id="chk-step-1"><span>Preparing project</span><span class="checklist-icon" id="chk-icon-1">○</span></div>
+              <div class="checklist-row" id="chk-step-2"><span>Reading source / manga</span><span class="checklist-icon" id="chk-icon-2">○</span></div>
+              <div class="checklist-row" id="chk-step-3"><span>Extracting pages & panels</span><span class="checklist-icon" id="chk-icon-3">○</span></div>
+              <div class="checklist-row" id="chk-step-4"><span>Generating narration script</span><span class="checklist-icon" id="chk-icon-4">○</span></div>
+              <div class="checklist-row" id="chk-step-5"><span>Generating humanoid voice</span><span class="checklist-icon" id="chk-icon-5">○</span></div>
+              <div class="checklist-row" id="chk-step-6"><span>Adding background music & SFX</span><span class="checklist-icon" id="chk-icon-6">○</span></div>
+              <div class="checklist-row" id="chk-step-7"><span>Rendering video with camera motion</span><span class="checklist-icon" id="chk-icon-7">○</span></div>
+              <div class="checklist-row" id="chk-step-8"><span>Finalizing & burning subtitles</span><span class="checklist-icon" id="chk-icon-8">○</span></div>
             </div>
           </div>
 
-          <!-- Video Scrubber & Preview -->
+          <!-- Video Scrubber, Player & Editor Handoff -->
           <div class="glass-card player-container">
             <div class="card-header" style="width: 100%;">
-              <div class="card-title"><span>📱</span> Mobile Master Scrubber</div>
+              <div class="card-title"><span>📱</span> Preview Player</div>
               <span class="badge badge-success" id="scrubberResBadge">1080x1920 60FPS</span>
             </div>
             <div class="phone-mockup">
@@ -1119,13 +1654,201 @@
                 <source id="videoSource" src="" type="video/mp4">
               </video>
             </div>
-            <div style="width: 100%; margin-top: 18px; display: flex; gap: 10px;">
-              <button class="btn btn-primary" style="flex: 1;" onclick="openPublishModalCurrent()">
-                <span>📤</span> Upload to YouTube
+            <div style="width: 100%; margin-top: 18px; display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="openInVideoEditor()">
+                  <span>🎞️</span> Open in Video Editor
+                </button>
+                <a id="downloadVideoBtn" href="#" download class="btn btn-secondary" style="padding: 10px 16px;">
+                  <span>⬇️</span> Download
+                </a>
+              </div>
+              <button class="btn btn-primary" style="width: 100%;" onclick="openPublishModalCurrent()">
+                <span>📤</span> Upload to YouTube Shorts (Comments 100% ON)
               </button>
-              <a id="downloadVideoBtn" href="#" download class="btn btn-secondary">
-                <span>⬇️</span> Download
-              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2B: INTEGRATED VIDEO EDITOR -->
+      <section class="view-panel" id="view-editor">
+        <!-- Top Toolbar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <select id="editorVideoSelect" onchange="onEditorSelectVideo(this.value)" class="form-select" style="max-width:320px;">
+              <option value="">Select Video to Edit...</option>
+            </select>
+            <button class="btn btn-secondary" onclick="loadEditorVideos()" title="Refresh videos">🔄 Refresh</button>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="btn btn-primary" onclick="triggerAiGodMode()">
+              <span>✨ 1-Click AI God Mode</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="editor-container">
+          <!-- Left: Video Viewport -->
+          <div class="editor-preview-card">
+            <div class="editor-viewport-wrap" id="editorViewport">
+              <video id="editorVideo" playsinline preload="metadata" crossorigin="anonymous">
+                <source id="editorVideoSource" src="" type="video/mp4">
+              </video>
+              <div id="editorHookOverlay" class="editor-hook-overlay pos-top">
+                WAIT TILL THE END 😱
+              </div>
+            </div>
+
+            <!-- Player Transport Controls -->
+            <div class="editor-transport">
+              <button class="editor-transport-btn" id="btnStepBack" onclick="editorStep(-1.0)" title="Step back 1s">⏪</button>
+              <button class="editor-transport-btn" id="btnPlayPause" onclick="editorTogglePlay()" title="Play/Pause (Space)" style="width:42px; height:42px; background:var(--accent-primary); color:#fff; font-size:16px;">▶</button>
+              <button class="editor-transport-btn" id="btnStepForward" onclick="editorStep(1.0)" title="Step forward 1s">⏩</button>
+              <button class="editor-transport-btn" id="btnLoop" onclick="editorToggleLoop()" title="Loop Playback">🔁</button>
+              <div class="editor-timecode" id="editorTimecode">00:00.0 / 00:00.0</div>
+            </div>
+
+            <div style="width:100%; display:flex; justify-content:space-between; margin-top:12px; font-size:12px; color:var(--text-muted);">
+              <span>Canvas: <strong>9:16 Shorts</strong></span>
+              <span id="editorActiveFilterLabel">Filter: <strong>Original</strong></span>
+            </div>
+          </div>
+
+          <!-- Right: Timeline & Multi-Track Workstation -->
+          <div class="editor-workstation">
+            <!-- Panel 1: Interactive Multi-Track Scrubber -->
+            <div class="editor-panel">
+              <div class="editor-panel-title">
+                <span>🎬 Interactive Timeline & Trimming Handles</span>
+                <span style="font-size:12px; color:var(--accent-cyan);" id="editorTrimDurationLabel">Trimmed: 0.0s</span>
+              </div>
+
+              <div class="timeline-track-container">
+                <div class="timeline-ruler">
+                  <span id="rulerStart">00:00</span>
+                  <span id="rulerMid">00:15</span>
+                  <span id="rulerEnd">00:30</span>
+                </div>
+
+                <div class="timeline-scrubber" id="timelineScrubber" onclick="onTimelineClick(event)">
+                  <div class="timeline-scenes-filmstrip" id="timelineScenesStrip"></div>
+                  <div class="timeline-active-range" id="timelineActiveRange"></div>
+                  <div class="timeline-playhead" id="timelinePlayhead"></div>
+                </div>
+
+                <div class="timeline-controls-row">
+                  <div class="trim-input-group">
+                    <label>IN POINT</label>
+                    <input type="number" id="inputTrimIn" step="0.1" min="0" value="0.0" onchange="onTrimInputChange()">
+                    <span style="font-size:11px; color:var(--text-muted);">sec</span>
+                    <button class="btn btn-secondary" onclick="setTrimCurrent('in')" style="padding:2px 6px; font-size:10px;">SET</button>
+                  </div>
+
+                  <div class="trim-input-group">
+                    <label>OUT POINT</label>
+                    <input type="number" id="inputTrimOut" step="0.1" min="0" value="30.0" onchange="onTrimInputChange()">
+                    <span style="font-size:11px; color:var(--text-muted);">sec</span>
+                    <button class="btn btn-secondary" onclick="setTrimCurrent('out')" style="padding:2px 6px; font-size:10px;">SET</button>
+                  </div>
+
+                  <div class="trim-input-group" style="margin-left:auto;">
+                    <label>SPEED</label>
+                    <select id="selectSpeed" onchange="onSpeedChange(this.value)" style="background:transparent; border:none; color:var(--accent-cyan); font-family:var(--font-mono); outline:none; cursor:pointer;">
+                      <option value="0.75">0.75x (Cinematic Slow)</option>
+                      <option value="1.0" selected>1.0x (Normal)</option>
+                      <option value="1.1">1.1x (Fast Shorts)</option>
+                      <option value="1.25">1.25x (Viral Pacing)</option>
+                      <option value="1.5">1.5x (Super Speed)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 2: Cinematic LUT Color Grading -->
+            <div class="editor-panel">
+              <div class="editor-panel-title">
+                <span>🎨 Cinematic LUT Color Grading</span>
+                <span style="font-size:11px; color:var(--text-muted);">Instant Live CSS Preview</span>
+              </div>
+              <div class="filter-presets-grid" id="filterPresetsGrid">
+                <div class="filter-chip active" onclick="applyEditorFilter('none', this)">
+                  <div class="filter-chip-name">✨ Original</div>
+                  <div class="filter-chip-desc">Untouched natural balance</div>
+                </div>
+                <div class="filter-chip" onclick="applyEditorFilter('cyberpunk', this)">
+                  <div class="filter-chip-name">⚡ Cyberpunk Neon</div>
+                  <div class="filter-chip-desc">Electric blue & magenta pop</div>
+                </div>
+                <div class="filter-chip" onclick="applyEditorFilter('noir', this)">
+                  <div class="filter-chip-name">🕵️ Cinematic Noir</div>
+                  <div class="filter-chip-desc">Moody teal & dark contrast</div>
+                </div>
+                <div class="filter-chip" onclick="applyEditorFilter('golden_hour', this)">
+                  <div class="filter-chip-name">🌅 Golden Hour</div>
+                  <div class="filter-chip-desc">Radiant amber sunlight glow</div>
+                </div>
+                <div class="filter-chip" onclick="applyEditorFilter('anime_vivid', this)">
+                  <div class="filter-chip-name">🌸 Anime Vivid</div>
+                  <div class="filter-chip-desc">Vibrant hyper-saturation</div>
+                </div>
+                <div class="filter-chip" onclick="applyEditorFilter('vintage', this)">
+                  <div class="filter-chip-name">📼 Vintage 90s</div>
+                  <div class="filter-chip-desc">Retro film grain vignette</div>
+                </div>
+                <div class="filter-chip" onclick="applyEditorFilter('horror', this)">
+                  <div class="filter-chip-name">🩸 Dark Horror</div>
+                  <div class="filter-chip-desc">Cold desaturated dread</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 3: Viral Hook Headline & Audio Mixer -->
+            <div class="editor-panel">
+              <div class="editor-panel-title">
+                <span>🔥 Viral Hook Sticker & Audio Control</span>
+              </div>
+              <div class="hook-tool-row">
+                <input type="text" id="inputHookText" class="hook-text-input" placeholder="Enter headline sticker (e.g. WAIT FOR 0:17 😱)" oninput="onHookTextInput(this.value)">
+                <div class="pos-btn-group">
+                  <button class="pos-btn active" id="posTop" onclick="setHookPos('top')">Top</button>
+                  <button class="pos-btn" id="posCenter" onclick="setHookPos('center')">Mid</button>
+                  <button class="pos-btn" id="posBottom" onclick="setHookPos('bottom')">Bottom</button>
+                </div>
+              </div>
+
+              <div class="audio-mixer-grid" style="margin-top:14px;">
+                <div class="mixer-item">
+                  <label><span>Voiceover Volume</span><span id="voiceVolLabel">100%</span></label>
+                  <input type="range" id="rangeVoiceVol" min="0" max="200" value="100" oninput="onVoiceVolChange(this.value)">
+                </div>
+                <div class="mixer-item">
+                  <label><span>Audio Fade In/Out</span></label>
+                  <div style="display:flex; align-items:center; gap:8px; height:34px;">
+                    <input type="checkbox" id="checkFadeAudio" checked style="accent-color:var(--accent-primary); width:18px; height:18px;">
+                    <span style="font-size:12px; color:#fff;">Smooth 0.5s audio fades</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 4: Render & Export -->
+            <div class="editor-panel">
+              <button class="btn btn-primary" id="btnExportCut" style="width:100%; padding:14px;" onclick="exportEditedCut()">
+                <span>⚡ Render & Export Cut</span>
+              </button>
+
+              <div class="export-result-card" id="exportResultCard">
+                <div>
+                  <div style="font-weight:700; font-size:13px; color:#34D399;">Export Ready!</div>
+                  <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="exportStatusMsg">Rendered via FFmpeg pipeline.</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span class="badge badge-purple" id="exportDurationBadge">30s</span>
+                  <a id="btnDownloadExport" href="#" download class="btn btn-secondary" style="padding:6px 12px; font-size:12px;">⬇️ Download</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1402,6 +2125,103 @@
             </table>
           </div>
         </div>
+
+        <!-- AI Model Configuration (Admin Only - Server-Side Storage) -->
+        <div class="glass-card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><span>🤖</span> AI Models & Provider Configuration</div>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Modular provider architecture. API keys are strictly masked and stored server-side.</p>
+            </div>
+            <button class="btn btn-secondary" onclick="loadAiModelConfig()"><span>🔄</span> Reload Config</button>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">LLM Provider</label>
+              <select id="cfgLlmProvider" class="form-select">
+                <option value="gemini">Google Gemini (Recommended)</option>
+                <option value="openai">OpenAI GPT</option>
+                <option value="anthropic">Anthropic Claude</option>
+                <option value="groq">Groq Llama-3 Fast</option>
+                <option value="deepseek">DeepSeek AI</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">LLM Model</label>
+              <select id="cfgLlmModel" class="form-select">
+                <option value="gemini-2.5-pro">gemini-2.5-pro (God Mode Storytelling)</option>
+                <option value="gemini-2.5-flash">gemini-2.5-flash (Ultra-fast)</option>
+                <option value="gpt-4o">gpt-4o (Omni)</option>
+                <option value="claude-3-7-sonnet">claude-3-7-sonnet</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">API Key (Encrypted Server-Side)</label>
+            <input type="password" id="cfgLlmApiKey" class="form-input" placeholder="••••••••••••••••" autocomplete="new-password">
+            <span style="font-size: 11px; color: var(--text-muted);">Leave as •••••••• to preserve existing server key. Keys are never transmitted to frontend.</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Vision Model</label>
+              <select id="cfgVisionModel" class="form-select">
+                <option value="gemini-2.5-flash">gemini-2.5-flash (Panel & Scene Analysis)</option>
+                <option value="gpt-4o-mini">gpt-4o-mini</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">OCR Engine</label>
+              <select id="cfgOcrModel" class="form-select">
+                <option value="pymupdf_ocr">PyMuPDF Neural OCR (Manga/PDF Text Extraction)</option>
+                <option value="tesseract">Tesseract Optical Recognition</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">TTS Provider</label>
+              <select id="cfgTtsProvider" class="form-select">
+                <option value="edge_tts">Edge-TTS Neural (Zero-Cost Humanoid Acting)</option>
+                <option value="gemini_neural">Gemini Neural Audio</option>
+                <option value="elevenlabs">ElevenLabs Multi-Lingual V2</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Default Voice Persona</label>
+              <select id="cfgVoiceModel" class="form-select">
+                <option value="hi-IN-MadhurNeural">Hindi - Madhur (Intense Dramatic Acting)</option>
+                <option value="en-US-ChristopherNeural">English - Christopher (Cinematic Deep)</option>
+                <option value="en-US-JennyNeural">English - Jenny (Expressive Action)</option>
+                <option value="hi-IN-SwaraNeural">Hindi - Swara (Storyteller)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Music Provider</label>
+              <select id="cfgMusicProvider" class="form-select">
+                <option value="procedural_mood">Procedural Mood Generator (Auto-Ducking)</option>
+                <option value="ambient_ai">Ambient AI Tension</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Video Render Engine</label>
+              <select id="cfgVideoProvider" class="form-select">
+                <option value="ffmpeg_hardware">FFmpeg Multi-Thread Hardware Pipeline</option>
+                <option value="ffmpeg_nvenc">FFmpeg NVENC GPU Accelerated</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;" onclick="saveAiModelConfig()">
+            <span>💾</span> Save AI Model Configuration
+          </button>
+        </div>
       </section>
     </main>
   </div>
@@ -1670,7 +2490,9 @@
       if (panelId === 'library') loadVideos();
       if (panelId === 'series' || panelId === 'studio-series') loadSeries();
       if (panelId === 'integrations') checkYouTubeStatus();
-      if (panelId === 'admin') loadAdminOverview();
+      if (panelId === 'admin') { loadAdminOverview(); loadAiModelConfig(); }
+      if (panelId === 'editor') loadEditorVideos();
+      if (panelId === 'studio-topic') loadStudioSeries();
       if (panelId === 'dashboard') {
         loadVideos();
         loadSeries();
@@ -1976,83 +2798,733 @@
       }
     }
 
-    // Video Generation & Pipeline Progress
-    async function triggerQuickRender() {
-      const topic = document.getElementById('dashQuickTopic').value.trim() || 'Latest AI breakthrough';
-      const duration = parseFloat(document.getElementById('dashQuickDuration').value);
-      const voice = document.getElementById('dashQuickVoice').value;
-      await dispatchGeneration({ topic, durationSeconds: duration, voiceId: voice });
+    // Source Tabs in Central Generate Video Studio
+    state.activeSourceTab = 'script';
+    state.currentMangaId = null;
+    state.mangaPages = [];
+
+    function switchSourceTab(tab) {
+      state.activeSourceTab = tab;
+      ['script', 'manga', 'images', 'text'].forEach(t => {
+        const btn = document.getElementById('srcTab' + t.charAt(0).toUpperCase() + t.slice(1));
+        const panel = document.getElementById('srcPanel' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (btn) btn.classList.toggle('active', t === tab);
+        if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
+      });
     }
 
-    async function triggerTopicRender() {
-      const title = document.getElementById('topicInputTitle').value.trim();
-      const topic = document.getElementById('topicInputPrompt').value.trim();
-      const duration = parseFloat(document.getElementById('topicInputDuration').value);
-      const voice = document.getElementById('topicInputVoice').value;
-      const style = document.getElementById('topicInputStyle').value;
-      const music = document.getElementById('topicInputMusic').value;
-      const ratio = document.getElementById('topicInputRatio').value;
-      await dispatchGeneration({ title, topic, durationSeconds: duration, voiceId: voice, style, music, resolution: ratio });
+    function loadStudioSeries() {
+      const sel = document.getElementById('genSeriesSelect');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">Standalone Video (No Series)</option>';
+      state.series.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = `${s.title} (${s.totalEpisodes || 1} eps)`;
+        sel.appendChild(opt);
+      });
     }
 
-    async function dispatchGeneration(payload) {
-      openProgressModal();
+    function onStudioSeriesChanged() {
+      const sId = document.getElementById('genSeriesSelect').value;
+      const s = state.series.find(x => x.id === sId);
+      if (s) {
+        document.getElementById('genEpisodeNumber').value = (s.totalEpisodes || 1) + 1;
+      }
+    }
+
+    // Manga PDF / CBZ Upload
+    async function handleMangaFileUpload(file) {
+      if (!file) return;
+      const statusText = document.getElementById('mangaUploadStatusText');
+      statusText.innerHTML = `⏳ Uploading and analyzing <strong>${file.name}</strong>...`;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
       try {
-        const res = await apiFetch('/api/v1/videos/generate', {
+        const res = await fetch('/api/v1/manga/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': state.token ? ('Bearer ' + state.token) : '',
+            'X-Workspace-Id': state.workspaceId
+          },
+          body: formData
+        });
+        const d = await res.json();
+        if (!d.success) {
+          statusText.innerText = 'Upload failed: ' + (d.error?.message || 'Server error');
+          showToast('Manga upload failed');
+          return;
+        }
+
+        const data = d.data;
+        state.currentMangaId = data.mangaId;
+        state.mangaPages = data.pages || [];
+
+        statusText.innerHTML = `✓ <strong>${file.name}</strong> ready (${data.pageCount} pages)`;
+        document.getElementById('mangaPagesPreviewSection').style.display = 'block';
+        document.getElementById('mangaExtractedInfo').innerText = `${data.pageCount} Pages Extracted`;
+
+        let totalPanels = 0;
+        const grid = document.getElementById('mangaPagesGrid');
+        grid.innerHTML = '';
+        state.mangaPages.forEach((p, idx) => {
+          totalPanels += (p.panelCount || 1);
+          const img = document.createElement('img');
+          img.src = p.imageUrl || p.imagePath;
+          img.className = 'manga-page-thumb';
+          img.title = `Page ${idx + 1} (${p.panelCount || 1} panels)`;
+          grid.appendChild(img);
+        });
+        document.getElementById('mangaPanelCountBadge').innerText = `${totalPanels} Panels Detected`;
+        showToast(`Analyzed ${data.pageCount} manga pages successfully!`);
+      } catch (err) {
+        statusText.innerText = 'Upload error: ' + err.message;
+        showToast('Manga upload failed');
+      }
+    }
+
+    function handleImageSequenceUpload(files) {
+      if (!files || files.length === 0) return;
+      document.getElementById('imageUploadStatusText').innerText = `✓ ${files.length} images selected for living motion scene render`;
+      const grid = document.getElementById('imageSequencePreview');
+      grid.innerHTML = '';
+      Array.from(files).slice(0, 12).forEach(f => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.className = 'manga-page-thumb';
+          grid.appendChild(img);
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    // Main Generate Video Dispatcher
+    async function handleMainStudioGenerate() {
+      const btn = document.getElementById('btnMainGenerate');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Initializing Generation Pipeline...';
+
+      if (state.activeSourceTab === 'manga' && state.currentMangaId) {
+        // Manga Generation Pipeline
+        const payload = {
+          manga_id: state.currentMangaId,
+          series_id: document.getElementById('genSeriesSelect').value || null,
+          episode_title: document.getElementById('topicInputTitle').value || 'Manga Chapter',
+          voice_name: document.getElementById('topicInputVoice').value,
+          voice_emotion: document.getElementById('voiceEmotionSelect').value,
+          intensity: (parseFloat(document.getElementById('sliderVoiceIntensity').value) || 100) / 100.0,
+          speed: (parseFloat(document.getElementById('sliderVoiceSpeed').value) || 100) / 100.0,
+          style: document.getElementById('topicInputStyle').value,
+          bgm_style: document.getElementById('topicInputMusic').value,
+          bgm_volume: (document.getElementById('checkAutoDucking').checked) ? 0.25 : 0.4
+        };
+
+        try {
+          const res = await apiFetch('/api/v1/manga/generate', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          const d = await res.json();
+          if (d.success) {
+            trackBackendMangaJob(d.data.jobId);
+          } else {
+            showToast(d.error?.message || 'Manga generation failed');
+            btn.disabled = false;
+            btn.innerHTML = '<span>🚀</span> GENERATE VIDEO';
+          }
+        } catch (err) {
+          showToast('Generation error: ' + err.message);
+          btn.disabled = false;
+          btn.innerHTML = '<span>🚀</span> GENERATE VIDEO';
+        }
+      } else {
+        // Topic / Script Pipeline
+        const payload = {
+          title: document.getElementById('topicInputTitle').value.trim(),
+          topic: document.getElementById('topicInputPrompt').value.trim() || 'Cinematic story',
+          durationSeconds: parseFloat(document.getElementById('topicInputDuration').value),
+          voiceId: document.getElementById('topicInputVoice').value,
+          style: document.getElementById('topicInputStyle').value,
+          music: document.getElementById('topicInputMusic').value,
+          resolution: document.getElementById('topicInputRatio').value
+        };
+
+        try {
+          const res = await apiFetch('/api/v1/videos/generate', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          const d = await res.json();
+          if (d.success) {
+            trackBackendVideoJob(d.data.jobId);
+          } else {
+            showToast(d.error?.message || 'Generation failed');
+            btn.disabled = false;
+            btn.innerHTML = '<span>🚀</span> GENERATE VIDEO';
+          }
+        } catch (err) {
+          showToast('Generation error: ' + err.message);
+          btn.disabled = false;
+          btn.innerHTML = '<span>🚀</span> GENERATE VIDEO';
+        }
+      }
+    }
+
+    // Real-Time Progress Checklist Tracker (Backed by Live API Polling)
+    function trackBackendMangaJob(jobId) {
+      const card = document.getElementById('studioLiveChecklistCard');
+      if (card) card.style.display = 'block';
+
+      const poll = setInterval(async () => {
+        try {
+          const res = await apiFetch(`/api/v1/manga/jobs/${jobId}`);
+          const d = await res.json();
+          if (!d.success || !d.data) return;
+
+          const job = d.data;
+          const pct = job.progress || 0;
+          document.getElementById('checklistPctBadge').innerText = `${pct}%`;
+          document.getElementById('checklistStatusTitle').innerText = job.message || 'Generating Video...';
+
+          // Update checklist steps based on real pipeline step
+          const stepOrder = [
+            'preparing_project',
+            'reading_manga',
+            'extracting_pages',
+            'generating_narration',
+            'generating_voice',
+            'adding_music',
+            'rendering_video',
+            'finalizing'
+          ];
+          const currIdx = stepOrder.indexOf(job.step);
+
+          for (let i = 1; i <= 8; i++) {
+            const row = document.getElementById(`chk-step-${i}`);
+            const icon = document.getElementById(`chk-icon-${i}`);
+            if (!row || !icon) continue;
+
+            if (job.status === 'completed' || currIdx > (i - 1)) {
+              row.className = 'checklist-row done';
+              icon.innerText = '✓';
+            } else if (currIdx === (i - 1)) {
+              row.className = 'checklist-row active';
+              icon.innerText = '●';
+            } else {
+              row.className = 'checklist-row';
+              icon.innerText = '○';
+            }
+          }
+
+          if (job.status === 'completed') {
+            clearInterval(poll);
+            const btn = document.getElementById('btnMainGenerate');
+            if (btn) { btn.disabled = false; btn.innerHTML = '<span>🚀</span> GENERATE VIDEO'; }
+
+            // Load output video into preview player
+            if (job.video_url) {
+              const player = document.getElementById('studioVideoPlayer');
+              if (player) {
+                player.src = job.video_url;
+                player.load();
+                player.play().catch(() => {});
+              }
+              const dlBtn = document.getElementById('downloadVideoBtn');
+              if (dlBtn) dlBtn.href = job.video_url;
+            }
+
+            state.currentGeneratedVideoId = job.video_id;
+            showToast('🎉 Video generated successfully! Open in Video Editor to customize.');
+            loadVideos();
+          } else if (job.status === 'failed') {
+            clearInterval(poll);
+            const btn = document.getElementById('btnMainGenerate');
+            if (btn) { btn.disabled = false; btn.innerHTML = '<span>🚀</span> GENERATE VIDEO'; }
+            showToast(job.error || 'Video generation failed');
+          }
+        } catch (err) {
+          console.error('Job poll error', err);
+        }
+      }, 1000);
+    }
+
+    function trackBackendVideoJob(jobId) {
+      const card = document.getElementById('studioLiveChecklistCard');
+      if (card) card.style.display = 'block';
+
+      const poll = setInterval(async () => {
+        try {
+          const res = await apiFetch(`/api/v1/jobs/${jobId}`);
+          const d = await res.json();
+          if (!d.success || !d.data) return;
+
+          const job = d.data;
+          const pct = job.progress || 0;
+          document.getElementById('checklistPctBadge').innerText = `${pct}%`;
+          document.getElementById('checklistStatusTitle').innerText = job.currentStep || 'Rendering...';
+
+          const stepNames = ['queued', 'scripting', 'storyboarding', 'voiceover', 'visuals', 'audio_mixing', 'rendering', 'completed'];
+          const currIdx = stepNames.indexOf(job.currentStep);
+
+          for (let i = 1; i <= 8; i++) {
+            const row = document.getElementById(`chk-step-${i}`);
+            const icon = document.getElementById(`chk-icon-${i}`);
+            if (!row || !icon) continue;
+
+            if (job.status === 'completed' || currIdx > (i - 1)) {
+              row.className = 'checklist-row done';
+              icon.innerText = '✓';
+            } else if (currIdx === (i - 1)) {
+              row.className = 'checklist-row active';
+              icon.innerText = '●';
+            } else {
+              row.className = 'checklist-row';
+              icon.innerText = '○';
+            }
+          }
+
+          if (job.status === 'completed') {
+            clearInterval(poll);
+            const btn = document.getElementById('btnMainGenerate');
+            if (btn) { btn.disabled = false; btn.innerHTML = '<span>🚀</span> GENERATE VIDEO'; }
+
+            if (job.outputUrl) {
+              const player = document.getElementById('studioVideoPlayer');
+              if (player) {
+                player.src = job.outputUrl;
+                player.load();
+              }
+              const dlBtn = document.getElementById('downloadVideoBtn');
+              if (dlBtn) dlBtn.href = job.outputUrl;
+            }
+
+            state.currentGeneratedVideoId = job.videoId;
+            showToast('🎉 Video generated successfully! Open in Video Editor to customize.');
+            loadVideos();
+          } else if (job.status === 'failed') {
+            clearInterval(poll);
+            const btn = document.getElementById('btnMainGenerate');
+            if (btn) { btn.disabled = false; btn.innerHTML = '<span>🚀</span> GENERATE VIDEO'; }
+            showToast(job.error || 'Video generation failed');
+          }
+        } catch (err) {
+          console.error('Job poll error', err);
+        }
+      }, 1000);
+    }
+
+    // =========================================================================
+    // VIDEO EDITOR INTEGRATION
+    // =========================================================================
+    let _edVideos = [];
+    let _edCurrentVideo = null;
+    let _edDuration = 30.0;
+    let _edTrimIn = 0.0;
+    let _edTrimOut = 30.0;
+    let _edSpeed = 1.0;
+    let _edActiveFilter = 'none';
+    let _edHookPos = 'top';
+    const _edFilterCssMap = {
+      'none': 'none',
+      'cyberpunk': 'contrast(1.35) saturate(1.5) hue-rotate(-15deg)',
+      'noir': 'contrast(1.4) saturate(0.65) brightness(0.9)',
+      'vintage': 'sepia(0.25) contrast(1.15) saturate(0.9) brightness(0.95)',
+      'golden_hour': 'sepia(0.15) contrast(1.18) saturate(1.3) brightness(1.05)',
+      'anime_vivid': 'contrast(1.25) saturate(1.7) brightness(1.02)',
+      'horror': 'contrast(1.45) saturate(0.4) brightness(0.85)'
+    };
+
+    function openInVideoEditor(targetVideoId = null) {
+      switchNav('editor');
+      loadEditorVideos(targetVideoId || state.currentGeneratedVideoId);
+    }
+
+    async function loadEditorVideos(autoSelectId = null) {
+      const sel = document.getElementById('editorVideoSelect');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">⏳ Scanning editable videos...</option>';
+
+      try {
+        const res = await apiFetch('/api/v1/editor/videos');
+        const data = await res.json();
+        if (!data.ok || !data.videos || data.videos.length === 0) {
+          sel.innerHTML = '<option value="">No videos found</option>';
+          return;
+        }
+        _edVideos = data.videos;
+        sel.innerHTML = '';
+        _edVideos.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v.id;
+          opt.textContent = `#${v.id} — ${(v.title || 'Video').slice(0, 42)} (${v.length_sec || 30}s)`;
+          sel.appendChild(opt);
+        });
+
+        const targetId = autoSelectId || _edVideos[0].id;
+        sel.value = targetId;
+        onEditorSelectVideo(targetId);
+      } catch (err) {
+        console.error('loadEditorVideos error', err);
+        sel.innerHTML = '<option value="">Failed to load videos</option>';
+      }
+    }
+
+    async function onEditorSelectVideo(vid) {
+      if (!vid) return;
+      const vidInt = parseInt(vid, 10);
+      const vMeta = _edVideos.find(v => v.id === vidInt);
+      const vEl = document.getElementById('editorVideo');
+      if (!vEl) return;
+
+      try {
+        const res = await apiFetch(`/api/v1/editor/video/${vidInt}`);
+        const data = await res.json();
+        if (!data.ok) {
+          showToast('Failed to load video timeline: ' + (data.error || 'Unknown error'));
+          return;
+        }
+        _edCurrentVideo = data;
+        _edDuration = data.duration || 30.0;
+        _edTrimIn = 0.0;
+        _edTrimOut = _edDuration;
+
+        vEl.src = data.video_url;
+        vEl.load();
+
+        const inEl = document.getElementById('inputTrimIn');
+        const outEl = document.getElementById('inputTrimOut');
+        if (inEl) { inEl.value = '0.0'; inEl.max = _edDuration; }
+        if (outEl) { outEl.value = _edDuration.toFixed(1); outEl.max = _edDuration; }
+
+        const rStart = document.getElementById('rulerStart');
+        const rMid = document.getElementById('rulerMid');
+        const rEnd = document.getElementById('rulerEnd');
+        if (rStart) rStart.textContent = '00:00';
+        if (rMid) rMid.textContent = formatEditorTimecode(_edDuration / 2);
+        if (rEnd) rEnd.textContent = formatEditorTimecode(_edDuration);
+
+        // Filmstrip scenes
+        const strip = document.getElementById('timelineScenesStrip');
+        if (strip) {
+          strip.innerHTML = '';
+          if (data.scenes && data.scenes.length > 0) {
+            data.scenes.forEach(s => {
+              const img = document.createElement('img');
+              img.src = s.img_url;
+              img.className = 'timeline-scene-thumb';
+              strip.appendChild(img);
+            });
+          }
+        }
+
+        // Hook overlay text
+        const hookInp = document.getElementById('inputHookText');
+        if (hookInp) {
+          hookInp.value = (vMeta && vMeta.hook_overlay) ? vMeta.hook_overlay : '';
+          onHookTextInput(hookInp.value);
+        }
+
+        updateEditorVisuals();
+        showToast(`Loaded Video #${vidInt} (${_edDuration}s) into Editor`);
+      } catch (err) {
+        console.error('onEditorSelectVideo error', err);
+      }
+    }
+
+    function formatEditorTimecode(sec) {
+      if (isNaN(sec)) sec = 0;
+      const m = Math.floor(sec / 60);
+      const s = (sec % 60).toFixed(1);
+      return `${m.toString().padStart(2, '0')}:${s.padStart(4, '0')}`;
+    }
+
+    function editorTogglePlay() {
+      const vEl = document.getElementById('editorVideo');
+      const btn = document.getElementById('btnPlayPause');
+      if (!vEl) return;
+      if (vEl.paused) {
+        if (vEl.currentTime >= _edTrimOut || vEl.currentTime < _edTrimIn) {
+          vEl.currentTime = _edTrimIn;
+        }
+        vEl.play();
+        if (btn) btn.textContent = '⏸';
+      } else {
+        vEl.pause();
+        if (btn) btn.textContent = '▶';
+      }
+    }
+
+    function editorStep(delta) {
+      const vEl = document.getElementById('editorVideo');
+      if (!vEl) return;
+      vEl.currentTime = Math.max(0, Math.min(_edDuration, vEl.currentTime + delta));
+    }
+
+    function editorToggleLoop() {
+      const btn = document.getElementById('btnLoop');
+      const vEl = document.getElementById('editorVideo');
+      if (!vEl) return;
+      vEl.loop = !vEl.loop;
+      if (btn) {
+        btn.style.background = vEl.loop ? 'var(--accent-primary)' : 'rgba(255,255,255,0.06)';
+      }
+    }
+
+    function onTimelineClick(e) {
+      const scrubber = document.getElementById('timelineScrubber');
+      const vEl = document.getElementById('editorVideo');
+      if (!scrubber || !vEl || !_edDuration) return;
+      const rect = scrubber.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = Math.max(0, Math.min(1, clickX / rect.width));
+      vEl.currentTime = pct * _edDuration;
+    }
+
+    function setTrimCurrent(type) {
+      const vEl = document.getElementById('editorVideo');
+      if (!vEl) return;
+      const cur = parseFloat(vEl.currentTime.toFixed(1));
+      if (type === 'in') {
+        _edTrimIn = cur;
+        if (_edTrimIn >= _edTrimOut) _edTrimOut = Math.min(_edDuration, _edTrimIn + 3.0);
+      } else {
+        _edTrimOut = cur;
+        if (_edTrimOut <= _edTrimIn) _edTrimIn = Math.max(0, _edTrimOut - 3.0);
+      }
+      const inEl = document.getElementById('inputTrimIn');
+      const outEl = document.getElementById('inputTrimOut');
+      if (inEl) inEl.value = _edTrimIn.toFixed(1);
+      if (outEl) outEl.value = _edTrimOut.toFixed(1);
+      updateEditorVisuals();
+    }
+
+    function onTrimInputChange() {
+      const inEl = document.getElementById('inputTrimIn');
+      const outEl = document.getElementById('inputTrimOut');
+      if (inEl && outEl) {
+        _edTrimIn = Math.max(0, parseFloat(inEl.value) || 0.0);
+        _edTrimOut = Math.min(_edDuration, Math.max(_edTrimIn + 1.0, parseFloat(outEl.value) || _edDuration));
+        inEl.value = _edTrimIn.toFixed(1);
+        outEl.value = _edTrimOut.toFixed(1);
+        updateEditorVisuals();
+      }
+    }
+
+    function updateEditorVisuals() {
+      if (!_edDuration) return;
+      const rangeEl = document.getElementById('timelineActiveRange');
+      const durLabel = document.getElementById('editorTrimDurationLabel');
+
+      const leftPct = (_edTrimIn / _edDuration) * 100;
+      const widthPct = ((_edTrimOut - _edTrimIn) / _edDuration) * 100;
+      if (rangeEl) {
+        rangeEl.style.left = `${leftPct}%`;
+        rangeEl.style.width = `${widthPct}%`;
+      }
+      const trimmedDur = (_edTrimOut - _edTrimIn) / _edSpeed;
+      if (durLabel) {
+        durLabel.textContent = `Trimmed: ${trimmedDur.toFixed(1)}s (at ${_edSpeed}x)`;
+      }
+    }
+
+    function onSpeedChange(val) {
+      _edSpeed = parseFloat(val) || 1.0;
+      const vEl = document.getElementById('editorVideo');
+      if (vEl) vEl.playbackRate = _edSpeed;
+      updateEditorVisuals();
+    }
+
+    function applyEditorFilter(preset, chipEl) {
+      _edActiveFilter = preset;
+      document.querySelectorAll('#filterPresetsGrid .filter-chip').forEach(c => c.classList.remove('active'));
+      if (chipEl) chipEl.classList.add('active');
+
+      const vEl = document.getElementById('editorVideo');
+      const label = document.getElementById('editorActiveFilterLabel');
+      const css = _edFilterCssMap[preset] || 'none';
+      if (vEl) vEl.style.filter = css;
+      if (label) {
+        const name = chipEl ? chipEl.querySelector('.filter-chip-name').textContent : preset;
+        label.innerHTML = `Filter: <strong>${name}</strong>`;
+      }
+    }
+
+    function onHookTextInput(val) {
+      const overlay = document.getElementById('editorHookOverlay');
+      if (!overlay) return;
+      if (val.trim()) {
+        overlay.textContent = val.trim();
+        overlay.style.display = 'block';
+      } else {
+        overlay.style.display = 'none';
+      }
+    }
+
+    function setHookPos(pos) {
+      _edHookPos = pos;
+      ['posTop', 'posCenter', 'posBottom'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.remove('active');
+      });
+      const activeBtn = document.getElementById(pos === 'top' ? 'posTop' : (pos === 'center' ? 'posCenter' : 'posBottom'));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const overlay = document.getElementById('editorHookOverlay');
+      if (overlay) {
+        overlay.className = `editor-hook-overlay pos-${pos}`;
+      }
+    }
+
+    function onVoiceVolChange(val) {
+      const label = document.getElementById('voiceVolLabel');
+      if (label) label.textContent = `${val}%`;
+    }
+
+    function triggerAiGodMode() {
+      if (!_edCurrentVideo) {
+        showToast('Please select a video first');
+        return;
+      }
+      _edTrimIn = 0.0;
+      _edTrimOut = Math.min(_edDuration, 28.0);
+      const inEl = document.getElementById('inputTrimIn');
+      const outEl = document.getElementById('inputTrimOut');
+      if (inEl) inEl.value = '0.0';
+      if (outEl) outEl.value = _edTrimOut.toFixed(1);
+
+      _edSpeed = 1.1;
+      const speedSel = document.getElementById('selectSpeed');
+      if (speedSel) speedSel.value = '1.1';
+      onSpeedChange('1.1');
+
+      const chips = document.querySelectorAll('#filterPresetsGrid .filter-chip');
+      if (chips.length > 1) {
+        applyEditorFilter('cyberpunk', chips[1]);
+      }
+
+      const hookInp = document.getElementById('inputHookText');
+      if (hookInp && !hookInp.value) {
+        hookInp.value = 'WAIT TILL THE END 😱';
+        onHookTextInput('WAIT TILL THE END 😱');
+      }
+
+      updateEditorVisuals();
+      showToast('✨ AI God Mode Applied: 28s Sweet Spot + Cyberpunk Color Grade + 1.1x Pacing!');
+    }
+
+    async function exportEditedCut() {
+      if (!_edCurrentVideo) {
+        showToast('Select a video first');
+        return;
+      }
+
+      const btn = document.getElementById('btnExportCut');
+      const resultCard = document.getElementById('exportResultCard');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ Rendering FFmpeg Cut...</span>';
+      }
+      if (resultCard) resultCard.classList.remove('active');
+
+      const payload = {
+        video_id: _edCurrentVideo.video_id,
+        start_sec: _edTrimIn,
+        end_sec: _edTrimOut,
+        speed: _edSpeed,
+        filter_preset: _edActiveFilter,
+        hook_headline: (document.getElementById('inputHookText') || {}).value || '',
+        hook_position: _edHookPos,
+        voice_volume: (parseFloat((document.getElementById('rangeVoiceVol') || {}).value) || 100) / 100.0,
+        fade_audio: (document.getElementById('checkFadeAudio') || {}).checked !== false
+      };
+
+      try {
+        const res = await apiFetch('/api/v1/editor/export', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          showToast(`Export failed: ${data.error || 'Server error'}`);
+          return;
+        }
+
+        showToast(`🎉 Cut rendered in ${data.render_time_sec}s!`);
+        if (resultCard) {
+          resultCard.classList.add('active');
+          const badge = document.getElementById('exportDurationBadge');
+          const msg = document.getElementById('exportStatusMsg');
+          const dlBtn = document.getElementById('btnDownloadExport');
+          if (badge) badge.textContent = `${data.duration}s (${data.filter_applied})`;
+          if (msg) msg.textContent = `Rendered in ${data.render_time_sec}s. Ready to download or publish.`;
+          if (dlBtn) dlBtn.href = data.output_url;
+        }
+        loadEditorVideos();
+      } catch (err) {
+        showToast('Network error while exporting video');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>⚡ Render & Export Cut</span>';
+        }
+      }
+    }
+
+    // AI Model Configuration
+    async function loadAiModelConfig() {
+      try {
+        const res = await apiFetch('/api/v1/admin/ai-models');
+        const d = await res.json();
+        if (d.success && d.data) {
+          const cfg = d.data;
+          if (cfg.llmProvider) document.getElementById('cfgLlmProvider').value = cfg.llmProvider;
+          if (cfg.llmModel) document.getElementById('cfgLlmModel').value = cfg.llmModel;
+          if (cfg.visionModel) document.getElementById('cfgVisionModel').value = cfg.visionModel;
+          if (cfg.ocrModel) document.getElementById('cfgOcrModel').value = cfg.ocrModel;
+          if (cfg.ttsProvider) document.getElementById('cfgTtsProvider').value = cfg.ttsProvider;
+          if (cfg.voiceModel) document.getElementById('cfgVoiceModel').value = cfg.voiceModel;
+          if (cfg.musicProvider) document.getElementById('cfgMusicProvider').value = cfg.musicProvider;
+          if (cfg.videoProvider) document.getElementById('cfgVideoProvider').value = cfg.videoProvider;
+        }
+      } catch (err) {
+        console.error('Failed to load AI model config', err);
+      }
+    }
+
+    async function saveAiModelConfig() {
+      const payload = {
+        llmProvider: document.getElementById('cfgLlmProvider').value,
+        llmModel: document.getElementById('cfgLlmModel').value,
+        visionModel: document.getElementById('cfgVisionModel').value,
+        ocrModel: document.getElementById('cfgOcrModel').value,
+        ttsProvider: document.getElementById('cfgTtsProvider').value,
+        voiceModel: document.getElementById('cfgVoiceModel').value,
+        musicProvider: document.getElementById('cfgMusicProvider').value,
+        videoProvider: document.getElementById('cfgVideoProvider').value
+      };
+      const keyVal = document.getElementById('cfgLlmApiKey').value.trim();
+      if (keyVal && !keyVal.startsWith('•')) {
+        payload.llmApiKey = keyVal;
+      }
+
+      try {
+        const res = await apiFetch('/api/v1/admin/ai-models', {
           method: 'POST',
           body: JSON.stringify(payload)
         });
         const d = await res.json();
         if (d.success) {
-          trackJobProgress(d.data.jobId);
+          showToast('✓ AI Model Configuration saved securely on server!');
         } else {
-          showToast(d.error?.message || 'Generation failed');
-          closeProgressModal();
+          showToast('Failed to save config: ' + (d.error?.message || 'Server error'));
         }
       } catch (err) {
-        showToast('Generation error: ' + err.message);
-        closeProgressModal();
+        showToast('Error saving config: ' + err.message);
       }
-    }
-
-    function openProgressModal() {
-      document.getElementById('progressModal').style.display = 'flex';
-      document.getElementById('progressCloseBtn').style.display = 'none';
-      document.getElementById('progressPercentBadge').innerText = '0%';
-      document.querySelectorAll('.step-item').forEach(s => {
-        s.className = 'step-item';
-      });
-      document.getElementById('step-context').classList.add('active');
-    }
-    function closeProgressModal() {
-      document.getElementById('progressModal').style.display = 'none';
-    }
-
-    function trackJobProgress(jobId) {
-      const steps = ['context', 'script', 'scenes', 'voice', 'visuals', 'music', 'render', 'qa'];
-      let idx = 0;
-      const interval = setInterval(() => {
-        if (idx < steps.length) {
-          const currId = steps[idx];
-          const currEl = document.getElementById('step-' + currId);
-          if (currEl) {
-            currEl.className = 'step-item done';
-          }
-          idx++;
-          if (idx < steps.length) {
-            const nextEl = document.getElementById('step-' + steps[idx]);
-            if (nextEl) nextEl.className = 'step-item active';
-          }
-          const pct = Math.round((idx / steps.length) * 100);
-          document.getElementById('progressPercentBadge').innerText = pct + '%';
-        } else {
-          clearInterval(interval);
-          document.getElementById('progressModalTitle').innerText = 'Video Generated Successfully! 🎉';
-          document.getElementById('progressCloseBtn').style.display = 'inline-flex';
-          showToast('Video ready in library & preview scrubber!');
-          loadVideos();
-        }
-      }, 700);
     }
 
     // Video Library & Scrubber
@@ -2066,27 +3538,41 @@
 
         const grid = document.getElementById('videoCatalogGrid');
         grid.innerHTML = '';
-        vids.forEach(v => {
-          const card = document.createElement('div');
-          card.className = 'video-card';
-          card.innerHTML = `
-            <div class="video-thumb-wrapper" onclick="selectVideo('${v.id}')">
-              <img src="${v.thumbnailUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800'}" class="video-thumb">
-            </div>
-            <div class="video-card-body">
-              <div class="video-card-title">${v.title}</div>
-              <div class="video-card-meta">
-                <span>⏱️ ${v.durationSeconds ? v.durationSeconds.toFixed(0) + 's' : '60s'}</span>
-                <span class="badge ${v.status === 'published' ? 'badge-success' : 'badge-purple'}">${v.status.toUpperCase()}</span>
-              </div>
-              <div class="video-card-actions">
-                <button class="btn btn-primary" style="flex: 1; padding: 7px;" onclick="openPublishModal(${JSON.stringify(v).replace(/"/g, '&quot;')})">Upload YT</button>
-                <button class="btn btn-secondary" style="padding: 7px;" onclick="selectVideo('${v.id}')">Preview</button>
+        if (vids.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 48px 24px; color: var(--text-muted);">
+              <div style="font-size: 42px; margin-bottom: 12px;">🎬</div>
+              <h3 style="color: var(--text-main); font-size: 18px; margin-bottom: 8px;">No Videos in this Workspace</h3>
+              <p style="font-size: 14px; max-width: 440px; margin: 0 auto 20px auto;">Welcome to Autopilot! Your isolated workspace is ready. Generate your first video or upload a manga chapter.</p>
+              <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="switchNav('studio-topic')">Generate First Video</button>
+                <button class="btn btn-secondary" onclick="switchNav('studio-topic'); switchSourceTab('manga');">Upload Manga PDF</button>
               </div>
             </div>
           `;
-          grid.appendChild(card);
-        });
+        } else {
+          vids.forEach(v => {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.innerHTML = `
+              <div class="video-thumb-wrapper" onclick="selectVideo('${v.id}')">
+                <img src="${v.thumbnailUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800'}" class="video-thumb">
+              </div>
+              <div class="video-card-body">
+                <div class="video-card-title">${v.title}</div>
+                <div class="video-card-meta">
+                  <span>⏱️ ${v.durationSeconds ? v.durationSeconds.toFixed(0) + 's' : '60s'}</span>
+                  <span class="badge ${v.status === 'published' ? 'badge-success' : 'badge-purple'}">${v.status.toUpperCase()}</span>
+                </div>
+                <div class="video-card-actions">
+                  <button class="btn btn-primary" style="flex: 1; padding: 7px;" onclick="openPublishModal(${JSON.stringify(v).replace(/"/g, '&quot;')})">Upload YT</button>
+                  <button class="btn btn-secondary" style="padding: 7px;" onclick="openInVideoEditor('${v.id}')">Edit ✂️</button>
+                </div>
+              </div>
+            `;
+            grid.appendChild(card);
+          });
+        }
 
         if (vids.length > 0 && !document.getElementById('studioVideoPlayer').src) {
           selectVideo(vids[0].id);

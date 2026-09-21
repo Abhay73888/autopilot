@@ -1412,7 +1412,15 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 from core.video_editor import VideoEditor
                 ve = VideoEditor()
-                return self._json(200, {"ok": True, "videos": ve.list_editable_videos()})
+                all_vids = ve.list_editable_videos()
+                qs = parse_qs(u.query)
+                uid = self.headers.get("X-User-Id") or qs.get("user_id", [None])[0]
+                if uid and uid not in ("admin_abhay", "admin", "1"):
+                    with DB() as db:
+                        rows = db.q("SELECT id FROM videos WHERE user_id = ? OR owner_id = ?", (uid, uid))
+                        u_vids = {r["id"] for r in rows}
+                    all_vids = [v for v in all_vids if v.get("id") in u_vids]
+                return self._json(200, {"ok": True, "videos": all_vids})
             except Exception as e:
                 log.error("Editor videos list fail", e)
                 return self._json(500, {"ok": False, "error": str(e)})
@@ -1421,6 +1429,13 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 vid_str = u.path[len("/api/editor/video/"):].strip("/")
                 vid = int(vid_str)
+                qs = parse_qs(u.query)
+                uid = self.headers.get("X-User-Id") or qs.get("user_id", [None])[0]
+                if uid and uid not in ("admin_abhay", "admin", "1") and vid > 0:
+                    with DB() as db:
+                        rows = db.q("SELECT user_id, owner_id FROM videos WHERE id = ?", (vid,))
+                        if rows and rows[0].get("user_id") != uid and rows[0].get("owner_id") != uid:
+                            return self._json(403, {"ok": False, "error": "Access denied to video asset"})
                 from core.video_editor import VideoEditor
                 ve = VideoEditor()
                 return self._json(200, ve.get_video_timeline(vid))
@@ -1636,10 +1651,17 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 n = int(self.headers.get("Content-Length", 0))
                 body = json.loads(self.rfile.read(n) or b"{}")
+                target_vid = int(body.get("video_id", 0))
+                uid = self.headers.get("X-User-Id") or body.get("user_id")
+                if uid and uid not in ("admin_abhay", "admin", "1") and target_vid > 0:
+                    with DB() as db:
+                        rows = db.q("SELECT user_id, owner_id FROM videos WHERE id = ?", (target_vid,))
+                        if rows and rows[0].get("user_id") != uid and rows[0].get("owner_id") != uid:
+                            return self._json(403, {"ok": False, "error": "Access denied to export video asset"})
                 from core.video_editor import VideoEditor
                 ve = VideoEditor()
                 res = ve.apply_edits(
-                    video_id=int(body.get("video_id", 0)),
+                    video_id=target_vid,
                     start_sec=float(body.get("start_sec", 0.0)),
                     end_sec=float(body.get("end_sec", 0.0)) if body.get("end_sec") else None,
                     speed=float(body.get("speed", 1.0)),
@@ -1669,25 +1691,27 @@ class Handler(BaseHTTPRequestHandler):
                     if not user:
                         return self._json(404, {"ok": False, "error": f"Account '{ident}' not found. Please create an account."})
 
-                    # Password verification
-                    is_admin_account = (ident.lower() in ("admin_abhay", "abhay@autopilot.ai") or user.get("role") == "admin")
+                    # Secure cryptographic password verification
+                    from backend.app.core.security import verify_password, hash_password
                     stored_pwd = user.get("password_hash") or ""
-                    admin_env_pwd = os.environ.get("ADMIN_PASSWORD", "autopilot2026")
+                    is_admin_account = (ident.lower() in ("admin_abhay", "abhay@autopilot.ai") or user.get("role") == "admin")
 
-                    if is_admin_account:
-                        valid_passwords = {admin_env_pwd, "admin_autopilot_2026", "autopilot2026"}
-                        if stored_pwd:
-                            valid_passwords.add(stored_pwd)
-                        if password not in valid_passwords:
-                            return self._json(401, {"ok": False, "error": "Incorrect password for admin account."})
-                    elif stored_pwd:
-                        if password != stored_pwd:
-                            return self._json(401, {"ok": False, "error": "Incorrect password. Please try again."})
+                    if not verify_password(password, stored_pwd):
+                        return self._json(401, {"ok": False, "error": "Incorrect email or password. Please verify your credentials."})
+
+                    # If stored hash was legacy plaintext, auto-upgrade to PBKDF2
+                    if stored_pwd and not stored_pwd.startswith("pbkdf2_sha256$"):
+                        try:
+                            upgraded_hash = hash_password(password)
+                            db.execute("UPDATE users SET password_hash = ? WHERE id = ?", (upgraded_hash, user.get("id")))
+                        except Exception:
+                            pass
 
                     # Clean password before returning user object
                     user_clean = dict(user)
                     user_clean.pop("password_hash", None)
                     return self._json(200, {"ok": True, "user": user_clean, "is_admin": is_admin_account})
+
             except Exception as e:
                 log.error("Auth login fail", e)
                 return self._json(500, {"ok": False, "error": str(e)})

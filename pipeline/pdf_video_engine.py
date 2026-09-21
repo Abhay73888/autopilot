@@ -184,9 +184,11 @@ class MangaPanelDetector:
     Detects individual manga panels within a page image using contour detection.
     Returns list of (x, y, w, h) bounding boxes sorted in reading order (top→bottom, left→right).
     """
-
     def detect_panels(self, image_path: Path, min_panel_area_ratio: float = 0.03) -> list[tuple[int,int,int,int]]:
-        import cv2
+        try:
+            import cv2
+        except ImportError:
+            return []
         img = cv2.imread(str(image_path))
         if img is None:
             return []

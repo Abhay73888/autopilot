@@ -3,7 +3,7 @@ backend/app/api/v1/admin.py — Operational Admin & System Health Endpoints
 """
 
 from typing import Any, Dict, List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from ...schemas.common import ApiResponse
 from ..dependencies import TenantContext, require_admin_role
 
@@ -75,26 +75,188 @@ async def get_admin_system_overview(ctx: TenantContext = Depends(require_admin_r
 
 @router.get("/users", response_model=ApiResponse[List[Dict[str, Any]]])
 async def list_admin_users(ctx: TenantContext = Depends(require_admin_role)):
-    """List all registered platform users. Never exposes password hashes or tokens."""
+    """List all registered platform users with ownership counts. Never exposes password hashes or tokens."""
+    from core.db import DB
     from core.db_base import DB_ENGINE
+    db = DB()
     users = []
     try:
-        # SQLite / Postgres column safe query
-        rows = DB_ENGINE.execute_query("SELECT * FROM users ORDER BY id DESC LIMIT 100")
+        rows = DB_ENGINE.execute_query("SELECT * FROM users ORDER BY (CASE WHEN role = 'admin' THEN 0 ELSE 1 END), id DESC LIMIT 500")
         for r in rows:
             uid = str(r.get("user_id") or r.get("id"))
+            email = r.get("email", "")
+            
+            # Real DB counts for this user
+            if uid == "admin_abhay" or r.get("role") == "admin":
+                v_count = db.q1("SELECT COUNT(*) as cnt FROM videos WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = ''")["cnt"]
+                s_count = db.q1("SELECT COUNT(*) as cnt FROM series WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = ''")["cnt"]
+                yt_cred = db.q1("SELECT channel_name FROM channel_credentials WHERE (user_id = 'admin_abhay' OR workspace_id = 'ws_admin_abhay') AND platform = 'youtube' LIMIT 1")
+            else:
+                v_count = db.q1("SELECT COUNT(*) as cnt FROM videos WHERE user_id = ?", (uid,))["cnt"]
+                s_count = db.q1("SELECT COUNT(*) as cnt FROM series WHERE user_id = ?", (uid,))["cnt"]
+                yt_cred = db.q1("SELECT channel_name FROM channel_credentials WHERE user_id = ? AND platform = 'youtube' LIMIT 1", (uid,))
+
             users.append({
                 "id": uid,
-                "email": r.get("email", ""),
-                "name": r.get("name") or r.get("full_name") or "",
+                "dbId": r.get("id"),
+                "email": email,
+                "name": r.get("name") or r.get("full_name") or "Creator User",
                 "role": r.get("role", "user"),
-                "isOnboarded": bool(r.get("is_onboarded", False)),
-                "createdAt": str(r.get("created_ts") or r.get("created_at") or "")
+                "tier": r.get("tier", "starter"),
+                "credits": r.get("credits", 100),
+                "videoCount": v_count,
+                "video_count": v_count,
+                "seriesCount": s_count,
+                "series_count": s_count,
+                "youtubeConnected": bool(yt_cred),
+                "youtube_connected": bool(yt_cred),
+                "youtubeChannel": yt_cred["channel_name"] if yt_cred else None,
+                "youtube_channel": yt_cred["channel_name"] if yt_cred else None,
+                "status": "Active",
+                "isOnboarded": bool(r.get("is_onboarded", 0)),
+                "createdAt": r.get("created_ts") or r.get("created_at") or "",
+                "created_at": r.get("created_ts") or r.get("created_at") or ""
             })
     except Exception as e:
         users = []
 
     return ApiResponse(success=True, data=users)
+
+
+@router.get("/users/{user_id}", response_model=ApiResponse[Dict[str, Any]])
+async def get_admin_user_details(user_id: str, ctx: TenantContext = Depends(require_admin_role)):
+    """
+    Read-only inspection of a specific user's permitted information and data for Administrators.
+    Strictly protected: normal users receive 403 Forbidden.
+    """
+    from core.db import DB
+    from core.db_base import DB_ENGINE
+    from pathlib import Path
+    import json
+
+    db = DB()
+    user_row = DB_ENGINE.get_user_by_id(user_id) or DB_ENGINE.get_user_by_email(user_id)
+    if not user_row:
+        raise HTTPException(status_code=404, detail=f"User '{user_id}' not found.")
+
+    canonical_uid = str(user_row.get("user_id") or user_row.get("id"))
+    is_target_admin = canonical_uid == "admin_abhay" or user_row.get("role") == "admin"
+
+    # User-scoped videos
+    if is_target_admin:
+        v_rows = db.q("SELECT * FROM videos WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY id DESC LIMIT 100")
+        s_rows = db.q("SELECT * FROM series WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY id DESC")
+        ep_rows = db.q("SELECT * FROM episodes WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY id DESC")
+        j_rows = db.q("SELECT * FROM jobs WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY id DESC LIMIT 50")
+        cred_row = db.q1("SELECT * FROM channel_credentials WHERE (user_id = 'admin_abhay' OR workspace_id = 'ws_admin_abhay') AND platform = 'youtube' LIMIT 1")
+    else:
+        v_rows = db.q("SELECT * FROM videos WHERE user_id = ? ORDER BY id DESC LIMIT 100", (canonical_uid,))
+        s_rows = db.q("SELECT * FROM series WHERE user_id = ? ORDER BY id DESC", (canonical_uid,))
+        ep_rows = db.q("SELECT * FROM episodes WHERE user_id = ? ORDER BY id DESC", (canonical_uid,))
+        j_rows = db.q("SELECT * FROM jobs WHERE user_id = ? ORDER BY id DESC LIMIT 50", (canonical_uid,))
+        cred_row = db.q1("SELECT * FROM channel_credentials WHERE user_id = ? AND platform = 'youtube' LIMIT 1", (canonical_uid,))
+
+    # Format videos
+    videos = []
+    for r in v_rows:
+        vpath = r["video_path"]
+        cpath = r["cover_path"]
+        video_url = f"/output/{Path(vpath).parent.name}/{Path(vpath).name}" if vpath and Path(vpath).exists() else None
+        thumb_url = f"/output/{Path(cpath).parent.name}/{Path(cpath).name}" if cpath and Path(cpath).exists() else None
+        videos.append({
+            "id": f"vid_{r['id']}",
+            "title": r["title"] or r["topic"] or f"Video #{r['id']}",
+            "status": r["status"],
+            "durationSeconds": float(r["length_sec"] or 60.0),
+            "videoUrl": video_url,
+            "thumbnailUrl": thumb_url,
+            "seriesName": r["series_name"],
+            "createdAt": r["created_ts"] or r["updated_ts"]
+        })
+
+    # Format series
+    series = []
+    for s in s_rows:
+        series.append({
+            "id": s["id"],
+            "title": s["title"],
+            "description": s["description"],
+            "genre": s["genre"],
+            "tone": s["tone"],
+            "createdAt": s["created_at"]
+        })
+
+    # Format YouTube status
+    yt_meta = {}
+    if cred_row and cred_row["token_metadata"]:
+        try:
+            yt_meta = json.loads(cred_row["token_metadata"])
+        except Exception:
+            pass
+
+    youtube_info = {
+        "connected": bool(cred_row),
+        "channelId": cred_row["channel_id"] if cred_row else None,
+        "channelName": cred_row["channel_name"] if cred_row else None,
+        "subscriberCount": yt_meta.get("subscriber_count", 0),
+        "videoCount": yt_meta.get("video_count", 0),
+        "connectedAt": cred_row["created_at"] if cred_row else None
+    }
+
+    # Format activity
+    activity = []
+    for v in v_rows[:8]:
+        activity.append({
+            "title": f"Video {v['status'].capitalize()}",
+            "description": v["title"] or v["topic"],
+            "timestamp": v["created_ts"] or v["updated_ts"]
+        })
+    for s in s_rows[:4]:
+        activity.append({
+            "title": "Franchise Created",
+            "description": s["title"],
+            "timestamp": s["created_at"]
+        })
+
+    user_dict = {
+        "id": canonical_uid,
+        "email": user_row.get("email"),
+        "name": user_row.get("name") or user_row.get("full_name"),
+        "role": user_row.get("role", "user"),
+        "tier": user_row.get("tier", "starter"),
+        "credits": user_row.get("credits", 100),
+        "status": "Active",
+        "createdAt": str(user_row.get("created_ts") or user_row.get("created_at") or "")
+    }
+    stats_dict = {
+        "totalVideos": len(v_rows),
+        "totalSeries": len(s_rows),
+        "totalEpisodes": len(ep_rows),
+        "totalJobs": len(j_rows),
+        "videos": len(v_rows),
+        "series": len(s_rows),
+        "episodes": len(ep_rows),
+        "jobs": len(j_rows),
+        "uploads": 0
+    }
+
+    return ApiResponse(
+        success=True,
+        data={
+            "user": user_dict,
+            "profile": user_dict,
+            "stats": stats_dict,
+            "counts": stats_dict,
+            "youtube": youtube_info,
+            "series": series,
+            "videos": videos,
+            "recent_videos": videos,
+            "recent_series": series,
+            "recent_jobs": [],
+            "activity": activity,
+            "recentActivity": activity
+        }
+    )
 
 
 @router.get("/workspaces", response_model=ApiResponse[List[Dict[str, Any]]])

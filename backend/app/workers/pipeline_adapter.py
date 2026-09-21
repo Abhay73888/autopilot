@@ -120,7 +120,8 @@ def execute_real_pipeline(
     topic: Optional[str] = None,
     dry_run: bool = False,
     voice: Optional[str] = None,
-    with_images: bool = True
+    with_images: bool = True,
+    user_id: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Executes the REAL existing video pipeline end-to-end:
@@ -128,7 +129,7 @@ def execute_real_pipeline(
     Emits real progress events at every phase.
     """
     start_time = time.time()
-    log.info(f"Starting real pipeline execution for Job {job_id}, Video {video_id}", topic=topic)
+    log.info(f"Starting real pipeline execution for Job {job_id}, Video {video_id}", topic=topic, user_id=user_id)
 
     emit_job_progress(job_id, video_id, "running", "initializing", 5, "Initializing autonomous content team...")
 
@@ -148,15 +149,19 @@ def execute_real_pipeline(
         render_info = renderer.render(out_dir, preset="veryfast", keep_temp=False)
         render_seconds = time.time() - start_time
 
-        # Update legacy DB
+        # Update legacy DB with strict user ownership
         with DB() as db:
-            db.update_video(
-                legacy_vid_id,
-                video_path=render_info["video_path"],
-                cover_path=render_info["cover_path"],
-                length_sec=render_info["duration_sec"],
-                status="rendered"
-            )
+            upd_fields = {
+                "video_path": render_info["video_path"],
+                "cover_path": render_info["cover_path"],
+                "length_sec": render_info["duration_sec"],
+                "status": "rendered"
+            }
+            if user_id:
+                upd_fields["user_id"] = user_id
+            if workspace_id:
+                upd_fields["workspace_id"] = workspace_id
+            db.update_video(legacy_vid_id, **upd_fields)
 
         emit_job_progress(job_id, video_id, "rendered", "qa_validation", 90, "Gatekeeper inspecting audio LUFS and subtitle sync...")
         

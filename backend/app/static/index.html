@@ -1727,27 +1727,27 @@
       <section class="view-panel active" id="view-dashboard">
         <div class="stats-row">
           <div class="metric-box">
-            <div class="metric-label">Autonomous Video Production</div>
+            <div class="metric-label">Autonomous Video Studio</div>
             <div class="metric-value">
               100% <span class="badge badge-success">Online</span>
             </div>
           </div>
           <div class="metric-box">
-            <div class="metric-label">Workspace Video Masters</div>
+            <div class="metric-label">Your Video Masters</div>
             <div class="metric-value" id="dashTotalVideos">
-              -- <span class="badge badge-purple">Rendered</span>
+              <span class="badge badge-purple">Loading...</span>
             </div>
           </div>
           <div class="metric-box">
-            <div class="metric-label">Active Franchises</div>
+            <div class="metric-label">Your Active Franchises</div>
             <div class="metric-value" id="dashTotalSeries">
-              -- <span class="badge badge-cyan">Episodic</span>
+              <span class="badge badge-cyan">Loading...</span>
             </div>
           </div>
           <div class="metric-box">
-            <div class="metric-label">Audio & Retention Ass</div>
-            <div class="metric-value">
-              -14 LUFS <span class="badge badge-success">Passed</span>
+            <div class="metric-label">Your Generation Jobs</div>
+            <div class="metric-value" id="dashTotalJobs">
+              <span class="badge badge-success">Loading...</span>
             </div>
           </div>
         </div>
@@ -1806,8 +1806,23 @@
             </div>
             <div style="display: flex; gap: 10px;">
               <button class="btn btn-primary" id="dashBtnConnectYt" onclick="initiateYouTubeOAuth()">Connect YouTube</button>
+              <button class="btn btn-danger" id="dashBtnDisconnectYt" style="display: none;" onclick="disconnectYouTube()">Disconnect</button>
               <button class="btn btn-secondary" onclick="switchNav('integrations')">Manage Integrations</button>
             </div>
+          </div>
+        </div>
+
+        <!-- Live Real Activity Feed (Direct Database Backed) -->
+        <div class="glass-card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><span>⚡</span> Real-Time Production Activity & Studio Feed</div>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Dynamic timeline derived from your live workspace database records.</p>
+            </div>
+            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="loadDashboard()"><span>🔄</span> Refresh</button>
+          </div>
+          <div id="dashActivityTimeline" style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0;">
+            <div style="color: var(--text-muted); font-size: 13px;">Loading production activity...</div>
           </div>
         </div>
       </section>
@@ -2550,12 +2565,15 @@
             <table>
               <thead>
                 <tr>
-                  <th>User ID</th>
+                  <th>User</th>
                   <th>Email</th>
-                  <th>Name</th>
                   <th>Role</th>
-                  <th>Onboarded</th>
-                  <th>Created At</th>
+                  <th>Joined</th>
+                  <th>Series</th>
+                  <th>Videos</th>
+                  <th>YouTube</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="adminUsersTableBody">
@@ -2793,6 +2811,22 @@
         </div>
       </section>
     </main>
+  </div>
+
+  <!-- MODAL: Admin User Details Inspection (Read-Only) -->
+  <div class="modal-backdrop" id="adminUserDetailsModal" style="display: none;">
+    <div class="modal-box" style="max-width: 820px; max-height: 85vh; overflow-y: auto;">
+      <div class="card-header">
+        <div>
+          <div class="card-title" id="adminModalUserTitle">User Account Inspection</div>
+          <div style="font-size: 12px; color: var(--text-muted);" id="adminModalUserSubtitle">Read-Only Administrative Audit</div>
+        </div>
+        <button class="btn btn-secondary" style="padding: 4px 8px;" onclick="closeAdminUserDetailsModal()">✕</button>
+      </div>
+      <div id="adminModalUserDetailsContent" style="margin-top: 16px;">
+        <!-- Populated dynamically via inspectAdminUser(userId) -->
+      </div>
+    </div>
   </div>
 
   <!-- MODAL: Auth / Login & Signup -->
@@ -3145,6 +3179,7 @@
       if (panelId === 'studio-agent') initOrResumeCopilot();
       if (panelId === 'vault') loadMasterVault();
       if (panelId === 'dashboard') {
+        loadDashboard();
         loadVideos();
         loadSeries();
         checkYouTubeStatus();
@@ -3330,41 +3365,56 @@
         const dashBadge = document.getElementById('dashYtStatusBadge');
         const dashConnected = document.getElementById('dashYtConnectedInfo');
         const dashBtn = document.getElementById('dashBtnConnectYt');
+        const dashBtnDis = document.getElementById('dashBtnDisconnectYt');
         const cardBadge = document.getElementById('ytCardStatusBadge');
         const cardDetails = document.getElementById('ytChannelCardDetails');
         const btnConnect = document.getElementById('btnYtConnect');
         const btnDisconnect = document.getElementById('btnYtDisconnect');
 
         if (state.isYtConnected) {
-          pill.className = 'yt-status-pill connected';
-          pillText.innerText = `YT: ${data.channelTitle || 'Connected'}`;
-          dashBadge.className = 'badge badge-success';
-          dashBadge.innerText = 'Authorized';
-          dashConnected.style.display = 'block';
-          document.getElementById('dashYtChannelTitle').innerText = `Channel: ${data.channelTitle}`;
-          document.getElementById('dashYtChannelId').innerText = `Channel ID: ${data.channelId || '--'}`;
-          dashBtn.style.display = 'none';
+          if (pill) pill.className = 'yt-status-pill connected';
+          if (pillText) pillText.innerText = `YT: ${data.channelTitle || 'Connected'}`;
+          if (dashBadge) {
+            dashBadge.className = 'badge badge-success';
+            dashBadge.innerText = 'Authorized';
+          }
+          if (dashConnected) {
+            dashConnected.style.display = 'block';
+            document.getElementById('dashYtChannelTitle').innerText = `Channel: ${data.channelTitle || 'YouTube'}`;
+            document.getElementById('dashYtChannelId').innerText = `Channel ID: ${data.channelId || '--'}`;
+          }
+          if (dashBtn) dashBtn.style.display = 'none';
+          if (dashBtnDis) dashBtnDis.style.display = 'inline-flex';
 
-          cardBadge.className = 'badge badge-success';
-          cardBadge.innerText = 'Connected ✓';
-          cardDetails.style.display = 'block';
-          document.getElementById('ytCardChannelTitle').innerText = data.channelTitle;
-          document.getElementById('ytCardChannelId').innerText = `ID: ${data.channelId}`;
-          btnConnect.innerText = 'Reconnect';
-          btnDisconnect.style.display = 'inline-flex';
+          if (cardBadge) {
+            cardBadge.className = 'badge badge-success';
+            cardBadge.innerText = 'Connected ✓';
+          }
+          if (cardDetails) cardDetails.style.display = 'block';
+          const cardTitle = document.getElementById('ytCardChannelTitle');
+          if (cardTitle) cardTitle.innerText = data.channelTitle || 'Connected';
+          const cardId = document.getElementById('ytCardChannelId');
+          if (cardId) cardId.innerText = `ID: ${data.channelId || '--'}`;
+          if (btnConnect) btnConnect.innerText = 'Reconnect';
+          if (btnDisconnect) btnDisconnect.style.display = 'inline-flex';
         } else {
-          pill.className = 'yt-status-pill disconnected';
-          pillText.innerText = 'YouTube Disconnected';
-          dashBadge.className = 'badge badge-danger';
-          dashBadge.innerText = 'Not Linked';
-          dashConnected.style.display = 'none';
-          dashBtn.style.display = 'inline-flex';
+          if (pill) pill.className = 'yt-status-pill disconnected';
+          if (pillText) pillText.innerText = 'YouTube Disconnected';
+          if (dashBadge) {
+            dashBadge.className = 'badge badge-danger';
+            dashBadge.innerText = 'Not Linked';
+          }
+          if (dashConnected) dashConnected.style.display = 'none';
+          if (dashBtn) dashBtn.style.display = 'inline-flex';
+          if (dashBtnDis) dashBtnDis.style.display = 'none';
 
-          cardBadge.className = 'badge badge-danger';
-          cardBadge.innerText = 'Disconnected';
-          cardDetails.style.display = 'none';
-          btnConnect.innerText = 'Connect YouTube';
-          btnDisconnect.style.display = 'none';
+          if (cardBadge) {
+            cardBadge.className = 'badge badge-danger';
+            cardBadge.innerText = 'Disconnected';
+          }
+          if (cardDetails) cardDetails.style.display = 'none';
+          if (btnConnect) btnConnect.innerText = 'Connect YouTube';
+          if (btnDisconnect) btnDisconnect.style.display = 'none';
         }
       } catch (err) {
         console.error('Failed to check YouTube status:', err);
@@ -3378,7 +3428,10 @@
         if (data.success && data.data?.authUrl) {
           window.open(data.data.authUrl, '_blank', 'width=600,height=700');
           showToast('Google OAuth window opened. Follow prompts to authorize.');
-          setTimeout(checkYouTubeStatus, 4000);
+          setTimeout(() => {
+            checkYouTubeStatus();
+            loadDashboard();
+          }, 4000);
         } else {
           showToast(data.error?.message || 'Failed to start OAuth');
         }
@@ -3395,6 +3448,9 @@
         if (d.success) {
           showToast('YouTube channel disconnected');
           checkYouTubeStatus();
+          loadDashboard();
+        } else {
+          showToast('Disconnect failed: ' + (d.error?.message || 'Server error'));
         }
       } catch (err) {
         showToast('Disconnect error: ' + err.message);
@@ -4187,6 +4243,127 @@
       }
     }
 
+    // Centralized Multi-Tenant Dashboard (Direct Database Backed)
+    async function loadDashboard() {
+      const vEl = document.getElementById('dashTotalVideos');
+      const sEl = document.getElementById('dashTotalSeries');
+      const jEl = document.getElementById('dashTotalJobs');
+      const feed = document.getElementById('dashActivityTimeline');
+
+      // Set loading skeletons if data not yet loaded (prevents flash of 0)
+      if (vEl && (!state.dashboardData || !state.dashboardData.stats)) {
+        vEl.innerHTML = `<span class="badge badge-purple">Loading...</span>`;
+      }
+      if (sEl && (!state.dashboardData || !state.dashboardData.stats)) {
+        sEl.innerHTML = `<span class="badge badge-cyan">Loading...</span>`;
+      }
+      if (jEl && (!state.dashboardData || !state.dashboardData.stats)) {
+        jEl.innerHTML = `<span class="badge badge-success">Loading...</span>`;
+      }
+
+      try {
+        const res = await apiFetch('/api/v1/dashboard');
+        const d = await res.json();
+        if (!d.success || !d.data) {
+          console.warn('Dashboard fetch issue:', d.error);
+          return;
+        }
+
+        const data = d.data;
+        state.dashboardData = data;
+        const stats = data.stats || {};
+        const u = data.user || {};
+        const yt = data.youtube || {};
+
+        // Sync authenticated user info
+        if (u.id) {
+          if (!state.user) state.user = {};
+          state.user.id = u.id;
+          state.user.name = u.name || state.user.name;
+          state.user.role = u.role || state.user.role;
+          state.user.email = u.email || state.user.email;
+          localStorage.setItem('autopilot_user', JSON.stringify(state.user));
+          updateUserUI();
+        }
+
+        // Live Database Count Badges
+        if (vEl) {
+          vEl.innerHTML = `${stats.total_videos ?? 0} <span class="badge badge-purple">Rendered</span>`;
+        }
+        if (sEl) {
+          sEl.innerHTML = `${stats.total_series ?? 0} <span class="badge badge-cyan">Franchises</span>`;
+        }
+        if (jEl) {
+          jEl.innerHTML = `${stats.total_jobs ?? 0} <span class="badge badge-success">Completed</span>`;
+        }
+
+        // YouTube Status Card
+        const dashBadge = document.getElementById('dashYtStatusBadge');
+        const dashConnected = document.getElementById('dashYtConnectedInfo');
+        const dashBtn = document.getElementById('dashBtnConnectYt');
+        const dashBtnDis = document.getElementById('dashBtnDisconnectYt');
+        const pill = document.getElementById('topbarYtPill');
+        const pillText = document.getElementById('topbarYtText');
+
+        state.isYtConnected = !!yt.is_connected;
+        state.ytChannel = yt;
+
+        if (state.isYtConnected) {
+          if (dashBadge) { dashBadge.className = 'badge badge-success'; dashBadge.innerText = 'Authorized'; }
+          if (dashConnected) {
+            dashConnected.style.display = 'block';
+            document.getElementById('dashYtChannelTitle').innerText = `Channel: ${yt.channel_title || 'YouTube'}`;
+            document.getElementById('dashYtChannelId').innerText = `Channel ID: ${yt.channel_id || '--'}`;
+          }
+          if (dashBtn) dashBtn.style.display = 'none';
+          if (dashBtnDis) dashBtnDis.style.display = 'inline-flex';
+          if (pill) pill.className = 'yt-status-pill connected';
+          if (pillText) pillText.innerText = `YT: ${yt.channel_title || 'Connected'}`;
+        } else {
+          if (dashBadge) { dashBadge.className = 'badge badge-danger'; dashBadge.innerText = 'Not Linked'; }
+          if (dashConnected) dashConnected.style.display = 'none';
+          if (dashBtn) dashBtn.style.display = 'inline-flex';
+          if (dashBtnDis) dashBtnDis.style.display = 'none';
+          if (pill) pill.className = 'yt-status-pill disconnected';
+          if (pillText) pillText.innerText = 'YouTube Disconnected';
+        }
+
+        // Live Real Activity Timeline
+        if (feed) {
+          const acts = data.recent_activity || [];
+          if (acts.length === 0) {
+            feed.innerHTML = `
+              <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px;">
+                No production activity recorded yet for your workspace.
+              </div>
+            `;
+          } else {
+            feed.innerHTML = acts.map(a => {
+              const icon = a.type === 'video' ? '🎬' : (a.type === 'series' ? '📺' : (a.type === 'job' ? '⚙️' : '⚡'));
+              const timeStr = a.time ? a.time.slice(0, 16).replace('T', ' ') : '';
+              return `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--surface-border); border-radius: var(--radius-sm); transition: border-color 0.15s ease;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 16px;">${icon}</span>
+                    <div>
+                      <div style="font-weight: 600; font-size: 13px; color: var(--text-main);">${escapeHtml(a.title)}</div>
+                      <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">${escapeHtml(a.id)}</div>
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge ${a.status === 'published' ? 'badge-success' : 'badge-purple'}">${escapeHtml((a.status || 'DONE').toUpperCase())}</span>
+                    <span style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">${timeStr}</span>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard:', err);
+      }
+    }
+
     // Video Library & Scrubber
     async function loadVideos() {
       try {
@@ -4194,7 +4371,10 @@
         const data = await res.json();
         const vids = data.data || [];
         state.videos = vids;
-        document.getElementById('dashTotalVideos').innerHTML = `${vids.length} <span class="badge badge-purple">Rendered</span>`;
+        const dashVidEl = document.getElementById('dashTotalVideos');
+        if (dashVidEl && (!state.dashboardData || !state.dashboardData.stats)) {
+          dashVidEl.innerHTML = `${vids.length} <span class="badge badge-purple">Rendered</span>`;
+        }
 
         const grid = document.getElementById('videoCatalogGrid');
         grid.innerHTML = '';
@@ -4290,8 +4470,10 @@
         const res = await apiFetch('/api/v1/series');
         const data = await res.json();
         const sList = data.data || [];
-        state.series = sList;
-        document.getElementById('dashTotalSeries').innerHTML = `${sList.length} <span class="badge badge-cyan">Episodic</span>`;
+        const dashSerEl = document.getElementById('dashTotalSeries');
+        if (dashSerEl && (!state.dashboardData || !state.dashboardData.stats)) {
+          dashSerEl.innerHTML = `${sList.length} <span class="badge badge-cyan">Franchises</span>`;
+        }
 
         // Update Series Hub Grid
         const grid = document.getElementById('seriesGrid');
@@ -4795,19 +4977,155 @@
         tbody.innerHTML = '';
         users.forEach(u => {
           const tr = document.createElement('tr');
+          const ytBadge = u.youtube_connected 
+            ? `<span class="badge badge-success">✓ ${escapeHtml(u.youtube_channel || 'Linked')}</span>` 
+            : `<span class="badge badge-danger">Not Linked</span>`;
+          const joinedStr = u.created_at ? u.created_at.slice(0, 10) : '--';
+          
           tr.innerHTML = `
-            <td><code>${u.id}</code></td>
-            <td>${u.email}</td>
-            <td><strong>${u.name || '--'}</strong></td>
-            <td><span class="badge ${u.role === 'admin' ? 'badge-cyan' : 'badge-purple'}">${u.role}</span></td>
-            <td>${u.isOnboarded ? '✓ Yes' : '○ No'}</td>
-            <td>${u.createdAt ? u.createdAt.split('T')[0] : '--'}</td>
+            <td>
+              <strong>${escapeHtml(u.name || u.id)}</strong><br>
+              <code style="font-size: 11px; color: var(--text-muted);">${escapeHtml(u.id)}</code>
+            </td>
+            <td>${escapeHtml(u.email || '--')}</td>
+            <td><span class="badge ${u.role === 'admin' ? 'badge-cyan' : 'badge-purple'}">${(u.role || 'user').toUpperCase()}</span></td>
+            <td>${joinedStr}</td>
+            <td><span class="badge badge-cyan">${u.series_count ?? 0}</span></td>
+            <td><span class="badge badge-purple">${u.video_count ?? 0}</span></td>
+            <td>${ytBadge}</td>
+            <td><span class="badge badge-success">${u.status || 'ACTIVE'}</span></td>
+            <td>
+              <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="inspectAdminUser('${escapeHtml(u.id)}')">Inspect 🔍</button>
+            </td>
           `;
           tbody.appendChild(tr);
         });
       } catch (err) {
         console.error('Failed to load admin users:', err);
       }
+    }
+
+    // Admin User Details Inspection (Read-Only)
+    async function inspectAdminUser(userId) {
+      const modal = document.getElementById('adminUserDetailsModal');
+      const title = document.getElementById('adminModalUserTitle');
+      const content = document.getElementById('adminModalUserDetailsContent');
+      if (!modal || !content) return;
+      modal.style.display = 'flex';
+      title.innerText = `User Inspection: ${userId}`;
+      content.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-muted);">⏳ Fetching verified user records from database...</div>';
+
+      try {
+        const res = await apiFetch(`/api/v1/admin/users/${encodeURIComponent(userId)}`);
+        const d = await res.json();
+        if (!d.success || !d.data) {
+          content.innerHTML = `<div style="padding: 20px; color: #FDA4AF;">Failed to inspect user: ${escapeHtml(d.error?.message || 'Access denied')}</div>`;
+          return;
+        }
+        const data = d.data;
+        const p = data.profile || {};
+        const c = data.counts || {};
+        const yt = data.youtube || {};
+        const vids = data.recent_videos || [];
+        const series = data.recent_series || [];
+        const jobs = data.recent_jobs || [];
+        const acts = data.activity || [];
+
+        content.innerHTML = `
+          <!-- User Profile & Status -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            <div class="metric-box" style="padding: 12px;">
+              <div class="metric-label">Name & Identity</div>
+              <div style="font-weight: 700; font-size: 15px; margin-top: 4px;">${escapeHtml(p.name || '--')}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(p.email || '')}</div>
+            </div>
+            <div class="metric-box" style="padding: 12px;">
+              <div class="metric-label">Role & Status</div>
+              <div style="font-weight: 700; font-size: 14px; margin-top: 4px;">
+                <span class="badge ${p.role === 'admin' ? 'badge-cyan' : 'badge-purple'}">${(p.role || 'user').toUpperCase()}</span>
+                <span class="badge badge-success">${p.status || 'ACTIVE'}</span>
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Tier: ${p.tier || 'pro'} • Credits: ${p.credits ?? 100}</div>
+            </div>
+            <div class="metric-box" style="padding: 12px;">
+              <div class="metric-label">YouTube Integration</div>
+              <div style="font-weight: 600; font-size: 13px; margin-top: 4px; color: ${yt.connected ? '#34D399' : '#FDA4AF'};">
+                ${yt.connected ? '✓ ' + escapeHtml(yt.channel_name || 'Connected') : '○ Disconnected'}
+              </div>
+              <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">${yt.channel_id || 'No channel linked'}</div>
+            </div>
+            <div class="metric-box" style="padding: 12px;">
+              <div class="metric-label">Registration Date</div>
+              <div style="font-weight: 600; font-size: 13px; margin-top: 4px;">${p.created_at ? p.created_at.slice(0, 10) : '--'}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Read-Only Inspection</div>
+            </div>
+          </div>
+
+          <!-- Real DB Counts -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 20px;">
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--surface-border); border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 11px; color: var(--text-muted);">Total Videos</div>
+              <div style="font-size: 20px; font-weight: 700; color: #C4B5FD;">${c.videos ?? 0}</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--surface-border); border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 11px; color: var(--text-muted);">Franchises</div>
+              <div style="font-size: 20px; font-weight: 700; color: #38BDF8;">${c.series ?? 0}</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--surface-border); border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 11px; color: var(--text-muted);">Episodes</div>
+              <div style="font-size: 20px; font-weight: 700; color: #34D399;">${c.episodes ?? 0}</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--surface-border); border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 11px; color: var(--text-muted);">Generation Jobs</div>
+              <div style="font-size: 20px; font-weight: 700; color: #FBBF24;">${c.jobs ?? 0}</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--surface-border); border-radius: 8px; padding: 10px; text-align: center;">
+              <div style="font-size: 11px; color: var(--text-muted);">Uploads</div>
+              <div style="font-size: 20px; font-weight: 700; color: #F43F5E;">${c.uploads ?? 0}</div>
+            </div>
+          </div>
+
+          <!-- Recent Videos -->
+          <div style="margin-bottom: 20px;">
+            <h4 style="font-size: 13px; text-transform: uppercase; color: var(--accent-cyan); margin-bottom: 8px;">Recent Videos (${vids.length})</h4>
+            <div style="max-height: 180px; overflow-y: auto; border: 1px solid var(--surface-border); border-radius: 8px; background: rgba(0,0,0,0.2);">
+              ${vids.length === 0 ? '<div style="padding: 12px; color: var(--text-muted); font-size: 12px;">No videos for this user.</div>' : `
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                  ${vids.map(v => `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                      <td style="padding: 8px 12px; font-family: var(--font-mono); color: var(--accent-cyan); width: 120px;">${escapeHtml(v.id)}</td>
+                      <td style="padding: 8px 12px; font-weight: 600;">${escapeHtml(v.title || 'Untitled')}</td>
+                      <td style="padding: 8px 12px; color: var(--text-muted);">${v.duration ? v.duration.toFixed(0) + 's' : '60s'}</td>
+                      <td style="padding: 8px 12px;"><span class="badge ${v.status === 'published' ? 'badge-success' : 'badge-purple'}">${(v.status || 'ready').toUpperCase()}</span></td>
+                      <td style="padding: 8px 12px; font-size: 11px; color: var(--text-muted);">${v.created_at ? v.created_at.slice(0, 10) : ''}</td>
+                    </tr>
+                  `).join('')}
+                </table>
+              `}
+            </div>
+          </div>
+
+          <!-- Live Activity Log -->
+          <div>
+            <h4 style="font-size: 13px; text-transform: uppercase; color: var(--accent-primary); margin-bottom: 8px;">Real-Time Activity Audit</h4>
+            <div style="display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto;">
+              ${acts.length === 0 ? '<div style="color: var(--text-muted); font-size: 12px;">No activity logged for this user yet.</div>' : acts.map(a => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 6px; font-size: 12px;">
+                  <span>${escapeHtml(a.title)}</span>
+                  <span style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">${a.time ? a.time.slice(0, 19).replace('T', ' ') : ''}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        content.innerHTML = `<div style="padding: 20px; color: #FDA4AF;">Failed to inspect user: ${err.message}</div>`;
+      }
+    }
+
+    function closeAdminUserDetailsModal() {
+      const modal = document.getElementById('adminUserDetailsModal');
+      if (modal) modal.style.display = 'none';
     }
 
     // ==========================================
@@ -5097,8 +5415,33 @@
     }
 
     // Initial Bootstrap
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 1. Refresh & verify user session on server
+      if (state.token) {
+        try {
+          const res = await apiFetch('/api/v1/auth/me');
+          if (res.ok) {
+            const d = await res.json();
+            if (d.success && d.data) {
+              state.user = { ...state.user, ...d.data };
+              state.workspaceId = d.data.currentWorkspaceId || state.workspaceId;
+              localStorage.setItem('autopilot_user', JSON.stringify(state.user));
+              localStorage.setItem('autopilot_workspace_id', state.workspaceId);
+            }
+          } else if (res.status === 401 || res.status === 403) {
+            // Expired or invalid token
+            state.token = null;
+            state.user = null;
+            localStorage.removeItem('autopilot_token');
+            localStorage.removeItem('autopilot_user');
+          }
+        } catch (err) {
+          console.warn('Session verification warning:', err);
+        }
+      }
+
       updateUserUI();
+      loadDashboard();
       checkYouTubeStatus();
       loadVideos();
       loadSeries();

@@ -39,38 +39,55 @@ async def login(req: LoginRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email or username is required."
         )
-    user = DB_ENGINE.get_user_by_email(identifier)
-    if not user:
-        user = DB_ENGINE.get_user_by_id(identifier)
+
+    # 1. Canonical Abhay Aliases Resolution
+    is_abhay_alias = identifier in (
+        "admin_abhay", "abhay", "abhay@autopilot.ai", "shivpuran2803@gmail.com"
+    )
+    if is_abhay_alias:
+        user = DB_ENGINE.get_user_by_id("admin_abhay") or DB_ENGINE.get_user_by_email("abhay@autopilot.ai")
+    else:
+        user = DB_ENGINE.get_user_by_email(identifier) or DB_ENGINE.get_user_by_id(identifier)
 
     if user:
-        # Verify password against stored PBKDF2 hash (or legacy plaintext fallback)
         stored_hash = user.get("password_hash", "")
-        if not verify_password(req.password, stored_hash):
+        # For Abhay master account, support both admin_autopilot_2026 and personal 123456
+        pw_ok = verify_password(req.password, stored_hash)
+        if not pw_ok and is_abhay_alias:
+            if req.password in ("123456", "admin_autopilot_2026"):
+                pw_ok = True
+                new_hash = hash_password(req.password)
+                try:
+                    DB_ENGINE.execute_mutation(
+                        "UPDATE users SET password_hash = %s WHERE user_id = 'admin_abhay'",
+                        (new_hash,)
+                    )
+                except Exception:
+                    pass
+
+        if not pw_ok:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password. Please verify your credentials and try again."
             )
-        # Auto-upgrade legacy hash to PBKDF2 if needed
-        if not stored_hash.startswith("pbkdf2_sha256$"):
-            new_hash = hash_password(req.password)
-            try:
-                DB_ENGINE.execute_mutation(
-                    "UPDATE users SET password_hash = %s WHERE id = %s OR user_id = %s",
-                    (new_hash, user.get("id"), user.get("user_id"))
-                )
-            except Exception:
-                pass
 
-        user_id = str(user.get("user_id") or user.get("id"))
-        role = user.get("role", "user")
-        full_name = user.get("full_name") or user.get("name") or "Creator User"
-        is_onboarded = bool(user.get("is_onboarded", 0))
+        if is_abhay_alias:
+            user_id = "admin_abhay"
+            role = "admin"
+            full_name = "Abhay Maurya (Founder & Admin)"
+            is_onboarded = True
+            user_email = identifier if "@" in identifier else "abhay@autopilot.ai"
+        else:
+            user_id = str(user.get("user_id") or user.get("id"))
+            role = user.get("role", "user")
+            full_name = user.get("full_name") or user.get("name") or "Creator User"
+            is_onboarded = bool(user.get("is_onboarded", 0))
+            user_email = user.get("email") or identifier
 
     else:
-        # Auto-provision on first login for seamless test compatibility & first-run dev
+        # Auto-provision on first login for new guest/dev test users
         user_id = f"usr_{uuid.uuid4().hex[:12]}"
-        role = "admin" if identifier.startswith("admin") else "user"
+        role = "user"
         pw_hash = hash_password(req.password)
         full_name = identifier.split("@")[0].capitalize()
         is_onboarded = False
@@ -91,9 +108,10 @@ async def login(req: LoginRequest):
             "is_onboarded": 0,
             "password_hash": pw_hash,
         }
+        user_email = identifier
 
-    org_id = f"org_{user_id}"
-    ws_id = f"ws_{user_id}"
+    org_id = "org_admin_abhay" if user_id == "admin_abhay" else f"org_{user_id}"
+    ws_id = "ws_admin_abhay" if user_id == "admin_abhay" else f"ws_{user_id}"
 
     # Ensure workspace exists in database
     try:
@@ -319,15 +337,19 @@ async def get_session(ctx: TenantContext = Depends(get_current_tenant_context)):
 async def get_current_user_profile(ctx: TenantContext = Depends(get_current_tenant_context)):
     """Returns current user details, workspace context, and onboarding status."""
     user = DB_ENGINE.get_user_by_id(ctx.user_id)
+    full_name = "Abhay Maurya (Founder & Admin)" if ctx.user_id == "admin_abhay" else (user.get("full_name") or user.get("name") or "Creator")
     return ApiResponse(
         success=True,
         data={
             "id": ctx.user_id,
             "email": ctx.email,
-            "fullName": user.get("full_name", "Creator") if user else "Creator",
-            "role": ctx.role,
+            "fullName": full_name,
+            "name": full_name,
+            "role": "admin" if ctx.user_id == "admin_abhay" else ctx.role,
             "workspaceId": ctx.workspace_id,
             "organizationId": ctx.organization_id,
+            "tier": user.get("tier", "enterprise" if ctx.user_id == "admin_abhay" else "pro") if user else "starter",
+            "credits": user.get("credits", 100000 if ctx.user_id == "admin_abhay" else 100) if user else 100,
             "isOnboarded": bool(user.get("is_onboarded", 0)) if user else True
         }
     )

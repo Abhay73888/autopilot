@@ -19,7 +19,7 @@ class VideoService:
         self._jobs: Dict[str, Dict[str, Any]] = {}
         self._videos: Dict[str, Dict[str, Any]] = {}
 
-    def queue_video_generation(self, workspace_id: str, request: VideoGenerateRequest) -> VideoJobResponse:
+    def queue_video_generation(self, workspace_id: str, request: VideoGenerateRequest, user_id: Optional[str] = None) -> VideoJobResponse:
         # Standard video render costs 10 credits
         required_credits = 10
         if not BILLING.check_has_sufficient_credits(required_credits, workspace_id):
@@ -43,6 +43,7 @@ class VideoService:
             "jobId": job_id,
             "videoId": video_id,
             "workspaceId": workspace_id,
+            "userId": user_id,
             "projectId": request.projectId,
             "scriptId": request.scriptId,
             "status": "queued",
@@ -57,6 +58,7 @@ class VideoService:
         video_record = {
             "id": video_id,
             "workspaceId": workspace_id,
+            "userId": user_id,
             "projectId": request.projectId,
             "title": req_title,
             "description": req_desc,
@@ -82,7 +84,7 @@ class VideoService:
             # Launch real asynchronous pipeline execution
             threading.Thread(
                 target=self._run_real_pipeline_worker,
-                args=(job_id, video_id, workspace_id),
+                args=(job_id, video_id, workspace_id, user_id, request.topic),
                 daemon=True
             ).start()
 
@@ -94,7 +96,7 @@ class VideoService:
             streamUrl=f"/api/v1/jobs/{job_id}/stream"
         )
 
-    def _run_real_pipeline_worker(self, job_id: str, video_id: str, workspace_id: str):
+    def _run_real_pipeline_worker(self, job_id: str, video_id: str, workspace_id: str, user_id: Optional[str] = None, topic: Optional[str] = None):
         """Asynchronous execution calling real agents and FFmpeg pipeline."""
         from ..workers.pipeline_adapter import execute_real_pipeline
         try:
@@ -102,6 +104,8 @@ class VideoService:
                 job_id=job_id,
                 video_id=video_id,
                 workspace_id=workspace_id,
+                user_id=user_id,
+                topic=topic,
                 dry_run=True  # Safe default for local integration without burning paid tokens
             )
             if job_id in self._jobs:
@@ -120,6 +124,7 @@ class VideoService:
                 self._jobs[job_id]["error"] = str(e)
             if video_id in self._videos:
                 self._videos[video_id]["status"] = "failed"
+
 
 
     def get_job(self, workspace_id: str, job_id: str) -> Optional[Dict[str, Any]]:
@@ -227,8 +232,13 @@ class VideoService:
         # 1. Check in-memory session videos
         if video_id in self._videos:
             vid = self._videos[video_id]
-            if vid.get("workspaceId") != workspace_id and not is_admin:
-                raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
+            v_user = vid.get("userId")
+            v_ws = vid.get("workspaceId")
+            if not is_admin:
+                if v_user and v_user != effective_user_id:
+                    raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
+                elif not v_user and v_ws != workspace_id:
+                    raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
             return VideoResponse(**vid)
 
         # 2. Check persistent database

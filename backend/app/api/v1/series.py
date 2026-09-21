@@ -50,42 +50,10 @@ async def list_workspace_series(ctx: TenantContext = Depends(get_current_tenant_
     """Lists all episodic franchises owned by current workspace or all if administrator."""
     is_admin = ctx.role == "admin" or ctx.user_id in ("admin_abhay", "usr_admin")
     if is_admin:
-        rows = DB_ENGINE.execute_query("SELECT * FROM series ORDER BY created_at DESC")
+        rows = DB_ENGINE.execute_query("SELECT * FROM series WHERE user_id = 'admin_abhay' OR user_id IS NULL OR user_id = '' ORDER BY created_at DESC")
         series_list = [dict(r) for r in rows]
     else:
-        series_list = DB_ENGINE.list_series(ctx.workspace_id)
-
-    # Seed default benchmark franchises if workspace has none yet
-    if not series_list and not is_admin:
-        default_franchises = [
-            {
-                "id": f"ser_kaalrekha_{ctx.workspace_id[:8]}",
-                "title": "KAAL-REKHA (काल-रेखा)",
-                "description": "Psychological time-loop thriller where Kabir relives 3:17 AM in Mumbai.",
-                "genre": "anime_mystery",
-                "tone": "suspense_intense",
-                "cast": {"protagonist": "Kabir Sen", "antagonist": "Masked Entity", "ally": "Meera"}
-            },
-            {
-                "id": f"ser_jabpyaar_{ctx.workspace_id[:8]}",
-                "title": "Jab Pyaar Online Tha",
-                "description": "High-stakes romantic drama and cyber intrigue between strangers.",
-                "genre": "romantic_drama",
-                "tone": "emotional_twist",
-                "cast": {"male_lead": "Aarav", "female_lead": "Meera"}
-            }
-        ]
-        for f in default_franchises:
-            DB_ENGINE.create_series(
-                series_id=f["id"],
-                workspace_id=ctx.workspace_id,
-                title=f["title"],
-                description=f["description"],
-                genre=f["genre"],
-                tone=f["tone"],
-                cast_json=json.dumps(f["cast"])
-            )
-        series_list = DB_ENGINE.list_series(ctx.workspace_id)
+        series_list = DB_ENGINE.list_series(ctx.workspace_id, user_id=ctx.user_id)
 
     # Attach episode counts
     results = []
@@ -94,7 +62,7 @@ async def list_workspace_series(ctx: TenantContext = Depends(get_current_tenant_
             ep_rows = DB_ENGINE.execute_query("SELECT count(*) as count FROM episodes WHERE series_id = %s", (s["id"],))
             ep_count = ep_rows[0]["count"] if ep_rows else 0
         else:
-            episodes = DB_ENGINE.list_episodes(ctx.workspace_id, s["id"])
+            episodes = DB_ENGINE.list_episodes(ctx.workspace_id, s["id"], user_id=ctx.user_id)
             ep_count = len(episodes)
         s_data = dict(s)
         s_data["episodeCount"] = ep_count
@@ -108,16 +76,17 @@ async def create_series(req: CreateSeriesRequest, ctx: TenantContext = Depends(g
     """Creates a new episodic franchise with isolated characters and story bible."""
     series_id = f"ser_{uuid.uuid4().hex[:12]}"
     cast_str = json.dumps(req.cast or {})
-    record = DB_ENGINE.create_series(
+    res = DB_ENGINE.create_series(
         series_id=series_id,
         workspace_id=ctx.workspace_id,
+        user_id=ctx.user_id,
         title=req.title,
         description=req.description or "",
         genre=req.genre,
         tone=req.tone,
         cast_json=cast_str
     )
-    return ApiResponse(success=True, data=record)
+    return ApiResponse(success=True, data=res)
 
 
 @router.get("/{series_id}", response_model=ApiResponse[Dict[str, Any]])
@@ -269,6 +238,7 @@ async def generate_series_episode(
         episode_id=episode_id,
         series_id=series_id,
         workspace_id=ws_for_ep,
+        user_id=ctx.user_id,
         episode_number=next_ep_num,
         title=ep_title,
         recap=recap,
@@ -287,7 +257,7 @@ async def generate_series_episode(
         resolution="1080x1920",
         fps=30
     )
-    job_response = video_service.queue_video_generation(ctx.workspace_id, gen_req)
+    job_response = video_service.queue_video_generation(ctx.workspace_id, gen_req, user_id=ctx.user_id)
 
     # Associate video ID with episode
     DB_ENGINE.update_episode(episode_id, status="rendering", video_id=job_response.videoId)

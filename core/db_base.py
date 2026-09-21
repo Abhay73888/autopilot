@@ -128,6 +128,7 @@ class DatabaseEngine:
         CREATE TABLE IF NOT EXISTS video_jobs (
             id TEXT PRIMARY KEY,
             workspace_id TEXT NOT NULL,
+            user_id TEXT DEFAULT 'admin_abhay',
             video_id TEXT NOT NULL,
             job_type TEXT DEFAULT 'render_full',
             status TEXT DEFAULT 'queued',
@@ -141,6 +142,7 @@ class DatabaseEngine:
         CREATE TABLE IF NOT EXISTS channel_credentials (
             id TEXT PRIMARY KEY,
             workspace_id TEXT NOT NULL,
+            user_id TEXT DEFAULT 'admin_abhay',
             platform TEXT NOT NULL,
             channel_id TEXT NOT NULL,
             channel_name TEXT,
@@ -215,6 +217,7 @@ class DatabaseEngine:
         CREATE TABLE IF NOT EXISTS series (
             id TEXT PRIMARY KEY,
             workspace_id TEXT NOT NULL,
+            user_id TEXT DEFAULT 'admin_abhay',
             title TEXT NOT NULL,
             description TEXT,
             genre TEXT DEFAULT 'mystery',
@@ -227,6 +230,7 @@ class DatabaseEngine:
             id TEXT PRIMARY KEY,
             series_id TEXT NOT NULL,
             workspace_id TEXT NOT NULL,
+            user_id TEXT DEFAULT 'admin_abhay',
             episode_number INTEGER NOT NULL,
             title TEXT NOT NULL,
             recap TEXT,
@@ -242,6 +246,17 @@ class DatabaseEngine:
         with self.get_connection() as conn:
             conn.executescript(schema_sql)
             # Safe backward-compatible migrations for preexisting local databases
+            for tbl, col, ctype in [
+                ("series", "user_id", "TEXT DEFAULT 'admin_abhay'"),
+                ("episodes", "user_id", "TEXT DEFAULT 'admin_abhay'"),
+                ("channel_credentials", "user_id", "TEXT DEFAULT 'admin_abhay'"),
+                ("video_jobs", "user_id", "TEXT DEFAULT 'admin_abhay'"),
+            ]:
+                try:
+                    conn.execute(f"ALTER TABLE {tbl} ADD COLUMN {col} {ctype};")
+                except Exception:
+                    pass
+
             for col, ctype in [
                 ("full_name", "TEXT"),
                 ("is_onboarded", "INTEGER DEFAULT 0"),
@@ -553,19 +568,20 @@ class DatabaseEngine:
     def create_series(
         self, series_id: str, workspace_id: str, title: str,
         description: str = "", genre: str = "mystery", tone: str = "suspense",
-        cast_json: str = "{}"
+        cast_json: str = "{}", user_id: str = "admin_abhay"
     ) -> Dict[str, Any]:
         now = datetime.now(timezone.utc).isoformat()
         self.execute_mutation(
             """
-            INSERT INTO series (id, workspace_id, title, description, genre, tone, cast_json, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO series (id, workspace_id, user_id, title, description, genre, tone, cast_json, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
-            (series_id, workspace_id, title, description, genre, tone, cast_json, now)
+            (series_id, workspace_id, user_id, title, description, genre, tone, cast_json, now)
         )
         return {
             "id": series_id,
             "workspace_id": workspace_id,
+            "user_id": user_id,
             "title": title,
             "description": description,
             "genre": genre,
@@ -573,34 +589,46 @@ class DatabaseEngine:
             "created_at": now
         }
 
-    def list_series(self, workspace_id: str) -> List[Dict[str, Any]]:
-        rows = self.execute_query(
-            "SELECT * FROM series WHERE workspace_id = %s ORDER BY created_at DESC",
-            (workspace_id,)
-        )
+    def list_series(self, workspace_id: str, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        if user_id:
+            rows = self.execute_query(
+                "SELECT * FROM series WHERE user_id = %s OR workspace_id = %s ORDER BY created_at DESC",
+                (user_id, workspace_id)
+            )
+        else:
+            rows = self.execute_query(
+                "SELECT * FROM series WHERE workspace_id = %s ORDER BY created_at DESC",
+                (workspace_id,)
+            )
         return [dict(r) for r in rows]
 
-    def get_series(self, workspace_id: str, series_id: str) -> Optional[Dict[str, Any]]:
-        rows = self.execute_query(
-            "SELECT * FROM series WHERE workspace_id = %s AND id = %s",
-            (workspace_id, series_id)
-        )
+    def get_series(self, workspace_id: str, series_id: str, user_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        if user_id:
+            rows = self.execute_query(
+                "SELECT * FROM series WHERE (user_id = %s OR workspace_id = %s) AND id = %s",
+                (user_id, workspace_id, series_id)
+            )
+        else:
+            rows = self.execute_query(
+                "SELECT * FROM series WHERE workspace_id = %s AND id = %s",
+                (workspace_id, series_id)
+            )
         return dict(rows[0]) if rows else None
 
     def create_episode(
         self, episode_id: str, series_id: str, workspace_id: str,
         episode_number: int, title: str, recap: str = "", conflict: str = "",
         cliffhanger: str = "", script_json: str = "{}", status: str = "draft",
-        video_id: Optional[str] = None
+        video_id: Optional[str] = None, user_id: str = "admin_abhay"
     ) -> Dict[str, Any]:
         now = datetime.now(timezone.utc).isoformat()
         if IS_POSTGRES:
             self.execute_mutation(
                 """
                 INSERT INTO episodes (
-                    id, series_id, workspace_id, episode_number, title,
+                    id, series_id, workspace_id, user_id, episode_number, title,
                     recap, conflict, cliffhanger, script_json, status, video_id, created_at
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (series_id, episode_number) DO UPDATE SET
                     title = EXCLUDED.title,
                     recap = EXCLUDED.recap,
@@ -611,7 +639,7 @@ class DatabaseEngine:
                     video_id = EXCLUDED.video_id
                 """,
                 (
-                    episode_id, series_id, workspace_id, episode_number, title,
+                    episode_id, series_id, workspace_id, user_id, episode_number, title,
                     recap, conflict, cliffhanger, script_json, status, video_id, now
                 )
             )
@@ -619,12 +647,12 @@ class DatabaseEngine:
             self.execute_mutation(
                 """
                 INSERT OR REPLACE INTO episodes (
-                    id, series_id, workspace_id, episode_number, title,
+                    id, series_id, workspace_id, user_id, episode_number, title,
                     recap, conflict, cliffhanger, script_json, status, video_id, created_at
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
-                    episode_id, series_id, workspace_id, episode_number, title,
+                    episode_id, series_id, workspace_id, user_id, episode_number, title,
                     recap, conflict, cliffhanger, script_json, status, video_id, now
                 )
             )
@@ -632,22 +660,34 @@ class DatabaseEngine:
             "id": episode_id,
             "series_id": series_id,
             "workspace_id": workspace_id,
+            "user_id": user_id,
             "episode_number": episode_number,
             "title": title,
             "status": status,
             "created_at": now
         }
 
-    def list_episodes(self, workspace_id: str, series_id: str) -> List[Dict[str, Any]]:
-        rows = self.execute_query(
-            """
-            SELECT * FROM episodes
-            WHERE workspace_id = %s AND series_id = %s
-            ORDER BY episode_number ASC
-            """,
-            (workspace_id, series_id)
-        )
+    def list_episodes(self, workspace_id: str, series_id: str, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        if user_id:
+            rows = self.execute_query(
+                """
+                SELECT * FROM episodes
+                WHERE (user_id = %s OR workspace_id = %s) AND series_id = %s
+                ORDER BY episode_number ASC
+                """,
+                (user_id, workspace_id, series_id)
+            )
+        else:
+            rows = self.execute_query(
+                """
+                SELECT * FROM episodes
+                WHERE workspace_id = %s AND series_id = %s
+                ORDER BY episode_number ASC
+                """,
+                (workspace_id, series_id)
+            )
         return [dict(r) for r in rows]
+
 
     def get_episode(self, workspace_id: str, episode_id: str) -> Optional[Dict[str, Any]]:
         rows = self.execute_query(

@@ -24,7 +24,7 @@ async def generate_video(
         if cached:
             return ApiResponse(success=True, data=VideoJobResponse(**cached))
 
-    job_res = video_service.queue_video_generation(ctx.workspace_id, req)
+    job_res = video_service.queue_video_generation(ctx.workspace_id, req, user_id=ctx.user_id)
 
     if idempotency_key:
         IDEMPOTENCY.set(idempotency_key, job_res.model_dump())

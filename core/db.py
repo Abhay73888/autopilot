@@ -297,7 +297,7 @@ class DB:
                 pass
 
         # Multi-tenancy migrations for existing tables
-        for tbl in ("videos", "jobs", "discord_connections"):
+        for tbl in ("videos", "jobs", "discord_connections", "series", "episodes", "channel_credentials", "video_jobs", "uploaded_assets"):
             try:
                 self.conn.execute(f"ALTER TABLE {tbl} ADD COLUMN user_id TEXT DEFAULT 'admin_abhay'")
             except sqlite3.OperationalError:

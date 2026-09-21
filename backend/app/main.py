@@ -17,6 +17,7 @@ from .api.v1.analytics import router as analytics_router
 from .api.v1.auth import router as auth_router
 from .api.v1.billing import router as billing_router
 from .api.v1.copilot import router as copilot_router
+from .api.v1.dashboard import router as dashboard_router
 from .api.v1.ideas import router as ideas_router
 from .api.v1.instagram import router as instagram_router
 from .api.v1.integrations_instagram import router as integrations_instagram_router
@@ -195,6 +196,8 @@ app.include_router(integrations_discord_router, prefix=v1_prefix)
 app.include_router(instagram_router, prefix=v1_prefix)
 app.include_router(analytics_router, prefix=v1_prefix)
 app.include_router(copilot_router, prefix=v1_prefix)
+app.include_router(dashboard_router, prefix=v1_prefix)
+app.include_router(dashboard_router, prefix="/api")
 app.include_router(billing_router, prefix=v1_prefix)
 app.include_router(admin_router, prefix=v1_prefix)
 

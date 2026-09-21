@@ -151,16 +151,26 @@ def fetch_channel_profile(access_token: str) -> Dict[str, Any]:
     }
 
 
-def get_workspace_youtube_integration(workspace_id: str) -> Optional[Dict[str, Any]]:
-    """Fetches YouTube channel credentials strictly for the specified workspace."""
-    rows = DB_ENGINE.execute_query(
-        """
-        SELECT * FROM channel_credentials
-        WHERE workspace_id = %s AND platform = 'youtube'
-        ORDER BY created_at DESC LIMIT 1
-        """,
-        (workspace_id,)
-    )
+def get_workspace_youtube_integration(workspace_id: str, user_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Fetches YouTube channel credentials strictly for the specified user or workspace."""
+    if user_id:
+        rows = DB_ENGINE.execute_query(
+            """
+            SELECT * FROM channel_credentials
+            WHERE (user_id = %s OR workspace_id = %s) AND platform = 'youtube'
+            ORDER BY id DESC LIMIT 1
+            """,
+            (user_id, workspace_id)
+        )
+    else:
+        rows = DB_ENGINE.execute_query(
+            """
+            SELECT * FROM channel_credentials
+            WHERE workspace_id = %s AND platform = 'youtube'
+            ORDER BY id DESC LIMIT 1
+            """,
+            (workspace_id,)
+        )
     if not rows:
         return None
     return dict(rows[0])
@@ -348,13 +358,15 @@ async def youtube_oauth_callback(
     now = datetime.now(timezone.utc).isoformat()
     cred_id = f"cred_yt_{uuid.uuid4().hex[:10]}"
 
-    # Save to channel_credentials strictly under workspace_id
+    user_id = payload.get("u") or "admin_abhay"
+
+    # Save to channel_credentials strictly under workspace_id and user_id
     DB_ENGINE.execute_mutation(
         """
-        INSERT INTO channel_credentials (id, workspace_id, platform, channel_id, channel_name, encrypted_token, token_metadata, created_at)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO channel_credentials (id, workspace_id, user_id, platform, channel_id, channel_name, encrypted_token, token_metadata, created_at)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """,
-        (cred_id, workspace_id, "youtube", channel_id, channel_name, encrypted_token, json.dumps(channel_info), now)
+        (cred_id, workspace_id, user_id, "youtube", channel_id, channel_name, encrypted_token, json.dumps(channel_info), now)
     )
 
     return HTMLResponse(
@@ -389,10 +401,10 @@ async def youtube_oauth_callback(
 @router.get("/status", response_model=ApiResponse[Dict[str, Any]])
 async def get_youtube_status(ctx: TenantContext = Depends(get_current_tenant_context)):
     """
-    Checks if current workspace has an authorized YouTube integration.
+    Checks if current user/workspace has an authorized YouTube integration.
     NEVER returns raw access or refresh tokens.
     """
-    cred = get_workspace_youtube_integration(ctx.workspace_id)
+    cred = get_workspace_youtube_integration(ctx.workspace_id, user_id=ctx.user_id)
     if not cred:
         return ApiResponse(
             success=True,
@@ -400,7 +412,7 @@ async def get_youtube_status(ctx: TenantContext = Depends(get_current_tenant_con
                 "connected": False,
                 "isConnected": False,
                 "status": "not_connected",
-                "message": "No YouTube account connected for this workspace."
+                "message": "No YouTube account connected for this account."
             }
         )
 
@@ -430,12 +442,12 @@ async def get_youtube_status(ctx: TenantContext = Depends(get_current_tenant_con
 
 @router.post("/disconnect", response_model=ApiResponse[Dict[str, Any]])
 async def disconnect_youtube(ctx: TenantContext = Depends(get_current_tenant_context)):
-    """Disconnects YouTube channel for current workspace and purges stored credentials."""
+    """Disconnects YouTube channel for current user and purges stored credentials."""
     DB_ENGINE.execute_mutation(
-        "DELETE FROM channel_credentials WHERE workspace_id = %s AND platform = 'youtube'",
-        (ctx.workspace_id,)
+        "DELETE FROM channel_credentials WHERE (user_id = %s OR workspace_id = %s) AND platform = 'youtube'",
+        (ctx.user_id, ctx.workspace_id)
     )
     return ApiResponse(
         success=True,
-        data={"status": "disconnected", "platform": "youtube", "workspaceId": ctx.workspace_id}
+        data={"status": "disconnected", "platform": "youtube", "userId": ctx.user_id, "workspaceId": ctx.workspace_id}
     )

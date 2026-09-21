@@ -108,6 +108,68 @@ A self-sufficient production studio running on a local machine, VPS, or cloud co
 | **Manga-to-Video Engine** | `backend/app/api/v1/manga.py` + PyMuPDF + OpenCV | PDF/CBZ/Image page extraction, contour panel slicing, dialogue preservation, and camera pan/zoom animations. |
 | **Modular AI Model Registry** | `core/provider_registry.py` | Abstracted hot-swappable providers for LLM, Vision, OCR, TTS, Music & Video with zero server-side secret leakage. |
 | **Zero-Setup Remote Access** | `tunnel.py` | Instant, free public HTTPS tunnel via SSH reverse proxy without requiring port forwarding or third-party accounts. |
+| **🛡️ Production DB & User Isolation** | `backend/app/api/v1/dashboard.py` + `core/db_base.py` | Strict multi-tenant data isolation, server-side JWT identity resolution, 100% real database counters, user-scoped YouTube OAuth, and IDOR protection. |
+
+---
+
+## 🛡️ Production Database, Multi-Tenant User Isolation & YouTube Architecture (v2.8.0)
+
+AUTOPILOT v2.8.0 establishes enterprise-grade multi-tenant data isolation, repairs the production database architecture, restores complete canonical ownership of all 367+ historical videos and 76 series to founder Abhay Maurya, and introduces the unified `/api/v1/dashboard` endpoint.
+
+```mermaid
+flowchart TD
+    subgraph Client["📱 Frontend Client Application"]
+        REQ["API Request with Bearer Token<br/><i>(Authorization: Bearer &lt;JWT&gt;)</i>"]
+    end
+
+    subgraph Server["🔐 Server-Side Identity Gateway"]
+        AUTH["JWT Cryptographic Validation<br/><code>backend/app/core/security.py</code>"]
+        RESOLVE["Derive Verified <b>ctx.user_id</b><br/><i>(NEVER trust client userId or query params)</i>"]
+        REQ --> AUTH --> RESOLVE
+    end
+
+    subgraph DataIsolation["🗄️ Multi-Tenant User-Scoped Database"]
+        VIDEOS["<code>videos</code> WHERE user_id = ctx.user_id<br/><b>Abhay: 367 Videos · User B: 0</b>"]
+        SERIES["<code>series</code> WHERE user_id = ctx.user_id<br/><b>Abhay: 76 Franchises · User B: 0</b>"]
+        YOUTUBE["<code>channel_credentials</code><br/><i>Per-User OAuth Credential Vault</i>"]
+        RESOLVE --> VIDEOS
+        RESOLVE --> SERIES
+        RESOLVE --> YOUTUBE
+    end
+
+    subgraph Endpoints["⚡ Protected Production Services"]
+        DASH["<code>GET /api/v1/dashboard</code><br/><i>Profile, Real Counts, Activity Timeline</i>"]
+        GEN["<code>POST /api/v1/videos/generate</code><br/><i>Job & Video created under caller's user_id</i>"]
+        ADMIN["<code>GET /api/v1/admin/users</code><br/><i>Read-Only Inspection (Admin Only)</i>"]
+        VIDEOS --> DASH
+        SERIES --> DASH
+        YOUTUBE --> DASH
+        RESOLVE --> GEN
+        RESOLVE --> ADMIN
+    end
+```
+
+### 1. 🔍 Root Cause Diagnosis & Safe Data Migration
+* **Identity Aliasing**: Previous versions split account records between `admin_abhay` (User 1) and transient `usr_xxxx` IDs. The login pipeline now canonicalizes all Abhay identities (`admin_abhay`, `abhay`, `abhay@autopilot.ai`, `shivpuran2803@gmail.com`) to canonical user `admin_abhay`.
+* **Zero Data Loss Invariant**: Automated migration created a verified binary snapshot (`data/autopilot.db.backup_*`), backfilled `user_id` across `series`, `episodes`, `channel_credentials`, `video_jobs`, and synchronized 15 missing franchise titles directly from `videos.series_name`.
+* **Database Indexes Added**:
+  * `idx_videos_user`: Instant user-scoped video catalog queries.
+  * `idx_series_user`: Instant user franchise queries.
+  * `idx_episodes_user`: User episode lookups.
+  * `idx_creds_user`: Isolated YouTube OAuth credential queries.
+
+### 2. 📊 Centralized Multi-Tenant Dashboard (`GET /api/v1/dashboard`)
+* **Real Database Counters**: Eliminates all hardcoded statistics and client-side fallbacks. Abhay's dashboard displays **367 Rendered Videos**, **76 Franchises**, **58 Episodes**, and **99 Completed Jobs**. New users start with a clean slate of 0.
+* **Loading Skeletons**: Employs responsive loading skeletons, completely eliminating the brief flash of 0 or `--` before database records arrive.
+* **Live DB-Backed Activity Feed**: Dynamically compiles recent video renders, franchise additions, and completed jobs into a chronological audit feed.
+
+### 3. ▶️ Per-User YouTube Isolation & Upload Invariant
+* **Isolated Credentials**: Every user links and manages their own YouTube channel. Disconnecting YouTube executes `POST /api/v1/integrations/youtube/disconnect` and strictly revokes credentials for the caller's `user_id` without affecting any other tenant.
+* **Permanent Zero Comment Lock Policy**: Mandatory YouTube upload parameters enforce `selfDeclaredMadeForKids=False` and `privacyStatus='public'`, ensuring comments remain 100% enabled across all generated Shorts and videos.
+
+### 4. 👑 Administrative User Inspection (`/api/v1/admin/users`)
+* **Role-Based Access Control**: Standard creators attempting to access `/api/v1/admin/users` or inspect other users receive **403 Forbidden**.
+* **Read-Only Audit Modal**: Administrators can click **Inspect 🔍** on any user to review their registration timestamp, series list, recent videos, YouTube connection, and production activity.
 
 ---
 

@@ -287,11 +287,27 @@ class FFmpegVideoProvider(BaseVideoProvider):
 class AIModelConfigManager:
     """Manages active AI models and provider credentials securely server-side."""
 
-    @staticmethod
-    def get_config() -> Dict[str, Any]:
+    _CONFIG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "ai_models_config.json")
+
+    @classmethod
+    def _ensure_loaded(cls):
+        if os.path.exists(cls._CONFIG_FILE):
+            try:
+                import json
+                with open(cls._CONFIG_FILE, "r", encoding="utf-8") as f:
+                    stored = json.load(f)
+                for k, v in stored.items():
+                    if v and k not in os.environ:
+                        os.environ[k] = str(v)
+            except Exception:
+                pass
+
+    @classmethod
+    def get_config(cls) -> Dict[str, Any]:
+        cls._ensure_loaded()
         return {
             "llmProvider": os.getenv("LLM_PROVIDER", "gemini"),
-            "llmModel": os.getenv("LLM_MODEL", "gemini-2.5-pro"),
+            "llmModel": os.getenv("LLM_MODEL", "gemini-3.5-flash-lite"),
             "hasLlmApiKey": bool(os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY")),
             "llmApiKeyMasked": "••••••••" if (os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY")) else "",
             "visionModel": os.getenv("VISION_MODEL", "gemini-2.5-flash"),
@@ -302,8 +318,8 @@ class AIModelConfigManager:
             "videoProvider": os.getenv("VIDEO_PROVIDER", "ffmpeg_hardware")
         }
 
-    @staticmethod
-    def update_config(data: Dict[str, Any]) -> Dict[str, Any]:
+    @classmethod
+    def update_config(cls, data: Dict[str, Any]) -> Dict[str, Any]:
         env_updates = {}
         if "llmProvider" in data:
             env_updates["LLM_PROVIDER"] = data["llmProvider"]
@@ -323,7 +339,20 @@ class AIModelConfigManager:
         for k, v in env_updates.items():
             os.environ[k] = str(v)
 
-        return AIModelConfigManager.get_config()
+        try:
+            import json
+            existing = {}
+            if os.path.exists(cls._CONFIG_FILE):
+                with open(cls._CONFIG_FILE, "r", encoding="utf-8") as f:
+                    existing = json.load(f)
+            existing.update(env_updates)
+            os.makedirs(os.path.dirname(cls._CONFIG_FILE), exist_ok=True)
+            with open(cls._CONFIG_FILE, "w", encoding="utf-8") as f:
+                json.dump(existing, f, indent=2)
+        except Exception:
+            pass
+
+        return cls.get_config()
 
 
 # =====================================================================

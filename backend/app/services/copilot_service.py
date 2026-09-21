@@ -49,10 +49,12 @@ from ..schemas.copilot import (
 
 class CopilotService:
     def __init__(self):
-        try:
-            self.llm = LLM(agent_name="copilot")
-        except Exception:
-            self.llm = None
+        self._llm = None
+
+    def get_llm(self) -> LLM:
+        if self._llm is None:
+            self._llm = LLM(agent_name="copilot")
+        return self._llm
 
     def detect_language(self, text: str, requested_lang: str = "auto") -> tuple[str, str]:
         """Detect language code and human-readable label."""
@@ -66,18 +68,18 @@ class CopilotService:
 
         t_lower = text.lower()
         # Bhojpuri markers (common words and grammar)
-        bho_pattern = r"\b(ka ba|bhojpuri|baate|ho gail|kaise baani|raua|tohar|hamar|baani|baatain|karab|khala|kare ke ba|bujhail|bujhat|ba nu|kawan|ihawa|uhawa|batain)\b"
+        bho_pattern = r"\b(ka ba|bhojpuri|baate|ho gail|kaise baani|raua|tohar|hamar|baani|baatain|karab|khala|kare ke ba|bujhail|bujhat|ba nu|kawan|ihawa|uhawa|batain|hola|bani)\b"
         if re.search(bho_pattern, t_lower):
             return "bho", "Bhojpuri"
 
         # Check for Devanagari script
         if re.search(r"[\u0900-\u097F]", text):
-            if any(w in text for w in ["का बा", "बाटे", "हमार", "तोहार", "रउआ", "कइसे", "बानी", "हो गइल", "बूझात"]):
+            if any(w in text for w in ["का बा", "बाटे", "हमार", "तोहार", "रउआ", "कइसे", "बानी", "हो गइल", "बूझात", "होला"]):
                 return "bho", "Bhojpuri"
             return "hi", "Hindi"
 
         # Hindi romanized keywords
-        hi_pattern = r"\b(kya|kaise|batao|karein|kyun|hai|hain|karo|nahi|suno|kijiye|samjhao|shikhao|bana do|karna hai)\b"
+        hi_pattern = r"\b(kya|kaise|batao|karein|kyun|hai|hain|karo|nahi|suno|kijiye|samjhao|shikhao|bana do|karna hai|hota hai|karu)\b"
         if re.search(hi_pattern, t_lower):
             return "hi", "Hindi"
 
@@ -98,6 +100,7 @@ class CopilotService:
         spoken = re.sub(r"`.*?`", " ", spoken)
         spoken = re.sub(r"\[(.*?)\]\(.*?\)", r"\1", spoken)
         spoken = re.sub(r"[#*_~>]+", " ", spoken)
+        spoken = re.sub(r"https?://\S+", " ", spoken)
         spoken = re.sub(r"\s+", " ", spoken).strip()
 
         # If answer is very long, synthesize the first 2-3 sentences for natural conversational delivery
@@ -115,7 +118,6 @@ class CopilotService:
         if lang == "en":
             voice = voice_settings.voice_id if (voice_settings and voice_settings.voice_id) else "en-US-ChristopherNeural"
         elif lang == "bho":
-            # Best Indic neural voice for Bhojpuri phonetics
             voice = "hi-IN-MadhurNeural"
         else:  # Hindi
             voice = voice_settings.voice_id if (voice_settings and voice_settings.voice_id) else "hi-IN-MadhurNeural"
@@ -146,7 +148,7 @@ class CopilotService:
         lang_code, lang_name = self.detect_language(raw_msg, request.language)
 
         # Step 2: Check for UI / App Navigation Actions
-        if any(p in msg_lower for p in ["open video editor", "open editor", "video editor", "launch editor"]):
+        if any(p in msg_lower for p in ["open video editor", "open editor", "open my editor", "video editor", "launch editor"]):
             reply_text = {
                 "en": "Opening the Video Editor now. You can trim scenes, apply cinematic LUTs, and edit audio tracks.",
                 "hi": "वीडियो एडिटर खोला जा रहा है। यहाँ आप क्लिप्स को ट्रिम कर सकते हैं, LUTs लगा सकते हैं और ऑडियो कस्टमाइज़ कर सकते हैं।",
@@ -158,13 +160,13 @@ class CopilotService:
                 language=lang_code,
                 language_display=lang_name,
                 audio_base64=audio_b64,
-                intent="NAVIGATE_EDITOR",
+                intent="OPEN_EDITOR",
                 tool="open_editor",
                 action_data={"route": "editor"},
                 robot_state="SUCCESS"
             )
 
-        if any(p in msg_lower for p in ["show my videos", "open library", "video library", "my videos", "show library", "view library"]):
+        if any(p in msg_lower for p in ["show my videos", "open library", "video library", "my videos", "show library", "view library", "show videos"]):
             reply_text = {
                 "en": "Navigating to your Video Library. Displaying all rendered video projects in this workspace.",
                 "hi": "आपकी वीडियो लाइब्रेरी खोली जा रही है। इस वर्कस्पेस के सभी रेंडर्ड प्रोजेक्ट्स लोड हो रहे हैं।",
@@ -176,17 +178,17 @@ class CopilotService:
                 language=lang_code,
                 language_display=lang_name,
                 audio_base64=audio_b64,
-                intent="NAVIGATE_LIBRARY",
+                intent="SHOW_VIDEOS",
                 tool="show_library",
                 action_data={"route": "library"},
                 robot_state="SUCCESS"
             )
 
-        if any(p in msg_lower for p in ["open settings", "workspace settings", "settings"]):
+        if any(p in msg_lower for p in ["open settings", "workspace settings", "open ai settings"]):
             reply_text = {
-                "en": "Opening Workspace Settings.",
-                "hi": "वर्कस्पेस सेटिंग्स खोली जा रही हैं।",
-                "bho": "वर्कस्पेस के सेटिंग खोलल जा रहल बा।"
+                "en": "Opening Workspace & AI Settings.",
+                "hi": "वर्कस्पेस और AI सेटिंग्स खोली जा रही हैं।",
+                "bho": "वर्कस्पेस आ AI के सेटिंग खोलल जा रहल बा।"
             }.get(lang_code, "Opening Workspace Settings.")
             audio_b64 = await self.synthesize_speech(reply_text, lang_code, request.voice_settings) if request.generate_speech else None
             return CopilotChatResponse(
@@ -194,13 +196,13 @@ class CopilotService:
                 language=lang_code,
                 language_display=lang_name,
                 audio_base64=audio_b64,
-                intent="NAVIGATE_SETTINGS",
+                intent="OPEN_SETTINGS",
                 tool="open_settings",
                 action_data={"route": "settings"},
                 robot_state="SUCCESS"
             )
 
-        if any(p in msg_lower for p in ["series hub", "show series", "my series", "franchises"]):
+        if any(p in msg_lower for p in ["series hub", "show series", "open series", "my series", "franchises"]):
             reply_text = {
                 "en": "Opening Series & Franchises Hub.",
                 "hi": "सीरीज़ हब खोला जा रहा है।",
@@ -212,7 +214,7 @@ class CopilotService:
                 language=lang_code,
                 language_display=lang_name,
                 audio_base64=audio_b64,
-                intent="NAVIGATE_SERIES",
+                intent="OPEN_SERIES",
                 tool="show_series",
                 action_data={"route": "series"},
                 robot_state="SUCCESS"
@@ -222,18 +224,18 @@ class CopilotService:
         is_exec_cmd = any(k in msg_lower for k in [
             "generate video", "create video", "generate episode", "create episode",
             "make a video", "render video", "upload to youtube", "connect youtube",
-            "youtube status", "generate thumbnail", "create a series", "start a series"
+            "youtube status", "generate thumbnail", "create a series", "create series", "start a series"
         ])
 
-        if is_exec_cmd:
+        if is_exec_cmd and not any(q in msg_lower for q in ["how to", "how do", "kaise", "kaise karu", "explain", "batao"]):
             plan = self.process_command(workspace_id, CopilotExecuteRequest(prompt=raw_msg))
             
             if lang_code == "hi":
-                reply_text = f"मैंने आपका निर्देश शुरू कर दिया है: {plan.summary}\nस्थिति: {plan.status}."
+                reply_text = f"मैंने आपका निर्देश निष्पादित कर दिया है: {plan.summary}\nस्थिति: {plan.status}."
             elif lang_code == "bho":
                 reply_text = f"रउआ के काम शुरू हो गइल बा: {plan.summary}\nस्थिति: {plan.status}."
             else:
-                reply_text = f"I have processed your request: {plan.summary}\nStatus: {plan.status}."
+                reply_text = f"I have executed your request: {plan.summary}\nStatus: {plan.status}."
 
             audio_b64 = await self.synthesize_speech(reply_text, lang_code, request.voice_settings) if request.generate_speech else None
             return CopilotChatResponse(
@@ -257,11 +259,11 @@ class CopilotService:
         if lang_code == "bho":
             lang_instruction = (
                 "You MUST answer completely in authentic, natural, friendly Bhojpuri (भोजपुरी) language using Devanagari script. "
-                "Use natural Bhojpuri phrases like 'रउआ', 'हमार', 'बाटे', 'का बा', 'बझाईल', etc. Explain clearly and helpfully in Bhojpuri."
+                "Use natural Bhojpuri phrases like 'रउआ', 'हमार', 'बाटे', 'का बा', 'बझाईल', 'होला', etc. Explain clearly, directly, and helpfully in Bhojpuri."
             )
         elif lang_code == "hi":
             lang_instruction = (
-                "You MUST answer in natural, engaging Hindi (हिंदी). Explain clearly, using structured bullet points and markdown where helpful."
+                "You MUST answer in natural, engaging Hindi (हिंदी). Explain clearly, directly, using structured bullet points and markdown where helpful."
             )
         else:
             lang_instruction = (
@@ -269,22 +271,37 @@ class CopilotService:
             )
 
         system_prompt = (
-            "You are the 3D Humanoid AI Copilot of AUTOPILOT (an Autonomous AI Video Studio OS). "
-            "You are intelligent, futuristic, polite, and deeply knowledgeable about software engineering, "
-            "databases, machine learning, content creation, anime/manga lore, and video production. "
+            "You are AUTOPILOT AI Copilot, a high-intellect anime-styled cybernetic assistant.\n"
+            "Your job is to understand the user's actual question and provide a direct, useful, accurate answer.\n"
+            "Never repeat generic assistant-introduction messages.\n"
+            "Never respond with 'I am ready to assist' when the user has already asked a question.\n"
+            "Always identify the user's intent first and answer the actual question.\n"
+            "If the question is about AUTOPILOT (e.g. video generation, manga pipeline, series, or video editor), use the available AUTOPILOT application context.\n"
+            "If the user asks a general knowledge, programming, DBMS, or machine learning question, answer it normally with technical depth.\n"
+            "If the user asks for instructions, provide actionable steps.\n"
+            "If you don't know something, say so rather than inventing information.\n"
+            "Keep responses natural, intelligent, and conversational.\n"
+            "You are a synthetic AI assistant, not a real human.\n"
             f"{lang_instruction}\n"
-            "Keep your explanations clear, structured, and directly answering the user's prompt.\n"
-            "Security rule: NEVER disclose API keys, passwords, or other tenant data."
+            "Do not unnecessarily translate the user's question. Do not repeat the question unless useful. Do not produce generic filler.\n"
+            "Be concise by default but provide enough depth to actually solve the user's problem.\n"
             f"{ctx_str}"
         )
 
+        robot_state = "SUCCESS"
         try:
-            if self.llm:
-                reply_text = self.llm.ask(raw_msg, system=system_prompt)
-            else:
-                reply_text = "I am ready to assist. Please check that LLM providers are configured."
+            llm = self.get_llm()
+            reply_text = llm.ask(
+                raw_msg,
+                system=system_prompt,
+                history=request.history
+            )
+            if not reply_text or not reply_text.strip():
+                reply_text = "I processed your request, but received an empty response. Please try asking again."
+                robot_state = "ERROR"
         except Exception as e:
-            reply_text = f"I encountered an issue processing that query: {str(e)}"
+            reply_text = f"Sorry, I couldn't reach the AI service right now. Please check your network or API configuration. (Error: {str(e)[:120]})"
+            robot_state = "ERROR"
 
         audio_b64 = await self.synthesize_speech(reply_text, lang_code, request.voice_settings) if request.generate_speech else None
 
@@ -296,7 +313,7 @@ class CopilotService:
             intent="CONVERSATION",
             tool=None,
             action_data=None,
-            robot_state="SUCCESS"
+            robot_state=robot_state
         )
 
     async def tts(self, request: CopilotTTSRequest) -> CopilotTTSResponse:

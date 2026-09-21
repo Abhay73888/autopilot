@@ -34,6 +34,7 @@ class CopilotChatRequest(BaseModel):
     message: str
     language: str = "auto"  # "en", "hi", "bho", "auto"
     context: Optional[Dict[str, Any]] = None
+    history: Optional[List[Dict[str, str]]] = None  # multi-turn conversation memory
     voice_settings: Optional[CopilotVoiceSettings] = None
     generate_speech: bool = True
 

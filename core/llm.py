@@ -42,7 +42,7 @@ def _read_env_file():
 _read_env_file()
 
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
-DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
 MOONSHOT_BASE_URL = os.environ.get("MOONSHOT_BASE_URL", "https://api.moonshot.ai/v1")
 MOONSHOT_DEFAULT_MODEL = os.environ.get("MOONSHOT_MODEL", "kimi-k3")
 
@@ -218,12 +218,21 @@ class GeminiLLM:
         self.quota = quota or Quota()
 
     def generate(self, prompt: str, *, temperature: float = 0.9, max_tokens: int = 2048,
-                 system: str | None = None) -> str:
+                 system: str | None = None, history: list[dict] | None = None) -> str:
         # STEP 1: quota check — hard constraint
         self.quota.check_and_spend("gemini_requests", 1, reason=f"generate:{self.model}")
 
+        contents = []
+        if history:
+            for turn in history[-6:]:  # sliding window of last 6 turns
+                role = "user" if turn.get("role") in ("user", "human") else "model"
+                text = turn.get("content") or turn.get("text") or ""
+                if text:
+                    contents.append({"role": role, "parts": [{"text": text}]})
+        contents.append({"role": "user", "parts": [{"text": prompt}]})
+
         body = {
-            "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+            "contents": contents,
             "generationConfig": {"temperature": temperature, "maxOutputTokens": max_tokens},
         }
         if system:
@@ -237,7 +246,7 @@ class GeminiLLM:
                 req_url, data=json.dumps(body).encode("utf-8"),
                 headers={"Content-Type": "application/json"}, method="POST")
             try:
-                with urllib.request.urlopen(req, timeout=60) as resp:
+                with urllib.request.urlopen(req, timeout=40) as resp:
                     return json.loads(resp.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
                 detail = e.read().decode("utf-8", "replace")[:400]
@@ -246,15 +255,22 @@ class GeminiLLM:
                 raise RuntimeError(f"{e.code} {e.reason} :: {detail}") from e
 
         try:
-            data = retry(lambda: _call_model(self.model), tries=3, base_delay=1.5, log=log,
-                         what=f"Gemini {self.model} generateContent")
+            data = _call_model(self.model)
         except (QuotaExceeded, RuntimeError) as e:
-            if self.model != "gemini-1.5-flash":
-                log.warn(f"Model '{self.model}' unavailable or quota limit — falling back to gemini-1.5-flash",
-                         reason=str(e)[:120])
-                data = retry(lambda: _call_model("gemini-1.5-flash"), tries=3, base_delay=1.5,
-                             log=log, what="Gemini gemini-1.5-flash fallback")
-            else:
+            fallback_models = ["gemini-3.5-flash-lite", "gemini-flash-latest", "gemini-3.7-flash"]
+            data = None
+            for fb in fallback_models:
+                if fb == self.model:
+                    continue
+                try:
+                    log.warn(f"Model '{self.model}' unavailable or quota limit — falling back to {fb}",
+                             reason=str(e)[:120])
+                    data = _call_model(fb)
+                    self.model = fb  # Remember working model for subsequent calls
+                    break
+                except Exception as fb_err:
+                    log.warn(f"Fallback {fb} also failed: {fb_err}")
+            if data is None:
                 raise
 
         try:
@@ -363,12 +379,21 @@ class LLM:
         self.agent_name = agent_name
         self.backends = []
 
-        mock = CONFIG.get("mock_mode", True) if force_mock is None else force_mock
+        mock = (CONFIG.get("mock_mode", False) if force_mock is None else force_mock)
+        if self.agent_name == "copilot" and force_mock is None:
+            mock = False
+
         if mock:
             self.backends = [MockLLM()]
             self.backend = self.backends[0]
             log.info(f"LLM [{self.agent_name or 'global'}] MOCK mode mein hai (config.yaml -> mock_mode: false karke real karo)")
             return
+
+        try:
+            from core.provider_registry import AIModelConfigManager
+            AIModelConfigManager._ensure_loaded()
+        except Exception:
+            pass
 
         gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
         moonshot_key = os.environ.get("MOONSHOT_API_KEY", "").strip()
@@ -470,10 +495,13 @@ class LLM:
     def ask(self, prompt: str, **kw) -> str:
         """Plain text jawab. Har provider koshish karega, fail ho to agla provider."""
         had_real_backend = any(not isinstance(b, MockLLM) for b in self.backends)
+        last_error = None
         for backend in self.backends:
             if isinstance(backend, MockLLM):
                 if had_real_backend:
                     log.warn("⚠️  Saare real LLM fail ho gaye — ye output MOCK hai, asli LLM ka nahi. Quality kam hogi.")
+                if self.agent_name == "copilot" and had_real_backend:
+                    raise RuntimeError(f"All active AI providers failed to generate answer: {last_error}")
                 return backend.generate(prompt, **kw)
             try:
                 ans = backend.generate(prompt, **kw)
@@ -481,9 +509,13 @@ class LLM:
                 return ans
             except QuotaExceeded as e:
                 log.warn(f"[{backend.name}] quota khatam, agla backend try karte hain: {e}")
+                last_error = e
             except Exception as e:  # noqa: BLE001
                 log.error(f"[{backend.name}] call fail — agla backend try karte hain", e)
+                last_error = e
 
+        if self.agent_name == "copilot" and had_real_backend:
+            raise RuntimeError(f"All real AI backends failed: {last_error}")
         fallback = MockLLM().generate(prompt)
         if had_real_backend:
             log.warn("⚠️  Ye output MOCK hai, asli LLM ka nahi. Quality kam hogi.")

@@ -2279,19 +2279,19 @@
       <!-- VIEW 4: STUDIO - 3D HUMANOID AI COPILOT WORKSTATION -->
       <section class="view-panel" id="view-studio-agent">
         <div class="copilot-container">
-          <!-- Left: 3D Humanoid Robot Stage -->
+          <!-- Left: 3D Anime Humanoid Robot Stage -->
           <div class="copilot-stage-card">
             <div class="copilot-stage-header">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 18px;">🤖</span>
+                <span style="font-size: 20px;">🥷</span>
                 <div>
-                  <div style="font-family: var(--font-display); font-weight: 700; font-size: 14px; color: #fff;">AI COPILOT 3D</div>
-                  <div style="font-size: 10px; color: var(--text-muted);">Humanoid Autonomous Assistant</div>
+                  <div style="font-family: var(--font-display); font-weight: 700; font-size: 14.5px; background: linear-gradient(135deg, #e11d48, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ANIME AI COPILOT</div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Humanoid AI Companion</div>
                 </div>
               </div>
               <div class="copilot-status-badge" id="robotStatusBadge">
                 <span class="dot" style="background: currentColor;"></span>
-                <span id="robotStatusText">ONLINE — IDLE</span>
+                <span id="robotStatusText">ANIME COPILOT — IDLE</span>
               </div>
             </div>
 
@@ -2307,13 +2307,15 @@
                 <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 10px;" onclick="stopCopilotSpeech()">⏹ Stop Voice</button>
               </div>
               <div class="copilot-action-chips">
-                <button class="copilot-chip" onclick="askCopilot('Explain database normalization.')">"Explain database normalization"</button>
-                <button class="copilot-chip" onclick="askCopilot('Machine learning kya hai?')">"Machine learning kya hai?"</button>
-                <button class="copilot-chip" onclick="askCopilot('Machine learning ka ba?')">"Machine learning ka ba?"</button>
-                <button class="copilot-chip" onclick="askCopilot('Open video editor')">"Open video editor"</button>
+                <button class="copilot-chip" onclick="askCopilot('What is machine learning?')">"What is machine learning?"</button>
+                <button class="copilot-chip" onclick="askCopilot('Explain neural networks simply.')">"Explain neural networks simply"</button>
+                <button class="copilot-chip" onclick="askCopilot('Machine learning kya hota hai?')">"Machine learning kya hota hai?"</button>
+                <button class="copilot-chip" onclick="askCopilot('Autopilot mein video kaise generate karu?')">"Autopilot mein video kaise generate karu?"</button>
+                <button class="copilot-chip" onclick="askCopilot('Ee machine learning ka hola?')">"Ee machine learning ka hola?"</button>
+                <button class="copilot-chip" onclick="askCopilot('Video kaise bani?')">"Video kaise bani?"</button>
+                <button class="copilot-chip" onclick="askCopilot('Open my video editor')">"Open my video editor"</button>
                 <button class="copilot-chip" onclick="askCopilot('Show my videos')">"Show my videos"</button>
                 <button class="copilot-chip" onclick="askCopilot('Create a new series')">"Create a new series"</button>
-                <button class="copilot-chip" onclick="askCopilot('Check YouTube status')">"Check YouTube status"</button>
               </div>
             </div>
           </div>
@@ -2337,7 +2339,7 @@
                   <span>⚙️</span> Voice Settings
                 </button>
                 <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="clearCopilotChat()">
-                  <span>🗑️</span> Clear
+                  <span>🗑️</span> New Session
                 </button>
               </div>
             </div>
@@ -2345,13 +2347,13 @@
             <!-- Chat Messages Feed -->
             <div class="copilot-feed" id="copilotFeed">
               <div class="copilot-msg bot">
-                <div class="copilot-avatar">🤖</div>
+                <div class="copilot-avatar">🥷</div>
                 <div class="copilot-bubble">
-                  <strong>Greetings, Creator!</strong> I am your interactive <strong>3D Humanoid AI Copilot</strong>.
+                  <strong>Greetings, Creator!</strong> I am your <strong>Anime Humanoid AI Copilot & Companion</strong>.
                   <br><br>
-                  I can answer general questions about databases, algorithms, code, and machine learning, speak fluent <strong>English, Hindi, and Bhojpuri</strong>, or command Autopilot's video production engine.
+                  I understand deep technical questions, software engineering, databases, and machine learning across <strong>English, Hindi, and Bhojpuri</strong>, or I can directly orchestrate Autopilot's video production engine.
                   <br><br>
-                  <em>Ask me anything below, or click any prompt on the left!</em>
+                  <em>Ask me any question below, or select a prompt on the left!</em>
                 </div>
               </div>
             </div>
@@ -4490,6 +4492,7 @@
           </div>
         `;
       }
+      copilotState.history = [];
       stopCopilotSpeech();
     }
 
@@ -4556,6 +4559,7 @@
           message: text,
           language: copilotState.language,
           context: appContext,
+          history: (copilotState.history || []).slice(-6),
           voice_settings: {
             speed: copilotState.voiceSettings.speed,
             pitch: copilotState.voiceSettings.pitch,
@@ -4574,6 +4578,14 @@
         if (d.success && d.data) {
           const resp = d.data;
           const formattedReply = formatMarkdownReply(resp.reply);
+
+          // Update multi-turn history
+          if (!copilotState.history) copilotState.history = [];
+          copilotState.history.push({ role: 'user', content: text });
+          copilotState.history.push({ role: 'assistant', content: resp.reply });
+          if (copilotState.history.length > 10) {
+            copilotState.history = copilotState.history.slice(-10);
+          }
 
           let actionBannerHtml = '';
           if (resp.tool) {

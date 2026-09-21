@@ -23,9 +23,21 @@ import tempfile
 from pathlib import Path
 from typing import Optional
 
-import fitz          # PyMuPDF
-import numpy as np
-import pdfplumber
+try:
+    import fitz          # PyMuPDF
+except ImportError:
+    fitz = None
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
+
+try:
+    import pdfplumber
+except ImportError:
+    pdfplumber = None
+
 from PIL import Image
 
 from core.ffmpeg import ffmpeg_bin, probe

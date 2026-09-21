@@ -134,6 +134,9 @@ uvicorn>=0.30.0
 cryptography>=43.0.0
 PyJWT>=2.8.0
 httpx>=0.27.0
+python-multipart>=0.0.9
+PyMuPDF>=1.24.0
+numpy>=1.24.0
 
 # ---------- OPTIONAL: LONG-FORM AUDIO ALIGNMENT ----------
 # faster-whisper>=1.0.0

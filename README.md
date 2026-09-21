@@ -151,7 +151,7 @@ flowchart TD
 
 ### 1. 🔍 Root Cause Diagnosis & Safe Data Migration
 * **Identity Aliasing**: Previous versions split account records between `admin_abhay` (User 1) and transient `usr_xxxx` IDs. The login pipeline now canonicalizes all Abhay identities (`admin_abhay`, `abhay`, `abhay@autopilot.ai`, `shivpuran2803@gmail.com`) to canonical user `admin_abhay`.
-* **Zero Data Loss Invariant**: Automated migration created a verified binary snapshot (`data/autopilot.db.backup_*`), backfilled `user_id` across `series`, `episodes`, `channel_credentials`, `video_jobs`, and synchronized 15 missing franchise titles directly from `videos.series_name`.
+* **Zero Data Loss Invariant**: Automated migration created a verified binary snapshot (`data/autopilot.db.backup_*`), executed WAL checkpointing (`PRAGMA wal_checkpoint(TRUNCATE)`), backfilled `user_id` across `series`, `episodes`, `channel_credentials`, `video_jobs`, synchronized 15 missing franchise titles directly from `videos.series_name`, and updated `data/autopilot_master_vault_backup.json` (3.96 MB).
 * **Database Indexes Added**:
   * `idx_videos_user`: Instant user-scoped video catalog queries.
   * `idx_series_user`: Instant user franchise queries.
@@ -159,7 +159,7 @@ flowchart TD
   * `idx_creds_user`: Isolated YouTube OAuth credential queries.
 
 ### 2. 📊 Centralized Multi-Tenant Dashboard (`GET /api/v1/dashboard`)
-* **Real Database Counters**: Eliminates all hardcoded statistics and client-side fallbacks. Abhay's dashboard displays **367 Rendered Videos**, **76 Franchises**, **58 Episodes**, and **99 Completed Jobs**. New users start with a clean slate of 0.
+* **Real Database Counters**: Eliminates all hardcoded statistics and client-side fallbacks. Abhay's dashboard displays **367 Rendered Videos**, **77 Franchises**, **58 Episodes**, and **99 Completed Jobs**. New users start with a clean slate of 0.
 * **Loading Skeletons**: Employs responsive loading skeletons, completely eliminating the brief flash of 0 or `--` before database records arrive.
 * **Live DB-Backed Activity Feed**: Dynamically compiles recent video renders, franchise additions, and completed jobs into a chronological audit feed.
 

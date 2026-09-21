@@ -303,15 +303,23 @@ class DB:
             except sqlite3.OperationalError:
                 pass
 
-        try:
-            self.conn.execute("ALTER TABLE videos ADD COLUMN scene_pacing TEXT DEFAULT 'standard'")
-        except sqlite3.OperationalError:
-            pass
-
-        try:
-            self.conn.execute("ALTER TABLE videos ADD COLUMN workspace_id TEXT DEFAULT 'ws_admin_abhay'")
-        except sqlite3.OperationalError:
-            pass
+        # Videos table migrations for older schemas
+        for col_name, col_type in [
+            ("scheduled_ts", "TEXT"),
+            ("published_ts", "TEXT"),
+            ("yt_video_id", "TEXT"),
+            ("ig_media_id", "TEXT"),
+            ("public_url", "TEXT"),
+            ("scene_pacing", "TEXT DEFAULT 'standard'"),
+            ("user_id", "TEXT DEFAULT 'admin_abhay'"),
+            ("workspace_id", "TEXT DEFAULT 'ws_admin_abhay'"),
+            ("ai_disclosed", "INTEGER DEFAULT 1"),
+            ("notes", "TEXT"),
+        ]:
+            try:
+                self.conn.execute(f"ALTER TABLE videos ADD COLUMN {col_name} {col_type}")
+            except sqlite3.OperationalError:
+                pass
 
         # Jobs progress tracking migrations
         for col_name, col_type in [

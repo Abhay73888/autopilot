@@ -220,7 +220,12 @@ class GeminiLLM:
     def generate(self, prompt: str, *, temperature: float = 0.9, max_tokens: int = 2048,
                  system: str | None = None, history: list[dict] | None = None) -> str:
         # STEP 1: quota check — hard constraint
-        self.quota.check_and_spend("gemini_requests", 1, reason=f"generate:{self.model}")
+        try:
+            self.quota.check_and_spend("gemini_requests", 1, reason=f"generate:{self.model}")
+        except QuotaExceeded:
+            raise
+        except Exception as q_err:
+            log.warn(f"Quota spend check skipped: {q_err}")
 
         contents = []
         if history:

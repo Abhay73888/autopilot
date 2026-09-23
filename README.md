@@ -49,7 +49,7 @@
 | **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized neural profiles), ElevenLabs Neural, Gemini TTS, paired with sub-bass procedural audio FX & EBU R128 loudness normalization. |
 | **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic karaoke subtitles, scaling from 30s shorts to 10m longform videos. |
 | **🗄️ Persistence** | Dual SQLite / PostgreSQL engine (`core/db_base.py`) with thread-local ContextVar tenant isolation, relational users, workspaces, series, and encrypted integration vaults. |
-| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays the 93 confirmed live YouTube videos (`status = 'published'`, non-empty `yt_video_id`). Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
+| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays the 107 confirmed live YouTube videos (`status = 'published'`, non-empty `yt_video_id`). Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
 | **☁️ Deployment** | Docker containerized deployment, Render Cloud Blueprint (`render.yaml`), Railway, and zero-setup HTTPS tunneling (`tunnel.py`). |
 
 ---
@@ -1170,52 +1170,52 @@ Discord messages are fully interactive—users can control the entire SaaS platf
 
 ### 🎬 Original Video Series Franchise Swarm
 
-AUTOPILOT includes 5 production-grade procedural video series franchises:
+AUTOPILOT includes 7 production-grade procedural video series franchises:
 
 1. **⏳ SERIES 1: काल-रेखा (Kaal-Rekha)**
    - **Genre**: Dark Anime Psychological Time-Loop Thriller
    - **Lore**: Kabir Sen trapped in a recursive 3:17 AM time loop where the cassette player reveals his own fate.
-   - **📺 Latest Release (Part 18)**: [Watch Part 18 on YouTube](https://www.youtube.com/watch?v=jrUjwlLRITc) *(Ambulance 14 Ke Andar Meera Ka Sandesh Mila! · Comments 100% ON)*
+   - **📺 Latest Release (Part 19)**: [Watch Part 19 on YouTube](https://www.youtube.com/watch?v=2cKdO10U-3c) *(Ambulance Driver Ka Chehra Dekh Kar Kabir Ke Hosh Udd Gaye! · Comments 100% ON)*
 
 2. **💖 SERIES 2: जब प्यार ऑनलाइन था (Jab Pyaar Online Tha)**
    - **Genre**: Modern Romance & Emotional Long-Distance Drama
    - **Lore**: The bittersweet online love story of Aarav and Meera with soulful neural audio narration.
-   - **📺 Latest Release (Episode 14)**: [Watch Ep 14 on YouTube](https://www.youtube.com/watch?v=VSL1mEkeauw) *(London Cafe Mein Meera Ka Chhupa Sach Samne Aaya! · Comments 100% ON)*
+   - **📺 Latest Release (Episode 15)**: [Watch Ep 15 on YouTube](https://www.youtube.com/watch?v=WtL5LUIyeB0) *(London Tower Bridge Par Aarav Ka Midnight Surprise! · Comments 100% ON)*
 
 3. **🎨 SERIES 3: चिंटू की जादुई दुनिया (Chintu Ki Jadui Duniya)**
    - **Genre**: Vibrant 3D Cartoon Pixar-Style Family Adventure
    - **Lore**: Fun, colorful 3D adventures and moral stories of Chintu and Golu.
-   - **📺 Latest Release (Episode 12)**: [Watch Ep 12 on YouTube](https://www.youtube.com/watch?v=NsGknw4GCgg) *(Rainbow Waterfall Ke Peeche Mila Chintu Ko Dragon Ka Anda! · Comments 100% ON)*
+   - **📺 Latest Release (Episode 13)**: [Watch Ep 13 on YouTube](https://www.youtube.com/watch?v=ngqAcrN-Y50) *(Baby Dragon Cheeku Ka Pehla Flying Lesson! · Comments 100% ON)*
 
 4. **🧠 SERIES 4: दिमाग का दही (Dimag Ka Dahi Riddles)**
    - **Genre**: Mind-Bending Riddles & Interactive Brain Teasers
    - **Lore**: High-retention viral riddle countdowns challenging 99% of viewers in the comments.
-   - **📺 Latest Release (Episode 12)**: [Watch Ep 12 on YouTube](https://www.youtube.com/watch?v=EnYopifw0Jc) *(Jail Ke 3 Darwaze Aur 1 Raasta: 99% Fail! · Comments 100% ON)*
+   - **📺 Latest Release (Episode 13)**: [Watch Ep 13 on YouTube](https://www.youtube.com/watch?v=v_X7TcdRrbY) *(3 Bridges Aur 1 Jungle: 99% Log Phans Gaye! · Comments 100% ON)*
 
 5. **⚡ SERIES 5: अश्वत्थामा 3049 AD (Ashwatthama 3049 AD — The Last Warrior)**
    - **Genre**: Dark Sci-Fi Mythological Cyberpunk Action Thriller *(Dune meets Mahabharat)*
    - **Lore**: In 3049 AD, the immortal warrior Ashwatthama uncovers Project KALKI v0.9 awakening on the dark side of the Moon!
-   - **📺 Latest Release (Episode 9)**: [Watch Ep 9 on YouTube](https://www.youtube.com/watch?v=Y5LN5mHVaoI) *(Moon Base Par Project KALKI Jag Utha! · Comments 100% ON)*
+   - **📺 Latest Release (Episode 10)**: [Watch Ep 10 on YouTube](https://www.youtube.com/watch?v=oDQNFagETEE) *(Moon Base Par Maha-Yuddh: Ashwatthama vs KALKI Prototype! · Comments 100% ON)*
 
 6. **👁️ SERIES 6: The Observer Files**
    - **Genre**: Analog Horror, Found Footage & Unsettling Urban Anomalies
    - **Lore**: Classified investigator VHS tapes documenting temporal anomalies, unmapped doors, and anomalous broadcasts.
-   - **📺 Latest Release (Episode 8)**: [Watch Ep 8 on YouTube](https://www.youtube.com/watch?v=jptsih_Gyqs) *(Studio 4B Ka TV Kal Subah Ki Khabar Dikha Raha Tha... · Comments 100% ON)*
+   - **📺 Latest Release (Episode 9)**: [Watch Ep 9 on YouTube](https://www.youtube.com/watch?v=ZtaTPWhg_Wc) *(Studio 4B: Camera Ke Peeche Ka Khaufnaak Sach! · Comments 100% ON)*
 
 7. **🎮 SERIES 7: Roblox Vault**
    - **Genre**: ARG Retro Gaming Mystery & Creepypasta
    - **Lore**: Investigating corrupted 2006–2008 unlisted Roblox servers, lost developer test sandboxes, and forgotten items.
-   - **📺 Latest Release (Episode 6)**: [Watch Ep 6 on YouTube](https://www.youtube.com/watch?v=KueMvPUaZxE) *(Staff Keycard 2007 Se Khula Deleted Admin Server! · Comments 100% ON)*
+   - **📺 Latest Release (Episode 7)**: [Watch Ep 7 on YouTube](https://www.youtube.com/watch?v=9wqB296Q3tg) *(Place ID 0 Mein Chala Corrupted Admin Wipe Command! · Comments 100% ON)*
 
 ---
 
 ### 🚀 Autonomous Multi-Series Orchestration
-AUTOPILOT includes `generate_and_publish_next_all_7_series_batch.py`, a one-command master orchestrator that automatically:
+AUTOPILOT includes `generate_and_publish_next_all_7_series_batch.py` & `generate_and_publish_next_all_7_series_batch_part2.py`, master batch orchestrators that automatically:
 - Synthesizes 100% Pure Neural Humanoid TTS with studio warmth DSP chain.
 - Generates 6 custom 9:16 cinematic frames per franchise with dynamic pan/zoom Ken Burns motion.
 - Burns stylized dual-color ASS subtitles (`SeriesCyan` & `SeriesGold`).
 - Enforces strict compliance with `AGENTS.md` (Comments ALWAYS 100% ON, `selfDeclaredMadeForKids=False`, first comment pinned).
-- Publishes all 7 episodes in parallel batch and delivers real-time Discord notifications.
+- Publishes all 7 episodes in sequence with failover retries and delivers real-time Discord notifications.
 
 ---
 

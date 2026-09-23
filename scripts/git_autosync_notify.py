@@ -53,7 +53,8 @@ def main():
         "agents/",
         "web/",
         "data/autopilot.db",
-        "data/autopilot_master_vault_backup.json"
+        "data/autopilot_master_vault_backup.json",
+        "generate_and_publish_next_all_7_series_batch_part2.py"
     ], check=False)
     
     commit_proc = subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True, text=True)

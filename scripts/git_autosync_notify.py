@@ -54,7 +54,9 @@ def main():
         "web/",
         "data/autopilot.db",
         "data/autopilot_master_vault_backup.json",
-        "generate_and_publish_next_all_7_series_batch_part2.py"
+        "generate_and_publish_next_all_7_series_batch_part2.py",
+        "generate_solo_leveling_ragnarok_ch7.py",
+        "publish_solo_leveling_ragnarok_ch7.py"
     ], check=False)
     
     commit_proc = subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True, text=True)

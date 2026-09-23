@@ -1,14 +1,14 @@
 {
-  "exported_at": "2026-09-23T06:15:55.548933+00:00",
+  "exported_at": "2026-09-23T06:48:47.481214+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
-    "videos": 107,
+    "videos": 108,
     "metrics": 28,
     "experiments": 4,
     "learnings": 0,
-    "quota_usage": 1825,
-    "events": 5112,
+    "quota_usage": 1830,
+    "events": 5113,
     "characters": 1,
     "jobs": 99,
     "organizations": 95,
@@ -3340,6 +3340,37 @@
         "ig_media_id": null,
         "scheduled_ts": null,
         "published_ts": "1790143977.00727",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000016,
+        "created_ts": "1790145641.49304",
+        "updated_ts": "1790145641.49304",
+        "status": "published",
+        "topic": "Solo Leveling Ragnarok Chapter 7: Suho vs Possessed Beast",
+        "title": "SOLO LEVELING: RAGNAROK Chapter 7 in Hindi \u2694\ufe0f | Suho vs Possessed Beast! | Full Recap",
+        "caption": "\u2694\ufe0f SOLO LEVELING: RAGNAROK Chapter 7 Full Story in Hindi | Suho vs The Possessed Red Name!\n\nCrystal Dungeon ke andar Suho ne apne Shadow Goblins ko kudar par laga diya...\nMiners dang reh gaye ki E-Rank awakener ke paas aisi summoning skill kahan se aayi?!\nChhotu Beru zameen par gire mana ke tukde scavenge karke apni shaktiyan bator raha tha...\nLekin achanak Beru kaanp utha:\n\"Young Monarch! Mujhe ek Monarch ki khaufnaak haazri mehsoos ho rahi hai!\"\n\nTabhi tunnel ke andhere se aayi bhediyon ki khoonkhar ghurrahat!\nSteel Fanged Lycans (Orange Named Monsters) ne miners par jaanleva hamla bol diya!\nSung Suho bijli ki tarah kooda aur apni inventory se daggers nikaal kar laashon ke dher laga diye!\nAur phir goonji Suho ki pehli maha-lalkaar:\n\"ARISE!\"\nAur zameen se nikal aayi SHADOW WOLVES ki fauj!\n\nLekin sabse bada twist toh tab aaya jab System par laal notification chamka:\n[URGENT QUEST: DEFEAT THE ENEMY!]\nTunnel se nikla ek armored hunter jiski aankhon mein bhediye ki shaitani aag thi...\nUske sar par laal rang mein chamak raha tha:\n[FANG OF RAKHAN \u2014 POSSESSED]!\n\nBeru ne chetavni di: \"Iske paas Monarch of Fangs ki taqat hai, aapke level ke liye ye maut hai!\"\nLekin Suho ne dono daggers thaamte hue kaha:\n\"System ne mujhe jeetne ka raasta diya hai... main is Red Name ko hara kar aur taqatwar banoonga!\"\n\nDekhiye Solo Leveling: Ragnarok Chapter 7 ka fast-paced, action-packed cinematic recap 100% Pure Humanoid Voice aur dynamic visual effects ke saath!\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u23f1\ufe0f CHAPTER TIMESTAMPS:\n00:00 - Shadow Goblins Mining & Beru's Mana Scavenge\n00:15 - Beru Senses A Monarch's Presence!\n00:25 - Steel Fanged Lycans Ambush & Suho Steps In\n00:38 - Blinding Slash & Second Shadow Arise!\n00:48 - Level Up! The Shadow Wolf Army Forms\n00:58 - Urgent Quest: Defeat The Possessed Hunter!\n01:08 - The Red Name: Fang of Rakhan Awakens\n01:18 - Suho's Dual Daggers Stance & Climax!\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n\ud83c\udfac Video Features:\n\u2705 100% Pure Humanoid Voice (Google Gemini Neural TTS with studio warmth DSP)\n\u2705 High-Energy Fast Pacing & Adrenaline Action Cuts\n\u2705 Ultra-Wide 1080p Visual Panels with Ken Burns Motion\n\u2705 Dynamic Cyan & Gold ASS Subtitles\n\u2705 Standard Fair Use Disclaimer (Section 107 of Copyright Act)\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udc4d Video pasand aayi toh LIKE aur SHARE zaroor karein!\n\ud83d\udd14 Chapter 8 ke agle maha-yuddh ke liye SUBSCRIBE karein aur Bell Icon dabayein!\n\ud83d\udcac Comment karke batao: Kya Suho is possessed Red Name hunter ko hara payega?!\n\n#SoloLevelingRagnarok #SoloLevelingHindi #SungSuho #Beru #MonarchOfFangs #FangOfRakhan #ShadowExtraction #Arise #SoloLevelingRagnarokChapter7 #AnimeRecapHindi #ManhwaHindi",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 147.8,
+        "series_name": "SOLO_LEVELING_RAGNAROK",
+        "series_index": 7,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\solo_leveling_ragnarok_ch7\\solo_leveling_ragnarok_ch7_final.mp4",
+        "cover_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\solo_leveling_ragnarok_ch7\\thumbnail.jpg",
+        "public_url": "https://www.youtube.com/watch?v=Lw0p023MAiQ",
+        "yt_video_id": "Lw0p023MAiQ",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790145641.49304",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -16651,6 +16682,41 @@
         "bucket": "youtube_uploads",
         "amount": 1,
         "reason": "upload_file series_7_ep7_final.mp4"
+      },
+      {
+        "id": 1826,
+        "ts": "2026-09-23T06:37:25+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file solo_leveling_ragnarok_ch7_final.mp4"
+      },
+      {
+        "id": 1827,
+        "ts": "2026-09-23T06:37:25+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file solo_leveling_ragnarok_ch7_final.mp4"
+      },
+      {
+        "id": 1828,
+        "ts": "2026-09-23T06:38:36+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file solo_leveling_ragnarok_ch7_final.mp4"
+      },
+      {
+        "id": 1829,
+        "ts": "2026-09-23T06:38:36+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file solo_leveling_ragnarok_ch7_final.mp4"
+      },
+      {
+        "id": 1830,
+        "ts": "2026-09-23T06:40:36+00:00",
+        "bucket": "youtube_units",
+        "amount": 50,
+        "reason": "thumbnail"
       }
     ],
     "events": [
@@ -57549,6 +57615,14 @@
         "kind": "published",
         "video_id": null,
         "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"9wqB296Q3tg\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\series_7_ep7\\\\series_7_ep7_final.mp4\", \"upload_secs\": 8.3}"
+      },
+      {
+        "id": 5113,
+        "ts": "2026-09-23T06:40:40+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"Lw0p023MAiQ\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\solo_leveling_ragnarok_ch7\\\\solo_leveling_ragnarok_ch7_final.mp4\", \"upload_secs\": 119.4}"
       }
     ],
     "characters": [

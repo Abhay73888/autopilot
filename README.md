@@ -49,7 +49,7 @@
 | **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized neural profiles), ElevenLabs Neural, Gemini TTS, paired with sub-bass procedural audio FX & EBU R128 loudness normalization. |
 | **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic karaoke subtitles, scaling from 30s shorts to 10m longform videos. |
 | **🗄️ Persistence** | Dual SQLite / PostgreSQL engine (`core/db_base.py`) with thread-local ContextVar tenant isolation, relational users, workspaces, series, and encrypted integration vaults. |
-| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays the 107 confirmed live YouTube videos (`status = 'published'`, non-empty `yt_video_id`). Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
+| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays 115+ confirmed live YouTube videos across 8 active series (`status = 'published'`, non-empty `yt_video_id`). Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
 | **☁️ Deployment** | Docker containerized deployment, Render Cloud Blueprint (`render.yaml`), Railway, and zero-setup HTTPS tunneling (`tunnel.py`). |
 
 ---

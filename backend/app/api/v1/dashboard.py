@@ -27,6 +27,7 @@ router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
 @router.get("", response_model=ApiResponse[Dict[str, Any]])
 @router.get("/summary", response_model=ApiResponse[Dict[str, Any]])
+@router.get("/overview", response_model=ApiResponse[Dict[str, Any]])
 async def get_user_dashboard(ctx: TenantContext = Depends(get_current_tenant_context)):
     """
     Returns aggregated dashboard metrics, recent videos, franchises, and real activity

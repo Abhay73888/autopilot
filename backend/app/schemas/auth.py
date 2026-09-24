@@ -70,3 +70,32 @@ class OnboardingCompleteRequest(BaseModel):
     defaultVoice: Optional[str] = "hi_m_intense"
     contentNiche: Optional[str] = "Mystery & Suspense"
     connectedYouTube: bool = False
+
+
+class ChangePasswordRequest(BaseModel):
+    currentPassword: str
+    newPassword: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    token: str
+    newPassword: str
+
+
+class UpdateProfileRequest(BaseModel):
+    fullName: Optional[str] = None
+    defaultLanguage: Optional[str] = None
+    defaultVoice: Optional[str] = None
+    contentNiche: Optional[str] = None
+    avatarUrl: Optional[str] = None
+
+
+class DeleteAccountRequest(BaseModel):
+    password: str
+    confirmation: str
+

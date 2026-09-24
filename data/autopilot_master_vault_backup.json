@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-09-24T08:55:54.275485+00:00",
+  "exported_at": "2026-09-24T16:05:38.952719+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
@@ -10,7 +10,7 @@
     "quota_usage": 2021,
     "events": 5124,
     "characters": 1,
-    "jobs": 99,
+    "jobs": 105,
     "organizations": 102,
     "workspaces": 1341,
     "credit_accounts": 0,
@@ -21,7 +21,7 @@
     "publishing_jobs": 137,
     "credit_transactions": 0,
     "templates": 4,
-    "users": 120,
+    "users": 125,
     "discord_connections": 0,
     "series": 77,
     "episodes": 58,
@@ -61283,6 +61283,120 @@
         "stage": "queued",
         "percent": 0.0,
         "eta": 0.0
+      },
+      {
+        "id": 110,
+        "job_id": "test_prog_ea04c148",
+        "request_id": null,
+        "idempotency_key": null,
+        "status": "queued",
+        "action": "generate",
+        "topic": "Progress HTTP Test",
+        "created_ts": "2026-09-24T08:56:42+00:00",
+        "started_ts": null,
+        "completed_ts": null,
+        "video_id": null,
+        "error_message": null,
+        "result_paths": null,
+        "user_id": "admin_abhay",
+        "stage": "rendering_clips",
+        "percent": 72.0,
+        "eta": 25.0
+      },
+      {
+        "id": 111,
+        "job_id": "test_job_fa69b241",
+        "request_id": null,
+        "idempotency_key": null,
+        "status": "queued",
+        "action": "generate",
+        "topic": "Test Topic",
+        "created_ts": "2026-09-24T08:56:42+00:00",
+        "started_ts": null,
+        "completed_ts": null,
+        "video_id": null,
+        "error_message": null,
+        "result_paths": null,
+        "user_id": "admin_abhay",
+        "stage": "rendering",
+        "percent": 78.5,
+        "eta": 42.0
+      },
+      {
+        "id": 112,
+        "job_id": "test_prog_a150b6c0",
+        "request_id": null,
+        "idempotency_key": null,
+        "status": "queued",
+        "action": "generate",
+        "topic": "Progress HTTP Test",
+        "created_ts": "2026-09-24T08:59:46+00:00",
+        "started_ts": null,
+        "completed_ts": null,
+        "video_id": null,
+        "error_message": null,
+        "result_paths": null,
+        "user_id": "admin_abhay",
+        "stage": "rendering_clips",
+        "percent": 72.0,
+        "eta": 25.0
+      },
+      {
+        "id": 113,
+        "job_id": "test_job_4ed72ace",
+        "request_id": null,
+        "idempotency_key": null,
+        "status": "queued",
+        "action": "generate",
+        "topic": "Test Topic",
+        "created_ts": "2026-09-24T08:59:46+00:00",
+        "started_ts": null,
+        "completed_ts": null,
+        "video_id": null,
+        "error_message": null,
+        "result_paths": null,
+        "user_id": "admin_abhay",
+        "stage": "rendering",
+        "percent": 78.5,
+        "eta": 42.0
+      },
+      {
+        "id": 114,
+        "job_id": "test_prog_4519ae72",
+        "request_id": null,
+        "idempotency_key": null,
+        "status": "queued",
+        "action": "generate",
+        "topic": "Progress HTTP Test",
+        "created_ts": "2026-09-24T15:40:37+00:00",
+        "started_ts": null,
+        "completed_ts": null,
+        "video_id": null,
+        "error_message": null,
+        "result_paths": null,
+        "user_id": "admin_abhay",
+        "stage": "rendering_clips",
+        "percent": 72.0,
+        "eta": 25.0
+      },
+      {
+        "id": 115,
+        "job_id": "test_job_c53f6091",
+        "request_id": null,
+        "idempotency_key": null,
+        "status": "queued",
+        "action": "generate",
+        "topic": "Test Topic",
+        "created_ts": "2026-09-24T15:40:37+00:00",
+        "started_ts": null,
+        "completed_ts": null,
+        "video_id": null,
+        "error_message": null,
+        "result_paths": null,
+        "user_id": "admin_abhay",
+        "stage": "rendering",
+        "percent": 78.5,
+        "eta": 42.0
       }
     ],
     "organizations": [
@@ -94474,7 +94588,9 @@
         "full_name": "Abhay Maurya (Founder & Admin)",
         "is_onboarded": 1,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 3,
@@ -94490,7 +94606,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 4,
@@ -94506,7 +94624,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 5,
@@ -94522,7 +94642,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 6,
@@ -94538,7 +94660,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 7,
@@ -94554,7 +94678,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 8,
@@ -94570,7 +94696,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 9,
@@ -94586,7 +94714,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 11,
@@ -94602,7 +94732,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 12,
@@ -94618,7 +94750,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 13,
@@ -94634,7 +94768,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 14,
@@ -94650,7 +94786,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 15,
@@ -94666,7 +94804,9 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 16,
@@ -94682,7 +94822,9 @@
         "full_name": "T2",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:19:14.270476+00:00"
+        "created_at": "2026-09-20T15:19:14.270476+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 17,
@@ -94698,7 +94840,9 @@
         "full_name": "Test",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:19:26.480553+00:00"
+        "created_at": "2026-09-20T15:19:26.480553+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 18,
@@ -94714,7 +94858,9 @@
         "full_name": "Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:19:31.246332+00:00"
+        "created_at": "2026-09-20T15:19:31.246332+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 19,
@@ -94730,7 +94876,9 @@
         "full_name": "Login_test_1789917874746",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:24:34.861567+00:00"
+        "created_at": "2026-09-20T15:24:34.861567+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 20,
@@ -94746,7 +94894,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:26:28.479579+00:00"
+        "created_at": "2026-09-20T15:26:28.479579+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 21,
@@ -94762,7 +94912,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:26:28.651823+00:00"
+        "created_at": "2026-09-20T15:26:28.651823+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 22,
@@ -94778,7 +94930,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:26:29.021668+00:00"
+        "created_at": "2026-09-20T15:26:29.021668+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 23,
@@ -94794,7 +94948,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:27:00.470746+00:00"
+        "created_at": "2026-09-20T15:27:00.470746+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 24,
@@ -94810,7 +94966,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:27:00.745079+00:00"
+        "created_at": "2026-09-20T15:27:00.745079+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 25,
@@ -94826,7 +94984,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:27:01.465045+00:00"
+        "created_at": "2026-09-20T15:27:01.465045+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 26,
@@ -94842,7 +95002,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:27:41.219319+00:00"
+        "created_at": "2026-09-20T15:27:41.219319+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 27,
@@ -94858,7 +95020,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:27:41.434957+00:00"
+        "created_at": "2026-09-20T15:27:41.434957+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 28,
@@ -94874,7 +95038,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:27:41.939640+00:00"
+        "created_at": "2026-09-20T15:27:41.939640+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 29,
@@ -94890,7 +95056,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:28:06.947547+00:00"
+        "created_at": "2026-09-20T15:28:06.947547+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 30,
@@ -94906,7 +95074,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:28:07.105823+00:00"
+        "created_at": "2026-09-20T15:28:07.105823+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 31,
@@ -94922,7 +95092,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:28:07.439130+00:00"
+        "created_at": "2026-09-20T15:28:07.439130+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 32,
@@ -94938,7 +95110,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:30:28.134007+00:00"
+        "created_at": "2026-09-20T15:30:28.134007+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 33,
@@ -94954,7 +95128,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:30:28.299063+00:00"
+        "created_at": "2026-09-20T15:30:28.299063+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 34,
@@ -94970,7 +95146,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:30:28.648950+00:00"
+        "created_at": "2026-09-20T15:30:28.648950+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 35,
@@ -94986,7 +95164,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:31:20.076736+00:00"
+        "created_at": "2026-09-20T15:31:20.076736+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 36,
@@ -95002,7 +95182,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:31:20.254280+00:00"
+        "created_at": "2026-09-20T15:31:20.254280+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 37,
@@ -95018,7 +95200,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:31:20.640246+00:00"
+        "created_at": "2026-09-20T15:31:20.640246+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 38,
@@ -95034,7 +95218,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:31:46.539788+00:00"
+        "created_at": "2026-09-20T15:31:46.539788+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 39,
@@ -95050,7 +95236,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:31:46.728594+00:00"
+        "created_at": "2026-09-20T15:31:46.728594+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 40,
@@ -95066,7 +95254,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:31:47.083826+00:00"
+        "created_at": "2026-09-20T15:31:47.083826+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 41,
@@ -95082,7 +95272,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:33:03.991822+00:00"
+        "created_at": "2026-09-20T15:33:03.991822+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 42,
@@ -95098,7 +95290,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:33:04.235499+00:00"
+        "created_at": "2026-09-20T15:33:04.235499+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 43,
@@ -95114,7 +95308,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:33:04.748071+00:00"
+        "created_at": "2026-09-20T15:33:04.748071+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 44,
@@ -95130,7 +95326,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:33:38.384994+00:00"
+        "created_at": "2026-09-20T15:33:38.384994+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 45,
@@ -95146,7 +95344,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:33:38.600979+00:00"
+        "created_at": "2026-09-20T15:33:38.600979+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 46,
@@ -95162,7 +95362,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:33:39.069624+00:00"
+        "created_at": "2026-09-20T15:33:39.069624+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 47,
@@ -95178,7 +95380,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:33:57.485959+00:00"
+        "created_at": "2026-09-20T15:33:57.485959+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 48,
@@ -95194,7 +95398,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:33:57.717702+00:00"
+        "created_at": "2026-09-20T15:33:57.717702+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 49,
@@ -95210,7 +95416,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:33:58.256784+00:00"
+        "created_at": "2026-09-20T15:33:58.256784+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 50,
@@ -95226,7 +95434,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:34:58.634213+00:00"
+        "created_at": "2026-09-20T15:34:58.634213+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 51,
@@ -95242,7 +95452,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:34:58.796387+00:00"
+        "created_at": "2026-09-20T15:34:58.796387+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 52,
@@ -95258,7 +95470,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:34:59.139276+00:00"
+        "created_at": "2026-09-20T15:34:59.139276+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 53,
@@ -95274,7 +95488,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:35:26.989507+00:00"
+        "created_at": "2026-09-20T15:35:26.989507+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 54,
@@ -95290,7 +95506,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:35:27.157950+00:00"
+        "created_at": "2026-09-20T15:35:27.157950+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 55,
@@ -95306,7 +95524,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:35:27.515209+00:00"
+        "created_at": "2026-09-20T15:35:27.515209+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 56,
@@ -95322,7 +95542,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:35:53.194810+00:00"
+        "created_at": "2026-09-20T15:35:53.194810+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 57,
@@ -95338,7 +95560,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:35:53.362355+00:00"
+        "created_at": "2026-09-20T15:35:53.362355+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 58,
@@ -95354,7 +95578,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:35:53.720431+00:00"
+        "created_at": "2026-09-20T15:35:53.720431+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 59,
@@ -95370,7 +95596,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:37:29.686158+00:00"
+        "created_at": "2026-09-20T15:37:29.686158+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 60,
@@ -95386,7 +95614,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:37:29.849115+00:00"
+        "created_at": "2026-09-20T15:37:29.849115+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 61,
@@ -95402,7 +95632,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T15:37:30.220740+00:00"
+        "created_at": "2026-09-20T15:37:30.220740+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 62,
@@ -95418,7 +95650,9 @@
         "full_name": "Smoke Tester Live",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T15:38:01.880374+00:00"
+        "created_at": "2026-09-20T15:38:01.880374+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 63,
@@ -95434,7 +95668,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T17:53:35.619996+00:00"
+        "created_at": "2026-09-20T17:53:35.619996+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 64,
@@ -95450,7 +95686,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T17:53:35.734826+00:00"
+        "created_at": "2026-09-20T17:53:35.734826+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 65,
@@ -95466,7 +95704,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T17:53:36.034333+00:00"
+        "created_at": "2026-09-20T17:53:36.034333+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 66,
@@ -95482,7 +95722,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T18:00:07.925992+00:00"
+        "created_at": "2026-09-20T18:00:07.925992+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 67,
@@ -95498,7 +95740,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-20T18:00:08.027258+00:00"
+        "created_at": "2026-09-20T18:00:08.027258+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 68,
@@ -95514,7 +95758,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-20T18:00:08.257094+00:00"
+        "created_at": "2026-09-20T18:00:08.257094+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 69,
@@ -95530,7 +95776,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:16:38.955054+00:00"
+        "created_at": "2026-09-21T09:16:38.955054+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 70,
@@ -95546,7 +95794,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:16:39.108945+00:00"
+        "created_at": "2026-09-21T09:16:39.108945+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 71,
@@ -95562,7 +95812,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T09:16:39.408998+00:00"
+        "created_at": "2026-09-21T09:16:39.408998+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 72,
@@ -95578,7 +95830,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:19:55.562541+00:00"
+        "created_at": "2026-09-21T09:19:55.562541+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 73,
@@ -95594,7 +95848,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:19:55.698297+00:00"
+        "created_at": "2026-09-21T09:19:55.698297+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 74,
@@ -95610,7 +95866,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T09:19:56.035246+00:00"
+        "created_at": "2026-09-21T09:19:56.035246+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 75,
@@ -95626,7 +95884,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:29:11.366247+00:00"
+        "created_at": "2026-09-21T09:29:11.366247+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 76,
@@ -95642,7 +95902,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:29:11.476718+00:00"
+        "created_at": "2026-09-21T09:29:11.476718+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 77,
@@ -95658,7 +95920,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T09:29:11.838078+00:00"
+        "created_at": "2026-09-21T09:29:11.838078+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 78,
@@ -95674,7 +95938,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:31:42.288736+00:00"
+        "created_at": "2026-09-21T09:31:42.288736+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 79,
@@ -95690,7 +95956,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:31:42.426146+00:00"
+        "created_at": "2026-09-21T09:31:42.426146+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 80,
@@ -95706,7 +95974,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T09:31:42.668675+00:00"
+        "created_at": "2026-09-21T09:31:42.668675+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 81,
@@ -95722,7 +95992,9 @@
         "full_name": "Clean Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:34:32.247928+00:00"
+        "created_at": "2026-09-21T09:34:32.247928+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 82,
@@ -95738,7 +96010,9 @@
         "full_name": "Clean Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:34:58.019193+00:00"
+        "created_at": "2026-09-21T09:34:58.019193+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 83,
@@ -95754,7 +96028,9 @@
         "full_name": "Clean Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:35:16.281240+00:00"
+        "created_at": "2026-09-21T09:35:16.281240+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 84,
@@ -95770,7 +96046,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:51:01.061719+00:00"
+        "created_at": "2026-09-21T09:51:01.061719+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 85,
@@ -95786,7 +96064,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:51:01.150832+00:00"
+        "created_at": "2026-09-21T09:51:01.150832+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 86,
@@ -95802,7 +96082,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T09:51:01.441175+00:00"
+        "created_at": "2026-09-21T09:51:01.441175+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 87,
@@ -95818,7 +96100,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:55:17.812495+00:00"
+        "created_at": "2026-09-21T09:55:17.812495+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 88,
@@ -95834,7 +96118,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:55:17.912795+00:00"
+        "created_at": "2026-09-21T09:55:17.912795+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 89,
@@ -95850,7 +96136,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T09:55:18.189188+00:00"
+        "created_at": "2026-09-21T09:55:18.189188+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 90,
@@ -95866,7 +96154,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:56:28.170502+00:00"
+        "created_at": "2026-09-21T09:56:28.170502+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 91,
@@ -95882,7 +96172,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:56:28.348280+00:00"
+        "created_at": "2026-09-21T09:56:28.348280+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 92,
@@ -95898,7 +96190,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T09:56:28.708420+00:00"
+        "created_at": "2026-09-21T09:56:28.708420+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 93,
@@ -95914,7 +96208,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:56:58.516537+00:00"
+        "created_at": "2026-09-21T09:56:58.516537+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 94,
@@ -95930,7 +96226,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:56:58.638547+00:00"
+        "created_at": "2026-09-21T09:56:58.638547+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 95,
@@ -95946,7 +96244,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T09:56:58.878383+00:00"
+        "created_at": "2026-09-21T09:56:58.878383+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 96,
@@ -95962,7 +96262,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:59:24.417295+00:00"
+        "created_at": "2026-09-21T09:59:24.417295+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 97,
@@ -95978,7 +96280,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T09:59:24.516913+00:00"
+        "created_at": "2026-09-21T09:59:24.516913+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 98,
@@ -95994,7 +96298,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T09:59:24.738763+00:00"
+        "created_at": "2026-09-21T09:59:24.738763+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 99,
@@ -96010,7 +96316,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T10:08:40.508602+00:00"
+        "created_at": "2026-09-21T10:08:40.508602+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 100,
@@ -96026,7 +96334,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T10:08:40.641983+00:00"
+        "created_at": "2026-09-21T10:08:40.641983+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 101,
@@ -96042,7 +96352,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T10:08:40.918930+00:00"
+        "created_at": "2026-09-21T10:08:40.918930+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 102,
@@ -96058,7 +96370,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T10:09:30.545604+00:00"
+        "created_at": "2026-09-21T10:09:30.545604+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 103,
@@ -96074,7 +96388,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T10:09:30.643805+00:00"
+        "created_at": "2026-09-21T10:09:30.643805+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 104,
@@ -96090,7 +96406,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T10:09:30.954500+00:00"
+        "created_at": "2026-09-21T10:09:30.954500+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 105,
@@ -96106,7 +96424,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T10:33:52.010359+00:00"
+        "created_at": "2026-09-21T10:33:52.010359+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 106,
@@ -96122,7 +96442,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T10:33:52.150112+00:00"
+        "created_at": "2026-09-21T10:33:52.150112+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 107,
@@ -96138,7 +96460,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T10:33:52.440927+00:00"
+        "created_at": "2026-09-21T10:33:52.440927+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 108,
@@ -96154,7 +96478,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T17:43:24.327204+00:00"
+        "created_at": "2026-09-21T17:43:24.327204+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 109,
@@ -96170,7 +96496,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T17:43:24.432294+00:00"
+        "created_at": "2026-09-21T17:43:24.432294+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 110,
@@ -96186,7 +96514,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T17:43:24.639792+00:00"
+        "created_at": "2026-09-21T17:43:24.639792+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 111,
@@ -96202,7 +96532,9 @@
         "full_name": "Alex Test Creator",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T18:02:45.899511+00:00"
+        "created_at": "2026-09-21T18:02:45.899511+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 112,
@@ -96218,7 +96550,9 @@
         "full_name": "Login Test User",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-21T18:02:46.090389+00:00"
+        "created_at": "2026-09-21T18:02:46.090389+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 113,
@@ -96234,7 +96568,9 @@
         "full_name": "Onboarding User",
         "is_onboarded": 1,
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
-        "created_at": "2026-09-21T18:02:46.396629+00:00"
+        "created_at": "2026-09-21T18:02:46.396629+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 114,
@@ -96250,7 +96586,9 @@
         "full_name": null,
         "is_onboarded": 1,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 121,
@@ -96266,7 +96604,9 @@
         "full_name": "Alex Mercer",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-24T08:21:04.327021+00:00"
+        "created_at": "2026-09-24T08:21:04.327021+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 122,
@@ -96282,7 +96622,9 @@
         "full_name": "Alex Mercer",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-24T08:21:49.436656+00:00"
+        "created_at": "2026-09-24T08:21:49.436656+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 123,
@@ -96298,7 +96640,9 @@
         "full_name": "Alex Mercer",
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": "2026-09-24T08:22:12.606768+00:00"
+        "created_at": "2026-09-24T08:22:12.606768+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 124,
@@ -96314,7 +96658,9 @@
         "full_name": "Alexander Mercer, CEO",
         "is_onboarded": 0,
         "preferences_json": "{\"defaultLanguage\": \"English\", \"defaultVoice\": \"en_m_brian\", \"contentNiche\": \"Sci-Fi Thrillers\"}",
-        "created_at": "2026-09-24T08:22:48.761530+00:00"
+        "created_at": "2026-09-24T08:22:48.761530+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 125,
@@ -96330,7 +96676,9 @@
         "full_name": "Alexander Mercer, CEO",
         "is_onboarded": 0,
         "preferences_json": "{\"defaultLanguage\": \"English\", \"defaultVoice\": \"en_m_brian\", \"contentNiche\": \"Sci-Fi Thrillers\"}",
-        "created_at": "2026-09-24T08:23:07.172212+00:00"
+        "created_at": "2026-09-24T08:23:07.172212+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 126,
@@ -96346,7 +96694,9 @@
         "full_name": "Alexander Mercer, CEO",
         "is_onboarded": 0,
         "preferences_json": "{\"defaultLanguage\": \"English\", \"defaultVoice\": \"en_m_brian\", \"contentNiche\": \"Sci-Fi Thrillers\"}",
-        "created_at": "2026-09-24T08:23:32.906057+00:00"
+        "created_at": "2026-09-24T08:23:32.906057+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 127,
@@ -96362,7 +96712,9 @@
         "full_name": "Alexander Mercer, CEO",
         "is_onboarded": 0,
         "preferences_json": "{\"defaultLanguage\": \"English\", \"defaultVoice\": \"en_m_brian\", \"contentNiche\": \"Sci-Fi Thrillers\"}",
-        "created_at": "2026-09-24T08:34:23.440393+00:00"
+        "created_at": "2026-09-24T08:34:23.440393+00:00",
+        "preferences": "{}",
+        "avatar_url": null
       },
       {
         "id": 128,
@@ -96378,7 +96730,99 @@
         "full_name": null,
         "is_onboarded": 0,
         "preferences_json": "{}",
-        "created_at": null
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
+      },
+      {
+        "id": 132,
+        "user_id": "web_user_80d50d",
+        "email": "web_user_1790263848@example.com",
+        "password_hash": "password123",
+        "name": "Web User",
+        "role": "creator",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-09-24T15:30:49+00:00",
+        "tour_completed": 0,
+        "full_name": null,
+        "is_onboarded": 0,
+        "preferences_json": "{}",
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
+      },
+      {
+        "id": 133,
+        "user_id": "web_user_930b45",
+        "email": "web_user_1790263922@example.com",
+        "password_hash": "password123",
+        "name": "Web User",
+        "role": "creator",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-09-24T15:32:02+00:00",
+        "tour_completed": 0,
+        "full_name": null,
+        "is_onboarded": 0,
+        "preferences_json": "{}",
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
+      },
+      {
+        "id": 134,
+        "user_id": "web_user_a088a5",
+        "email": "web_user_1790264066@example.com",
+        "password_hash": "pbkdf2_sha256$a2f4c69a80ca144f2bd0111516c09422$a64dff59e6ca3e76994cc1c56d79b85d019bf1b6df72c50ebb00e8e53b74626b",
+        "name": "Web User Updated",
+        "role": "creator",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-09-24T15:34:26+00:00",
+        "tour_completed": 0,
+        "full_name": null,
+        "is_onboarded": 0,
+        "preferences_json": "{}",
+        "created_at": null,
+        "preferences": "{}",
+        "avatar_url": null
+      },
+      {
+        "id": 135,
+        "user_id": "web_user_612686",
+        "email": "web_user_1790264147@example.com",
+        "password_hash": "pbkdf2_sha256$6d364b0ebce898f2dc81ede94b7c4021$44cdbf412553d3a1fef85dac32cbc32de24fc72e6d14ca6bc8208ea24ec191b0",
+        "name": "Web User Updated",
+        "role": "creator",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-09-24T15:35:48+00:00",
+        "tour_completed": 0,
+        "full_name": null,
+        "is_onboarded": 0,
+        "preferences_json": "{}",
+        "created_at": null,
+        "preferences": "{\"niche\": \"Cyberpunk Mythology\", \"voice_preference\": \"hi-IN-MadhurNeural\"}",
+        "avatar_url": null
+      },
+      {
+        "id": 136,
+        "user_id": "web_user_637ca3",
+        "email": "web_user_1790264254@example.com",
+        "password_hash": "pbkdf2_sha256$e60eb990360e90a8d34adad28a11569a$3a3fded8f48f20f04460233f2b22783619e0bc5404d2ae774be81434e7562cec",
+        "name": "Web User Updated",
+        "role": "creator",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-09-24T15:37:34+00:00",
+        "tour_completed": 0,
+        "full_name": null,
+        "is_onboarded": 0,
+        "preferences_json": "{}",
+        "created_at": null,
+        "preferences": "{\"niche\": \"Cyberpunk Mythology\", \"voice_preference\": \"hi-IN-MadhurNeural\"}",
+        "avatar_url": null
       }
     ],
     "discord_connections": [],
@@ -97220,14 +97664,14 @@
         "user_id": "admin_abhay"
       },
       {
-        "id": "ser_6ce91b58ff0f",
+        "id": "ser_daf0b3cb6281",
         "workspace_id": "ws_usr_test_user_b",
         "title": "User B Solo Anime",
         "description": "Independent franchise for User B",
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-21T20:15:37.785121+00:00",
+        "created_at": "2026-09-24T15:40:20.805328+00:00",
         "user_id": "usr_test_user_b"
       }
     ],

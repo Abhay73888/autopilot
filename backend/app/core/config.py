@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     port: int = Field(default=8765, alias="PORT")
     host: str = Field(default="0.0.0.0", alias="HOST")
     secret_key: str = Field(default="autopilot-super-secure-production-secret-key-32chars", alias="APP_SECRET_KEY")
+    jwt_secret: str = Field(default="autopilot-super-secure-production-secret-key-32chars", alias="JWT_SECRET")
+    jwt_algorithm: str = "HS256"
+    jwt_expires_minutes: int = 60 * 24 * 7  # 7 days
     
     # CORS
     cors_origins: List[str] = [

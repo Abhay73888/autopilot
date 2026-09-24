@@ -38,6 +38,7 @@ elif sys.stderr and hasattr(sys.stderr, "buffer"):
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace", write_through=True)
 
 import json
+import hashlib
 import mimetypes
 import os
 import threading
@@ -1797,6 +1798,180 @@ class Handler(BaseHTTPRequestHandler):
                 log.error("Auth Google fail", e)
                 return self._json(500, {"ok": False, "error": f"Google authentication error: {str(e)}"})
 
+        # ---- Authentication: Forgot Password recovery token ----
+        if u.path == "/api/auth/forgot-password":
+            try:
+                n = int(self.headers.get("Content-Length", 0))
+                body = json.loads(self.rfile.read(n) or b"{}")
+                email = (body.get("email") or "").strip().lower()
+                if not email:
+                    return self._json(400, {"ok": False, "error": "Email address is required."})
+                with DB() as db:
+                    user = db.get_user(email)
+                    if not user:
+                        return self._json(200, {
+                            "ok": True,
+                            "message": "If an account exists with this email, password recovery instructions have been prepared.",
+                            "reset_token": None
+                        })
+                    from backend.app.core.config import settings
+                    ts = int(time.time())
+                    uid = user.get("id") or user.get("user_id")
+                    raw = f"{uid}:{ts}".encode("utf-8")
+                    key = getattr(settings, "jwt_secret", None) or getattr(settings, "secret_key", "autopilot_secret")
+                    sig = hmac.new(key.encode("utf-8"), raw, hashlib.sha256).hexdigest()[:32]
+                    token = f"rst.{uid}.{ts}.{sig}"
+                    return self._json(200, {
+                        "ok": True,
+                        "message": "Reset token generated successfully.",
+                        "reset_token": token,
+                        "expires_in": 3600
+                    })
+            except Exception as e:
+                log.error("Auth forgot-password fail", e)
+                return self._json(500, {"ok": False, "error": str(e)})
+
+        # ---- Authentication: Reset Password using token ----
+        if u.path == "/api/auth/reset-password":
+            try:
+                n = int(self.headers.get("Content-Length", 0))
+                body = json.loads(self.rfile.read(n) or b"{}")
+                email = (body.get("email") or "").strip().lower()
+                token = (body.get("token") or "").strip()
+                new_pwd = (body.get("new_password") or body.get("newPassword") or "").strip()
+                if not email or not token or not new_pwd:
+                    return self._json(400, {"ok": False, "error": "Email, reset token, and new password are required."})
+                if len(new_pwd) < 6:
+                    return self._json(400, {"ok": False, "error": "New password must be at least 6 characters long."})
+
+                parts = token.split(".")
+                if len(parts) != 4 or parts[0] != "rst":
+                    return self._json(400, {"ok": False, "error": "Invalid reset token format."})
+                uid, ts_str, sig = parts[1], parts[2], parts[3]
+                try:
+                    ts = int(ts_str)
+                    if time.time() - ts > 3600:
+                        return self._json(400, {"ok": False, "error": "Reset token has expired. Please request a new one."})
+                except ValueError:
+                    return self._json(400, {"ok": False, "error": "Malformed timestamp in reset token."})
+
+                from backend.app.core.config import settings
+                raw = f"{uid}:{ts}".encode("utf-8")
+                key = getattr(settings, "jwt_secret", None) or getattr(settings, "secret_key", "autopilot_secret")
+                expected_sig = hmac.new(key.encode("utf-8"), raw, hashlib.sha256).hexdigest()[:32]
+                if not hmac.compare_digest(sig, expected_sig):
+                    return self._json(400, {"ok": False, "error": "Invalid or tampered reset token."})
+
+                with DB() as db:
+                    from backend.app.core.security import hash_password
+                    new_hash = hash_password(new_pwd)
+                    db.execute("UPDATE users SET password_hash = ? WHERE email = ? OR id = ?", (new_hash, email, uid))
+                    return self._json(200, {
+                        "ok": True,
+                        "message": "Your password has been successfully reset. You can now log in with your new credentials."
+                    })
+            except Exception as e:
+                log.error("Auth reset-password fail", e)
+                return self._json(500, {"ok": False, "error": str(e)})
+
+        # ---- Authentication: Change Password (In-Session) ----
+        if u.path == "/api/auth/change-password":
+            try:
+                n = int(self.headers.get("Content-Length", 0))
+                body = json.loads(self.rfile.read(n) or b"{}")
+                curr_pwd = (body.get("current_password") or body.get("currentPassword") or "").strip()
+                new_pwd = (body.get("new_password") or body.get("newPassword") or "").strip()
+                uid = self.headers.get("X-User-Id") or body.get("user_id") or "admin_abhay"
+
+                if not curr_pwd or not new_pwd:
+                    return self._json(400, {"ok": False, "error": "Both current and new password are required."})
+                if len(new_pwd) < 6:
+                    return self._json(400, {"ok": False, "error": "New password must be at least 6 characters long."})
+
+                with DB() as db:
+                    user = db.get_user(uid)
+                    if not user:
+                        return self._json(404, {"ok": False, "error": "User account not found."})
+                    from backend.app.core.security import verify_password, hash_password
+                    if not verify_password(curr_pwd, user.get("password_hash") or ""):
+                        return self._json(401, {"ok": False, "error": "Current password does not match records."})
+                    new_hash = hash_password(new_pwd)
+                    db.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hash, user.get("id")))
+                    return self._json(200, {"ok": True, "message": "Password changed successfully."})
+            except Exception as e:
+                log.error("Auth change-password fail", e)
+                return self._json(500, {"ok": False, "error": str(e)})
+
+        # ---- User: Update Profile & Niche Preferences ----
+        if u.path == "/api/auth/profile":
+            try:
+                n = int(self.headers.get("Content-Length", 0))
+                body = json.loads(self.rfile.read(n) or b"{}")
+                uid = self.headers.get("X-User-Id") or body.get("user_id") or "admin_abhay"
+                full_name = body.get("fullName") or body.get("full_name") or body.get("name")
+                niche = body.get("niche")
+                voice = body.get("voicePreference") or body.get("voice_preference")
+
+                with DB() as db:
+                    user = db.get_user(uid)
+                    if not user:
+                        return self._json(404, {"ok": False, "error": "User not found."})
+                    if full_name:
+                        db.execute("UPDATE users SET name = ? WHERE id = ?", (full_name.strip(), user.get("id")))
+                    prefs = json.loads(user.get("preferences") or "{}") if isinstance(user.get("preferences"), str) else (user.get("preferences") or {})
+                    if niche:
+                        prefs["niche"] = niche
+                    if voice:
+                        prefs["voice_preference"] = voice
+                    db.execute("UPDATE users SET preferences = ? WHERE id = ?", (json.dumps(prefs), user.get("id")))
+                    updated_user = db.get_user(uid)
+                    user_clean = dict(updated_user)
+                    user_clean.pop("password_hash", None)
+                    return self._json(200, {"ok": True, "user": user_clean})
+            except Exception as e:
+                log.error("Auth profile update fail", e)
+                return self._json(500, {"ok": False, "error": str(e)})
+
+        # ---- User: GDPR Permanent Account Erasure ----
+        if u.path == "/api/auth/delete-account":
+            try:
+                n = int(self.headers.get("Content-Length", 0))
+                body = json.loads(self.rfile.read(n) or b"{}")
+                pwd = (body.get("password") or "").strip()
+                confirm_str = (body.get("confirmation") or "").strip()
+                uid = self.headers.get("X-User-Id") or body.get("user_id")
+
+                if not uid or uid in ("admin_abhay", "1", 1):
+                    return self._json(403, {"ok": False, "error": "Primary administrative founder account cannot be deleted via self-service."})
+                if confirm_str != "DELETE MY ACCOUNT":
+                    return self._json(400, {"ok": False, "error": "Confirmation phrase must match 'DELETE MY ACCOUNT' exactly."})
+
+                with DB() as db:
+                    user = db.get_user(uid)
+                    if not user:
+                        return self._json(404, {"ok": False, "error": "Account not found."})
+                    from backend.app.core.security import verify_password
+                    if not verify_password(pwd, user.get("password_hash") or ""):
+                        return self._json(401, {"ok": False, "error": "Password confirmation failed."})
+                    cleanup_queries = [
+                        ("DELETE FROM channel_credentials WHERE user_id = ?", (uid,)),
+                        ("DELETE FROM videos WHERE user_id = ?", (uid,)),
+                        ("DELETE FROM jobs WHERE user_id = ?", (uid,)),
+                        ("DELETE FROM series WHERE user_id = ?", (uid,)),
+                        ("DELETE FROM discord_connections WHERE user_id = ?", (uid,)),
+                        ("DELETE FROM workspaces WHERE owner_email = ? OR id = ?", (user.get("email"), f"ws_{uid}")),
+                    ]
+                    for sql, params in cleanup_queries:
+                        try:
+                            db.execute(sql, params)
+                        except Exception:
+                            pass
+                    db.execute("DELETE FROM users WHERE id = ?", (user.get("id"),))
+                    return self._json(200, {"ok": True, "message": "Account and all associated tenant data permanently deleted."})
+            except Exception as e:
+                log.error("Auth delete-account fail", e)
+                return self._json(500, {"ok": False, "error": str(e)})
+
         # ---- User: Mark onboarding tour completed in DB ----
         if u.path == "/api/user/tour-complete":
             try:
@@ -3517,27 +3692,43 @@ body::before {
     <div class="login-tabs">
       <button class="login-tab-btn active" id="tabBtnSignIn" onclick="setAuthTab('signin')">Sign In</button>
       <button class="login-tab-btn" id="tabBtnSignUp" onclick="setAuthTab('signup')">Create Account</button>
+      <button class="login-tab-btn" id="tabBtnForgot" onclick="setAuthTab('forgot')">Recovery</button>
+      <button class="login-tab-btn" id="tabBtnReset" onclick="setAuthTab('reset')" style="display:none;">Reset</button>
     </div>
+
+    <div id="authAlertBanner" style="display:none; padding:10px 14px; border-radius:8px; font-size:12.5px; margin-bottom:14px; line-height:1.4;"></div>
     
     <form id="authForm" onsubmit="handleAuthSubmit(event)">
       <div class="form-group" id="groupFullName" style="display:none;">
         <label id="lblFullName">Full Name</label>
         <input type="text" id="authName" placeholder="e.g. Rahul Sharma" class="auth-input" autocomplete="name">
       </div>
-      <div class="form-group">
+      <div class="form-group" id="groupEmail">
         <label id="lblEmail">Email Address or Creator ID</label>
         <input type="text" id="authEmail" placeholder="name@example.com" required class="auth-input" value="" autocomplete="username">
       </div>
-      <div class="form-group">
+      <div class="form-group" id="groupResetToken" style="display:none;">
+        <label>Reset Recovery Token</label>
+        <input type="text" id="authResetToken" placeholder="Paste rst.usr_... token" class="auth-input">
+      </div>
+      <div class="form-group" id="groupPassword">
         <label id="lblPassword">Password</label>
-        <input type="password" id="authPassword" placeholder="••••••••" required class="auth-input" value="" autocomplete="current-password">
+        <input type="password" id="authPassword" placeholder="••••••••" class="auth-input" value="" autocomplete="current-password">
+      </div>
+      <div class="form-group" id="groupConfirmPassword" style="display:none;">
+        <label id="lblConfirmPassword">Confirm Password</label>
+        <input type="password" id="authConfirmPassword" placeholder="••••••••" class="auth-input">
       </div>
       <button type="submit" class="btn-auth-submit" id="btnAuthSubmit">
         🚀 Sign In &amp; Launch Studio
       </button>
     </form>
 
-    <div class="auth-footer-badge" id="lblAuthSecurity" style="margin-top:18px;">
+    <div id="authBottomSwitcher" style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:12px;">
+      <a href="javascript:void(0)" onclick="setAuthTab('forgot')" style="color:var(--cyan); text-decoration:none;">Forgot your password?</a>
+    </div>
+
+    <div class="auth-footer-badge" id="lblAuthSecurity" style="margin-top:16px;">
       🛡️ End-to-End Secure Workspace &amp; Creator Isolation
     </div>
   </div>
@@ -4078,6 +4269,136 @@ body::before {
   <!-- TAB 5: SETTINGS & QUOTA -->
   <!-- ============================================================== -->
   <section class="tab-section" id="sec-settings">
+    <!-- 4-CARD SAAS STUDIO SETTINGS CENTER -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-bottom: 24px;">
+      
+      <!-- CARD 1: CREATOR PROFILE & NICHE PREFERENCES -->
+      <div class="custom-studio-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <h3 style="font-family:'Outfit',sans-serif; margin:0;">👤 Creator Profile</h3>
+          <span class="creator-role-tag role-creator" id="settingsRoleBadge">CREATOR</span>
+        </div>
+        <div id="settingsProfileAlert" style="display: none; padding: 10px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 14px;"></div>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="settingsFullName" class="auth-input" placeholder="e.g. Alex Creator">
+        </div>
+        <div class="form-group">
+          <label>Account Email <span style="font-size: 11px; color: #10B981;">✓ Verified</span></label>
+          <input type="email" id="settingsEmail" class="auth-input" readonly style="opacity: 0.8; background: rgba(0,0,0,0.3);">
+        </div>
+        <div class="form-group">
+          <label>Primary Content Niche</label>
+          <select id="settingsNiche" class="custom-select" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(5,8,20,0.85); color: #fff; border: 1px solid var(--border);">
+            <option value="Anime & Manhwa Recap">⚔️ Solo Leveling &amp; Anime Recaps</option>
+            <option value="Sci-Fi & Time-Loop">⏳ Sci-Fi Thrillers &amp; Time Loops (Kaal-Rekha)</option>
+            <option value="Cyberpunk Mythology">⚡ Cyberpunk Indian Mythology (Ashwatthama)</option>
+            <option value="Horror & Radio Mystery">📻 Found Footage &amp; Radio Horror (The Observer Files)</option>
+            <option value="Romance & Drama">💔 Emotional Romance &amp; Drama (Jab Pyaar Online Tha)</option>
+            <option value="Brain Teasers & Riddles">🧠 Mind Riddles (Dimag Ka Dahi)</option>
+            <option value="Historical Documentaries">📜 Historical Documentaries (Leonardo Da Vinci)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Default Humanoid Voice Profile</label>
+          <select id="settingsVoice" class="custom-select" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(5,8,20,0.85); color: #fff; border: 1px solid var(--border);">
+            <option value="hi-IN-MadhurNeural">🇮🇳 Hindi — Madhur Neural (Studio Warmth &amp; Resonance)</option>
+            <option value="hi-IN-SwaraNeural">🇮🇳 Hindi — Swara Neural (Expressive Female)</option>
+            <option value="en-US-GuyNeural">🇺🇸 English — Guy Neural (Action Narrator)</option>
+            <option value="en-US-BrianNeural">🇺🇸 English — Brian Neural (Deep Documentary)</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="btnSaveProfile" onclick="saveUserProfile()">
+          Save Profile Changes
+        </button>
+      </div>
+
+      <!-- CARD 2: SECURITY & PASSWORD -->
+      <div class="custom-studio-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <h3 style="font-family:'Outfit',sans-serif; margin:0;">🔐 Security &amp; Password</h3>
+          <span style="font-size:11px; color:#10B981; font-weight:600;">256-Bit Protected</span>
+        </div>
+        <div id="settingsPasswordAlert" style="display: none; padding: 10px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 14px;"></div>
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" id="settingsCurrentPass" class="auth-input" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label>New Password (Min 6 Characters)</label>
+          <input type="password" id="settingsNewPass" class="auth-input" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" id="settingsConfirmPass" class="auth-input" placeholder="••••••••">
+        </div>
+        <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" id="btnChangePassword" onclick="changeAccountPassword()">
+          Update Password
+        </button>
+        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 13px; font-weight: 600;">Active Session</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Restores automatically on revisit</div>
+          </div>
+          <button class="btn btn-ghost" style="padding: 6px 12px; font-size: 12px;" onclick="logoutUser()">Sign Out</button>
+        </div>
+      </div>
+
+      <!-- CARD 3: WORKSPACE & INVARIANTS -->
+      <div class="custom-studio-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <h3 style="font-family:'Outfit',sans-serif; margin:0;">🏢 Studio Engine &amp; Invariants</h3>
+        </div>
+        <div class="form-group">
+          <label>Active Workspace / Creator ID</label>
+          <input type="text" id="settingsWsId" class="auth-input" readonly style="opacity: 0.8; background: rgba(0,0,0,0.3);">
+        </div>
+        <div class="form-group">
+          <label>Default Video Aspect Ratio</label>
+          <select class="custom-select" id="settingsAspectRatio" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(5,8,20,0.85); color: #fff; border: 1px solid var(--border);">
+            <option value="9:16">1080x1920 (9:16 Vertical HD — YouTube Shorts &amp; Reels)</option>
+            <option value="16:9">1920x1080 (16:9 Landscape Full HD — Long-Form Chapters)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>YouTube Comment Invariant (AGENTS.md)</label>
+          <input type="text" class="auth-input" value="Permanent: Comments ALWAYS 100% ENABLED (Zero Comment Lock Policy)" readonly style="color: #34D399; font-weight: 600; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.25);">
+        </div>
+        <div style="margin-top: 14px;">
+          <button class="btn btn-ghost" style="width: 100%;" onclick="replayTour()">🤖 Reopen Guided Tour</button>
+        </div>
+      </div>
+
+      <!-- CARD 4: DANGER ZONE -->
+      <div class="custom-studio-card" style="border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <h3 style="font-family:'Outfit',sans-serif; margin:0; color: #FDA4AF;">⚠️ Danger Zone</h3>
+          <span style="font-size:11px; color:#EF4444; font-weight:700;">IRREVERSIBLE</span>
+        </div>
+        <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+          Permanently purge workspace render assets, disconnect stored channel OAuth tokens, or delete your entire creator account.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: #FDA4AF;">Purge Workspace Cache</div>
+              <div style="font-size: 11px; color: var(--text-dim);">Clears local storage and cached session tokens</div>
+            </div>
+            <button class="btn btn-ghost" style="padding: 6px 12px; font-size: 12px; color: #FDA4AF;" onclick="purgeUserData()">Purge</button>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: #EF4444;">Delete Creator Account</div>
+              <div style="font-size: 11px; color: var(--text-dim);">GDPR compliant complete account erasure</div>
+            </div>
+            <button class="btn btn-ghost" style="padding: 6px 12px; font-size: 12px; background: #EF4444; color: #fff; border:none;" onclick="openDeleteAccountModal()">Delete</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- QUOTA METRICS & SYSTEM CONTROLS -->
     <div class="custom-studio-card" style="margin-bottom:24px;">
       <h3 style="margin-bottom:14px; font-family:'Outfit',sans-serif;" id="lblQuotaTitle">📊 Daily API Quota &amp; Rate Limits</h3>
       <div class="metrics-row" id="quotaMetrics">
@@ -4105,6 +4426,32 @@ body::before {
       </div>
     </div>
   </section>
+</div>
+
+<!-- MODAL: Permanent Account Deletion Confirmation -->
+<div id="deleteAccountModal" class="login-modal-overlay" style="display:none;">
+  <div class="login-card" style="max-width: 480px; border: 1px solid rgba(239, 68, 68, 0.4);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 style="color: #FDA4AF; font-size: 18px; margin: 0;">⚠️ Delete Creator Account</h3>
+      <button class="btn-ghost" style="padding: 4px 8px;" onclick="closeDeleteAccountModal()">✕</button>
+    </div>
+    <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin-bottom: 16px;">
+      This action is <strong style="color: #FDA4AF;">permanent and irreversible</strong>. All your workspaces, video renders, and YouTube connection tokens will be erased.
+    </p>
+    <div id="deleteAccountAlert" style="display: none; padding: 10px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 14px; background: rgba(239, 68, 68, 0.15); color: #FDA4AF;"></div>
+    <div class="form-group">
+      <label>Account Password</label>
+      <input type="password" id="deleteAccountPass" class="auth-input" placeholder="Enter your current password">
+    </div>
+    <div class="form-group">
+      <label>Type <strong style="color: #FDA4AF;">DELETE MY ACCOUNT</strong> to confirm</label>
+      <input type="text" id="deleteAccountConfirmText" class="auth-input" placeholder="DELETE MY ACCOUNT">
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button class="btn btn-ghost" style="flex: 1;" onclick="closeDeleteAccountModal()">Cancel</button>
+      <button class="btn" style="flex: 1; background: #EF4444; color: #fff; border:none; border-radius:8px; font-weight:700;" id="btnConfirmDeleteAccount" onclick="confirmDeleteAccount()">Permanently Delete</button>
+    </div>
+  </div>
 </div>
 
 <!-- FLOATING COPILOT ORB -->
@@ -4644,6 +4991,23 @@ function checkAuthState() {
       btnAdminView.style.display = isAdmin ? 'inline-flex' : 'none';
       updateAdminViewButton();
     }
+
+    // Populate Settings Panel inputs
+    const setFn = document.getElementById('settingsFullName');
+    if (setFn) setFn.value = authUser.name || '';
+    const setEm = document.getElementById('settingsEmail');
+    if (setEm) setEm.value = authUser.email || '';
+    const setWs = document.getElementById('settingsWsId');
+    if (setWs) setWs.value = authUser.user_id || 'admin_abhay';
+    const setRb = document.getElementById('settingsRoleBadge');
+    if (setRb) setRb.textContent = (authUser.role || 'creator').toUpperCase();
+    if (authUser.preferences) {
+      try {
+        const p = (typeof authUser.preferences === 'string') ? JSON.parse(authUser.preferences) : authUser.preferences;
+        if (p.niche && document.getElementById('settingsNiche')) document.getElementById('settingsNiche').value = p.niche;
+        if (p.voice_preference && document.getElementById('settingsVoice')) document.getElementById('settingsVoice').value = p.voice_preference;
+      } catch (e) {}
+    }
   }
 }
 
@@ -4658,38 +5022,105 @@ function closeLoginModal() {
 }
 
 let authMode = 'signin';
+
+function setAuthAlert(msg, isSuccess = false) {
+  const el = document.getElementById('authAlertBanner');
+  if (!el) return;
+  if (!msg) {
+    el.style.display = 'none';
+    return;
+  }
+  el.style.display = 'block';
+  el.style.background = isSuccess ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)';
+  el.style.border = isSuccess ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)';
+  el.style.color = isSuccess ? '#34D399' : '#FDA4AF';
+  el.innerText = msg;
+}
+
 function setAuthTab(mode) {
   authMode = mode;
+  setAuthAlert('');
   if (typeof audio !== 'undefined' && audio.click) audio.click();
   document.getElementById('tabBtnSignIn').classList.toggle('active', mode === 'signin');
   document.getElementById('tabBtnSignUp').classList.toggle('active', mode === 'signup');
-  document.getElementById('groupFullName').style.display = (mode === 'signup') ? 'block' : 'none';
+  const fTab = document.getElementById('tabBtnForgot');
+  if (fTab) fTab.classList.toggle('active', mode === 'forgot');
+  const rTab = document.getElementById('tabBtnReset');
+  if (rTab) rTab.classList.toggle('active', mode === 'reset');
+
+  const gName = document.getElementById('groupFullName');
+  const gEmail = document.getElementById('groupEmail');
+  const gPass = document.getElementById('groupPassword');
+  const gConfirm = document.getElementById('groupConfirmPassword');
+  const gToken = document.getElementById('groupResetToken');
+  const btnSubmit = document.getElementById('btnAuthSubmit');
+  const switcher = document.getElementById('authBottomSwitcher');
+
   if (mode === 'signup') {
-    document.getElementById('lblEmail').textContent = 'Email Address';
-    document.getElementById('btnAuthSubmit').textContent = '✨ Create Account & Get Started';
+    if (gName) gName.style.display = 'block';
+    if (gEmail) gEmail.style.display = 'block';
+    if (gPass) gPass.style.display = 'block';
+    if (gConfirm) gConfirm.style.display = 'block';
+    if (gToken) gToken.style.display = 'none';
+    if (btnSubmit) btnSubmit.textContent = '✨ Create Account & Launch Studio';
+    if (switcher) switcher.innerHTML = `Already have an account? <a href="javascript:void(0)" onclick="setAuthTab('signin')" style="color:var(--cyan); font-weight:600; text-decoration:none;">Sign In</a>`;
+  } else if (mode === 'forgot') {
+    if (gName) gName.style.display = 'none';
+    if (gEmail) gEmail.style.display = 'block';
+    if (gPass) gPass.style.display = 'none';
+    if (gConfirm) gConfirm.style.display = 'none';
+    if (gToken) gToken.style.display = 'none';
+    if (btnSubmit) btnSubmit.textContent = '🔑 Generate Recovery Token';
+    if (switcher) switcher.innerHTML = `Remembered your password? <a href="javascript:void(0)" onclick="setAuthTab('signin')" style="color:var(--cyan); font-weight:600; text-decoration:none;">Back to Sign In</a>`;
+  } else if (mode === 'reset') {
+    if (gName) gName.style.display = 'none';
+    if (gEmail) gEmail.style.display = 'block';
+    if (gPass) gPass.style.display = 'block';
+    if (gConfirm) gConfirm.style.display = 'block';
+    if (gToken) gToken.style.display = 'block';
+    if (btnSubmit) btnSubmit.textContent = '🔒 Set New Password & Sign In';
+    if (switcher) switcher.innerHTML = `<a href="javascript:void(0)" onclick="setAuthTab('signin')" style="color:var(--cyan); font-weight:600; text-decoration:none;">Back to Sign In</a>`;
   } else {
-    document.getElementById('lblEmail').textContent = 'Email Address or Creator ID';
-    document.getElementById('btnAuthSubmit').textContent = '🚀 Sign In & Launch Studio';
+    // signin
+    if (gName) gName.style.display = 'none';
+    if (gEmail) gEmail.style.display = 'block';
+    if (gPass) gPass.style.display = 'block';
+    if (gConfirm) gConfirm.style.display = 'none';
+    if (gToken) gToken.style.display = 'none';
+    if (btnSubmit) btnSubmit.textContent = '🚀 Sign In & Launch Studio';
+    if (switcher) switcher.innerHTML = `<a href="javascript:void(0)" onclick="setAuthTab('forgot')" style="color:var(--cyan); text-decoration:none;">Forgot your password?</a>`;
   }
 }
 
 async function handleAuthSubmit(e) {
   e.preventDefault();
+  setAuthAlert('');
   const email = document.getElementById('authEmail').value.trim();
   const name = document.getElementById('authName')?.value.trim() || email.split('@')[0];
   const password = document.getElementById('authPassword')?.value || '';
-
-  if (!email) {
-    alert('Please enter your email address.');
-    return;
-  }
-  if (!password) {
-    alert('Please enter your password.');
-    return;
-  }
+  const confirmPassword = document.getElementById('authConfirmPassword')?.value || '';
+  const resetToken = document.getElementById('authResetToken')?.value.trim() || '';
+  const btnSubmit = document.getElementById('btnAuthSubmit');
+  const origText = btnSubmit.textContent;
+  btnSubmit.disabled = true;
 
   try {
     if (authMode === 'signup') {
+      if (!email || !password) {
+        setAuthAlert('Please provide email and password.');
+        btnSubmit.disabled = false;
+        return;
+      }
+      if (password.length < 6) {
+        setAuthAlert('Password must be at least 6 characters long.');
+        btnSubmit.disabled = false;
+        return;
+      }
+      if (password !== confirmPassword) {
+        setAuthAlert('Passwords do not match. Please re-enter.');
+        btnSubmit.disabled = false;
+        return;
+      }
       const r = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -4697,7 +5128,8 @@ async function handleAuthSubmit(e) {
       });
       const res = await r.json();
       if (!res.ok) {
-        alert(res.error || 'Registration failed');
+        setAuthAlert(res.error || 'Registration failed.');
+        btnSubmit.disabled = false;
         return;
       }
       authUser = res.user;
@@ -4711,7 +5143,62 @@ async function handleAuthSubmit(e) {
       if (typeof checkNewUserTour === 'function') {
         setTimeout(() => checkNewUserTour(true), 600);
       }
+    } else if (authMode === 'forgot') {
+      if (!email) {
+        setAuthAlert('Please enter your account email.');
+        btnSubmit.disabled = false;
+        return;
+      }
+      const r = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const res = await r.json();
+      if (res.ok && res.reset_token) {
+        document.getElementById('authResetToken').value = res.reset_token;
+        const rTab = document.getElementById('tabBtnReset');
+        if (rTab) rTab.style.display = 'inline-block';
+        setAuthTab('reset');
+        setAuthAlert(`Recovery token generated! Copy: ${res.reset_token}`, true);
+      } else {
+        setAuthAlert(res.error || res.message || 'Recovery instructions prepared.');
+      }
+    } else if (authMode === 'reset') {
+      if (!email || !resetToken || !password) {
+        setAuthAlert('Please fill in email, reset token, and new password.');
+        btnSubmit.disabled = false;
+        return;
+      }
+      if (password.length < 6) {
+        setAuthAlert('New password must be at least 6 characters.');
+        btnSubmit.disabled = false;
+        return;
+      }
+      if (password !== confirmPassword) {
+        setAuthAlert('Passwords do not match.');
+        btnSubmit.disabled = false;
+        return;
+      }
+      const r = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, token: resetToken, new_password: password })
+      });
+      const res = await r.json();
+      if (res.ok) {
+        setAuthTab('signin');
+        setAuthAlert('Password reset successfully! Please sign in with your new password.', true);
+      } else {
+        setAuthAlert(res.error || 'Password reset failed.');
+      }
     } else {
+      // signin
+      if (!email || !password) {
+        setAuthAlert('Please provide both email and password.');
+        btnSubmit.disabled = false;
+        return;
+      }
       const r = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -4719,7 +5206,8 @@ async function handleAuthSubmit(e) {
       });
       const res = await r.json();
       if (!res.ok) {
-        alert(res.error || 'Login failed. Please check your credentials.');
+        setAuthAlert(res.error || 'Login failed. Please check your credentials.');
+        btnSubmit.disabled = false;
         return;
       }
       authUser = res.user;
@@ -4731,7 +5219,234 @@ async function handleAuthSubmit(e) {
       refreshTasks();
     }
   } catch (err) {
-    alert('Authentication error: ' + err.message);
+    setAuthAlert('Network error: ' + err.message);
+  } finally {
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = origText;
+  }
+}
+
+// Studio Settings Handlers
+async function saveUserProfile() {
+  const btn = document.getElementById('btnSaveProfile');
+  const alertEl = document.getElementById('settingsProfileAlert');
+  const fullName = document.getElementById('settingsFullName').value.trim();
+  const niche = document.getElementById('settingsNiche').value;
+  const voicePreference = document.getElementById('settingsVoice').value;
+
+  if (!authUser) {
+    toast('⚠️ Please sign in first.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  if (alertEl) alertEl.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/auth/profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-User-Id': authUser.user_id || 'admin_abhay'
+      },
+      body: JSON.stringify({ fullName, niche, voicePreference })
+    });
+    const data = await res.json();
+    if (data.ok && data.user) {
+      authUser = { ...authUser, ...data.user };
+      localStorage.setItem('autopilot_auth_user', JSON.stringify(authUser));
+      checkAuthState();
+      if (alertEl) {
+        alertEl.style.display = 'block';
+        alertEl.style.background = 'rgba(16, 185, 129, 0.15)';
+        alertEl.style.color = '#34D399';
+        alertEl.innerText = '✓ Profile & studio preferences updated successfully!';
+      }
+      toast('Profile updated!');
+    } else {
+      if (alertEl) {
+        alertEl.style.display = 'block';
+        alertEl.style.background = 'rgba(239, 68, 68, 0.15)';
+        alertEl.style.color = '#FDA4AF';
+        alertEl.innerText = data.error || 'Failed to update profile.';
+      }
+    }
+  } catch (err) {
+    if (alertEl) {
+      alertEl.style.display = 'block';
+      alertEl.style.background = 'rgba(239, 68, 68, 0.15)';
+      alertEl.style.color = '#FDA4AF';
+      alertEl.innerText = 'Error: ' + err.message;
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Profile Changes';
+  }
+}
+
+async function changeAccountPassword() {
+  const btn = document.getElementById('btnChangePassword');
+  const alertEl = document.getElementById('settingsPasswordAlert');
+  const currentPassword = document.getElementById('settingsCurrentPass').value;
+  const newPassword = document.getElementById('settingsNewPass').value;
+  const confirmPassword = document.getElementById('settingsConfirmPass').value;
+
+  if (!authUser) {
+    toast('⚠️ Please sign in first.');
+    return;
+  }
+  if (!currentPassword || !newPassword) {
+    if (alertEl) {
+      alertEl.style.display = 'block';
+      alertEl.style.background = 'rgba(239, 68, 68, 0.15)';
+      alertEl.style.color = '#FDA4AF';
+      alertEl.innerText = 'Please provide current and new password.';
+    }
+    return;
+  }
+  if (newPassword.length < 6) {
+    if (alertEl) {
+      alertEl.style.display = 'block';
+      alertEl.style.background = 'rgba(239, 68, 68, 0.15)';
+      alertEl.style.color = '#FDA4AF';
+      alertEl.innerText = 'New password must be at least 6 characters.';
+    }
+    return;
+  }
+  if (newPassword !== confirmPassword) {
+    if (alertEl) {
+      alertEl.style.display = 'block';
+      alertEl.style.background = 'rgba(239, 68, 68, 0.15)';
+      alertEl.style.color = '#FDA4AF';
+      alertEl.innerText = 'New passwords do not match.';
+    }
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Updating...';
+  if (alertEl) alertEl.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/auth/change-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-User-Id': authUser.user_id || 'admin_abhay'
+      },
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('settingsCurrentPass').value = '';
+      document.getElementById('settingsNewPass').value = '';
+      document.getElementById('settingsConfirmPass').value = '';
+      if (alertEl) {
+        alertEl.style.display = 'block';
+        alertEl.style.background = 'rgba(16, 185, 129, 0.15)';
+        alertEl.style.color = '#34D399';
+        alertEl.innerText = '✓ Password changed successfully! Keep it safe.';
+      }
+      toast('Password updated successfully!');
+    } else {
+      if (alertEl) {
+        alertEl.style.display = 'block';
+        alertEl.style.background = 'rgba(239, 68, 68, 0.15)';
+        alertEl.style.color = '#FDA4AF';
+        alertEl.innerText = data.error || 'Password change failed.';
+      }
+    }
+  } catch (err) {
+    if (alertEl) {
+      alertEl.style.display = 'block';
+      alertEl.style.background = 'rgba(239, 68, 68, 0.15)';
+      alertEl.style.color = '#FDA4AF';
+      alertEl.innerText = 'Error: ' + err.message;
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Update Password';
+  }
+}
+
+function purgeUserData() {
+  if (!confirm('Are you sure you want to purge local studio cache and reset private preferences?')) return;
+  localStorage.removeItem('autopilot_auth_user');
+  authUser = null;
+  checkAuthState();
+  toast('Local workspace cache purged.');
+  switchNav('studio');
+}
+
+function logoutUser() {
+  localStorage.removeItem('autopilot_auth_user');
+  authUser = null;
+  checkAuthState();
+  toast('Signed out successfully.');
+  switchNav('studio');
+}
+
+function openDeleteAccountModal() {
+  if (!authUser) {
+    toast('⚠️ Please sign in first.');
+    return;
+  }
+  document.getElementById('deleteAccountPass').value = '';
+  document.getElementById('deleteAccountConfirmText').value = '';
+  const alertEl = document.getElementById('deleteAccountAlert');
+  if (alertEl) alertEl.style.display = 'none';
+  document.getElementById('deleteAccountModal').style.display = 'flex';
+}
+
+function closeDeleteAccountModal() {
+  document.getElementById('deleteAccountModal').style.display = 'none';
+}
+
+async function confirmDeleteAccount() {
+  const pass = document.getElementById('deleteAccountPass').value;
+  const confirmText = document.getElementById('deleteAccountConfirmText').value.trim();
+  const alertEl = document.getElementById('deleteAccountAlert');
+  const btn = document.getElementById('btnConfirmDeleteAccount');
+
+  if (!pass) {
+    alertEl.style.display = 'block';
+    alertEl.innerText = 'Please enter your password to confirm.';
+    return;
+  }
+  if (confirmText !== 'DELETE MY ACCOUNT') {
+    alertEl.style.display = 'block';
+    alertEl.innerText = 'You must type "DELETE MY ACCOUNT" exactly.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Erasing Account...';
+
+  try {
+    const res = await fetch('/api/auth/delete-account', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-User-Id': authUser.user_id
+      },
+      body: JSON.stringify({ password: pass, confirmation: confirmText })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      closeDeleteAccountModal();
+      logoutUser();
+      toast('Account permanently erased. We hope to see you again!');
+    } else {
+      alertEl.style.display = 'block';
+      alertEl.innerText = data.error || 'Failed to delete account.';
+    }
+  } catch (err) {
+    alertEl.style.display = 'block';
+    alertEl.innerText = 'Error: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Permanently Delete';
   }
 }
 

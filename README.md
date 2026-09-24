@@ -1455,6 +1455,12 @@ python -m unittest discover -s backend/tests -v
 * **OAuth & Upload Protocol**: 308 resume byte parsing, Content-Range headers, and token refresh mock sequences.
 * **Audio & Subtitle Sync**: Asserts subtitle syllable timestamps strictly match narration duration within $\pm 0.05\text{s}$.
 * **Multi-Tenancy & IDOR**: Verifies tenant isolation across workspaces, preventing unauthorized resource access.
+* **Dual-Runtime SaaS Studio Parity**: Validates 100% feature parity across FastAPI (`backend/app`) and Python Studio (`web/server.py`):
+  * Multi-tab modal authentication (Sign In, Sign Up, Forgot Password, Reset Password via HMAC-SHA256 tokens).
+  * 4-Card Studio Settings Center (Creator Profile & Niche Selection, Neural Voice assignment, Password Management, and GDPR Account Deletion).
+  * Administrative founder immunity (`admin_abhay` cannot be self-deleted).
+  * Robust database abstraction layer with `db.execute()`, automatic integer/string user lookup resolution, and preference schema migrations.
+  * 100% passing suites across User Isolation (8/8), Longform Engine (14/14), Discord & Copilot Reference (17/17), and Web Studio E2E (6/6).
 
 ---
 

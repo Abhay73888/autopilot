@@ -191,6 +191,8 @@ CREATE TABLE IF NOT EXISTS users (
     tier             TEXT NOT NULL DEFAULT 'starter', -- starter | pro | enterprise
     credits          INTEGER NOT NULL DEFAULT 100,
     tour_completed   INTEGER NOT NULL DEFAULT 0,
+    preferences      TEXT DEFAULT '{}',
+    avatar_url       TEXT,
     created_ts       TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_users_id ON users(user_id);
@@ -303,6 +305,16 @@ class DB:
             except sqlite3.OperationalError:
                 pass
 
+        # Users table migrations for preferences & profile
+        for col_name, col_type in [
+            ("preferences", "TEXT DEFAULT '{}'"),
+            ("avatar_url", "TEXT"),
+        ]:
+            try:
+                self.conn.execute(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}")
+            except sqlite3.OperationalError:
+                pass
+
         # Videos table migrations for older schemas
         for col_name, col_type in [
             ("scheduled_ts", "TEXT"),
@@ -371,6 +383,10 @@ class DB:
         return self.conn.execute(sql, params).fetchone()
 
     q1 = one
+
+    def execute(self, sql: str, params=()):
+        """Execute a query directly on the underlying connection."""
+        return self.conn.execute(sql, params)
 
     # ---------- videos ----------
     def create_video(self, topic: str, **fields) -> int:
@@ -733,11 +749,14 @@ class DB:
         return [dict(r) for r in rows]
 
     # ---------- users & multi-tenancy ----------
-    def get_user(self, user_id_or_email: str) -> dict | None:
-        ident = (user_id_or_email or "").strip().lower()
+    def get_user(self, user_id_or_email: str | int) -> dict | None:
+        ident = str(user_id_or_email or "").strip().lower()
         if not ident:
             return None
-        r = self.one("SELECT * FROM users WHERE LOWER(user_id) = ? OR LOWER(email) = ? LIMIT 1", (ident, ident))
+        if ident.isdigit():
+            r = self.one("SELECT * FROM users WHERE id = ? OR LOWER(user_id) = ? OR LOWER(email) = ? LIMIT 1", (int(ident), ident, ident))
+        else:
+            r = self.one("SELECT * FROM users WHERE LOWER(user_id) = ? OR LOWER(email) = ? LIMIT 1", (ident, ident))
         return dict(r) if r else None
 
     def create_user(self, email: str, name: str, password: str = "", role: str = "creator", user_id: str | None = None) -> dict:

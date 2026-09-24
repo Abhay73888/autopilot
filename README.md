@@ -44,7 +44,7 @@
 | **👥 Multi-Tenancy** | True workspace & tenant data isolation: User A cannot see, query, or publish User B's videos, series, episodes, or OAuth credentials. |
 | **⚡ Core Runtime** | Python 3.10+ stdlib-first rendering core + Production FastAPI SaaS Gateway (`backend/app`) with Pydantic v2, PBKDF2 password security & HS256 JWT sessions. |
 | **🤖 AI & Swarm** | 12 Specialized Agents + Autonomous Copilot executing 16 natural language tools for scripting, voice synthesis, thumbnail generation, series continuation, and publishing. |
-| **📺 Series Franchises** | Continuous episodic memory: Kaal-Rekha (Sci-Fi Loop), Ashwatthama 3049 AD, Jab Pyaar Online Tha, Chintu 3D, Mind Riddles, The Observer Files, Roblox Vault. |
+| **📺 Series Franchises** | Continuous episodic memory: Kaal-Rekha (Sci-Fi Loop), Ashwatthama 3049 AD, Jab Pyaar Online Tha, Chintu 3D, Mind Riddles, The Observer Files, Roblox Vault, and Series 8: Leonardo da Vinci (Cinematic Historical Documentary). |
 | **▶️ YouTube OAuth** | Per-workspace Google OAuth 2.0 with AES-256-GCM encrypted tokens, live channel status inspection, YouTube Upload Guard, and AGENTS.md Zero Comment Lock Policy enforcement. |
 | **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized neural profiles), ElevenLabs Neural, Gemini TTS, paired with sub-bass procedural audio FX & EBU R128 loudness normalization. |
 | **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic karaoke subtitles, scaling from 30s shorts to 10m longform videos. |

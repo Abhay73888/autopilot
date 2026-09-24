@@ -52,6 +52,8 @@ def main():
         "tests/",
         "agents/",
         "web/",
+        "series/",
+        "docs/",
         "data/autopilot.db",
         "data/autopilot_master_vault_backup.json",
         "generate_and_publish_next_all_7_series_batch_part2.py",

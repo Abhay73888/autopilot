@@ -457,6 +457,32 @@ def _synthesize_procedural_episode(series_code: str, episode_num: int) -> dict[s
                 "Dramatic cliffhanger shot of glowing mysterious portal opening inside Roblox vault with question mark hologram, vertical 9:16, high contrast neon, no text"
             ]
         }
+    elif series_code == "SERIES_8":
+        # Leonardo da Vinci — Cinematic Historical Documentary Series
+        return {
+            "title": f"Leonardo Da Vinci Ka Sabse Bada Chhippa Hua Raaz! 📜🎨 | LEONARDO (Ep {episode_num}) #Shorts",
+            "caption": f"Leonardo da Vinci Episode {episode_num}: The Mystery of Leonardo ('Omo Sanza Lettere'). Unlettered polymath whose 10,000+ notebook pages in mirror script changed human vision forever. Subscribe for Episode 2! 👇",
+            "hook_overlay": f"📜 LEONARDO DA VINCI (EPISODE {episode_num}) 🏛️",
+            "comment_bait": "Kya aapko lagta hai Leonardo wakai insaan the ya unka dimaag sadiyon aage tha? Apni raye comment mein dein! 👇",
+            "lines": [
+                {"speaker": "narrator", "text": "Kaise 500 saal pehle ek aam insaan bina kisi degree ke painter, anatomist, engineer aur scientist sab kuch ban gaya?", "emotion": "serious", "role": "hook"},
+                {"speaker": "narrator", "text": "Ye hai Leonardo da Vinci. Duniya unhe jadoogar samajhti hai, lekin asli sach unki chhippi hui diary mein darj hai.", "emotion": "mysterious", "role": "body"},
+                {"speaker": "narrator", "text": "Unki zindagi mein unhone 20 se bhi kam paintings banayi... lekin unke haathon se likhe 10 hazar se zyada pages aaj bhi zinda hain.", "emotion": "serious", "role": "body"},
+                {"speaker": "narrator", "text": "Wo hamesha ulti handwriting mein likhte the — mirror script — jise sirf aaine ke saamne padha ja sakta tha!", "emotion": "amazed", "role": "reveal"},
+                {"speaker": "narrator", "text": "Unhone khud ko ek hi naam diya: 'Omo Sanza Lettere' — yaani ek anpadh insaan jise kitaabi gyaan nahi tha.", "emotion": "deep", "role": "body"},
+                {"speaker": "narrator", "text": "Ye kisi chamatkar ki kahani nahi hai... ye us method ki dastaan hai jisne insaniyat ka nazariya hamesha ke liye badal diya!", "emotion": "climax", "role": "climax"},
+                {"speaker": "narrator", "text": "Mona Lisa ke us an-suljhe raaz aur Leonardo ke sach ko janne ke liye channel ko abhi subscribe karein!", "emotion": "serious", "role": "ending"}
+            ],
+            "image_prompts": [
+                "Cinematic historical documentary frame, dark Renaissance workshop, single candle flame trembling in draft, macro of iron-gall ink blooming on antique linen paper, warm candlelight, 35mm anamorphic, vertical 9:16, no text, no watermark",
+                "Atmospheric Renaissance study, Leonardo da Vinci mirror handwriting and reverse cursive script sketches covering rustic wooden table, antique magnifying glass, warm amber light, vertical 9:16, no text",
+                "Extreme close-up macro of an ancient weathered leather-bound Renaissance notebook folio showing anatomical tendon sketches and water spiral diagrams, dust in the air, vertical 9:16, no text",
+                "Mysterious half-lit portrait inspired by the Mona Lisa smile veiled in delicate sfumato shadow, soft candle glow, deep umber palette, Renaissance masterpiece framing, vertical 9:16, no text",
+                "Breathtaking dawn over 15th century Florence, terracotta red curve of Brunelleschi dome emerging through morning mist over Arno river, historical accuracy, vertical 9:16, no text",
+                "Dramatic silhouette of Leonardo da Vinci standing alone at heavy walnut workbench at dusk holding an antique brass mechanical gear, cinematic rim lighting, vertical 9:16, no text",
+                "Monumental parchment title frame with weathered gold leaf Renaissance engraving aesthetic, candlelight flickers, museum grade archival lighting, vertical 9:16, no text"
+            ]
+        }
     else:
         # Generic fallback
         return {

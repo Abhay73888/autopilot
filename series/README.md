@@ -66,6 +66,6 @@ Ye directory autopilot channel ki official active series ko manage karti hai.
 * **Script**: [`series/SERIES_8_LEONARDO_DA_VINCI_ACT_1.md`](file:///c:/Users/ABHAY%20MAURAYA/Downloads/autopilot/autopilot/series/SERIES_8_LEONARDO_DA_VINCI_ACT_1.md)
 * **Genre**: Cinematic Historical Documentary (5-Act Feature Cut / 6-Part Streaming Miniseries)
 * **Core Subject**: Leonardo di ser Piero da Vinci — The forensic method of the unlettered polymath.
-* **Current Progress**: Act I (Chapters 1–6) Complete Production Script & Storyboard Generated.
+* **Current Progress**: Episode 1 Rendered (`output/video_1000018/final.mp4`, 52.4s) | Act I (Chapters 1–6) Complete Production Script & Storyboard Generated.
 * **Trigger**: Jab user bole *"series 8"*, *"leonardo"*, *"da vinci"*, *"renaissance documentary"*.
 

@@ -43,3 +43,16 @@ Every claim, scene, and asset in Series 8 carries a verifiable on-screen badge:
 - [Act I Production Script & Storyboard](file:///c:/Users/ABHAY%20MAURAYA/Downloads/autopilot/autopilot/series/SERIES_8_LEONARDO_DA_VINCI_ACT_1.md): Complete script for Chapters 1–6 with timestamps, audio cues, and visual match-cuts.
 - **Fact-Check Matrix (A–H):** Rigorous verb enforcement (designed, proposed, sketched, studied vs. "invented").
 - **Tier-1 Institutional Citations:** Louvre, Uffizi, Royal Collection Trust (Windsor), Biblioteca Ambrosiana, Gallerie dell'Accademia, National Gallery London.
+
+---
+
+## 📺 Episode Log & Render Library
+
+* **Episode 1 (Part 1 — THE MYSTERY OF LEONARDO: "OMO SANZA LETTERE")**:
+  * **Title**: *Leonardo Da Vinci Ka Sabse Bada Chhippa Hua Raaz! 📜🎨 | LEONARDO (Ep 1) #Shorts*
+  * **Status**: **RENDERED ✅** (`output/video_1000018/final.mp4`)
+  * **Duration**: 52.4 seconds (1080x1920 60fps vertical format, 12.53 MB)
+  * **Audio**: Edge-TTS Neural grave documentary voice (`hi_m_grave` / Madhur) + `suspense_bgm.mp3` master mix
+  * **Visuals**: 7 authentic AI Renaissance scenes (Candlelit workshop, iron-gall ink bloom, mirror script, sfumato Mona Lisa, Florence dawn, Leonardo silhouette, weathered gold parchment title)
+  * **Validation**: PASS ✅ (Word-accurate alignment, zero audio clipping, verified MadeForKids=False)
+

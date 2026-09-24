@@ -60,7 +60,8 @@ def main():
         "generate_solo_leveling_ragnarok_ch7.py",
         "publish_solo_leveling_ragnarok_ch7.py",
         "generate_solo_leveling_ragnarok_ch8.py",
-        "publish_solo_leveling_ragnarok_ch8.py"
+        "publish_solo_leveling_ragnarok_ch8.py",
+        "generate_and_publish_series8_ep1.py"
     ], check=False)
     
     commit_proc = subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True, text=True)

@@ -49,7 +49,7 @@
 | **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized neural profiles), ElevenLabs Neural, Gemini TTS, paired with sub-bass procedural audio FX & EBU R128 loudness normalization. |
 | **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic karaoke subtitles, scaling from 30s shorts to 10m longform videos. |
 | **🗄️ Persistence** | Dual SQLite / PostgreSQL engine (`core/db_base.py`) with thread-local ContextVar tenant isolation, relational users, workspaces, series, and encrypted integration vaults. |
-| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays 115+ confirmed live YouTube videos across 8 active series (`status = 'published'`, non-empty `yt_video_id`). Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
+| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays 118+ confirmed live YouTube videos across 8 active series (`status = 'published'`, non-empty `yt_video_id`). Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
 | **☁️ Deployment** | Docker containerized deployment, Render Cloud Blueprint (`render.yaml`), Railway, and zero-setup HTTPS tunneling (`tunnel.py`). |
 
 ---
@@ -223,7 +223,7 @@ flowchart TD
 
 ---
 
-## ⚔️ Solo Leveling: Ragnarok Adaptation Pipeline & Chapters 7 & 8 Releases (v2.9.2)
+## ⚔️ Solo Leveling: Ragnarok Adaptation Pipeline & Chapters 7, 8 & 9 Releases (v2.9.3)
 
 AUTOPILOT introduces specialized Manhwa high-density recap processing with back-to-back cinematic releases of **Solo Leveling: Ragnarok**:
 
@@ -232,12 +232,14 @@ AUTOPILOT introduces specialized Manhwa high-density recap processing with back-
   * *Plot*: Shadow Goblins mining crystals, Beru mana recovery, Steel Fanged Lycans dungeon breach, Suho's initial *Arise*, and the arrival of the Possessed Hunter.
 * **Chapter 8 Recap**: [Watch Chapter 8 on YouTube](https://www.youtube.com/watch?v=uF9U1V1uoxs) (ID: `uF9U1V1uoxs` · 2.33 mins)
   * *Plot*: Suho vs Fang of Rakhan Possessed Hunter, Ruler's Authority weapon storm, infant seal lore, and Suho unlocking **Shadow Extraction Lv.2 — Form Change: Beast Gauntlet** to shatter the cavern in hand-to-hand combat!
+* **Chapter 9 Recap**: [Watch Chapter 9 on YouTube](https://www.youtube.com/watch?v=nj6D3Wa3MZs) (ID: `nj6D3Wa3MZs` · 7.62 mins / 457s)
+  * *Plot*: Defeating the red-name hunter, unlocking [Rune Stone: Storm Slash], resisting the cursed sword's corruption via Kandiaru's Blessing, clearing the cavern with a single devastating slash, rescuing Dogyoon, refusing to extract human hunter souls into shadow soldiers, Beru revealing the 9 Monarchs and Sung Jinwoo's Earth defense war, forging the historic alliance between Shadow and Fang, and viral media coverage triggering Black Tortoise Guild recruitment!
 
 ### ⚡ Technical & Production Pipeline:
-* **High-Tempo Humanoid Voiceover**: Configured with `atempo=1.18` speed boost, dynamic narrative pitch, and studio warm DSP equalizer chain (`hi-IN-MadhurNeural` / Gemini Neural Voice) to deliver high-retention, punchy storytelling without dragging runtime (under 2.5 minutes).
+* **High-Tempo Humanoid Voiceover**: Configured with `atempo=1.18` speed boost, dynamic narrative pitch, and studio warm DSP equalizer chain (`hi-IN-MadhurNeural` / Gemini Neural Voice) to deliver high-retention, punchy storytelling without dragging runtime. Chapter 9 scales to 7.6 minutes of deep narrative recap across 37 custom action panels.
 * **Dual-Stage Slicing & Extraction**:
-  - `pipeline/ragnarok_ch7_extractor.py` & `pipeline/ragnarok_ch8_extractor.py`: Extracts ultra-high-resolution raw manhwa strip canvases via PyMuPDF.
-  - `pipeline/ragnarok_ch7_panel_slicer.py` & `pipeline/ragnarok_ch8_panel_slicer.py`: Uses adaptive luminance and morphological contour analysis to isolate 20-22 distinct 1080p widescreen action panels per episode.
+  - `pipeline/ragnarok_ch7_extractor.py`, `pipeline/ragnarok_ch8_extractor.py`, and Chapter 9 pipeline: Extracts ultra-high-resolution raw manhwa strip canvases via PyMuPDF.
+  - `pipeline/ragnarok_ch7_panel_slicer.py`, `pipeline/ragnarok_ch8_panel_slicer.py`, and Chapter 9 panel slicer: Uses adaptive luminance and morphological contour analysis to isolate 20-37 distinct 1080p widescreen action panels per episode.
 * **🔥 Dynamic Motion Compositing**: 60fps FFmpeg engine with Ken Burns pan/zoom, 38Hz Braam sub-bass tension hits, and synchronized dual-color ASS subtitles.
 * **🛡️ Zero Comment Lock & Monetization Invariant**: 100% Comments Enabled (`selfDeclaredMadeForKids=False`), public visibility, pinned engagement discussion comment, and Section 107 Fair Use attribution.
 

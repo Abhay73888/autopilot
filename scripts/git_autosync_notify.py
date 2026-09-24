@@ -61,6 +61,8 @@ def main():
         "publish_solo_leveling_ragnarok_ch7.py",
         "generate_solo_leveling_ragnarok_ch8.py",
         "publish_solo_leveling_ragnarok_ch8.py",
+        "generate_solo_leveling_ragnarok_ch9.py",
+        "publish_solo_leveling_ragnarok_ch9.py",
         "generate_and_publish_series8_ep1.py",
         "generate_and_publish_next_all_7_series_batch_part3.py"
     ], check=False)

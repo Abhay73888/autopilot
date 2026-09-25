@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-09-25T12:19:45.625844+00:00",
+  "exported_at": "2026-09-25T12:51:39.034874+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
@@ -98985,14 +98985,14 @@
         "user_id": "admin_abhay"
       },
       {
-        "id": "ser_daf0b3cb6281",
+        "id": "ser_362fbb38b66e",
         "workspace_id": "ws_usr_test_user_b",
         "title": "User B Solo Anime",
         "description": "Independent franchise for User B",
         "genre": "mystery",
         "tone": "suspense",
         "cast_json": "{}",
-        "created_at": "2026-09-24T15:40:20.805328+00:00",
+        "created_at": "2026-09-25T12:50:48.530899+00:00",
         "user_id": "usr_test_user_b"
       }
     ],

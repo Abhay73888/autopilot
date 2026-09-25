@@ -307,13 +307,19 @@ class MoonshotLLM:
         self.quota = quota or Quota()
 
     def generate(self, prompt: str, *, temperature: float = 0.9, max_tokens: int = 2048,
-                 system: str | None = None) -> str:
+                 system: str | None = None, history: list[dict] | None = None, **_kwargs) -> str:
         # STEP 1: quota check — hard constraint (Moonshot is PAID API, daily spend cap)
         self.quota.check_and_spend("moonshot_requests", 1, reason=f"generate:{self.model}")
 
         messages = []
         if system:
             messages.append({"role": "system", "content": system})
+        if history:
+            for turn in history[-8:]:
+                role = "user" if turn.get("role") in ("user", "human") else "assistant"
+                text = turn.get("content") or turn.get("text") or ""
+                if text:
+                    messages.append({"role": role, "content": text})
         messages.append({"role": "user", "content": prompt})
 
         body = {
@@ -355,12 +361,101 @@ class MoonshotLLM:
             raise RuntimeError(f"Moonshot ne content nahi diya. Raw: {json.dumps(data)[:300]}")
 
 
+# =====================================================================
+# OLLAMA CLOUD / HERMES (real)
+# =====================================================================
+class OllamaCloudLLM:
+    """
+    Ollama Cloud API client (stdlib urllib only) — OpenAI-compatible REST endpoint.
+    Endpoint: https://ollama.com/v1/chat/completions
+    Zero external dependencies, supports open-source models (gemma4:31b, gpt-oss:120b, nemotron-3-super).
+    """
+
+    name = "ollama"
+
+    def __init__(self, api_key: str, model: str | None = None,
+                 base_url: str | None = None, quota: Quota | None = None):
+        self.api_key = api_key
+        self.model = model or os.environ.get("OLLAMA_MODEL") or "gemma4:31b"
+        raw_url = base_url or os.environ.get("OLLAMA_BASE_URL") or "https://ollama.com/v1"
+        self.base_url = raw_url.rstrip("/")
+        self.quota = quota or Quota()
+
+    def generate(self, prompt: str, *, temperature: float = 0.7, max_tokens: int = 2048,
+                 system: str | None = None, history: list[dict] | None = None, **_kwargs) -> str:
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        if history:
+            for turn in history[-8:]:
+                role = "user" if turn.get("role") in ("user", "human") else "assistant"
+                text = turn.get("content") or turn.get("text") or ""
+                if text:
+                    messages.append({"role": role, "content": text})
+        messages.append({"role": "user", "content": prompt})
+
+        endpoint = f"{self.base_url}/chat/completions"
+
+        def _call_model(target_model: str):
+            body = {
+                "model": target_model,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            }
+            req = urllib.request.Request(
+                endpoint,
+                data=json.dumps(body).encode("utf-8"),
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.api_key}",
+                },
+                method="POST",
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    return json.loads(resp.read().decode("utf-8"))
+            except urllib.error.HTTPError as e:
+                detail = e.read().decode("utf-8", "replace")[:400]
+                if e.code == 401:
+                    raise RuntimeError(f"Ollama Cloud API key invalid/unauthorized (401): {detail}") from e
+                if e.code == 429:
+                    raise QuotaExceeded(f"Ollama Cloud API rate limit (429): {detail}") from e
+                raise RuntimeError(f"Ollama Cloud HTTP error {e.code} {e.reason}: {detail}") from e
+
+        fallback_models = [self.model, "gemma4:31b", "gpt-oss:120b", "nemotron-3-super"]
+        seen = set()
+        models_to_try = [m for m in fallback_models if not (m in seen or seen.add(m))]
+
+        data = None
+        last_err = None
+        for m in models_to_try:
+            try:
+                data = retry(lambda: _call_model(m), tries=2, base_delay=1.0, log=log,
+                             what=f"Ollama Cloud {m} chat/completions")
+                self.model = m
+                break
+            except Exception as err:
+                last_err = err
+                log.warn(f"Ollama Cloud model {m} failed, trying next: {err}")
+
+        if data is None:
+            raise RuntimeError(f"Ollama Cloud request failed: {last_err}")
+
+        try:
+            return data["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError):
+            raise RuntimeError(f"Ollama Cloud ne content nahi diya. Raw: {json.dumps(data)[:300]}")
+
+
 def _normalize_provider(p: str) -> str:
     p = (p or "").strip().lower()
     if p in ("moonshot", "kimi", "kimi-k3"):
         return "kimi"
     if p in ("gemini", "google"):
         return "gemini"
+    if p in ("ollama", "ollama-cloud", "ollamacloud", "hermes"):
+        return "ollama"
     if p == "mock":
         return "mock"
     return p
@@ -402,11 +497,17 @@ class LLM:
 
         gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
         moonshot_key = os.environ.get("MOONSHOT_API_KEY", "").strip()
+        ollama_key = os.environ.get("OLLAMA_API_KEY", "").strip()
 
         order = self._resolve_order(agent_name)
 
         for name in order:
-            if name == "kimi":
+            if name == "ollama":
+                if ollama_key:
+                    self.backends.append(OllamaCloudLLM(ollama_key, quota=quota))
+                else:
+                    log.warn("OLLAMA_API_KEY nahi mili — ollama backend skip ho raha hai")
+            elif name == "kimi":
                 if moonshot_key:
                     self.backends.append(MoonshotLLM(moonshot_key, quota=quota))
                 else:
@@ -423,7 +524,7 @@ class LLM:
             if not self.backends:
                 self.backends = [MockLLM()]
             log.warn("Koi valid LLM API key nahi mili — mock pe gir gaye. "
-                     ".env mein GEMINI_API_KEY ya MOONSHOT_API_KEY daalo")
+                     ".env mein OLLAMA_API_KEY, GEMINI_API_KEY ya MOONSHOT_API_KEY daalo")
         elif not any(isinstance(b, MockLLM) for b in self.backends):
             # Mock hamesha aakhri resort hona chahiye
             self.backends.append(MockLLM())
@@ -431,7 +532,9 @@ class LLM:
         self.backend = self.backends[0]
         chain_str = " -> ".join(b.name for b in self.backends)
         log.info(f"LLM [{self.agent_name or 'global'}] routing chain: {chain_str}")
-        if isinstance(self.backend, GeminiLLM):
+        if isinstance(self.backend, OllamaCloudLLM):
+            log.ok(f"Ollama Cloud connected: {self.backend.model} ({self.backend.base_url})")
+        elif isinstance(self.backend, GeminiLLM):
             log.ok(f"Gemini connected: {self.backend.model}")
         elif isinstance(self.backend, MoonshotLLM):
             log.ok(f"Moonshot connected: {self.backend.model} ({self.backend.base_url})")
@@ -458,34 +561,42 @@ class LLM:
         global_provider = _normalize_provider(os.environ.get("LLM_PROVIDER", "auto"))
 
         # 4. Global LLM_PRIMARY
-        global_primary = _normalize_provider(os.environ.get("LLM_PRIMARY", "gemini"))
-        if global_primary not in ("kimi", "gemini"):
-            global_primary = "gemini"
+        global_primary = _normalize_provider(os.environ.get("LLM_PRIMARY", "auto"))
 
         target_pref = agent_pref or (global_provider if global_provider != "auto" else None)
 
+        ollama_key = os.environ.get("OLLAMA_API_KEY", "").strip()
+        gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+        moonshot_key = os.environ.get("MOONSHOT_API_KEY", "").strip()
+
+        if target_pref == "ollama":
+            return ["ollama", "gemini", "kimi", "mock"]
         if target_pref == "kimi":
-            return ["kimi", "gemini", "mock"]
+            return ["kimi", "gemini", "ollama", "mock"]
         if target_pref == "gemini":
-            return ["gemini", "kimi", "mock"]
+            return ["gemini", "ollama", "kimi", "mock"]
         if target_pref == "mock":
             return ["mock"]
 
-        # auto mode:
-        gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
-        moonshot_key = os.environ.get("MOONSHOT_API_KEY", "").strip()
-        if gemini_key and moonshot_key:
-            if global_primary == "kimi":
-                return ["kimi", "gemini", "mock"]
-            return ["gemini", "kimi", "mock"]
-        elif moonshot_key and not gemini_key:
-            return ["kimi", "gemini", "mock"]
-        elif gemini_key and not moonshot_key:
-            return ["gemini", "kimi", "mock"]
-        else:
-            if global_primary == "kimi":
-                return ["kimi", "gemini", "mock"]
-            return ["gemini", "kimi", "mock"]
+        # Copilot agent defaults to Ollama Cloud / Hermes if key available
+        if agent_name == "copilot" and ollama_key:
+            return ["ollama", "gemini", "kimi", "mock"]
+
+        # auto mode order based on available keys:
+        chain = []
+        if global_primary == "ollama" and ollama_key:
+            chain.append("ollama")
+        elif global_primary == "kimi" and moonshot_key:
+            chain.append("kimi")
+        elif gemini_key:
+            chain.append("gemini")
+
+        for prov, key in [("ollama", ollama_key), ("gemini", gemini_key), ("kimi", moonshot_key)]:
+            if key and prov not in chain:
+                chain.append(prov)
+
+        chain.append("mock")
+        return chain
 
     def for_agent(self, agent_name: str) -> "LLM":
         """Naya LLM instance banao is agent ke specific routing ke saath."""

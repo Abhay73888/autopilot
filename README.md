@@ -313,13 +313,52 @@ AUTOPILOT introduces specialized Manhwa high-density recap processing with back-
 * **Chapter 9 Recap**: [Watch Chapter 9 on YouTube](https://www.youtube.com/watch?v=nj6D3Wa3MZs) (ID: `nj6D3Wa3MZs` · 7.62 mins / 457s)
   * *Plot*: Defeating the red-name hunter, unlocking [Rune Stone: Storm Slash], resisting the cursed sword's corruption via Kandiaru's Blessing, clearing the cavern with a single devastating slash, rescuing Dogyoon, refusing to extract human hunter souls into shadow soldiers, Beru revealing the 9 Monarchs and Sung Jinwoo's Earth defense war, forging the historic alliance between Shadow and Fang, and viral media coverage triggering Black Tortoise Guild recruitment!
 
+* **Chapter 10 Cinematic Recap**: [Watch Chapter 10 on YouTube](https://www.youtube.com/watch?v=1tH38Pguils) (ID: `1tH38Pguils` · **4.84 mins / 290.6s**)
+  * *Plot*: Shadow Goblin miners discover high-grade mana crystal veins, deep shadow extraction lore, the arrival of the Berserk Lycans, Suho's calculated tactical counter, and the intense awakening of the Beast Gauntlet to pulverize the dungeon boss!
+  * *Calibration*: Mastered with high-energy narrative pacing (`atempo=1.18`), 37 isolated 1080p widescreen action panels, 38Hz Braam sub-bass tension hits, and strict 4–5 minute runtime enforcement.
+  * *Compliance*: 100% Comments Enabled (`selfDeclaredMadeForKids=False`), pinned engagement bait comment (`Ugy32XnUCCO6ibJKYKF4AaABAg`), and Section 107 Fair Use attribution.
+
 ### ⚡ Technical & Production Pipeline:
-* **High-Tempo Humanoid Voiceover**: Configured with `atempo=1.18` speed boost, dynamic narrative pitch, and studio warm DSP equalizer chain (`hi-IN-MadhurNeural` / Gemini Neural Voice) to deliver high-retention, punchy storytelling without dragging runtime. Chapter 9 scales to 7.6 minutes of deep narrative recap across 37 custom action panels.
+* **High-Tempo Humanoid Voiceover**: Configured with `atempo=1.18` speed boost, dynamic narrative pitch, and studio warm DSP equalizer chain (`hi-IN-MadhurNeural` / Gemini Neural Voice) to deliver high-retention, punchy storytelling without dragging runtime.
 * **Dual-Stage Slicing & Extraction**:
-  - `pipeline/ragnarok_ch7_extractor.py`, `pipeline/ragnarok_ch8_extractor.py`, and Chapter 9 pipeline: Extracts ultra-high-resolution raw manhwa strip canvases via PyMuPDF.
-  - `pipeline/ragnarok_ch7_panel_slicer.py`, `pipeline/ragnarok_ch8_panel_slicer.py`, and Chapter 9 panel slicer: Uses adaptive luminance and morphological contour analysis to isolate 20-37 distinct 1080p widescreen action panels per episode.
+  - `pipeline/ragnarok_ch10_extractor.py`: High-resolution raw strip extraction via PyMuPDF.
+  - `pipeline/ragnarok_ch10_panel_slicer.py`: Adaptive luminance and morphological contour analysis to isolate 37 distinct 1080p widescreen action panels.
 * **🔥 Dynamic Motion Compositing**: 60fps FFmpeg engine with Ken Burns pan/zoom, 38Hz Braam sub-bass tension hits, and synchronized dual-color ASS subtitles.
 * **🛡️ Zero Comment Lock & Monetization Invariant**: 100% Comments Enabled (`selfDeclaredMadeForKids=False`), public visibility, pinned engagement discussion comment, and Section 107 Fair Use attribution.
+
+---
+
+## 🦙 Ollama Cloud (Gemma 4 31B / Hermes) Full Website Copilot Integration (v3.1.0)
+
+AUTOPILOT v3.1.0 integrates **Ollama Cloud** (`gemma4:31b` and `gpt-oss:120b`) and **Hermes Agent** directly into the core multi-tenant FastAPI SaaS platform and bilingual Studio Web UI:
+
+```mermaid
+flowchart LR
+    UI["🌐 Studio Web UI<br/>(Floating 3D Copilot & Station)"] -->|"POST /api/v1/copilot/chat"| API["⚡ FastAPI Copilot Gateway<br/>(backend/app/api/v1/copilot.py)"]
+    API --> SVC["🧠 Copilot Service<br/>(copilot_service.py)"]
+    SVC --> ROUTER["🔀 Autonomous LLM Router<br/>(core/llm.py)"]
+    ROUTER -->|"Primary Chain"| OLLAMA["🦙 Ollama Cloud API<br/>(gemma4:31b / ₹0 Free)"]
+    ROUTER -->|"Fallback 1"| GEMINI["✨ Google Gemini<br/>(gemini-3.6-flash)"]
+    ROUTER -->|"Fallback 2"| MOONSHOT["🌙 Moonshot Kimi K3"]
+    ROUTER -->|"Fallback 3"| MOCK["🛡️ Deterministic Mock"]
+    SVC -->|"Neural Speech Synthesis"| TTS["🎙️ Edge-TTS / Neural Voice<br/>(Base64 MP3 Audio)"]
+    TTS --> AVATAR["🥷 3D Anime Avatar Canvas<br/>(Web Audio Lip-Sync & Gaze)"]
+```
+
+### ⚡ Core Capabilities Deployed:
+1. **Native `OllamaCloudLLM` Provider (`core/llm.py`)**:
+   - Zero third-party dependencies — built entirely on Python stdlib `urllib.request` + `json`.
+   - Hits OpenAI-compatible endpoint `https://ollama.com/v1/chat/completions` using user's `OLLAMA_API_KEY`.
+   - Accesses high-parameter open-source reasoning models: `gemma4:31b` (default), `gpt-oss:120b`, and `nemotron-3-super`.
+   - Dynamic model retry & automatic fallback across model tiers if any single model encounters rate limits.
+2. **Autonomous Multi-Tier Routing Chain**:
+   - Priority fallback order: `ollama` -> `gemini` -> `kimi` -> `mock`.
+   - Dedicated Copilot routing ensures interactive studio commands and conversational queries are served with zero latency and zero token cost.
+3. **Studio Web UI Integration (`backend/app/static/index.html`)**:
+   - **Floating Global Copilot Button**: Accessible from any view (Dashboard, Video Editor, Series Hub, Library) with a single click.
+   - **3D Anime Companion Station**: Full Three.js humanoid robot with natural eyelid blinking, head tilts, digital particle field, and real-time audio lip-sync.
+   - **Interactive Voice & Speech**: Built-in Web Speech API microphone input for voice commands in Hindi and English, paired with Edge-TTS neural speech playback.
+   - **Direct UI Actions**: Automatically resolves user intent and generates 1-click action buttons to navigate straight into the Video Editor, Video Library, or Series Hub.
 
 ---
 

@@ -1531,6 +1531,21 @@ AUTOPILOT v2.6.0 underwent an autonomous full-stack audit, self-healing cycle, a
 
 ---
 
+## ☤ Hermes Agent Copilot & Ollama Cloud Integration (₹0 Autonomous AI Assistant)
+
+AUTOPILOT pairs directly with **Hermes Agent** (Nous Research) powered by **Ollama Cloud** (`ollama.com`) for a completely free, local & cloud-hybrid AI co-pilot:
+
+* **Engine**: Hermes Agent with native Ollama Cloud provider integration (`ollama-cloud`).
+* **Active Model**: `gemma4:31b` (Google's multimodal multilingual 31B open model) + fallback to `gpt-oss:120b` and `nemotron-3-super`.
+* **Cost**: **₹0 / Month (100% Free Included Tier)**.
+* **Capabilities**:
+  - Direct Terminal REPL & Interactive Chat: `hermes` or `hermes --tui`.
+  - One-Shot Query Mode: `hermes -z "<prompt>"`.
+  - Web UI Studio Dashboard: `hermes dashboard` on `http://127.0.0.1:9119`.
+  - Workspace Context & Rules Awareness: Reads `AGENTS.md` and repository guidelines automatically.
+
+---
+
 ## 📜 License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for complete details.

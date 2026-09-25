@@ -1,14 +1,14 @@
 {
-  "exported_at": "2026-09-25T15:43:27.712827+00:00",
+  "exported_at": "2026-09-25T16:18:48.745094+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
-    "videos": 129,
+    "videos": 130,
     "metrics": 28,
     "experiments": 4,
     "learnings": 0,
-    "quota_usage": 2170,
-    "events": 5135,
+    "quota_usage": 2173,
+    "events": 5136,
     "characters": 1,
     "jobs": 105,
     "organizations": 102,
@@ -24,7 +24,7 @@
     "users": 125,
     "discord_connections": 0,
     "series": 77,
-    "episodes": 61,
+    "episodes": 62,
     "uploaded_assets": 0
   },
   "data": {
@@ -4022,6 +4022,37 @@
         "ig_media_id": null,
         "scheduled_ts": null,
         "published_ts": "1790350951.61026",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": "ws_admin_abhay"
+      },
+      {
+        "id": 1000039,
+        "created_ts": "1790352927.58477",
+        "updated_ts": "1790352927.58477",
+        "status": "published",
+        "topic": "Solo Leveling Ragnarok Chapter 13: Celestial Beast Form & Martial Arts Awakening",
+        "title": "SOLO LEVELING: RAGNAROK Chapter 13 in Hindi \u2694\ufe0f | Suho's Celestial Beast Form & Martial Arts Awakening! | Full Recap",
+        "caption": "\u2694\ufe0f SOLO LEVELING: RAGNAROK Chapter 13 Full Story in Hindi | Suho's Celestial Beast Form & Martial Arts Awakening!\n\nFang Monarch ke waris ke aavishkar ke baad Sung Suho ne use apna pehla aitihaasik Ally banaya!\nGathbandhan bante hi khuli Brocky ki purani yaadein:\nItarim (Outer Gods) ke halo-dhari dooton ne Brocky ki aankh mein lagaya tha ek divine stone jisne uski ichhaon ko bhrasht kar diya tha!\nNannha bhediya badla nahi, balki Brocky ko us bhrashtaachaar se azaad karana chahta tha!\n\nTabhi unlock hua naya Grand Quest:\n[QUEST: MONARCH'S HEIRS - RECRUIT ALL MONARCH HEIRS (1/8)]!\nAur System ne Suho ke andar paida ki ek nayi divine shakti:\n[BOND SKILL: BEAST POSSESSION LV. 1]!\n\nSung Suho ke baal bane chandi jaise safed, maathe par chamka Fang Monarch ka divine symbol, aur haathon mein aagaye Beast Gauntlets!\nSuho ne Brocky ke mountain-crushing punch ko akele haath se rok kar unlock kiya:\n[SKILL: MARTIAL ARTS LV. 1 (+33% Bare-Handed Damage)]!\n\nBeru ki garjana:\n\"Shadow Monarch ke aage prajati ke farq ki baat mat kar! Apex par baithe Monarch se unchi koi prajati nahi!\"\n\nSuho ki catastrophic Axe Kick se Brocky parast hua, aur marte waqt use yaad aayi Lord Rakhan ki purani wafadari!\nSuho ko mila DOUBLE LEVEL UP!\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u23f1\ufe0f CHAPTER TIMESTAMPS:\n00:00 - Recruiting the Successor of the Fang\n00:35 - Resonance & Flashback: The Itarim Apostle Appears\n01:10 - The Implanted Divine Eye & Brocky's Corruption\n01:45 - The Truth: Saving Brocky from Madness\n02:20 - Grand Quest: Monarch's Heirs (1/8)\n02:55 - Bond Skill Awakening: Beast Possession Lv. 1\n03:30 - Stopping the Colossal Fist & Martial Arts Lv. 1\n04:05 - Beru's Apex Speech & The Crushing Axe Kick\n04:40 - Brocky's Peace, Wolf's Howl & Double Level Up!\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u2696\ufe0f DISCLAIMER & FAIR USE ATTRIBUTION:\nCopyright Disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for \"fair use\" for purposes such as criticism, commentary, news reporting, teaching, scholarship, and research. Fair use is a use permitted by copyright statute that might otherwise be infringing. Non-profit, educational or personal use tips the balance in favor of fair use.\n\nOriginal Work: Solo Leveling: Ragnarok by Daul, Redice Studio, D&C Media.\nThis video is a transformative narrative recap, review, and analytical commentary in Hindi.\nAll visual rights belong to their respective copyright holders.\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n#SoloLeveling #SoloLevelingRagnarok #SungSuho #SungJinwoo #AnimeRecapHindi #ManhwaRecap #Shorts #ShadowMonarch #BeastForm\n",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 270.16,
+        "series_name": "SOLO_LEVELING_RAGNAROK",
+        "series_index": 13,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\solo_leveling_ragnarok_ch13\\solo_leveling_ragnarok_ch13_final.mp4",
+        "cover_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\solo_leveling_ragnarok_ch13\\thumbnail.jpg",
+        "public_url": "https://www.youtube.com/watch?v=OBBsr6WYZKk",
+        "yt_video_id": "OBBsr6WYZKk",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790352927.58477",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -19745,6 +19776,27 @@
       {
         "id": 2170,
         "ts": "2026-09-25T15:42:22+00:00",
+        "bucket": "youtube_units",
+        "amount": 50,
+        "reason": "thumbnail"
+      },
+      {
+        "id": 2171,
+        "ts": "2026-09-25T16:14:16+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file solo_leveling_ragnarok_ch13_final.mp4"
+      },
+      {
+        "id": 2172,
+        "ts": "2026-09-25T16:14:16+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file solo_leveling_ragnarok_ch13_final.mp4"
+      },
+      {
+        "id": 2173,
+        "ts": "2026-09-25T16:15:21+00:00",
         "bucket": "youtube_units",
         "amount": 50,
         "reason": "thumbnail"
@@ -60830,6 +60882,14 @@
         "kind": "published",
         "video_id": null,
         "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"M8On2dX4XJ4\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\solo_leveling_ragnarok_ch12\\\\solo_leveling_ragnarok_ch12_final.mp4\", \"upload_secs\": 74.0}"
+      },
+      {
+        "id": 5136,
+        "ts": "2026-09-25T16:15:26+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"OBBsr6WYZKk\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\solo_leveling_ragnarok_ch13\\\\solo_leveling_ragnarok_ch13_final.mp4\", \"upload_secs\": 65.2}"
       }
     ],
     "characters": [
@@ -100030,6 +100090,21 @@
         "status": "published",
         "video_id": "M8On2dX4XJ4",
         "created_at": "2026-09-25 21:12:31",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ep_ragnarok_ch13",
+        "series_id": "ser_26cae0f3a422",
+        "workspace_id": "ws_admin_abhay",
+        "episode_number": 13,
+        "title": "SOLO LEVELING: RAGNAROK Chapter 13 in Hindi \u2694\ufe0f | Suho's Celestial Beast Form & Martial Arts Awakening! | Full Recap",
+        "recap": "Suho recruits Fang's heir, unlocks Beast Possession Lv. 1 and Martial Arts Lv. 1, defeats Brocky with catastrophic Axe Kick.",
+        "conflict": "Werewolf Brocky vs Sung Suho in Beast Possession Form",
+        "cliffhanger": "Brocky remembers Lord Rakhan, giant wolf howls, Suho double levels up",
+        "script_json": "{\"scenes\": 40, \"duration\": 270.16}",
+        "status": "published",
+        "video_id": "OBBsr6WYZKk",
+        "created_at": "2026-09-25 21:45:27",
         "user_id": "admin_abhay"
       }
     ],

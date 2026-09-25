@@ -1,14 +1,14 @@
 {
-  "exported_at": "2026-09-24T16:05:38.952719+00:00",
+  "exported_at": "2026-09-25T05:46:25.197900+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
-    "videos": 119,
+    "videos": 122,
     "metrics": 28,
     "experiments": 4,
     "learnings": 0,
-    "quota_usage": 2021,
-    "events": 5124,
+    "quota_usage": 2099,
+    "events": 5128,
     "characters": 1,
     "jobs": 105,
     "organizations": 102,
@@ -3712,6 +3712,99 @@
         "ig_media_id": null,
         "scheduled_ts": null,
         "published_ts": "1790237162.07033",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000029,
+        "created_ts": "1790313062.45397",
+        "updated_ts": "1790313062.45397",
+        "status": "published",
+        "topic": "Jab Pyaar Online Tha Episode 17: London Se 2:00 AM Video Call",
+        "title": "London Se 2:00 AM Video Call: 4,000 Miles Ki Duri Par Wahi Muskaan! \ud83d\udcf1\u2764\ufe0f | JAB PYAAR ONLINE THA (Ep 17) #Shorts",
+        "caption": "London pahunchte hi raat ke theek 2:00 AM par Meera ka pehla video call aaya! \ud83d\udcf1\u2764\ufe0f\nBaahar London ki barish thi, aur screen par uski ungli mein Aarav ki di hui silver promise ring chamak rahi thi.\nAarav ne pucha: 'London kaisa laga?' Meera ne muskurakar kaha: 'Duniya badal gayi Aarav... lekin dil abhi bhi Delhi mein hai!'\n\nLong-distance relationships mein kya pyaar sach mein barkarar rehta hai? Comment karein! \ud83d\udc47\u2728\n\n#JabPyaarOnlineTha #Episode17 #Romance #Shorts #LoveStory #Emotional #Trending",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 48.433333,
+        "series_name": "SERIES_2",
+        "series_index": 17,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch4_series_2_ep17\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": "https://www.youtube.com/watch?v=kLuoTE4SqIw",
+        "yt_video_id": "kLuoTE4SqIw",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790313062.45397",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000030,
+        "created_ts": "1790314607.18148",
+        "updated_ts": "1790314607.18148",
+        "status": "published",
+        "topic": "Chintu Ki Jadui Duniya Episode 15: The Chocolate Dragon & The Star Key",
+        "title": "Chocolate Dragon Ki Gufa Aur Jadui Star Key! \ud83c\udf6b\ud83d\udc09\u2728 | CHINTU (Ep 15) #Shorts",
+        "caption": "Chintu aur fluffy monster Golu pahunche Chocolate Dragon ki garam cocoa gufa mein! \ud83c\udf6b\ud83d\udc09\u2728\nGiant dragon aag ugalne hi wala tha ki Chintu ne apna backpack khol diya aur strawberry cookies offer kiye!\nDragon ne khushi se jhoomte hue unhe di chamakti hui golden Star Key! Kya wo kholenge Starry Castle? Dekhiye! \ud83d\udc47\ud83c\udf6d\n\n#ChintuKiJaduiDuniya #KidsAnimation #3DAnimation #PixarStyle #FamilyFun #Shorts #Cartoon",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 46.6,
+        "series_name": "SERIES_3",
+        "series_index": 15,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch4_series_3_ep15\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": "https://www.youtube.com/watch?v=3v_pFEOqrYs",
+        "yt_video_id": "3v_pFEOqrYs",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790314607.18148",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000031,
+        "created_ts": "1790315066.07122",
+        "updated_ts": "1790315066.07122",
+        "status": "published",
+        "topic": "Kaal-Rekha Part 21: 3:14 AM - The Shunya Void & Meera's True Purpose",
+        "title": "3:14 AM Par Mumbai Shunya Ho Gaya! Meera Ka Asli Roop! \u23f3\ud83d\udca5 | KAAL-REKHA (Part 21) #Shorts",
+        "caption": "Theek 3:14 AM par Mumbai ki saari roshni gayab ho gayi aur shahar ek safed shunya mein jam gaya! \u23f3\ud83d\udca5\nMeera clock tower ke temporal core mein khadi thi, haath mein golden Chronos key liye!\nUsne kaha: 'Kabir, ye loop tumhe qaid karne ke liye nahi... original timeline ke us haadse se bachane ke liye banaya tha!'\n\nKya Kabir Meera par bharosa karega ya key chheen lega? Drop your theories! \ud83d\udc47\ud83d\udd25\n\n#KaalRekha #Part21 #TimeLoop #AnimeShorts #IndianAnime #Shorts #HindiAnime #Mystery #Trending",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 53.633333,
+        "series_name": "SERIES_1",
+        "series_index": 21,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch4_series_1_ep21\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": "https://www.youtube.com/watch?v=hV4DusnAhek",
+        "yt_video_id": "hV4DusnAhek",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790315066.07122",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -18395,6 +18488,552 @@
         "bucket": "youtube_units",
         "amount": 50,
         "reason": "thumbnail"
+      },
+      {
+        "id": 2022,
+        "ts": "2026-09-25T04:16:10+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2023,
+        "ts": "2026-09-25T04:16:18+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2024,
+        "ts": "2026-09-25T04:16:20+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2025,
+        "ts": "2026-09-25T04:16:22+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2026,
+        "ts": "2026-09-25T04:16:29+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2027,
+        "ts": "2026-09-25T04:16:30+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2028,
+        "ts": "2026-09-25T04:16:33+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2029,
+        "ts": "2026-09-25T04:16:35+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2030,
+        "ts": "2026-09-25T04:16:37+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2031,
+        "ts": "2026-09-25T04:16:40+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2032,
+        "ts": "2026-09-25T04:16:44+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2033,
+        "ts": "2026-09-25T04:16:45+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2034,
+        "ts": "2026-09-25T04:16:48+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2035,
+        "ts": "2026-09-25T04:16:50+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2036,
+        "ts": "2026-09-25T04:16:52+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2037,
+        "ts": "2026-09-25T04:16:54+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2038,
+        "ts": "2026-09-25T04:43:37+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2039,
+        "ts": "2026-09-25T04:43:37+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2040,
+        "ts": "2026-09-25T04:43:45+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2041,
+        "ts": "2026-09-25T04:43:47+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2042,
+        "ts": "2026-09-25T04:43:50+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2043,
+        "ts": "2026-09-25T04:43:52+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2044,
+        "ts": "2026-09-25T04:43:54+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2045,
+        "ts": "2026-09-25T04:43:57+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2046,
+        "ts": "2026-09-25T04:43:59+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2047,
+        "ts": "2026-09-25T04:44:01+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2048,
+        "ts": "2026-09-25T04:44:03+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2049,
+        "ts": "2026-09-25T04:44:06+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2050,
+        "ts": "2026-09-25T04:44:08+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2051,
+        "ts": "2026-09-25T04:44:10+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2052,
+        "ts": "2026-09-25T04:44:13+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2053,
+        "ts": "2026-09-25T04:44:15+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2054,
+        "ts": "2026-09-25T04:44:17+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2055,
+        "ts": "2026-09-25T04:44:19+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2056,
+        "ts": "2026-09-25T04:44:21+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2057,
+        "ts": "2026-09-25T04:44:23+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2058,
+        "ts": "2026-09-25T05:10:58+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2059,
+        "ts": "2026-09-25T05:10:58+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2060,
+        "ts": "2026-09-25T05:11:06+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2061,
+        "ts": "2026-09-25T05:11:07+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2062,
+        "ts": "2026-09-25T05:11:10+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2063,
+        "ts": "2026-09-25T05:11:12+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2064,
+        "ts": "2026-09-25T05:11:14+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2065,
+        "ts": "2026-09-25T05:11:16+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2066,
+        "ts": "2026-09-25T05:11:18+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2067,
+        "ts": "2026-09-25T05:11:20+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2068,
+        "ts": "2026-09-25T05:11:22+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2069,
+        "ts": "2026-09-25T05:11:24+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2070,
+        "ts": "2026-09-25T05:11:26+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2071,
+        "ts": "2026-09-25T05:11:28+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2072,
+        "ts": "2026-09-25T05:11:31+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2073,
+        "ts": "2026-09-25T05:11:32+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2074,
+        "ts": "2026-09-25T05:11:34+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2075,
+        "ts": "2026-09-25T05:11:36+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2076,
+        "ts": "2026-09-25T05:11:38+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2077,
+        "ts": "2026-09-25T05:11:40+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2078,
+        "ts": "2026-09-25T05:36:42+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2079,
+        "ts": "2026-09-25T05:36:42+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2080,
+        "ts": "2026-09-25T05:36:50+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2081,
+        "ts": "2026-09-25T05:36:52+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2082,
+        "ts": "2026-09-25T05:36:55+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2083,
+        "ts": "2026-09-25T05:36:57+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2084,
+        "ts": "2026-09-25T05:36:59+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2085,
+        "ts": "2026-09-25T05:37:01+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2086,
+        "ts": "2026-09-25T05:37:04+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2087,
+        "ts": "2026-09-25T05:37:06+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2088,
+        "ts": "2026-09-25T05:37:08+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2089,
+        "ts": "2026-09-25T05:37:11+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2090,
+        "ts": "2026-09-25T05:37:13+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2091,
+        "ts": "2026-09-25T05:37:15+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2092,
+        "ts": "2026-09-25T05:37:18+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2093,
+        "ts": "2026-09-25T05:37:19+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2094,
+        "ts": "2026-09-25T05:37:22+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2095,
+        "ts": "2026-09-25T05:37:24+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2096,
+        "ts": "2026-09-25T05:37:25+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2097,
+        "ts": "2026-09-25T05:37:28+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2098,
+        "ts": "2026-09-25T05:44:20+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2099,
+        "ts": "2026-09-25T05:44:20+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file final_with_subs.mp4"
       }
     ],
     "events": [
@@ -59389,6 +60028,38 @@
         "kind": "published",
         "video_id": null,
         "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"nj6D3Wa3MZs\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\solo_leveling_ragnarok_ch9\\\\solo_leveling_ragnarok_ch9_final.mp4\", \"upload_secs\": 239.5}"
+      },
+      {
+        "id": 5125,
+        "ts": "2026-09-25T04:43:40+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"5dTj728fSfk\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\batch4_series_1_ep21\\\\final_with_subs.mp4\", \"upload_secs\": 3.5}"
+      },
+      {
+        "id": 5126,
+        "ts": "2026-09-25T05:11:01+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"kLuoTE4SqIw\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\batch4_series_2_ep17\\\\final_with_subs.mp4\", \"upload_secs\": 3.1}"
+      },
+      {
+        "id": 5127,
+        "ts": "2026-09-25T05:36:46+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"3v_pFEOqrYs\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\batch4_series_3_ep15\\\\final_with_subs.mp4\", \"upload_secs\": 3.3}"
+      },
+      {
+        "id": 5128,
+        "ts": "2026-09-25T05:44:25+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"hV4DusnAhek\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\batch4_series_1_ep21\\\\final_with_subs.mp4\", \"upload_secs\": 4.6}"
       }
     ],
     "characters": [

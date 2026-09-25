@@ -44,12 +44,12 @@
 | **👥 Multi-Tenancy** | True workspace & tenant data isolation: User A cannot see, query, or publish User B's videos, series, episodes, or OAuth credentials. |
 | **⚡ Core Runtime** | Python 3.10+ stdlib-first rendering core + Production FastAPI SaaS Gateway (`backend/app`) with Pydantic v2, PBKDF2 password security & HS256 JWT sessions. |
 | **🤖 AI & Swarm** | 12 Specialized Agents + Autonomous Copilot executing 16 natural language tools for scripting, voice synthesis, thumbnail generation, series continuation, and publishing. |
-| **📺 Series Franchises** | Continuous episodic memory: Kaal-Rekha (Sci-Fi Loop), Ashwatthama 3049 AD, Jab Pyaar Online Tha, Chintu 3D, Mind Riddles, The Observer Files, Roblox Vault, and Series 8: Leonardo da Vinci (Cinematic Historical Documentary). |
+| **📺 Series Franchises** | Continuous episodic memory: Kaal-Rekha (Sci-Fi Loop, Part 21 Live), Ashwatthama 3049 AD, Jab Pyaar Online Tha, Chintu 3D, Mind Riddles, The Observer Files, Roblox Vault, and Series 8: Leonardo da Vinci (Cinematic Historical Documentary). |
 | **▶️ YouTube OAuth** | Per-workspace Google OAuth 2.0 with AES-256-GCM encrypted tokens, live channel status inspection, YouTube Upload Guard, and AGENTS.md Zero Comment Lock Policy enforcement. |
 | **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized neural profiles), ElevenLabs Neural, Gemini TTS, paired with sub-bass procedural audio FX & EBU R128 loudness normalization. |
 | **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic karaoke subtitles, scaling from 30s shorts to 10m longform videos. |
 | **🗄️ Persistence** | Dual SQLite / PostgreSQL engine (`core/db_base.py`) with thread-local ContextVar tenant isolation, relational users, workspaces, series, and encrypted integration vaults. |
-| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays 118+ confirmed live YouTube videos across 8 active series (`status = 'published'`, non-empty `yt_video_id`). Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
+| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays 119+ confirmed live YouTube videos across 8 active series (`status = 'published'`, non-empty `yt_video_id`), including Batch 4 Kaal-Rekha Part 21 with authentic AI anime visuals. Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
 | **☁️ Deployment** | Docker containerized deployment, Render Cloud Blueprint (`render.yaml`), Railway, and zero-setup HTTPS tunneling (`tunnel.py`). |
 
 ---

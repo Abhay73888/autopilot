@@ -91,6 +91,12 @@ SERIES_REGISTRY = {
         "language": "English",
         "genre": "Gaming Content",
     },
+    "SERIES_8": {
+        "name": "Leonardo da Vinci",
+        "db_series_name": "SERIES_8",
+        "language": "Hindi/English",
+        "genre": "Historical Forensic Documentary",
+    },
 }
 
 

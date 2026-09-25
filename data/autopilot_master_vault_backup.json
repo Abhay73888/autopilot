@@ -1,14 +1,14 @@
 {
-  "exported_at": "2026-09-25T05:46:25.197900+00:00",
+  "exported_at": "2026-09-25T10:56:24.298852+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
-    "videos": 122,
+    "videos": 126,
     "metrics": 28,
     "experiments": 4,
     "learnings": 0,
-    "quota_usage": 2099,
-    "events": 5128,
+    "quota_usage": 2161,
+    "events": 5132,
     "characters": 1,
     "jobs": 105,
     "organizations": 102,
@@ -3805,6 +3805,130 @@
         "ig_media_id": null,
         "scheduled_ts": null,
         "published_ts": "1790315066.07122",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000032,
+        "created_ts": "1790316230.19006",
+        "updated_ts": "1790316230.19006",
+        "status": "published",
+        "topic": "Dimag Ka Dahi Episode 15: The Darkness Riddle That 99% Fail",
+        "title": "Wo Kya Hai Jo Jitni Zyada Hoti Hai, Utna Hi Kam Dikhta Hai?! \ud83e\udde0\ud83d\udca1 | DIMAG KA DAHI (Ep 15) #Shorts",
+        "caption": "Dimag Ka Dahi Episode 15! Aisi paheli jiska jawab sirf 1% log pehle attempt mein de paate hain! \ud83e\udde0\ud83d\udca1\n'Wo kaunsi aisi cheez hai jo jitni badhti jaati hai, aankhon ko utna hi kam dikhai deta hai?'\nAapke paas hain 5 seconds! Comment karein apna jawab! \ud83d\udc47\ud83d\udd25\n\n#DimagKaDahi #Paheli #Riddle #Shorts #BrainTeaser #HindiPaheli #MindBending",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 46.1,
+        "series_name": "SERIES_4",
+        "series_index": 15,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch4_series_4_ep15\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": "https://www.youtube.com/watch?v=OEL38fTTivY",
+        "yt_video_id": "OEL38fTTivY",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790316230.19006",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000033,
+        "created_ts": "1790317825.3945",
+        "updated_ts": "1790317825.3945",
+        "status": "published",
+        "topic": "Ashwatthama 3049 AD Episode 12: Cosmic Asteroid Interception over Neo-Kashi",
+        "title": "Neo-Kashi Par Girne Wala Tha Dark Asteroid: Ashwatthama Ka Raudra Roop! \u26a1\u2604\ufe0f | ASHWATTHAMA 3049 (Ep 12) #Shorts",
+        "caption": "Deep space radar ne alert bajaya: Neo-Kashi ke energy shield ki taraf ek antimatter asteroid 40,000 km/h ki raftaar se badh raha tha! \u26a1\u2604\ufe0f\nPlanetary defense fail ho gaya, tabhi Ashwatthama ka 3,000 saal purana celestial trishul aasmaan ki taraf chamka!\nAshwatthama lower stratosphere mein kood pada aur uski cosmic energy ne asteroid ke do tukde kar diye! Dekhiye! \ud83d\udc47\ud83d\udd25\n\n#Ashwatthama3049 #SciFiAction #MahabharatSciFi #IndianSciFi #Shorts #EpicAction #Trending",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 48.933333,
+        "series_name": "SERIES_5",
+        "series_index": 12,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch4_series_5_ep12\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": "https://www.youtube.com/watch?v=oj89VYV1BSE",
+        "yt_video_id": "oj89VYV1BSE",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790317825.3945",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000034,
+        "created_ts": "1790319464.85705",
+        "updated_ts": "1790319464.85705",
+        "status": "published",
+        "topic": "The Observer Files Episode 11: The CCTV Shadows That Move Against Time",
+        "title": "Traffic Cameras Stopped Recording Humans... Only Shadows Remain! \ud83d\udc41\ufe0f\ud83d\udcf9 | THE OBSERVER FILES (Ep 11) #Shorts",
+        "caption": "The Observer Files Episode 11: Classified Highway Protocol. \ud83d\udc41\ufe0f\ud83d\udcf9\nAt 3:17 AM across 8 municipal surveillance grids, all vehicles and pedestrians disappeared from screen feeds.\nIn their place: 400 elongated shadow silhouettes walking backward against the direction of wind.\nThen one silhouette turned, stopped, and pressed its palm against camera lens #4... leaving frosted condensation from INSIDE the server.\n\n#TheObserverFiles #AnalogHorror #CCTVMystery #Shorts #FoundFootage #HorrorShorts",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 42.766667,
+        "series_name": "SERIES_6",
+        "series_index": 11,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch4_series_6_ep11\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": "https://www.youtube.com/watch?v=ECM8jQUt0qE",
+        "yt_video_id": "ECM8jQUt0qE",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790319464.85705",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000035,
+        "created_ts": "1790321102.04233",
+        "updated_ts": "1790321102.04233",
+        "status": "published",
+        "topic": "Roblox Vault Episode 9: The Banned 2016 Telamon Golden Katana Glitch",
+        "title": "The Banned 2016 Katana Hidden In Sword Fights! \u2694\ufe0f\ud83c\udfae | ROBLOX VAULT (Ep 9) #Shorts",
+        "caption": "Roblox Vault Episode 9: The secret glitch weapon that bypasses all hitbox cooldowns! \ud83c\udfae\u2694\ufe0f\nHidden beneath the cloud spawn in classic Sword Fight on the Heights.\nIf you cancel the potion animation at 0.1s while equipping the venom dagger, you clip straight into the Telamon Vault!\nWatch the full glitch before developers patch it in tomorrow's update! \ud83d\udc47\ud83c\udfae\n\n#RobloxVault #RobloxGlitches #SFOTH #GamingSecrets #RobloxShorts #Shorts #Gaming",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 42.066667,
+        "series_name": "SERIES_7",
+        "series_index": 9,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch4_series_7_ep9\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": "https://www.youtube.com/watch?v=qzhyCZNF3V4",
+        "yt_video_id": "qzhyCZNF3V4",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790321102.04233",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -19031,6 +19155,440 @@
       {
         "id": 2099,
         "ts": "2026-09-25T05:44:20+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2100,
+        "ts": "2026-09-25T06:03:45+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2101,
+        "ts": "2026-09-25T06:03:45+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2102,
+        "ts": "2026-09-25T06:03:53+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2103,
+        "ts": "2026-09-25T06:03:55+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2104,
+        "ts": "2026-09-25T06:03:58+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2105,
+        "ts": "2026-09-25T06:04:00+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2106,
+        "ts": "2026-09-25T06:04:02+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2107,
+        "ts": "2026-09-25T06:04:04+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2108,
+        "ts": "2026-09-25T06:04:07+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2109,
+        "ts": "2026-09-25T06:04:08+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2110,
+        "ts": "2026-09-25T06:04:10+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2111,
+        "ts": "2026-09-25T06:04:14+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2112,
+        "ts": "2026-09-25T06:04:15+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2113,
+        "ts": "2026-09-25T06:04:18+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2114,
+        "ts": "2026-09-25T06:04:20+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2115,
+        "ts": "2026-09-25T06:04:22+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2116,
+        "ts": "2026-09-25T06:04:25+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2117,
+        "ts": "2026-09-25T06:04:27+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2118,
+        "ts": "2026-09-25T06:04:29+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2119,
+        "ts": "2026-09-25T06:04:31+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2120,
+        "ts": "2026-09-25T06:30:20+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2121,
+        "ts": "2026-09-25T06:30:20+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2122,
+        "ts": "2026-09-25T06:30:29+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2123,
+        "ts": "2026-09-25T06:30:30+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2124,
+        "ts": "2026-09-25T06:30:33+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2125,
+        "ts": "2026-09-25T06:30:35+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2126,
+        "ts": "2026-09-25T06:30:37+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2127,
+        "ts": "2026-09-25T06:30:39+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2128,
+        "ts": "2026-09-25T06:30:41+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2129,
+        "ts": "2026-09-25T06:30:43+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2130,
+        "ts": "2026-09-25T06:30:45+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2131,
+        "ts": "2026-09-25T06:30:49+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2132,
+        "ts": "2026-09-25T06:30:51+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2133,
+        "ts": "2026-09-25T06:30:53+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2134,
+        "ts": "2026-09-25T06:30:55+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2135,
+        "ts": "2026-09-25T06:30:57+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2136,
+        "ts": "2026-09-25T06:30:59+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2137,
+        "ts": "2026-09-25T06:31:03+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2138,
+        "ts": "2026-09-25T06:31:04+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2139,
+        "ts": "2026-09-25T06:31:07+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2140,
+        "ts": "2026-09-25T06:57:39+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2141,
+        "ts": "2026-09-25T06:57:39+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2142,
+        "ts": "2026-09-25T06:57:48+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2143,
+        "ts": "2026-09-25T06:57:50+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2144,
+        "ts": "2026-09-25T06:57:53+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2145,
+        "ts": "2026-09-25T06:57:55+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2146,
+        "ts": "2026-09-25T06:57:57+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2147,
+        "ts": "2026-09-25T06:57:59+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2148,
+        "ts": "2026-09-25T06:58:02+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2149,
+        "ts": "2026-09-25T06:58:04+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2150,
+        "ts": "2026-09-25T06:58:06+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2151,
+        "ts": "2026-09-25T06:58:09+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2152,
+        "ts": "2026-09-25T06:58:10+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2153,
+        "ts": "2026-09-25T06:58:13+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2154,
+        "ts": "2026-09-25T06:58:15+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2155,
+        "ts": "2026-09-25T06:58:16+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2156,
+        "ts": "2026-09-25T06:58:19+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2157,
+        "ts": "2026-09-25T06:58:22+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2158,
+        "ts": "2026-09-25T06:58:23+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2159,
+        "ts": "2026-09-25T06:58:26+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2160,
+        "ts": "2026-09-25T07:24:57+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file final_with_subs.mp4"
+      },
+      {
+        "id": 2161,
+        "ts": "2026-09-25T07:24:57+00:00",
         "bucket": "youtube_uploads",
         "amount": 1,
         "reason": "upload_file final_with_subs.mp4"
@@ -60060,6 +60618,38 @@
         "kind": "published",
         "video_id": null,
         "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"hV4DusnAhek\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\batch4_series_1_ep21\\\\final_with_subs.mp4\", \"upload_secs\": 4.6}"
+      },
+      {
+        "id": 5129,
+        "ts": "2026-09-25T06:03:49+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"OEL38fTTivY\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\batch4_series_4_ep15\\\\final_with_subs.mp4\", \"upload_secs\": 4.0}"
+      },
+      {
+        "id": 5130,
+        "ts": "2026-09-25T06:30:24+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"oj89VYV1BSE\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\batch4_series_5_ep12\\\\final_with_subs.mp4\", \"upload_secs\": 3.5}"
+      },
+      {
+        "id": 5131,
+        "ts": "2026-09-25T06:57:43+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"ECM8jQUt0qE\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\batch4_series_6_ep11\\\\final_with_subs.mp4\", \"upload_secs\": 4.3}"
+      },
+      {
+        "id": 5132,
+        "ts": "2026-09-25T07:25:01+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"qzhyCZNF3V4\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\batch4_series_7_ep9\\\\final_with_subs.mp4\", \"upload_secs\": 3.6}"
       }
     ],
     "characters": [

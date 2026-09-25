@@ -1,14 +1,14 @@
 {
-  "exported_at": "2026-09-25T15:10:54.419150+00:00",
+  "exported_at": "2026-09-25T15:43:27.712827+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
-    "videos": 128,
+    "videos": 129,
     "metrics": 28,
     "experiments": 4,
     "learnings": 0,
-    "quota_usage": 2167,
-    "events": 5134,
+    "quota_usage": 2170,
+    "events": 5135,
     "characters": 1,
     "jobs": 105,
     "organizations": 102,
@@ -24,7 +24,7 @@
     "users": 125,
     "discord_connections": 0,
     "series": 77,
-    "episodes": 60,
+    "episodes": 61,
     "uploaded_assets": 0
   },
   "data": {
@@ -3991,6 +3991,37 @@
         "ig_media_id": null,
         "scheduled_ts": null,
         "published_ts": "1790349025.77562",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": "ws_admin_abhay"
+      },
+      {
+        "id": 1000038,
+        "created_ts": "1790350951.61026",
+        "updated_ts": "1790350951.61026",
+        "status": "published",
+        "topic": "Solo Leveling Ragnarok Chapter 12: The Beast King Awakens & Suho's New Ally",
+        "title": "SOLO LEVELING: RAGNAROK Chapter 12 in Hindi \u2694\ufe0f | The Beast King Awakens & Suho's New Ally! | Full Recap",
+        "caption": "\u2694\ufe0f SOLO LEVELING: RAGNAROK Chapter 12 Full Story in Hindi | The Beast King Awakens & Suho's New Ally!\n\nEmergency Quest \"HUNT THE HYENA\" ka khatarnak mod!\nWerewolf Brocky ne apni taqat ka dikhava karte hue apne hi D-Rank shikaariyon ko Suho ke samne chaba daala!\n\nSuho ne Storm Slash aur Spin skill se toofani hamla kiya, lekin Brocky ki Itarim shaktiyon ke samne Fang Monarch ki talwar ke do tukde ho gaye!\nZameen par patak kar Brocky ne jab Suho par maut ka aakhri vaar kiya aur Suho ki HP ghati:\n[HP: 21 / 2,350]!\n\nTabhi tooti hui talwar ki aakhri aag nannhe bhediye ke andar samayi!\nEk pal mein wo chhota bachha ban gaya ek vishalkay BEAST KING WOLF!\nBrocky ki peeth par deadly fangs gaad kar usne Sung Suho ki jaan bacha li!\n\nAur System ne pucha wo sawaal jisne sabko hila diya:\n[NOTICE: THE \"SUCCESSOR OF THE FANG\" HAS SHOWN RESPECT TO YOUR FIGHTING SPIRIT.]\n[DO YOU ACCEPT THE \"SUCCESSOR OF THE FANG\" AS A PART OF YOUR PARTY?]\n\nDekhiye Shadow aur Beast King ke aitihaasik gathbandhan ka mahayudh!\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u23f1\ufe0f CHAPTER TIMESTAMPS:\n00:00 - Emergency Quest Delivered: Hunt the Hyena!\n00:35 - Brocky's Ruthless Subordinate Execution\n01:10 - Claws vs Blade: The Philosophy of the Strong\n01:45 - Suho's Aerial Acrobatics & Storm Slash Barrage\n02:20 - Spin Attack & The Relic's Broken Loyalty\n02:55 - The Shattered Blade & Suho's Shadow Punch\n03:30 - HP 21 Alert: Suho at the Brink of Death\n04:05 - The Beast King's Rebirth & Brocky's Fall\n04:40 - The Successor Joins the Party!\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u2696\ufe0f DISCLAIMER & FAIR USE ATTRIBUTION:\nCopyright Disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for \"fair use\" for purposes such as criticism, commentary, news reporting, teaching, scholarship, and research. Fair use is a use permitted by copyright statute that might otherwise be infringing. Non-profit, educational or personal use tips the balance in favor of fair use.\n\nOriginal Work: Solo Leveling: Ragnarok by Daul, Redice Studio, D&C Media.\nThis video is a transformative narrative recap, review, and analytical commentary in Hindi.\nAll visual rights belong to their respective copyright holders.\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n#SoloLeveling #SoloLevelingRagnarok #SungSuho #SungJinwoo #AnimeRecapHindi #ManhwaRecap #Shorts #ShadowMonarch #BeastKing\n",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 272.04,
+        "series_name": "SOLO_LEVELING_RAGNAROK",
+        "series_index": 12,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\solo_leveling_ragnarok_ch12\\solo_leveling_ragnarok_ch12_final.mp4",
+        "cover_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\solo_leveling_ragnarok_ch12\\thumbnail.jpg",
+        "public_url": "https://www.youtube.com/watch?v=M8On2dX4XJ4",
+        "yt_video_id": "M8On2dX4XJ4",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": "1790350951.61026",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -19693,6 +19724,27 @@
       {
         "id": 2167,
         "ts": "2026-09-25T15:09:03+00:00",
+        "bucket": "youtube_units",
+        "amount": 50,
+        "reason": "thumbnail"
+      },
+      {
+        "id": 2168,
+        "ts": "2026-09-25T15:41:08+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file solo_leveling_ragnarok_ch12_final.mp4"
+      },
+      {
+        "id": 2169,
+        "ts": "2026-09-25T15:41:08+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file solo_leveling_ragnarok_ch12_final.mp4"
+      },
+      {
+        "id": 2170,
+        "ts": "2026-09-25T15:42:22+00:00",
         "bucket": "youtube_units",
         "amount": 50,
         "reason": "thumbnail"
@@ -60770,6 +60822,14 @@
         "kind": "published",
         "video_id": null,
         "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"1-uYrV8DN6I\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\solo_leveling_ragnarok_ch11\\\\solo_leveling_ragnarok_ch11_final.mp4\", \"upload_secs\": 116.1}"
+      },
+      {
+        "id": 5135,
+        "ts": "2026-09-25T15:42:30+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"M8On2dX4XJ4\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\solo_leveling_ragnarok_ch12\\\\solo_leveling_ragnarok_ch12_final.mp4\", \"upload_secs\": 74.0}"
       }
     ],
     "characters": [
@@ -99955,6 +100015,21 @@
         "status": "published",
         "video_id": "1-uYrV8DN6I",
         "created_at": "2026-09-25 20:40:25",
+        "user_id": "admin_abhay"
+      },
+      {
+        "id": "ep_ragnarok_ch12",
+        "series_id": "ser_26cae0f3a422",
+        "workspace_id": "ws_admin_abhay",
+        "episode_number": 12,
+        "title": "SOLO LEVELING: RAGNAROK Chapter 12 in Hindi \u2694\ufe0f | The Beast King Awakens & Suho's New Ally! | Full Recap",
+        "recap": "Suho vs Werewolf Brocky, sword shatters, cub transforms into Beast King, saves Suho and joins party.",
+        "conflict": "Werewolf Brocky vs Sung Suho & Transformed Beast King Wolf",
+        "cliffhanger": "Transformed Beast King requests to join Suho's party",
+        "script_json": "{\"scenes\": 40, \"duration\": 272.04}",
+        "status": "published",
+        "video_id": "M8On2dX4XJ4",
+        "created_at": "2026-09-25 21:12:31",
         "user_id": "admin_abhay"
       }
     ],

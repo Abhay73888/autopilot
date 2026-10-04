@@ -1,14 +1,14 @@
 {
-  "exported_at": "2026-10-04T05:26:03.129813+00:00",
+  "exported_at": "2026-10-04T06:23:46.840068+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
-    "videos": 138,
+    "videos": 139,
     "metrics": 28,
     "experiments": 4,
     "learnings": 0,
-    "quota_usage": 2303,
-    "events": 5146,
+    "quota_usage": 2306,
+    "events": 5147,
     "characters": 1,
     "jobs": 105,
     "organizations": 102,
@@ -4303,6 +4303,37 @@
         "published_ts": "2026-10-04T05:07:56+00:00",
         "ai_disclosed": 1,
         "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000048,
+        "created_ts": "2026-10-04T06:18:50+00:00",
+        "updated_ts": "2026-10-04T06:19:59+00:00",
+        "status": "published",
+        "topic": "Solo Leveling: Ragnarok Chapter 14",
+        "title": "SOLO LEVELING: RAGNAROK Chapter 14 in Hindi \u2694\ufe0f | Suho Names Gray & Grim Reaper Guild Conspiracy! | Full Recap",
+        "caption": "Solo Leveling: Ragnarok Chapter 14 full recap in Hindi.",
+        "hashtags": null,
+        "script_json": null,
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 270.0,
+        "series_name": "SOLO_LEVELING_RAGNAROK",
+        "series_index": 14,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\solo_leveling_ragnarok_ch14\\solo_leveling_ragnarok_ch14_final.mp4",
+        "cover_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\solo_leveling_ragnarok_ch14\\thumbnail.jpg",
+        "public_url": null,
+        "yt_video_id": "3OqEqeny6SI",
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": null,
+        "ai_disclosed": 1,
+        "notes": "Live on YouTube: https://www.youtube.com/watch?v=3OqEqeny6SI",
         "scene_pacing": "standard",
         "user_id": "admin_abhay",
         "workspace_id": null
@@ -20958,6 +20989,27 @@
         "bucket": "youtube_units",
         "amount": 50,
         "reason": "first comment #1000019"
+      },
+      {
+        "id": 2304,
+        "ts": "2026-10-04T06:18:50+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload_file solo_leveling_ragnarok_ch14_final.mp4"
+      },
+      {
+        "id": 2305,
+        "ts": "2026-10-04T06:18:50+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload_file solo_leveling_ragnarok_ch14_final.mp4"
+      },
+      {
+        "id": 2306,
+        "ts": "2026-10-04T06:19:53+00:00",
+        "bucket": "youtube_units",
+        "amount": 50,
+        "reason": "thumbnail"
       }
     ],
     "events": [
@@ -62128,6 +62180,14 @@
         "kind": "first_comment",
         "video_id": 1000019,
         "payload": "{\"yt_id\": \"nwL_Kg2lQGE\"}"
+      },
+      {
+        "id": 5147,
+        "ts": "2026-10-04T06:19:59+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": null,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"3OqEqeny6SI\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\solo_leveling_ragnarok_ch14\\\\solo_leveling_ragnarok_ch14_final.mp4\", \"upload_secs\": 63.0}"
       }
     ],
     "characters": [

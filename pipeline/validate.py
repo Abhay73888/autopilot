@@ -612,12 +612,23 @@ def _parse_fps(rate: str | None) -> float | None:
 
 
 # =====================================================================
-def validate_dir(video_dir: str | Path, deep: bool = True, profile: str | dict | None = None) -> Report:
+def validate_dir(video_dir: str | Path, deep: bool = True, profile: str | dict | None = None, video_path: str | Path | None = None) -> Report:
     """Ek output folder validate karo (manifest ke saath)."""
     d = Path(video_dir)
     mf = d / "manifest.json"
     manifest = json.loads(mf.read_text(encoding="utf-8")) if mf.exists() else None
-    return validate(d / "final.mp4", manifest=manifest, deep=deep, profile=profile)
+
+    if video_path and Path(video_path).exists():
+        target = Path(video_path)
+    elif (d / "final_with_subs.mp4").exists():
+        target = d / "final_with_subs.mp4"
+    elif (d / "final.mp4").exists():
+        target = d / "final.mp4"
+    else:
+        mp4s = list(d.glob("*.mp4"))
+        target = mp4s[0] if mp4s else (d / "final.mp4")
+
+    return validate(target, manifest=manifest, deep=deep, profile=profile)
 
 
 if __name__ == "__main__":

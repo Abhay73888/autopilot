@@ -116,7 +116,7 @@ class YouTubePublisher:
 
         # ---------- GATE 3: validate ----------
         from pipeline.validate import validate_dir
-        rep = validate_dir(path.parent)
+        rep = validate_dir(path.parent, video_path=path)
         # YouTube supports standard 16:9 horizontal videos (not just vertical Shorts)
         yt_fatals = [i for i in rep.fatals if i.code != "IG_TOO_LONG" and not (i.code == "RESOLUTION" and "Horizontal" in i.msg)]
         if yt_fatals:
@@ -210,24 +210,28 @@ class YouTubePublisher:
         profile = script.get("profile") or row.get("profile") or CONFIG.get("active_profile", "shorts")
         is_longform = (profile == "longform") or bool(script.get("chapters"))
 
-        thumb = out_dir / "thumbnail.jpg"
-        if not thumb.exists():
-            thumb = Path(row["cover_path"] or "") if "cover_path" in row.keys() else None
-        if not thumb or not Path(thumb).exists():
-            if (out_dir / "cover.jpg").exists():
-                thumb = out_dir / "cover.jpg"
-            elif is_longform:
-                try:
-                    from agents.metadata import generate_thumbnail
-                    thumb_target = out_dir / "thumbnail.jpg"
-                    base_img = next(out_dir.glob("scene_*.png"), None) or next(out_dir.glob("*.jpg"), None)
-                    generate_thumbnail(thumb_target, title_text=row.get("title") or "Episode", base_image_path=base_img)
-                    thumb = thumb_target
-                except Exception as e:
-                    log.warn(f"Auto thumbnail generation skip: {e}")
+        thumb = None
+        if (out_dir / "thumbnail.jpg").is_file():
+            thumb = out_dir / "thumbnail.jpg"
+        elif row.get("cover_path") and Path(row["cover_path"]).is_file():
+            thumb = Path(row["cover_path"])
+        elif (out_dir / "cover.jpg").is_file():
+            thumb = out_dir / "cover.jpg"
+        elif is_longform:
+            try:
+                from agents.metadata import generate_thumbnail
+                thumb_target = out_dir / "thumbnail.jpg"
+                base_img = next(out_dir.glob("scene_*.png"), None) or next(out_dir.glob("*.jpg"), None)
+                generate_thumbnail(thumb_target, title_text=row.get("title") or "Episode", base_image_path=base_img)
+                thumb = thumb_target
+            except Exception as e:
+                log.warn(f"Auto thumbnail generation skip: {e}")
 
-        if thumb and Path(thumb).exists():
-            self.set_thumbnail(yt_id, thumb)
+        if thumb and Path(thumb).is_file():
+            try:
+                self.set_thumbnail(yt_id, thumb)
+            except Exception as e:
+                log.warn(f"Thumbnail upload skip/fail: {e}")
 
         # ---------- pinned first comment (Section 8: comment seeding) ----------
         if pin_comment and privacy != "private":
@@ -693,7 +697,7 @@ class YouTubePublisher:
     def set_thumbnail(self, yt_id: str, image_path: str | Path) -> bool:
         """Cover frame / thumbnail.jpg ko thumbnail banao (50 units). Shorts search carousel mein ye dikhta hai."""
         p = Path(image_path)
-        if not p.exists() or p.stat().st_size == 0:
+        if not p.is_file() or p.stat().st_size == 0:
             return False
         if p.stat().st_size > 2 * 1024 * 1024:
             log.warn("Thumbnail 2MB se bada hai — YouTube reject karega")

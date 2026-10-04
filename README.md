@@ -49,7 +49,7 @@
 | **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized neural profiles), ElevenLabs Neural, Gemini TTS, paired with sub-bass procedural audio FX & EBU R128 loudness normalization. |
 | **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic karaoke subtitles, scaling from 30s shorts to 10m longform videos. |
 | **🗄️ Persistence** | Dual SQLite / PostgreSQL engine (`core/db_base.py`) with thread-local ContextVar tenant isolation, relational users, workspaces, series, and encrypted integration vaults. |
-| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays 119+ confirmed live YouTube videos across 8 active series (`status = 'published'`, non-empty `yt_video_id`), with Batch 5 next episodes (Series 1–8) rendered and approved in DB ready for YouTube push. Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
+| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays 128+ confirmed live YouTube videos across 8 active series (`status = 'published'`, non-empty `yt_video_id`), with Batch 5 next episodes (Series 1–8) and Leonardo da Vinci (Ep 1 & 2) published live with Zero Comment Lock compliance. Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
 | **☁️ Deployment** | Docker containerized deployment, Render Cloud Blueprint (`render.yaml`), Railway, and zero-setup HTTPS tunneling (`tunnel.py`). |
 
 ---
@@ -1642,6 +1642,29 @@ AUTOPILOT v3.1.1 enforces professional enterprise UI standards across both the S
 
 * **Clean SaaS Sidebar Navigation**: Always-accessible persistent left sidebar (`<aside class="sidebar">`) providing 1-click access to all 11 studio operational centers: Dashboard, Generate Video, Mini Video Editor, Generate Episode, 3D AI Copilot, Video Library, Series Hub, Integrations, Settings, Admin Console, and Master Data Vault.
 * **Professional 3D AI Copilot Workstation**: Purged temporary and informal prototype character references from the production studio. Restored clean, high-performance 3D humanoid AI companion workstation with live audio-driven FFT lip sync, multi-turn reasoning, and quick studio command dispatchers.
+
+---
+
+## 🚀 Production Batch 5 & Series 8 Publishing Milestone (All 9 Ready Episodes Live)
+
+AUTOPILOT autonomously published all 9 pending pre-rendered and newly remastered episodes across all 8 active franchise series to YouTube Shorts with 100% policy compliance:
+
+* **Zero Comment Lock Compliance**: Verified and enforced `selfDeclaredMadeForKids=False`, public visibility, and automated first pinned comment bait on every upload via `commentThreads.insert`.
+* **Publisher Robustness Improvements**:
+  - Enhanced `pipeline/validate.py` (`validate_dir`) to dynamically check and validate custom `video_path` and `final_with_subs.mp4` targets rather than assuming only `final.mp4`.
+  - Hardened thumbnail handling in `agents/publisher.py`: corrected empty string `cover_path` handling (`Path("") == Path(". ")`), added strict `is_file()` checks to prevent `[Errno 13] Permission denied` errors, and wrapped thumbnail uploads in non-fatal warnings to ensure comment seeding and status transitions complete reliably.
+  - Upgraded **Series 8 Episode 1** visual assets with high-fidelity historical Renaissance artwork and mastered documentary BGM (`suspense_bgm.mp3`).
+
+### 📺 Live Published Episodes:
+1. **Series 1 (Kaal-Rekha) Ep 22**: [https://youtube.com/shorts/Htm9pYPiOaA](https://youtube.com/shorts/Htm9pYPiOaA) (`Htm9pYPiOaA`)
+2. **Series 2 (Jab Pyaar Online Tha) Ep 18**: [https://youtube.com/shorts/pXET2adLwLY](https://youtube.com/shorts/pXET2adLwLY) (`pXET2adLwLY`)
+3. **Series 3 (Chintu Ki Jadui Duniya) Ep 16**: [https://youtube.com/shorts/IVk-lRwmzHg](https://youtube.com/shorts/IVk-lRwmzHg) (`IVk-lRwmzHg`)
+4. **Series 4 (Dimag Ka Dahi) Ep 16**: [https://youtube.com/shorts/d2wLH_gVaZk](https://youtube.com/shorts/d2wLH_gVaZk) (`d2wLH_gVaZk`)
+5. **Series 5 (Ashwatthama 3049 AD) Ep 13**: [https://youtube.com/shorts/072ZGHIkkhQ](https://youtube.com/shorts/072ZGHIkkhQ) (`072ZGHIkkhQ`)
+6. **Series 6 (The Observer Files) Ep 12**: [https://youtube.com/shorts/SgbN2p0s3aY](https://youtube.com/shorts/SgbN2p0s3aY) (`SgbN2p0s3aY`)
+7. **Series 7 (Roblox Vault) Ep 10**: [https://youtube.com/shorts/VXFawrPxCqw](https://youtube.com/shorts/VXFawrPxCqw) (`VXFawrPxCqw`)
+8. **Series 8 (Leonardo da Vinci) Ep 1**: [https://youtube.com/shorts/nwL_Kg2lQGE](https://youtube.com/shorts/nwL_Kg2lQGE) (`nwL_Kg2lQGE`)
+9. **Series 8 (Leonardo da Vinci) Ep 2**: [https://youtube.com/shorts/ExNamTvpQ7Y](https://youtube.com/shorts/ExNamTvpQ7Y) (`ExNamTvpQ7Y`)
 
 ---
 

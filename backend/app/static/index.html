@@ -1665,6 +1665,10 @@
           </a>
 
           <div class="nav-group-label">System</div>
+          <a class="nav-item" data-view="activity" onclick="switchNav('activity')">
+            <span class="nav-icon">📈</span>
+            <span>Activity</span>
+          </a>
           <a class="nav-item" onclick="switchNav('integrations')">
             <span class="nav-icon">🔌</span>
             <span>Integrations</span>
@@ -2940,7 +2944,63 @@
           </div>
         </div>
       </section>
+
+      <!-- VIEW: USER ACTIVITY -->
+      <section class="view-panel" id="view-activity">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <h2 style="font-size: 22px; font-weight: 700;">Your Account Activity</h2>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin-top: 4px;">
+              Personal audit log and chronological timeline of actions, video jobs, and account events.
+            </p>
+          </div>
+          <button class="btn btn-secondary" onclick="loadUserActivity()">
+            <span>🔄</span> Refresh
+          </button>
+        </div>
+
+        <div style="background: rgba(17, 24, 39, 0.7); border: 1px solid var(--surface-border); border-radius: var(--radius-md); overflow: hidden;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13.5px;">
+            <thead>
+              <tr style="background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid var(--surface-border);">
+                <th style="padding: 12px 16px; color: var(--text-muted); font-weight: 600;">Time</th>
+                <th style="padding: 12px 16px; color: var(--text-muted); font-weight: 600;">Action</th>
+                <th style="padding: 12px 16px; color: var(--text-muted); font-weight: 600;">Resource</th>
+                <th style="padding: 12px 16px; color: var(--text-muted); font-weight: 600;">Actor</th>
+              </tr>
+            </thead>
+            <tbody id="userActivityTableBody">
+              <tr>
+                <td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                  Loading activity history...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
+  </div>
+
+  <!-- MODAL: Blocked / Suspended Account Notice (Preserves Data, Keeps Session) -->
+  <div class="modal-backdrop" id="blockedAccountModal" style="display: none; z-index: 10000;">
+    <div class="modal-box" style="max-width: 480px; border: 1px solid rgba(239, 68, 68, 0.4);">
+      <div class="card-header">
+        <div class="card-title" style="color: #FDA4AF;"><span>🛑</span> Account Restricted</div>
+      </div>
+      <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin-bottom: 16px;" id="blockedAccountMessage">
+        Your account has been restricted by an administrator.
+      </p>
+      <div style="padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 12.5px; color: #FDA4AF;" id="blockedReasonBox">
+        Reason: <span id="blockedReasonText">Account suspended</span>
+      </div>
+      <p style="font-size: 12px; color: var(--text-subtle); margin-bottom: 16px;">
+        ℹ️ Your projects, videos, connected channels, and history remain <strong>completely safe and preserved</strong>.
+      </p>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('blockedAccountModal').style.display='none'">Dismiss</button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL: Admin User Details Inspection (Read-Only) -->
@@ -3753,7 +3813,7 @@
         }
       });
 
-      // Lazy loads
+      if (panelId === 'activity') loadUserActivity();
       if (panelId === 'library') loadVideos();
       if (panelId === 'series' || panelId === 'studio-series') loadSeries();
       if (panelId === 'integrations') checkYouTubeStatus();
@@ -3774,16 +3834,62 @@
       document.getElementById('sidebar').classList.remove('open');
     }
 
+    function showBlockedModal(detail) {
+      const modal = document.getElementById('blockedAccountModal');
+      const reasonText = document.getElementById('blockedReasonText');
+      if (reasonText && detail) reasonText.innerText = detail;
+      if (modal) modal.style.display = 'flex';
+    }
+
+    async function loadUserActivity() {
+      const tbody = document.getElementById('userActivityTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">Loading activity history...</td></tr>';
+      try {
+        const res = await apiFetch('/api/v1/me/activity');
+        const data = await res.json();
+        const items = (data && data.data && (data.data.items || data.data)) || [];
+        if (!items.length) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">No activity records recorded yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = items.map(act => `
+          <tr style="border-bottom: 1px solid var(--surface-border);">
+            <td style="padding: 12px 16px; color: var(--text-muted);">${new Date(act.created_at || Date.now()).toLocaleString()}</td>
+            <td style="padding: 12px 16px;"><span class="badge badge-purple">${act.action}</span></td>
+            <td style="padding: 12px 16px; color: var(--text-main);">${act.resource_type || 'system'}${act.resource_id ? ': ' + act.resource_id : ''}</td>
+            <td style="padding: 12px 16px; color: var(--text-muted); font-family: monospace;">${act.actor_id || act.user_id}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 24px; color: #FDA4AF;">Failed to load activity.</td></tr>';
+      }
+    }
+
     // HTTP Helper with auth & tenant headers
     async function apiFetch(url, options = {}) {
       const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
       if (state.token) {
         headers['Authorization'] = 'Bearer ' + state.token;
       }
-      if (state.workspaceId) {
+      if (state.workspaceId && state.user && (state.workspaceId === state.user.currentWorkspaceId || state.workspaceId === ('ws_' + state.user.id))) {
         headers['X-Workspace-Id'] = state.workspaceId;
       }
-      return fetch(url, { ...options, headers });
+      const res = await fetch(url, { ...options, headers });
+      if (res.status === 401) {
+        clearSession();
+        toggleAuthModal();
+      } else if (res.status === 403) {
+        try {
+          const clone = res.clone();
+          const d = await clone.json();
+          const detail = (d && (d.detail || (d.error && d.error.message))) || "";
+          if (detail.toLowerCase().includes("blocked") || detail.toLowerCase().includes("suspended")) {
+            showBlockedModal(detail);
+          }
+        } catch {}
+      }
+      return res;
     }
 
     // Authentication Suite
@@ -6534,12 +6640,19 @@
               localStorage.setItem('autopilot_user', JSON.stringify(state.user));
               localStorage.setItem('autopilot_workspace_id', state.workspaceId);
             }
-          } else if (res.status === 401 || res.status === 403) {
+          } else if (res.status === 401) {
             // Expired or invalid token
             state.token = null;
             state.user = null;
             localStorage.removeItem('autopilot_token');
             localStorage.removeItem('autopilot_user');
+          } else if (res.status === 403) {
+            // Account blocked/suspended: retain session, show blocked modal with administrator reason
+            try {
+              const d = await res.json();
+              const detail = (d && (d.detail || (d.error && d.error.message))) || "Account is restricted";
+              showBlockedModal(detail);
+            } catch {}
           }
         } catch (err) {
           console.warn('Session verification warning:', err);
@@ -6551,6 +6664,11 @@
       checkYouTubeStatus();
       loadVideos();
       loadSeries();
+
+      // Deep link to /activity
+      if (window.location.pathname === '/activity') {
+        switchNav('activity');
+      }
 
       // Check if user is logged in & needs onboarding
       if (state.user && !state.user.isOnboarded) {

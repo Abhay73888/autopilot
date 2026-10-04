@@ -89,6 +89,83 @@ async def get_authenticated_tenant_context(
     return await get_current_tenant_context(request, authorization, x_workspace_id)
 
 
+def request_meta(request: Request) -> dict:
+    """Extracts client IP and User-Agent from incoming request."""
+    ip = None
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        ip = forwarded.split(",")[0].strip()
+    elif request.client:
+        ip = request.client.host
+
+    ua = request.headers.get("User-Agent")
+    return {"ip_address": ip or "127.0.0.1", "user_agent": ua or "unknown"}
+
+
+async def require_active_user(
+    request: Request,
+    ctx: TenantContext = Depends(get_authenticated_tenant_context)
+) -> TenantContext:
+    """
+    Guarantees the authenticated account is currently active.
+    Re-reads account status and block_reason from DB on every request.
+    If blocked/suspended, records denial activity and returns 403 with administrator's reason.
+    """
+    from core.db_base import DB_ENGINE
+    user = DB_ENGINE.get_user_by_id(ctx.user_id)
+    if not user:
+        raise UnauthorizedException("User account does not exist")
+
+    status = (user.get("status") or "active").strip().lower()
+    block_reason = user.get("block_reason")
+
+    if status in ("blocked", "suspended"):
+        # Log denial telemetry record
+        try:
+            from ..services.platform_service import log_activity
+            meta = request_meta(request)
+            log_activity(
+                user_id=ctx.user_id,
+                action=f"auth.login_denied_{status}",
+                details={"block_reason": block_reason, "path": str(request.url.path)},
+                ip_address=meta.get("ip_address"),
+                user_agent=meta.get("user_agent"),
+            )
+        except Exception:
+            pass
+
+        msg = f"Account is {status}: {block_reason}" if block_reason else f"Account is {status}. Please contact administrator."
+        raise TenantAccessDeniedException(msg)
+
+    return ctx
+
+
+async def require_admin_db(
+    request: Request,
+    ctx: TenantContext = Depends(get_authenticated_tenant_context)
+) -> TenantContext:
+    """
+    Strict DB-driven admin role authorization.
+    Re-reads users.role and users.status from the database on every request.
+    Never trusts the JWT claim alone.
+    """
+    from core.db_base import DB_ENGINE
+    user = DB_ENGINE.get_user_by_id(ctx.user_id)
+    if not user:
+        raise UnauthorizedException("Admin account not found")
+
+    status = (user.get("status") or "active").strip().lower()
+    if status in ("blocked", "suspended"):
+        raise TenantAccessDeniedException(f"Administrative account is {status}")
+
+    role = (user.get("role") or "").strip().lower()
+    if role != "admin":
+        raise TenantAccessDeniedException("Administrative privileges required for this resource")
+
+    ctx.role = "admin"
+    return ctx
+
+
 async def require_admin_role(
     ctx: TenantContext = Depends(get_authenticated_tenant_context)
 ) -> TenantContext:
@@ -100,4 +177,5 @@ async def require_admin_role(
 
 # Convenience alias for endpoints requiring authenticated tenant context
 require_tenant_context = get_authenticated_tenant_context
+
 

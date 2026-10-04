@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-10-04T06:23:46.840068+00:00",
+  "exported_at": "2026-10-04T07:09:57.977872+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
@@ -12,7 +12,7 @@
     "characters": 1,
     "jobs": 105,
     "organizations": 102,
-    "workspaces": 1341,
+    "workspaces": 1342,
     "credit_accounts": 0,
     "usage_ledger": 518,
     "video_jobs": 0,
@@ -21,11 +21,14 @@
     "publishing_jobs": 137,
     "credit_transactions": 0,
     "templates": 4,
-    "users": 125,
+    "users": 126,
     "discord_connections": 0,
-    "series": 77,
+    "series": 78,
     "episodes": 62,
-    "uploaded_assets": 0
+    "uploaded_assets": 0,
+    "activity_log": 54,
+    "audit_log": 10,
+    "notifications": 0
   },
   "data": {
     "videos": [
@@ -83688,6 +83691,20 @@
         "plan_tier": "starter",
         "credits_balance": 100,
         "created_ts": null
+      },
+      {
+        "id": "ws_usr_1f8f25c596d9",
+        "organization_id": "org_usr_1f8f25c596d9",
+        "name": "Test_creator_qa's Studio",
+        "slug": "usr_1f8f25c596d9-studio",
+        "autopilot_mode": "assisted",
+        "is_active": 1,
+        "created_at": "2026-10-04 06:57:45",
+        "api_key": null,
+        "owner_email": null,
+        "plan_tier": "starter",
+        "credits_balance": 100,
+        "created_ts": null
       }
     ],
     "credit_accounts": [],
@@ -97389,7 +97406,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": "2026-10-04T07:08:20.949984+00:00",
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 3,
@@ -97407,7 +97429,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 4,
@@ -97425,7 +97452,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 5,
@@ -97443,7 +97475,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 6,
@@ -97461,7 +97498,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 7,
@@ -97479,7 +97521,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 8,
@@ -97497,7 +97544,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 9,
@@ -97515,7 +97567,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 11,
@@ -97533,7 +97590,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 12,
@@ -97551,7 +97613,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 13,
@@ -97569,7 +97636,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 14,
@@ -97587,7 +97659,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 15,
@@ -97605,7 +97682,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 16,
@@ -97623,7 +97705,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:19:14.270476+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 17,
@@ -97641,7 +97728,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:19:26.480553+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 18,
@@ -97659,7 +97751,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:19:31.246332+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 19,
@@ -97677,7 +97774,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:24:34.861567+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 20,
@@ -97695,7 +97797,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:26:28.479579+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 21,
@@ -97713,7 +97820,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:26:28.651823+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 22,
@@ -97731,7 +97843,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:26:29.021668+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 23,
@@ -97749,7 +97866,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:27:00.470746+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 24,
@@ -97767,7 +97889,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:27:00.745079+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 25,
@@ -97785,7 +97912,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:27:01.465045+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 26,
@@ -97803,7 +97935,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:27:41.219319+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 27,
@@ -97821,7 +97958,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:27:41.434957+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 28,
@@ -97839,7 +97981,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:27:41.939640+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 29,
@@ -97857,7 +98004,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:28:06.947547+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 30,
@@ -97875,7 +98027,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:28:07.105823+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 31,
@@ -97893,7 +98050,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:28:07.439130+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 32,
@@ -97911,7 +98073,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:30:28.134007+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 33,
@@ -97929,7 +98096,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:30:28.299063+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 34,
@@ -97947,7 +98119,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:30:28.648950+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 35,
@@ -97965,7 +98142,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:31:20.076736+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 36,
@@ -97983,7 +98165,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:31:20.254280+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 37,
@@ -98001,7 +98188,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:31:20.640246+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 38,
@@ -98019,7 +98211,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:31:46.539788+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 39,
@@ -98037,7 +98234,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:31:46.728594+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 40,
@@ -98055,7 +98257,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:31:47.083826+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 41,
@@ -98073,7 +98280,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:33:03.991822+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 42,
@@ -98091,7 +98303,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:33:04.235499+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 43,
@@ -98109,7 +98326,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:33:04.748071+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 44,
@@ -98127,7 +98349,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:33:38.384994+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 45,
@@ -98145,7 +98372,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:33:38.600979+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 46,
@@ -98163,7 +98395,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:33:39.069624+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 47,
@@ -98181,7 +98418,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:33:57.485959+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 48,
@@ -98199,7 +98441,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:33:57.717702+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 49,
@@ -98217,7 +98464,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:33:58.256784+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 50,
@@ -98235,7 +98487,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:34:58.634213+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 51,
@@ -98253,7 +98510,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:34:58.796387+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 52,
@@ -98271,7 +98533,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:34:59.139276+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 53,
@@ -98289,7 +98556,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:35:26.989507+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 54,
@@ -98307,7 +98579,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:35:27.157950+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 55,
@@ -98325,7 +98602,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:35:27.515209+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 56,
@@ -98343,7 +98625,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:35:53.194810+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 57,
@@ -98361,7 +98648,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:35:53.362355+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 58,
@@ -98379,7 +98671,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:35:53.720431+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 59,
@@ -98397,7 +98694,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:37:29.686158+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 60,
@@ -98415,7 +98717,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:37:29.849115+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 61,
@@ -98433,7 +98740,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T15:37:30.220740+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 62,
@@ -98451,7 +98763,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T15:38:01.880374+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 63,
@@ -98469,7 +98786,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T17:53:35.619996+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 64,
@@ -98487,7 +98809,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T17:53:35.734826+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 65,
@@ -98505,7 +98832,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T17:53:36.034333+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 66,
@@ -98523,7 +98855,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T18:00:07.925992+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 67,
@@ -98541,7 +98878,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-20T18:00:08.027258+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 68,
@@ -98559,7 +98901,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-20T18:00:08.257094+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 69,
@@ -98577,7 +98924,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:16:38.955054+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 70,
@@ -98595,7 +98947,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:16:39.108945+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 71,
@@ -98613,7 +98970,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T09:16:39.408998+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 72,
@@ -98631,7 +98993,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:19:55.562541+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 73,
@@ -98649,7 +99016,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:19:55.698297+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 74,
@@ -98667,7 +99039,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T09:19:56.035246+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 75,
@@ -98685,7 +99062,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:29:11.366247+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 76,
@@ -98703,7 +99085,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:29:11.476718+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 77,
@@ -98721,7 +99108,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T09:29:11.838078+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 78,
@@ -98739,7 +99131,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:31:42.288736+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 79,
@@ -98757,7 +99154,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:31:42.426146+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 80,
@@ -98775,7 +99177,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T09:31:42.668675+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 81,
@@ -98793,7 +99200,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:34:32.247928+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 82,
@@ -98811,7 +99223,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:34:58.019193+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 83,
@@ -98829,7 +99246,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:35:16.281240+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 84,
@@ -98847,7 +99269,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:51:01.061719+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 85,
@@ -98865,7 +99292,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:51:01.150832+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 86,
@@ -98883,7 +99315,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T09:51:01.441175+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 87,
@@ -98901,7 +99338,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:55:17.812495+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 88,
@@ -98919,7 +99361,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:55:17.912795+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 89,
@@ -98937,7 +99384,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T09:55:18.189188+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 90,
@@ -98955,7 +99407,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:56:28.170502+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 91,
@@ -98973,7 +99430,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:56:28.348280+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 92,
@@ -98991,7 +99453,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T09:56:28.708420+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 93,
@@ -99009,7 +99476,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:56:58.516537+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 94,
@@ -99027,7 +99499,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:56:58.638547+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 95,
@@ -99045,7 +99522,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T09:56:58.878383+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 96,
@@ -99063,7 +99545,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:59:24.417295+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 97,
@@ -99081,7 +99568,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T09:59:24.516913+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 98,
@@ -99099,7 +99591,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T09:59:24.738763+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 99,
@@ -99117,7 +99614,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T10:08:40.508602+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 100,
@@ -99135,7 +99637,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T10:08:40.641983+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 101,
@@ -99153,7 +99660,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T10:08:40.918930+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 102,
@@ -99171,7 +99683,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T10:09:30.545604+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 103,
@@ -99189,7 +99706,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T10:09:30.643805+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 104,
@@ -99207,7 +99729,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T10:09:30.954500+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 105,
@@ -99225,7 +99752,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T10:33:52.010359+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 106,
@@ -99243,7 +99775,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T10:33:52.150112+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 107,
@@ -99261,7 +99798,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T10:33:52.440927+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 108,
@@ -99279,7 +99821,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T17:43:24.327204+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 109,
@@ -99297,7 +99844,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T17:43:24.432294+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 110,
@@ -99315,7 +99867,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T17:43:24.639792+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 111,
@@ -99333,7 +99890,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T18:02:45.899511+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 112,
@@ -99351,7 +99913,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-21T18:02:46.090389+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 113,
@@ -99369,7 +99936,12 @@
         "preferences_json": "{\"defaultDurationSeconds\": 60, \"defaultLanguage\": \"Hindi\", \"defaultVoice\": \"hi_m_intense\", \"contentNiche\": \"Mystery & Suspense\", \"connectedYouTube\": false}",
         "created_at": "2026-09-21T18:02:46.396629+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 114,
@@ -99387,7 +99959,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 121,
@@ -99405,7 +99982,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-24T08:21:04.327021+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 122,
@@ -99423,7 +100005,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-24T08:21:49.436656+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 123,
@@ -99441,7 +100028,12 @@
         "preferences_json": "{}",
         "created_at": "2026-09-24T08:22:12.606768+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 124,
@@ -99459,7 +100051,12 @@
         "preferences_json": "{\"defaultLanguage\": \"English\", \"defaultVoice\": \"en_m_brian\", \"contentNiche\": \"Sci-Fi Thrillers\"}",
         "created_at": "2026-09-24T08:22:48.761530+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 125,
@@ -99477,7 +100074,12 @@
         "preferences_json": "{\"defaultLanguage\": \"English\", \"defaultVoice\": \"en_m_brian\", \"contentNiche\": \"Sci-Fi Thrillers\"}",
         "created_at": "2026-09-24T08:23:07.172212+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 126,
@@ -99495,7 +100097,12 @@
         "preferences_json": "{\"defaultLanguage\": \"English\", \"defaultVoice\": \"en_m_brian\", \"contentNiche\": \"Sci-Fi Thrillers\"}",
         "created_at": "2026-09-24T08:23:32.906057+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 127,
@@ -99513,7 +100120,12 @@
         "preferences_json": "{\"defaultLanguage\": \"English\", \"defaultVoice\": \"en_m_brian\", \"contentNiche\": \"Sci-Fi Thrillers\"}",
         "created_at": "2026-09-24T08:34:23.440393+00:00",
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 128,
@@ -99531,7 +100143,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 132,
@@ -99549,7 +100166,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 133,
@@ -99567,7 +100189,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 134,
@@ -99585,7 +100212,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 135,
@@ -99603,7 +100235,12 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{\"niche\": \"Cyberpunk Mythology\", \"voice_preference\": \"hi-IN-MadhurNeural\"}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       },
       {
         "id": 136,
@@ -99621,7 +100258,35 @@
         "preferences_json": "{}",
         "created_at": null,
         "preferences": "{\"niche\": \"Cyberpunk Mythology\", \"voice_preference\": \"hi-IN-MadhurNeural\"}",
-        "avatar_url": null
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": null,
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
+      },
+      {
+        "id": 140,
+        "user_id": "usr_1f8f25c596d9",
+        "email": "test_creator_qa@autopilot.ai",
+        "password_hash": "pbkdf2_sha256$8719befb6329efd95ccb330e050ded52$184a59d2b86c019d745c4ab156c24744d5b338fa9cd81bb39075b57081e8a3b1",
+        "name": "Test_creator_qa",
+        "role": "user",
+        "tier": "starter",
+        "credits": 100,
+        "created_ts": "2026-10-04T06:57:45.700423+00:00",
+        "tour_completed": 0,
+        "full_name": "Test_creator_qa",
+        "is_onboarded": 0,
+        "preferences_json": "{}",
+        "created_at": "2026-10-04T06:57:45.700423+00:00",
+        "preferences": "{}",
+        "avatar_url": null,
+        "status": "active",
+        "last_active_ts": "2026-10-04T07:08:21.190126+00:00",
+        "block_reason": null,
+        "blocked_at": null,
+        "blocked_by": null
       }
     ],
     "discord_connections": [],
@@ -100472,6 +101137,17 @@
         "cast_json": "{}",
         "created_at": "2026-09-25T12:50:48.530899+00:00",
         "user_id": "usr_test_user_b"
+      },
+      {
+        "id": "proj_admin_secret_01",
+        "workspace_id": "ws_admin_abhay",
+        "title": "Admin Secret Series",
+        "description": "",
+        "genre": "mystery",
+        "tone": "suspense",
+        "cast_json": "{}",
+        "created_at": "2026-10-04T06:57:46.849158+00:00",
+        "user_id": "admin_abhay"
       }
     ],
     "episodes": [
@@ -101406,6 +102082,779 @@
         "user_id": "admin_abhay"
       }
     ],
-    "uploaded_assets": []
+    "uploaded_assets": [],
+    "activity_log": [
+      {
+        "id": "act_72d0e23e6d274a9e",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:56:30.476775+00:00"
+      },
+      {
+        "id": "act_cd93b40471494816",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:57:45.416332+00:00"
+      },
+      {
+        "id": "act_ce520212760e406e",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:57:45.553808+00:00"
+      },
+      {
+        "id": "act_0608b09a698d4646",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"test_creator_qa@autopilot.ai\", \"role\": \"user\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:57:45.741529+00:00"
+      },
+      {
+        "id": "act_6bfd103bd8ef4f51",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.blocked",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": \"Violating terms of service (QA Test)\", \"previous_status\": \"active\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T06:57:46.456160+00:00"
+      },
+      {
+        "id": "act_47c622fabc8648a7",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"identifier\": \"test_creator_qa@autopilot.ai\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:57:46.561797+00:00"
+      },
+      {
+        "id": "act_c6663041c88f4799",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"path\": \"/api/v1/me/projects\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:57:46.655657+00:00"
+      },
+      {
+        "id": "act_37ef70d3b7a248a1",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.active",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": null, \"previous_status\": \"blocked\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T06:57:46.776449+00:00"
+      },
+      {
+        "id": "act_3dfaa722ea3c4fe7",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:58:40.673884+00:00"
+      },
+      {
+        "id": "act_0b510e42f2534e6d",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:58:40.821822+00:00"
+      },
+      {
+        "id": "act_984e03997021495b",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"test_creator_qa@autopilot.ai\", \"role\": \"user\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:58:40.950586+00:00"
+      },
+      {
+        "id": "act_c8325fe6e4ba4e8b",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.blocked",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": \"Violating terms of service (QA Test)\", \"previous_status\": \"active\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T06:58:41.557649+00:00"
+      },
+      {
+        "id": "act_9637df67bc8d4f3e",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"identifier\": \"test_creator_qa@autopilot.ai\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:58:41.703847+00:00"
+      },
+      {
+        "id": "act_cb0f0e12771d4375",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"path\": \"/api/v1/me/projects\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:58:41.845674+00:00"
+      },
+      {
+        "id": "act_3b04bdfbcf384c36",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.active",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": null, \"previous_status\": \"blocked\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T06:58:41.949659+00:00"
+      },
+      {
+        "id": "act_54c9b7e5c7d74a82",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:11.813377+00:00"
+      },
+      {
+        "id": "act_d67311239a8e4390",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:11.961259+00:00"
+      },
+      {
+        "id": "act_ad935583188a4637",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"test_creator_qa@autopilot.ai\", \"role\": \"user\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:12.186760+00:00"
+      },
+      {
+        "id": "act_643c3bc427024fb4",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.blocked",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": \"Violating terms of service (QA Test)\", \"previous_status\": \"active\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T06:59:12.786002+00:00"
+      },
+      {
+        "id": "act_cd41e6028a6143f9",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"identifier\": \"test_creator_qa@autopilot.ai\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:12.901179+00:00"
+      },
+      {
+        "id": "act_744492c8f4004cac",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"path\": \"/api/v1/me/projects\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:12.995236+00:00"
+      },
+      {
+        "id": "act_26e1d4c94d84497f",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.active",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": null, \"previous_status\": \"blocked\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T06:59:13.127582+00:00"
+      },
+      {
+        "id": "act_4af998637e704ba7",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:35.127876+00:00"
+      },
+      {
+        "id": "act_a733b125199e4e02",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:35.258512+00:00"
+      },
+      {
+        "id": "act_07ab8262aede4a7f",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"test_creator_qa@autopilot.ai\", \"role\": \"user\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:35.393915+00:00"
+      },
+      {
+        "id": "act_d9cae81b7dbc469b",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.blocked",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": \"Violating terms of service (QA Test)\", \"previous_status\": \"active\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T06:59:36.091391+00:00"
+      },
+      {
+        "id": "act_0e25d027330c46c5",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"identifier\": \"test_creator_qa@autopilot.ai\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:36.198927+00:00"
+      },
+      {
+        "id": "act_11fa209ab2b34888",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"path\": \"/api/v1/me/projects\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T06:59:36.277766+00:00"
+      },
+      {
+        "id": "act_580d5be30fc14ee5",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.active",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": null, \"previous_status\": \"blocked\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T06:59:36.399935+00:00"
+      },
+      {
+        "id": "act_dd4000c55d2e4901",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "192.168.1.50",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:04:12.804368+00:00"
+      },
+      {
+        "id": "act_47a688a58d2e48a4",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:04:12.936358+00:00"
+      },
+      {
+        "id": "act_c8bb158c570f4aca",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "192.168.1.50",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:04:51.950844+00:00"
+      },
+      {
+        "id": "act_cf1f225ba45043ad",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:04:52.083283+00:00"
+      },
+      {
+        "id": "act_d4ac07604e394dc4",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"test_creator_qa@autopilot.ai\", \"role\": \"user\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:04:52.212189+00:00"
+      },
+      {
+        "id": "act_64828d52da534e0d",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Suspended by probe\", \"identifier\": \"test_creator_qa@autopilot.ai\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:04:52.273466+00:00"
+      },
+      {
+        "id": "act_6821b6d6e7ab43cb",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "192.168.1.50",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:05:45.563953+00:00"
+      },
+      {
+        "id": "act_04ffdc457f9f40f3",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:05:45.686801+00:00"
+      },
+      {
+        "id": "act_1dd4de530956449d",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"test_creator_qa@autopilot.ai\", \"role\": \"user\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:05:45.845506+00:00"
+      },
+      {
+        "id": "act_b5161717d0004fca",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Suspended by probe\", \"identifier\": \"test_creator_qa@autopilot.ai\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:05:45.924401+00:00"
+      },
+      {
+        "id": "act_16f2aff7cc95472d",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "192.168.1.50",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:06:22.444290+00:00"
+      },
+      {
+        "id": "act_568d5047e41d4532",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:06:22.549629+00:00"
+      },
+      {
+        "id": "act_9288332988224d76",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"test_creator_qa@autopilot.ai\", \"role\": \"user\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:06:22.649414+00:00"
+      },
+      {
+        "id": "act_706c8bd193174832",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Suspended by probe\", \"identifier\": \"test_creator_qa@autopilot.ai\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:06:22.732422+00:00"
+      },
+      {
+        "id": "act_70f00a9fc03a44bd",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:07:45.660959+00:00"
+      },
+      {
+        "id": "act_0684a7ecf6164072",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:07:45.828867+00:00"
+      },
+      {
+        "id": "act_1d79308f261f47b2",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"test_creator_qa@autopilot.ai\", \"role\": \"user\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:07:45.970496+00:00"
+      },
+      {
+        "id": "act_d60594468147479a",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.blocked",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": \"Violating terms of service (QA Test)\", \"previous_status\": \"active\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T07:07:46.512728+00:00"
+      },
+      {
+        "id": "act_da08549e4fbe47e5",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"identifier\": \"test_creator_qa@autopilot.ai\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:07:46.604835+00:00"
+      },
+      {
+        "id": "act_b1b1387f0aa64a68",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Violating terms of service (QA Test)\", \"path\": \"/api/v1/me/projects\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:07:46.683938+00:00"
+      },
+      {
+        "id": "act_1164b3f176a047ad",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "admin_abhay",
+        "action": "admin.user.active",
+        "resource_type": "user",
+        "resource_id": "usr_1f8f25c596d9",
+        "details_json": "{\"reason\": null, \"previous_status\": \"blocked\"}",
+        "ip_address": "testclient",
+        "user_agent": null,
+        "created_at": "2026-10-04T07:07:46.764422+00:00"
+      },
+      {
+        "id": "act_55e9b5c3904e4aa8",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"abhay@autopilot.ai\", \"role\": \"admin\"}",
+        "ip_address": "192.168.1.50",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:08:20.803582+00:00"
+      },
+      {
+        "id": "act_2f0b1f138eb4434e",
+        "user_id": "admin_abhay",
+        "actor_id": "admin_abhay",
+        "action": "auth.login_failed",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"reason\": \"Invalid credentials\", \"identifier\": \"admin_abhay\"}",
+        "ip_address": "testclient",
+        "user_agent": "ProbeClient/1.0",
+        "created_at": "2026-10-04T07:08:20.928563+00:00"
+      },
+      {
+        "id": "act_62b3c60a4a6d4894",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"email\": \"test_creator_qa@autopilot.ai\", \"role\": \"user\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:08:21.074173+00:00"
+      },
+      {
+        "id": "act_a92077f8d90e4abb",
+        "user_id": "usr_1f8f25c596d9",
+        "actor_id": "usr_1f8f25c596d9",
+        "action": "auth.login_denied_blocked",
+        "resource_type": null,
+        "resource_id": null,
+        "details_json": "{\"block_reason\": \"Suspended by probe\", \"identifier\": \"test_creator_qa@autopilot.ai\"}",
+        "ip_address": "testclient",
+        "user_agent": "testclient",
+        "created_at": "2026-10-04T07:08:21.164993+00:00"
+      }
+    ],
+    "audit_log": [
+      {
+        "id": "aud_c412d212a8354e66",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.blocked",
+        "resource": "users",
+        "before_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "after_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T06:57:46.397444+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "reason": "Violating terms of service (QA Test)",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T06:57:46.413565+00:00"
+      },
+      {
+        "id": "aud_f31711945ead4ef1",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.active",
+        "resource": "users",
+        "before_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T06:57:46.397444+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "after_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "reason": "Account unblocked by administrator",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T06:57:46.732614+00:00"
+      },
+      {
+        "id": "aud_bc2a9b64c88f4313",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.blocked",
+        "resource": "users",
+        "before_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "after_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T06:58:41.491656+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "reason": "Violating terms of service (QA Test)",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T06:58:41.511078+00:00"
+      },
+      {
+        "id": "aud_f671b1358d2a4e8c",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.active",
+        "resource": "users",
+        "before_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T06:58:41.491656+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "after_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "reason": "Account unblocked by administrator",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T06:58:41.907884+00:00"
+      },
+      {
+        "id": "aud_0c6a20cf16834b0d",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.blocked",
+        "resource": "users",
+        "before_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "after_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T06:59:12.723303+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "reason": "Violating terms of service (QA Test)",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T06:59:12.744947+00:00"
+      },
+      {
+        "id": "aud_5f554f87da6e4c1f",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.active",
+        "resource": "users",
+        "before_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T06:59:12.723303+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "after_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "reason": "Account unblocked by administrator",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T06:59:13.073949+00:00"
+      },
+      {
+        "id": "aud_202105620d9e4386",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.blocked",
+        "resource": "users",
+        "before_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "after_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T06:59:36.032048+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "reason": "Violating terms of service (QA Test)",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T06:59:36.050951+00:00"
+      },
+      {
+        "id": "aud_cf33ef254b784d34",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.active",
+        "resource": "users",
+        "before_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T06:59:36.032048+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "after_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "reason": "Account unblocked by administrator",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T06:59:36.349865+00:00"
+      },
+      {
+        "id": "aud_ac48294df1634e30",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.blocked",
+        "resource": "users",
+        "before_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "after_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T07:07:46.456640+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "reason": "Violating terms of service (QA Test)",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T07:07:46.475836+00:00"
+      },
+      {
+        "id": "aud_fd62cee93b004b9a",
+        "admin_id": "admin_abhay",
+        "target_id": "usr_1f8f25c596d9",
+        "action": "user.status.active",
+        "resource": "users",
+        "before_json": "{\"status\": \"blocked\", \"block_reason\": \"Violating terms of service (QA Test)\", \"blocked_at\": \"2026-10-04T07:07:46.456640+00:00\", \"blocked_by\": \"admin_abhay\"}",
+        "after_json": "{\"status\": \"active\", \"block_reason\": null, \"blocked_at\": null, \"blocked_by\": null}",
+        "reason": "Account unblocked by administrator",
+        "ip_address": "testclient",
+        "created_at": "2026-10-04T07:07:46.738630+00:00"
+      }
+    ],
+    "notifications": []
   }
 }

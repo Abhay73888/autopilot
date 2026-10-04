@@ -33,3 +33,5 @@ data/anime_horror_scenes/
 *.jpg
 *.jpeg
 *.webp
+node_modules/
+package-lock.json

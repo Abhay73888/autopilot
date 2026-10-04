@@ -5,7 +5,7 @@ backend/app/api/v1/auth.py — Production-Grade Multi-User Authentication Endpoi
 import json
 import uuid
 from typing import Any, Dict
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from core.db_base import DB_ENGINE
 from ...core.security import (
@@ -31,13 +31,14 @@ from ...schemas.auth import (
     WorkspaceSummary,
 )
 from ...schemas.common import ApiResponse
-from ..dependencies import TenantContext, get_current_tenant_context
+from ..dependencies import TenantContext, get_current_tenant_context, request_meta
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/login", response_model=ApiResponse[SessionResponse])
-async def login(req: LoginRequest):
+async def login(req: LoginRequest, request: Request):
+    meta = request_meta(request)
     identifier = (req.email or req.username or "").strip().lower()
     if not identifier:
         raise HTTPException(
@@ -55,6 +56,26 @@ async def login(req: LoginRequest):
         user = DB_ENGINE.get_user_by_email(identifier) or DB_ENGINE.get_user_by_id(identifier)
 
     if user:
+        user_status = (user.get("status") or "active").strip().lower()
+        block_reason = user.get("block_reason")
+        if user_status in ("blocked", "suspended"):
+            try:
+                from ...services.platform_service import log_activity
+                log_activity(
+                    user_id=str(user.get("user_id") or user.get("id")),
+                    action=f"auth.login_denied_{user_status}",
+                    details={"block_reason": block_reason, "identifier": identifier},
+                    ip_address=meta.get("ip_address"),
+                    user_agent=meta.get("user_agent"),
+                )
+            except Exception:
+                pass
+            msg = f"Account is {user_status}: {block_reason}" if block_reason else f"Account is {user_status}. Please contact administrator."
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=msg
+            )
+
         stored_hash = user.get("password_hash", "")
         # For Abhay master account, support both admin_autopilot_2026 and personal 123456
         pw_ok = verify_password(req.password, stored_hash)
@@ -71,6 +92,17 @@ async def login(req: LoginRequest):
                     pass
 
         if not pw_ok:
+            try:
+                from ...services.platform_service import log_activity
+                log_activity(
+                    user_id=str(user.get("user_id") or user.get("id")),
+                    action="auth.login_failed",
+                    details={"reason": "Invalid credentials", "identifier": identifier},
+                    ip_address=meta.get("ip_address"),
+                    user_agent=meta.get("user_agent"),
+                )
+            except Exception:
+                pass
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password. Please verify your credentials and try again."
@@ -112,6 +144,7 @@ async def login(req: LoginRequest):
             "full_name": full_name,
             "is_onboarded": 0,
             "password_hash": pw_hash,
+            "status": "active",
         }
         user_email = identifier
 
@@ -126,6 +159,18 @@ async def login(req: LoginRequest):
             VALUES (%s, %s, %s, %s)
             """,
             (ws_id, org_id, f"{full_name}'s Studio", f"{user_id}-studio")
+        )
+    except Exception:
+        pass
+
+    try:
+        from ...services.platform_service import log_activity
+        log_activity(
+            user_id=user_id,
+            action="auth.login",
+            details={"email": user_email, "role": role},
+            ip_address=meta.get("ip_address"),
+            user_agent=meta.get("user_agent"),
         )
     except Exception:
         pass

@@ -15,7 +15,7 @@
 [![Long-Form Ready](https://img.shields.io/badge/Long--Form%20Video-10%20to%2060%20Min-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](#-long-form-mode-10-to-60-minutes)
 [![FFmpeg 60fps](https://img.shields.io/badge/FFmpeg-60fps%20Compositor-22C55E?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org/)
 [![Autonomous Swarm](https://img.shields.io/badge/Autonomous%20Swarm-12%20Agents-A855F7?style=for-the-badge&logo=openai&logoColor=white)](#-12-agent-autonomous-swarm-architecture)
-[![Test Suite](https://img.shields.io/badge/Tests-371%20Passing%20(100%25)-10B981?style=for-the-badge&logo=pytest&logoColor=white)](#-testing--quality-assurance)
+[![Test Suite](https://img.shields.io/badge/Tests-389%20Passing%20(100%25)-10B981?style=for-the-badge&logo=pytest&logoColor=white)](#-testing--quality-assurance)
 [![Health Score](https://img.shields.io/badge/Health%20Score-99%2F100-success?style=for-the-badge&logo=checkmarx&logoColor=white)](#-god-mode-autonomous-audit--release-v260)
 [![Cost](https://img.shields.io/badge/Operating%20Cost-%E2%82%B90%20%2F%20mo%20(Zero--Key%20Safe)-10B981?style=for-the-badge&logo=googlepay&logoColor=white)](#-multimodal-ai--provider-failover-matrix)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge)](LICENSE)
@@ -1500,6 +1500,32 @@ python -m unittest discover -s backend/tests -v
   * Administrative founder immunity (`admin_abhay` cannot be self-deleted).
   * Robust database abstraction layer with `db.execute()`, automatic integer/string user lookup resolution, and preference schema migrations.
   * 100% passing suites across User Isolation (8/8), Longform Engine (14/14), Discord & Copilot Reference (17/17), and Web Studio E2E (6/6).
+
+### 🛡️ Admin Control Center & Automated Platform Test Suites (389 Passing Assertions)
+
+AUTOPILOT includes an enterprise Admin Control Center and per-user Activity Monitor passing 389 automated end-to-end assertions:
+
+```bash
+# 1. Platform Core, DB-Driven RBAC, & Cross-Tenant Isolation (208 Assertions)
+python qa/.acceptance_sweep.py
+
+# 2. Admin SPA DOM & Light Theme Conformance (145 Assertions)
+node qa/.dom_smoke.js
+
+# 3. Creator User Studio Activity & Blocked Modal (36 Assertions)
+node qa/.user_dom_smoke.js
+
+# 4. Auth Telemetry & Payload Shape Probe (31 Checks)
+python qa/.probe.py
+```
+
+* **DB-Driven RBAC Invariant**: Privileged routes read `users.role` dynamically from the database (`require_admin_db`) on each request; forged JWT claims are refused with HTTP 403.
+* **Cross-Tenant Isolation Invariant**: Foreign record access strictly returns HTTP 404 (never 403) to prevent resource existence enumeration.
+* **Non-Destructive User Management**: Blocking an account updates status and logs admin audit rows; user projects, videos, and OAuth channels are 100% retained.
+* **403 vs 401 Session Isolation**: HTTP 403 preserves session tokens in `localStorage` and presents `#blockedAccountModal` with the administrator's block reason, while HTTP 401 wipes tokens.
+* **Strict Secret Masking**: All OAuth credentials, channel tokens, and encrypted keys are masked (`id` + length only); zero secret keys exposed in admin views.
+* **Zero Dark Mode / Light UI**: Standard light SaaS theme (`#f8fafc` canvas, charcoal text, no neon styling).
+* **Comprehensive Endpoints**: 34 Admin Control Center routes under `/api/v1/control/*` and 11 user-scoped routes under `/api/v1/me/*`.
 
 ---
 

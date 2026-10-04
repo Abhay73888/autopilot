@@ -13,6 +13,8 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .api.v1.admin import router as admin_router
+from .api.v1.control import router as control_router
+from .api.v1.me import router as me_router
 from .api.v1.analytics import router as analytics_router
 from .api.v1.auth import router as auth_router
 from .api.v1.billing import router as billing_router
@@ -175,6 +177,38 @@ async def health_ready():
     }
 
 
+# Startup Migration Event
+@app.on_event("startup")
+async def on_startup():
+    from core.platform_schema import ensure_platform_schema
+    ensure_platform_schema()
+
+
+@app.get("/activity", response_class=HTMLResponse, tags=["Studio UI"])
+async def user_activity_ui():
+    index_file = STATIC_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(index_file)
+    return HTMLResponse("<h1>Activity Page</h1>")
+
+
+@app.get("/admin/login", response_class=HTMLResponse, tags=["Admin UI"])
+async def admin_login_ui():
+    login_file = STATIC_DIR / "admin-login.html"
+    if login_file.exists():
+        return FileResponse(login_file)
+    return HTMLResponse("<h1>Admin Login</h1>")
+
+
+@app.get("/admin", response_class=HTMLResponse, tags=["Admin UI"])
+@app.get("/admin/{rest_of_path:path}", response_class=HTMLResponse, tags=["Admin UI"])
+async def admin_spa_ui(rest_of_path: str = ""):
+    admin_file = STATIC_DIR / "admin.html"
+    if admin_file.exists():
+        return FileResponse(admin_file)
+    return HTMLResponse("<h1>Admin Control Center</h1>")
+
+
 # Mount API V1 Routers
 v1_prefix = "/api/v1"
 app.include_router(auth_router, prefix=v1_prefix)
@@ -200,6 +234,8 @@ app.include_router(dashboard_router, prefix=v1_prefix)
 app.include_router(dashboard_router, prefix="/api")
 app.include_router(billing_router, prefix=v1_prefix)
 app.include_router(admin_router, prefix=v1_prefix)
+app.include_router(control_router, prefix=v1_prefix)
+app.include_router(me_router, prefix=v1_prefix)
 
 
 # Observability & Metrics Endpoint

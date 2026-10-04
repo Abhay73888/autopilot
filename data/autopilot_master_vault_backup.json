@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-10-02T05:13:17.135691+00:00",
+  "exported_at": "2026-10-04T05:26:03.129813+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
@@ -7,8 +7,8 @@
     "metrics": 28,
     "experiments": 4,
     "learnings": 0,
-    "quota_usage": 2281,
-    "events": 5136,
+    "quota_usage": 2303,
+    "events": 5146,
     "characters": 1,
     "jobs": 105,
     "organizations": 102,
@@ -3442,8 +3442,8 @@
       {
         "id": 1000019,
         "created_ts": "2026-09-24T07:06:23+00:00",
-        "updated_ts": "2026-09-24T07:14:56+00:00",
-        "status": "approved",
+        "updated_ts": "2026-10-04T05:23:10+00:00",
+        "status": "published",
         "topic": "Leonardo da Vinci: Episode 1 \u2014 The Mystery of Leonardo ('Omo Sanza Lettere')",
         "title": "Leonardo Da Vinci Ka Sabse Bada Chhippa Hua Raaz! \ud83d\udcdc\ud83c\udfa8 | LEONARDO (Ep 1) #Shorts",
         "caption": "500 saal pehle bina kisi university degree ke ek aam insaan ne duniya ka nazariya badal diya! Fewer than 20 paintings, 10,000+ notebook pages in mirror script, and the secret of 'Omo Sanza Lettere'. Watch the forensic documentary of Leonardo da Vinci. Episode 2 ke liye COMMENT karein! \ud83d\udc47",
@@ -3452,7 +3452,7 @@
         "hook_type": "mystery",
         "voice_id": null,
         "template_id": null,
-        "length_sec": 48.6,
+        "length_sec": 49.16,
         "series_name": "SERIES_8",
         "series_index": 1,
         "experiment_id": null,
@@ -3460,10 +3460,10 @@
         "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\video_1000019\\final.mp4",
         "cover_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\video_1000019\\cover.jpg",
         "public_url": null,
-        "yt_video_id": null,
+        "yt_video_id": "nwL_Kg2lQGE",
         "ig_media_id": null,
         "scheduled_ts": null,
-        "published_ts": null,
+        "published_ts": "2026-10-04T05:23:10+00:00",
         "ai_disclosed": 1,
         "notes": "Approved for YouTube upload",
         "scene_pacing": "standard",
@@ -4062,8 +4062,8 @@
       {
         "id": 1000040,
         "created_ts": "1790916629.78117",
-        "updated_ts": "1790916629.78117",
-        "status": "approved",
+        "updated_ts": "2026-10-04T05:02:44+00:00",
+        "status": "published",
         "topic": "Kaal-Rekha Part 22: The Original Disaster at Bandra-Worli & The Chronos Key",
         "title": "3:14 AM Ka Asli Sach! Wo Loop Meera Ne Kyun Banaya?! \u23f3\ud83d\udca5 | KAAL-REKHA (Part 22) #Shorts",
         "caption": "Golden Chronos Key ne shunya void ko cheer kar 14th August ki original timeline khol di! \u23f3\ud83d\udca5\nBandra-Worli Sealink par Kabir ke experiment ne ek aisi temporal rift khol di thi jisne poore shahar ko nigal liya tha!\nMeera ne Kabir ko maut se bachane ke liye waqt ko 3:14 se 3:18 AM ke loop mein qaid kiya tha... lekin ab Chronos-0 jag chuka hai!\n\nKya Kabir loop todega ya Meera ka sath dega? Drop your theories! \ud83d\udc47\ud83d\udd25\n\n#KaalRekha #Part22 #TimeLoop #AnimeShorts #IndianAnime #Shorts #HindiAnime #Mystery #Trending",
@@ -4080,10 +4080,10 @@
         "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch5_series_1_ep22\\final_with_subs.mp4",
         "cover_path": null,
         "public_url": null,
-        "yt_video_id": null,
+        "yt_video_id": "Htm9pYPiOaA",
         "ig_media_id": null,
         "scheduled_ts": null,
-        "published_ts": null,
+        "published_ts": "2026-10-04T05:02:44+00:00",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -4093,8 +4093,8 @@
       {
         "id": 1000041,
         "created_ts": "1790916812.32048",
-        "updated_ts": "1790916812.32048",
-        "status": "approved",
+        "updated_ts": "2026-10-04T05:05:43+00:00",
+        "status": "published",
         "topic": "Jab Pyaar Online Tha Episode 18: Heathrow Terminal Surprise & The Unsent Letter",
         "title": "London Heathrow Par Rohan Ka Achanak Surprise! 4000 Miles Dur Pyar! \u2708\ufe0f\u2764\ufe0f | JAB PYAAR ONLINE THA (Ep 18) #Shorts",
         "caption": "London Heathrow Airport par Meera apna heavy suitcase kheench rahi thi, aankhon mein thakan liye... \u2708\ufe0f\u2764\ufe0f\nTabhi arrivals gate ke samne bheed mein ek ladka khada tha, haath mein cardboard sign liye: '@Rohan_99 Looking For Ananya!'\n4,000 miles ki doori ek pal mein mit gayi jab dono ki aankhein mili! Episode 19 ke liye comment karein! \ud83d\udc47\ud83d\udc8c\n\n#JabPyaarOnlineTha #Episode18 #LongDistanceLove #LoveStory #Shorts #RomanticShorts #ViralLove #AnimeShorts",
@@ -4111,10 +4111,10 @@
         "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch5_series_2_ep18\\final_with_subs.mp4",
         "cover_path": null,
         "public_url": null,
-        "yt_video_id": null,
+        "yt_video_id": "pXET2adLwLY",
         "ig_media_id": null,
         "scheduled_ts": null,
-        "published_ts": null,
+        "published_ts": "2026-10-04T05:05:43+00:00",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -4124,8 +4124,8 @@
       {
         "id": 1000042,
         "created_ts": "1790916991.29327",
-        "updated_ts": "1790916991.29327",
-        "status": "approved",
+        "updated_ts": "2026-10-04T05:06:30+00:00",
+        "status": "published",
         "topic": "Chintu Ki Jadui Duniya Episode 16: Jadui Star Key Se Khula Badal Ka Shahi Mahal",
         "title": "Jadui Star Key Se Khula Aasmani Badal Ka Qila! \u2601\ufe0f\ud83c\udff0\u2728 | CHINTU (Ep 16) #Shorts",
         "caption": "Chocolate Dragon ki di hui Golden Star Key ne aasmaan mein ek nayi jadui sidhi bana di! \u2601\ufe0f\ud83c\udff0\u2728\nChintu aur Golu marshmallow ki sidhiyon par koodte hue sidhe Cloud Castle pahunch gaye!\nWahan Cloud King ne unka swagat kiya hawa mein udte hue rainbow cupcakes ke sath! Agle episode ke liye comment karein! \ud83d\udc47\ud83e\uddc1\n\n#ChintuKiDuniya #Episode16 #KidsAnimation #3DAnimation #CartoonShorts #MagicalAdventure #Shorts",
@@ -4142,10 +4142,10 @@
         "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch5_series_3_ep16\\final_with_subs.mp4",
         "cover_path": null,
         "public_url": null,
-        "yt_video_id": null,
+        "yt_video_id": "IVk-lRwmzHg",
         "ig_media_id": null,
         "scheduled_ts": null,
-        "published_ts": null,
+        "published_ts": "2026-10-04T05:06:30+00:00",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -4155,8 +4155,8 @@
       {
         "id": 1000043,
         "created_ts": "1790917148.27878",
-        "updated_ts": "1790917148.27878",
-        "status": "approved",
+        "updated_ts": "2026-10-04T05:06:46+00:00",
+        "status": "published",
         "topic": "Dimag Ka Dahi Episode 16: The Invisible Constant Riddle",
         "title": "Wo Kya Hai Jiska Koi Rang Nahi, Par Sab Dekh Sakte Hain? \ud83e\udde0\ud83d\udd25 | DIMAG KA DAHI (Ep 16) #Shorts",
         "caption": "Aaj ki aisi paheli jo bade-bade geniuses ke dimag ka dahi bana degi! \ud83e\udde0\ud83d\udd25\n'Wo kya hai jiska apna koi rang nahi hota, lekin roshni aate hi wo tumhara peecha karti hai?'\nAapke paas hain sirf 5 seconds! Comment karein apna jawab aur like karein video! \ud83d\udc47\u23f3\n\n#DimagKaDahi #Episode16 #Paheliyan #HindiRiddles #BrainTeaser #Shorts #IQTest #MindGames",
@@ -4173,10 +4173,10 @@
         "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch5_series_4_ep16\\final_with_subs.mp4",
         "cover_path": null,
         "public_url": null,
-        "yt_video_id": null,
+        "yt_video_id": "d2wLH_gVaZk",
         "ig_media_id": null,
         "scheduled_ts": null,
-        "published_ts": null,
+        "published_ts": "2026-10-04T05:06:46+00:00",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -4186,8 +4186,8 @@
       {
         "id": 1000044,
         "created_ts": "1790917338.19023",
-        "updated_ts": "1790917338.19023",
-        "status": "approved",
+        "updated_ts": "2026-10-04T05:07:03+00:00",
+        "status": "published",
         "topic": "Ashwatthama 3049 AD Episode 13: Kurukshetra Plasma Core & Cosmic Brahmashira",
         "title": "Kurukshetra Ka Plasma Brahmastra Space Mein Activate Hua! \ud83d\ude80\ud83c\udff9\u26a1 | ASHWATTHAMA 3049 AD (Ep 13) #Shorts",
         "caption": "Dark Asteroid ke toote hue core se 5000 saal purani Sanskrit cybernetic seals jaag uthin! \ud83d\ude80\ud83c\udff9\u26a1\nAshwatthama ke maathe par sthit Divya Mani ne asteroid ke andar sthit Brahmashira weapon core ko pehchan liya!\nMahabharat ke us prachin hathiyar ne deep space mein ek naya celestial portal khol diya! Episode 14 ke liye comment karein! \ud83d\udc47\ud83d\udd25\n\n#Ashwatthama3049 #Episode13 #SciFiIndia #FuturisticAnime #SpaceWarrior #Brahmastra #Shorts #HindiSciFi",
@@ -4204,10 +4204,10 @@
         "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch5_series_5_ep13\\final_with_subs.mp4",
         "cover_path": null,
         "public_url": null,
-        "yt_video_id": null,
+        "yt_video_id": "072ZGHIkkhQ",
         "ig_media_id": null,
         "scheduled_ts": null,
-        "published_ts": null,
+        "published_ts": "2026-10-04T05:07:03+00:00",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -4217,8 +4217,8 @@
       {
         "id": 1000045,
         "created_ts": "1790917494.42962",
-        "updated_ts": "1790917494.42962",
-        "status": "approved",
+        "updated_ts": "2026-10-04T05:07:15+00:00",
+        "status": "published",
         "topic": "The Observer Files Part 12: Smart Home Voice Assistants Whispering At 3:17 AM",
         "title": "Smart Home Speakers Started Whispering At 3:17 AM... \ud83d\udc41\ufe0f\ud83d\udcfb | THE OBSERVER FILES (Part 12) #Shorts",
         "caption": "Audio recordings extracted from over 200 households confirm the same chilling anomaly... \ud83d\udc41\ufe0f\ud83d\udcfb\nAt exactly 03:17 AM, smart home voice assistants turned on unprompted with a glowing red indicator ring.\nThe low-frequency whisper repeated: 'The observer is not outside your window. Look into the reflection.'\n\nHas your speaker ever behaved strangely at night? Drop your comments below! \ud83d\udc41\ufe0f\n\n#TheObserverFiles #Part12 #AnalogHorror #HorrorShorts #Uncanny #Creepy #Shorts #FoundFootage",
@@ -4235,10 +4235,10 @@
         "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch5_series_6_ep12\\final_with_subs.mp4",
         "cover_path": null,
         "public_url": null,
-        "yt_video_id": null,
+        "yt_video_id": "SgbN2p0s3aY",
         "ig_media_id": null,
         "scheduled_ts": null,
-        "published_ts": null,
+        "published_ts": "2026-10-04T05:07:15+00:00",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -4248,8 +4248,8 @@
       {
         "id": 1000046,
         "created_ts": "1790917652.13588",
-        "updated_ts": "1790917652.13588",
-        "status": "approved",
+        "updated_ts": "2026-10-04T05:07:29+00:00",
+        "status": "published",
         "topic": "Roblox Vault Episode 10: The Forgotten 2011 Developer Island Under The Map",
         "title": "The Secret 2011 Developer Island Under The Map! \ud83c\udfae\ud83c\udfdd\ufe0f | ROBLOX VAULT (Ep 10) #Shorts",
         "caption": "Did you know about the secret 2011 developer testing island buried 5,000 studs beneath the map? \ud83c\udfae\ud83c\udfdd\ufe0f\nUsing the legendary ladder clip glitch, pro players can break through the void ceiling into an untouched vintage world!\nInside is the golden admin sword and forgotten sound effects that Roblox never patched! Try it now! \ud83d\udc47\ud83c\udfae\n\n#RobloxVault #Episode10 #RobloxSecrets #RobloxGlitches #GamingShorts #RobloxTutorial #Shorts #ViralGaming",
@@ -4266,10 +4266,10 @@
         "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch5_series_7_ep10\\final_with_subs.mp4",
         "cover_path": null,
         "public_url": null,
-        "yt_video_id": null,
+        "yt_video_id": "VXFawrPxCqw",
         "ig_media_id": null,
         "scheduled_ts": null,
-        "published_ts": null,
+        "published_ts": "2026-10-04T05:07:29+00:00",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -4279,8 +4279,8 @@
       {
         "id": 1000047,
         "created_ts": "1790917853.58955",
-        "updated_ts": "1790917853.58955",
-        "status": "approved",
+        "updated_ts": "2026-10-04T05:07:56+00:00",
+        "status": "published",
         "topic": "Leonardo da Vinci Episode 2: The Angel in Verrocchio's Workshop",
         "title": "Verrocchio Ki Workshop Aur Vo Farishta Jisne Guru Ko Hairan Kar Diya! \ud83c\udfa8\ud83d\udd4a\ufe0f | LEONARDO (Ep 2) #Shorts",
         "caption": "1475 Florence: Master Andrea del Verrocchio ne apne 23 saal ke apprentice Leonardo ko ek angel paint karne ko kaha! \ud83c\udfa8\ud83d\udd4a\ufe0f\nLeonardo ne naye oil glaze aur sfumato technique se kneeling angel ko aisi zinda roshni di ki guru ne apna brush hamesha ke liye chhod diya!\nForensic documentary of Leonardo's breakthrough masterpiece: 'The Baptism of Christ'. Episode 3 ke liye comment karein! \ud83d\udc47\ud83d\udcdc\n\n#LeonardoDaVinci #Renaissance #BaptismOfChrist #ArtHistory #DocumentaryShorts #Series8 #Episode2 #Shorts",
@@ -4297,10 +4297,10 @@
         "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch5_series_8_ep2\\final_with_subs.mp4",
         "cover_path": null,
         "public_url": null,
-        "yt_video_id": null,
+        "yt_video_id": "ExNamTvpQ7Y",
         "ig_media_id": null,
         "scheduled_ts": null,
-        "published_ts": null,
+        "published_ts": "2026-10-04T05:07:56+00:00",
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -20804,6 +20804,160 @@
         "bucket": "gemini_tts_requests",
         "amount": 1,
         "reason": "tts:gemini"
+      },
+      {
+        "id": 2282,
+        "ts": "2026-10-04T04:55:33+00:00",
+        "bucket": "youtube_units",
+        "amount": 1,
+        "reason": "channel info"
+      },
+      {
+        "id": 2283,
+        "ts": "2026-10-04T05:02:39+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload video #1000040"
+      },
+      {
+        "id": 2284,
+        "ts": "2026-10-04T05:02:39+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload video #1000040"
+      },
+      {
+        "id": 2285,
+        "ts": "2026-10-04T05:02:44+00:00",
+        "bucket": "youtube_units",
+        "amount": 50,
+        "reason": "thumbnail"
+      },
+      {
+        "id": 2286,
+        "ts": "2026-10-04T05:05:38+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload video #1000041"
+      },
+      {
+        "id": 2287,
+        "ts": "2026-10-04T05:05:38+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload video #1000041"
+      },
+      {
+        "id": 2288,
+        "ts": "2026-10-04T05:06:26+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload video #1000042"
+      },
+      {
+        "id": 2289,
+        "ts": "2026-10-04T05:06:26+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload video #1000042"
+      },
+      {
+        "id": 2290,
+        "ts": "2026-10-04T05:06:41+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload video #1000043"
+      },
+      {
+        "id": 2291,
+        "ts": "2026-10-04T05:06:41+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload video #1000043"
+      },
+      {
+        "id": 2292,
+        "ts": "2026-10-04T05:06:59+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload video #1000044"
+      },
+      {
+        "id": 2293,
+        "ts": "2026-10-04T05:06:59+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload video #1000044"
+      },
+      {
+        "id": 2294,
+        "ts": "2026-10-04T05:07:11+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload video #1000045"
+      },
+      {
+        "id": 2295,
+        "ts": "2026-10-04T05:07:11+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload video #1000045"
+      },
+      {
+        "id": 2296,
+        "ts": "2026-10-04T05:07:23+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload video #1000046"
+      },
+      {
+        "id": 2297,
+        "ts": "2026-10-04T05:07:23+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload video #1000046"
+      },
+      {
+        "id": 2298,
+        "ts": "2026-10-04T05:07:52+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload video #1000047"
+      },
+      {
+        "id": 2299,
+        "ts": "2026-10-04T05:07:52+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload video #1000047"
+      },
+      {
+        "id": 2300,
+        "ts": "2026-10-04T05:23:02+00:00",
+        "bucket": "youtube_units",
+        "amount": 100,
+        "reason": "upload video #1000019"
+      },
+      {
+        "id": 2301,
+        "ts": "2026-10-04T05:23:02+00:00",
+        "bucket": "youtube_uploads",
+        "amount": 1,
+        "reason": "upload video #1000019"
+      },
+      {
+        "id": 2302,
+        "ts": "2026-10-04T05:23:10+00:00",
+        "bucket": "youtube_units",
+        "amount": 50,
+        "reason": "thumbnail"
+      },
+      {
+        "id": 2303,
+        "ts": "2026-10-04T05:23:14+00:00",
+        "bucket": "youtube_units",
+        "amount": 50,
+        "reason": "first comment #1000019"
       }
     ],
     "events": [
@@ -61894,6 +62048,86 @@
         "kind": "published",
         "video_id": null,
         "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"OBBsr6WYZKk\", \"privacy\": \"public\", \"file\": \"C:\\\\Users\\\\ABHAY MAURAYA\\\\Downloads\\\\autopilot\\\\autopilot\\\\output\\\\solo_leveling_ragnarok_ch13\\\\solo_leveling_ragnarok_ch13_final.mp4\", \"upload_secs\": 65.2}"
+      },
+      {
+        "id": 5137,
+        "ts": "2026-10-04T05:02:44+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": 1000040,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"Htm9pYPiOaA\", \"privacy\": \"public\"}"
+      },
+      {
+        "id": 5138,
+        "ts": "2026-10-04T05:05:43+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": 1000041,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"pXET2adLwLY\", \"privacy\": \"public\"}"
+      },
+      {
+        "id": 5139,
+        "ts": "2026-10-04T05:06:30+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": 1000042,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"IVk-lRwmzHg\", \"privacy\": \"public\"}"
+      },
+      {
+        "id": 5140,
+        "ts": "2026-10-04T05:06:46+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": 1000043,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"d2wLH_gVaZk\", \"privacy\": \"public\"}"
+      },
+      {
+        "id": 5141,
+        "ts": "2026-10-04T05:07:03+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": 1000044,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"072ZGHIkkhQ\", \"privacy\": \"public\"}"
+      },
+      {
+        "id": 5142,
+        "ts": "2026-10-04T05:07:15+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": 1000045,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"SgbN2p0s3aY\", \"privacy\": \"public\"}"
+      },
+      {
+        "id": 5143,
+        "ts": "2026-10-04T05:07:29+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": 1000046,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"VXFawrPxCqw\", \"privacy\": \"public\"}"
+      },
+      {
+        "id": 5144,
+        "ts": "2026-10-04T05:07:56+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": 1000047,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"ExNamTvpQ7Y\", \"privacy\": \"public\"}"
+      },
+      {
+        "id": 5145,
+        "ts": "2026-10-04T05:23:10+00:00",
+        "agent": "publisher",
+        "kind": "published",
+        "video_id": 1000019,
+        "payload": "{\"platform\": \"youtube\", \"yt_video_id\": \"nwL_Kg2lQGE\", \"privacy\": \"public\"}"
+      },
+      {
+        "id": 5146,
+        "ts": "2026-10-04T05:23:15+00:00",
+        "agent": "publisher",
+        "kind": "first_comment",
+        "video_id": 1000019,
+        "payload": "{\"yt_id\": \"nwL_Kg2lQGE\"}"
       }
     ],
     "characters": [

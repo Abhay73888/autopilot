@@ -82,6 +82,9 @@ def main():
         "generate_and_publish_series8_ep1.py",
         "generate_and_publish_next_all_7_series_batch_part3.py",
         "generate_and_publish_next_all_7_series_batch_part4.py",
+        "generate_and_publish_next_all_7_series_batch_part5.py",
+        "publish_batch5.py",
+        "generate_and_publish_next_all_series_batch6.py",
         "republish_kaalrekha_ep21.py",
         "next_ep.py"
     ], check=False)

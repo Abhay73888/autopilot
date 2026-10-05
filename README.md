@@ -49,7 +49,7 @@
 | **🎙️ Audio & Voice** | Microsoft Edge-TTS (6 customized neural profiles), ElevenLabs Neural, Gemini TTS, paired with sub-bass procedural audio FX & EBU R128 loudness normalization. |
 | **🎥 Video Compositor** | Hardware-accelerated 60fps FFmpeg engine with Ken Burns pan/zoom, motion blur, kinetic karaoke subtitles, scaling from 30s shorts to 10m longform videos. |
 | **🗄️ Persistence** | Dual SQLite / PostgreSQL engine (`core/db_base.py`) with thread-local ContextVar tenant isolation, relational users, workspaces, series, and encrypted integration vaults. |
-| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays 128+ confirmed live YouTube videos across 8 active series (`status = 'published'`, non-empty `yt_video_id`), with Batch 5 next episodes (Series 1–8) and Leonardo da Vinci (Ep 1 & 2) published live with Zero Comment Lock compliance. Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
+| **💎 Master Data Vault & Library** | Confirmed YouTube Upload source-of-truth: Strictly manages and displays 136+ confirmed live YouTube videos across 8 active series (`status = 'published'`, non-empty `yt_video_id`), with Batch 6 next episodes (Series 1–8) published live with Zero Comment Lock compliance. Pre-cleanup snapshot backed up in `data/backup/`. Reclaimed 11.59 GB of intermediate render assets. |
 | **☁️ Deployment** | Docker containerized deployment, Render Cloud Blueprint (`render.yaml`), Railway, and zero-setup HTTPS tunneling (`tunnel.py`). |
 
 ---
@@ -1704,6 +1704,28 @@ AUTOPILOT autonomously published all 9 pending pre-rendered and newly remastered
 7. **Series 7 (Roblox Vault) Ep 10**: [https://youtube.com/shorts/VXFawrPxCqw](https://youtube.com/shorts/VXFawrPxCqw) (`VXFawrPxCqw`)
 8. **Series 8 (Leonardo da Vinci) Ep 1**: [https://youtube.com/shorts/nwL_Kg2lQGE](https://youtube.com/shorts/nwL_Kg2lQGE) (`nwL_Kg2lQGE`)
 9. **Series 8 (Leonardo da Vinci) Ep 2**: [https://youtube.com/shorts/ExNamTvpQ7Y](https://youtube.com/shorts/ExNamTvpQ7Y) (`ExNamTvpQ7Y`)
+
+---
+
+## 🚀 Production Batch 6 Master Orchestration & YouTube Live Release (All 8 Active Series)
+
+AUTOPILOT autonomously generated, rendered, validated, and published the next episodes for all 8 active franchise series (**Batch 6**) live to YouTube Shorts with 100% policy compliance:
+
+* **Zero Comment Lock Compliance**: Verified and enforced `selfDeclaredMadeForKids=False`, public visibility, and automated first pinned discussion comment bait on every upload via `commentThreads.insert`.
+* **Humanoid AI Audio & Motion Compositing**:
+  - Neural voice synthesis with specialized personas (Fenrir, Kore, Charon) across intense anime, romantic drama, kids animation, mystery riddles, space sci-fi, analog horror, and historical documentary.
+  - Multi-scene dynamic Ken Burns 30fps compositing with atmospheric background music (`suspense_bgm.mp3` & `romance_bgm.mp3`).
+  - Dual-tone kinetic ASS subtitles with custom series badges and yellow/white emphasis styling.
+
+### 📺 Batch 6 Live Published Episodes:
+1. **Series 1 (Kaal-Rekha) Ep 23**: [https://youtube.com/shorts/LgM4FnTwTLg](https://youtube.com/shorts/LgM4FnTwTLg) (`LgM4FnTwTLg`) — *3:15 AM Par Samundar Phata! Chronos-Zero Ka Khaufnaak Roop!*
+2. **Series 2 (Jab Pyaar Online Tha) Ep 19**: [https://youtube.com/shorts/yqto_086Z1c](https://youtube.com/shorts/yqto_086Z1c) (`yqto_086Z1c`) — *Sirf 48 Ghante Ka Saath! London Tower Bridge Par Aakhiri Wada!*
+3. **Series 3 (Chintu Ki Jadui Duniya) Ep 17**: [https://youtube.com/shorts/Vo-mCLizO0c](https://youtube.com/shorts/Vo-mCLizO0c) (`Vo-mCLizO0c`) — *Aasman Mein Mila Jadui Pankhila Ghoda! Chintu Ki Udti Masti!*
+4. **Series 4 (Dimag Ka Dahi) Ep 17**: [https://youtube.com/shorts/DzAO-kW2nbE](https://youtube.com/shorts/DzAO-kW2nbE) (`DzAO-kW2nbE`) — *Paani Mein Geeli Nahi Hoti, Aag Mein Jalti Nahi! Dimag Ka Dahi!*
+5. **Series 5 (Ashwatthama 3049 AD) Ep 14**: [https://youtube.com/shorts/Vhrz_fiy_TA](https://youtube.com/shorts/Vhrz_fiy_TA) (`Vhrz_fiy_TA`) — *Alien Dreadnought Par Ashwatthama Ka Achanak Hamla!*
+6. **Series 6 (The Observer Files) Ep 13**: [https://youtube.com/shorts/8C5uGl2GmKI](https://youtube.com/shorts/8C5uGl2GmKI) (`8C5uGl2GmKI`) — *The Elevator Stopped At Floor -3... It Doesn't Exist!*
+7. **Series 7 (Roblox Vault) Ep 11**: [https://youtube.com/shorts/NwYpyQsLgiE](https://youtube.com/shorts/NwYpyQsLgiE) (`NwYpyQsLgiE`) — *The Banned Golden Domino Crown Glitch In 2026!*
+8. **Series 8 (Leonardo da Vinci) Ep 3**: [https://youtube.com/shorts/C7UnAJBuiiM](https://youtube.com/shorts/C7UnAJBuiiM) (`C7UnAJBuiiM`) — *Milan Ke Duke Ko Bheja Ye Khat! Leonardo Ka Khaufnaak Armoured Tank!*
 
 ---
 

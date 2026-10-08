@@ -1753,6 +1753,8 @@ AUTOPILOT introduces direct CLI and multi-platform publishing capabilities for *
   - **Meta Business Account ID**: `17841476670990694` (linked via Facebook Page `Autopilot Media` [ID: `1203341672873654`]).
   - **60-Day Extended Token Authentication**: Long-lived user & page access token active until December 7, 2026 (`IG_LONG_LIVED_TOKEN`).
   - **Enterprise SSL & Firewall Resilience**: Automatic detection and graceful fallback for SSL inspection / corporate firewalls (Sophos / zScaler) ensuring zero unhandled exceptions.
+* **1-Click Browser Launchpad (`web/publish_instagram_reels.html`)**:
+  - Interactive, cyberpunk-themed web console enabling 1-click batch publishing for all 8 series episodes directly through the authenticated browser session with live status tracking, container polling, and comment bait dispatching.
 
 ---
 

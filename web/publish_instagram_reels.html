@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AUTOPILOT — Instagram Reels Live Publisher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0b10;
+      --card-bg: rgba(18, 20, 32, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-ig: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      --accent-purple: #8b5cf6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      padding: 30px 20px;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(220, 39, 67, 0.12) 0%, transparent 40%);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #e6683c;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #fff 0%, #d1d5db 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .account-strip {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .chip {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 10px 18px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      backdrop-filter: blur(10px);
+    }
+    .chip b { color: #fff; }
+
+    .action-panel {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .btn-main {
+      background: var(--accent-ig);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      padding: 16px 36px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 30px -10px rgba(225, 48, 108, 0.5);
+      transition: all 0.25s ease;
+    }
+    .btn-main:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px -8px rgba(225, 48, 108, 0.7);
+    }
+    .btn-main:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+      margin-bottom: 35px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 22px;
+      backdrop-filter: blur(14px);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+    }
+    .card.publishing {
+      border-color: #f59e0b;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
+    }
+    .card.published {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .series-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(139, 92, 246, 0.2);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .status-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+    }
+    .status-pill.published {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .card-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      word-break: break-all;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .btn-single {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-single:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #fff;
+    }
+
+    .log-panel {
+      background: #08090d;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .log-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .log-entry {
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .log-entry.info { color: #94a3b8; }
+    .log-entry.success { color: #34d399; font-weight: 600; }
+    .log-entry.warn { color: #fbbf24; }
+    .log-entry.error { color: #f87171; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">🔥 Meta Graph API v21.0 Direct Publisher</div>
+      <h1>AUTOPILOT Instagram Reels Launchpad</h1>
+      <p class="subtitle">Publishing Episode 1 across all 8 original series directly to Instagram Reels</p>
+
+      <div class="account-strip">
+        <div class="chip">Account: <b>@whop28032005</b></div>
+        <div class="chip">Page: <b>Autopilot Media</b></div>
+        <div class="chip">IG User ID: <b id="igUserId">17841476670990694</b></div>
+        <div class="chip">Token: <b style="color:#10b981">60-Day Active ✅</b></div>
+      </div>
+    </header>
+
+    <div class="action-panel">
+      <button id="btnPublishAll" class="btn-main" onclick="publishAll()">
+        <span>🚀</span> Publish All 8 Series Reels to Instagram Live
+      </button>
+    </div>
+
+    <div class="grid" id="reelsGrid">
+      <!-- Dynamic Reel Cards populated by JS -->
+    </div>
+
+    <div class="log-panel">
+      <div class="log-title">
+        <span>Live Meta Execution Log</span>
+        <span id="logCounter">0 / 8 Complete</span>
+      </div>
+      <div id="logContainer">
+        <div class="log-entry info">System ready. Chrome VPN active. Ready to dispatch 8 series reels.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      igUserId: "17841476670990694",
+      token: "EAAgu1f4kksIBSnPy1mMF2a47nxNQPxZBqZBEcI4Rl2jUxTI7m0YZAoDobcdPOfqoRqCUnMLSv77Lz6ERFviZC7F9qI3ZCUSDaDJc2fuYtPBZCNC97urZBZC9dW74tYWlWdHiyGTmrDJ5ZAxzPZBe4ssy1SaiBglfZAzTpSNayvtUfU2UL9HBVuOhzKxdhPx2CAT",
+      handle: "@whop28032005"
+    };
+
+    const REELS = [
+      {
+        id: 189,
+        series: "Series 1: Kaal-Rekha",
+        ep: 9,
+        title: "Meera Ko Bachau Ya Time-Loop Todu?! 😱⏳",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_672a6333.mp4",
+        caption: "Sach saamne aa chuka hai... time-loop kisi dushman ne nahi, Kabir ne khud Meera ko bachane ke liye banaya tha! Lekin ab Roman number III se ghatt kar II ho chuka hai. Agar loop toota... toh Meera mar jayegi! 😱⏳\n\nGrand Season Finale ke liye COMMENT karein: 'PART 10'! 👇🔥\n\n#KaalRekha #Series1 #AnimeShorts #TimeLoop #Reels #Trending\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Kabir ko kya karna chahiye? Loop tod kar aazad ho ya Meera ke liye hamesha qaid rahe? Vote in COMMENTS! 👇⏳"
+      },
+      {
+        id: 190,
+        series: "Series 2: Jab Pyaar Online Tha",
+        ep: 4,
+        title: "Jab Usne Kisi Aur Ke Saath Photo Daali... 💔🥺",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_a851bc5b.mp4",
+        caption: "Mohabbat mein fasle physical nahi hote... fasle tab aate hain jab baatein choti hone lagti hain. College badla, sheher badle... aur ek din Meera ne kisi aur ke saath photo post kar di. 💔🥺\n\nAarav galat tha ya Meera ko explain karna chahiye tha? Agle episode ke liye COMMENT karein! 👇✨\n\n#JabPyaarOnlineTha #Series2 #Romance #Heartbreak #LoveStory #Reels\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Kya rishton mein shak pyaar ko khatam kar deta hai? Aarav galat tha ya Meera? COMMENT karo! 👇💔"
+      },
+      {
+        id: 191,
+        series: "Series 3: Chintu Ki Jadui Duniya",
+        ep: 2,
+        title: "Golu Ke Ghar Par Chocolate Ki Baarish! 🍫☁️",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_d4247a1e.mp4",
+        caption: "Chintu ne apni jadui pencil se aasmaan mein ek chocolate ka badal draw kar diya! Aur phir aasmaan se shuru ho gayi garam chocolate aur marshmallows ki baarish! 🍫✨\n\nAgar aapke ghar ke upar aisi baarish ho, toh aap kis cheez mein chocolate bharoge? Bucket ya Mug? COMMENT karo! 👇😋\n\n#ChintuKiKahani #Series3 #KidsReels #Animation #PixarStyle #Reels\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Agar aasmaan se chocolate barse toh aap Bucket bharoge ya Tub? COMMENT mein batao! 🍫👇"
+      },
+      {
+        id: 192,
+        series: "Series 4: Dimag Ka Dahi",
+        ep: 2,
+        title: "Dimag Hil Jayega! 95% Log Fail Ho Gaye! 😂🧠",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_fcd06189.mp4",
+        caption: "Aisa sawal jiska jawab sabke paas hai... par pehli baar mein 95% log galat sochte hain! 😂 Aisi kaun si cheez hai jo subah 4 taangon par, dopahar ko 2 par, aur shaam ko 3 par chalti hai? 🧠🔥\n\nSach-sach batao kisne galat socha tha? Bina sharmaye COMMENT karo apna score! 👇😂\n\n#DimagKaDahi #Series4 #FunnyReels #Paheliyan #Riddles #Quiz #Reels\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Sach-sach batao, kisne pehle galat socha tha? Bina sharmaye COMMENT karo apna score! 😂👇"
+      },
+      {
+        id: 280,
+        series: "Series 5: Ashwatthama 3049 AD",
+        ep: 2,
+        title: "3,000 Saal Baad Ashwatthama Ne Bola Pehla Shabd! ⚡️🌌",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_0f61a845.mp4",
+        caption: "Kailash Underground Base ke sound sensors par 5,000 saal baad achanak Sanskrit ke divine mantras gunj uthe! ⚡️\nAshwatthama ne hava mein ek cosmic Brahmashira code draw kiya... aur sari drone army hawa mein freeze ho gayi! 😱\n\nKalki kahan chipa hai? Next Episode ke liye COMMENT karein: 'KALKI'! 👇🔥\n\n#Ashwatthama #Kalki #Mahabharat #SciFi #Himalayas #Mythology #Reels #Epic\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Kya Ashwatthama aur Kalki milkar Kali Yuga ka ant karenge? COMMENT mein likho: 'KALKI'! 👇🔥"
+      },
+      {
+        id: 281,
+        series: "Series 6: The Observer Files",
+        ep: 1,
+        title: "The 4-Second Blackout: Who Was Behind You? 👁️😱",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_6f1c7046.mp4",
+        caption: "At 3:07 AM, every security camera across New York and London glitched for exactly 4 seconds. The government blamed a satellite sync error. But when private investigators zoomed into the raw footage, they found someone standing behind you. Welcome to THE OBSERVER FILES.\n\nSubscribe for Part 2 tomorrow at midnight.\n\n#TheObserverFiles #AnalogHorror #ScaryStories #Mystery #Thriller #Creepy #ViralReels\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Did your phone screen flicker right at the 20-second mark? Check behind your door and comment your city below! 👇👁️"
+      },
+      {
+        id: 300,
+        series: "Series 7: Roblox Vault",
+        ep: 1,
+        title: "Brookhaven Has a SECRET Underground Base! 🎮🔐",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_2d7a2766.mp4",
+        caption: "Inside Brookhaven RP there's a fully hidden agency underground base that 99% of players have NEVER found. Here's exactly how to get in!\n\nDrop 🔐 in the comments if you found it first!\n\n#Roblox #BrookhavenRP #RobloxSecrets #RobloxTips #GamingReels #Reels #RobloxVault\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Drop 🔐 if you ALREADY knew this secret, or 😱 if this just blew your mind! How many of these did you find? 👇"
+      },
+      {
+        id: 1000018,
+        series: "Series 8: Leonardo da Vinci",
+        ep: 1,
+        title: "Leonardo Da Vinci Ka Sabse Bada Chhippa Hua Raaz! 📜🎨",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_602a5a7c.mp4",
+        caption: "500 saal pehle bina kisi university degree ke ek aam insaan ne duniya ka nazariya badal diya! Fewer than 20 paintings, 10,000+ notebook pages in mirror script, and the secret of 'Omo Sanza Lettere'. Watch the forensic documentary of Leonardo da Vinci. Episode 2 ke liye COMMENT karein! 👇\n\n#LeonardoDaVinci #Renaissance #MonaLisa #HistoryMystery #DocumentaryReels #Reels #TrueHistory\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Kya aapko lagta hai Leonardo wakai ek sadharan insaan the ya unka dimaag sadiyon aage tha? Apni raye comment mein dein! 👇"
+      }
+    ];
+
+    function log(msg, type = "info") {
+      const container = document.getElementById("logContainer");
+      const div = document.createElement("div");
+      div.className = `log-entry ${type}`;
+      div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function renderCards() {
+      const grid = document.getElementById("reelsGrid");
+      grid.innerHTML = "";
+      REELS.forEach((reel, idx) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = `card-${reel.id}`;
+        card.innerHTML = `
+          <div>
+            <div class="card-header">
+              <span class="series-tag">${reel.series}</span>
+              <span class="status-pill" id="pill-${reel.id}">Pending</span>
+            </div>
+            <div class="card-title">${reel.title}</div>
+            <div class="card-url">📹 ${reel.video_url}</div>
+          </div>
+          <div class="card-footer">
+            <span style="font-size:0.8rem; color:var(--text-muted)">Episode ${reel.ep}</span>
+            <button class="btn-single" id="btn-${reel.id}" onclick="publishSingle(${idx})">Publish Live</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async function publishReel(reel) {
+      const card = document.getElementById(`card-${reel.id}`);
+      const pill = document.getElementById(`pill-${reel.id}`);
+      const btn = document.getElementById(`btn-${reel.id}`);
+      
+      card.classList.add("publishing");
+      pill.textContent = "Creating Container...";
+      btn.disabled = true;
+      log(`[${reel.series}] Step 1: Initializing Meta Media Container...`, "info");
+
+      // STEP 1: POST /media container
+      const containerParams = new URLSearchParams({
+        media_type: "REELS",
+        video_url: reel.video_url,
+        caption: reel.caption,
+        share_to_feed: "true",
+        access_token: CONFIG.token
+      });
+
+      const contRes = await fetch(`https://graph.facebook.com/v21.0/${CONFIG.igUserId}/media`, {
+        method: "POST",
+        body: containerParams
+      });
+      const contData = await contRes.json();
+      if (!contRes.ok || contData.error) {
+        throw new Error(contData.error?.message || "Container create failed");
+      }
+      const containerId = contData.id;
+      log(`[${reel.series}] Container created: ID ${containerId}`, "info");
+
+      // STEP 2: Poll container status until FINISHED
+      pill.textContent = "Processing Video...";
+      let finished = false;
+      let attempts = 0;
+      while (!finished && attempts < 35) {
+        attempts++;
+        await new Promise(r => setTimeout(r, 6000));
+        const statusRes = await fetch(`https://graph.facebook.com/v21.0/${containerId}?fields=status_code&access_token=${CONFIG.token}`);
+        const statusData = await statusRes.json();
+        const sc = statusData.status_code;
+        log(`[${reel.series}] Container status check #${attempts}: ${sc}`, "info");
+
+        if (sc === "FINISHED") {
+          finished = true;
+        } else if (sc === "ERROR") {
+          throw new Error("Meta video encoding failed");
+        }
+      }
+
+      if (!finished) {
+        throw new Error("Container processing timed out");
+      }
+
+      // STEP 3: POST /media_publish
+      pill.textContent = "Publishing to Feed...";
+      log(`[${reel.series}] Step 3: Publishing Reel to live Instagram feed...`, "info");
+      const pubParams = new URLSearchParams({
+        creation_id: containerId,
+        access_token: CONFIG.token
+      });
+      const pubRes = await fetch(`https://graph.facebook.com/v21.0/${CONFIG.igUserId}/media_publish`, {
+        method: "POST",
+        body: pubParams
+      });
+      const pubData = await pubRes.json();
+      if (!pubRes.ok || pubData.error) {
+        throw new Error(pubData.error?.message || "Publish failed");
+      }
+      const mediaId = pubData.id;
+      log(`[${reel.series}] 🎉 LIVE PUBLISHED! Media ID: ${mediaId}`, "success");
+
+      // STEP 4: First Comment Bait (Community Engagement)
+      if (reel.comment_bait) {
+        try {
+          const commentParams = new URLSearchParams({
+            message: reel.comment_bait,
+            access_token: CONFIG.token
+          });
+          await fetch(`https://graph.facebook.com/v21.0/${mediaId}/comments`, {
+            method: "POST",
+            body: commentParams
+          });
+          log(`[${reel.series}] First comment bait posted ✅`, "info");
+        } catch (e) {
+          console.warn("Comment bait non-fatal:", e);
+        }
+      }
+
+      // Update Card to Success
+      card.classList.remove("publishing");
+      card.classList.add("published");
+      pill.className = "status-pill published";
+      pill.textContent = "Published ✅";
+      btn.textContent = "Live on IG";
+      btn.style.color = "#10b981";
+
+      return mediaId;
+    }
+
+    async function publishSingle(idx) {
+      const reel = REELS[idx];
+      try {
+        await publishReel(reel);
+      } catch (err) {
+        log(`[${reel.series}] ERROR: ${err.message}`, "error");
+        const pill = document.getElementById(`pill-${reel.id}`);
+        pill.textContent = "Failed ❌";
+        pill.style.color = "#ef4444";
+        document.getElementById(`btn-${reel.id}`).disabled = false;
+      }
+    }
+
+    async function publishAll() {
+      const btnAll = document.getElementById("btnPublishAll");
+      btnAll.disabled = true;
+      btnAll.textContent = "⏳ Publishing Series Batch in Progress...";
+
+      let successCount = 0;
+      for (let i = 0; i < REELS.length; i++) {
+        const reel = REELS[i];
+        try {
+          log(`>>> Starting [${i+1}/${REELS.length}]: ${reel.series} Ep ${reel.ep}...`, "info");
+          await publishReel(reel);
+          successCount++;
+          document.getElementById("logCounter").textContent = `${successCount} / ${REELS.length} Complete`;
+          
+          if (i < REELS.length - 1) {
+            log(`Waiting 12 seconds before next series upload (rate limit guard)...`, "info");
+            await new Promise(r => setTimeout(r, 12000));
+          }
+        } catch (err) {
+          log(`[${reel.series}] ERROR: ${err.message}`, "error");
+        }
+      }
+
+      log(`🏆 ALL BATCH OPERATIONS COMPLETE! ${successCount}/${REELS.length} published successfully!`, "success");
+      btnAll.textContent = `🎉 Complete (${successCount}/${REELS.length} Published)`;
+    }
+
+    window.onload = renderCards;
+  </script>
+</body>
+</html>

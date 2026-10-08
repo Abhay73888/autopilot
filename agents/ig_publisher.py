@@ -138,20 +138,20 @@ class InstagramPublisher:
                 return {"status": "queued", "reason": str(e)}
 
         # ---------- video ko public URL pe daalo ----------
-        url = public_url or row["public_url"]
-        if url:
-            # purana URL 24h+ purana ho sakta hai — verify karo
-            try:
-                from core.hosting import verify
-                verify(url)
-                log.info("Pehle se hosted URL use kar rahe hain", url=url[:70])
-            except Exception:  # noqa: BLE001
-                log.warn("Purana public URL kaam nahi kar raha — dobara upload")
-                url = None
-        if not url:
-            if self.dry_run:
-                url = "https://example.com/DRY_RUN_placeholder.mp4"
-            else:
+        if self.dry_run:
+            url = public_url or "https://example.com/DRY_RUN_placeholder.mp4"
+        else:
+            url = public_url or row["public_url"]
+            if url:
+                # purana URL 24h+ purana ho sakta hai — verify karo
+                try:
+                    from core.hosting import verify
+                    verify(url)
+                    log.info("Pehle se hosted URL use kar rahe hain", url=url[:70])
+                except Exception:  # noqa: BLE001
+                    log.warn("Purana public URL kaam nahi kar raha — dobara upload")
+                    url = None
+            if not url:
                 url = host_upload(path)
                 self.db.update_video(video_id, public_url=url)
 
@@ -334,18 +334,36 @@ class InstagramPublisher:
         body = urllib.parse.urlencode(params).encode()
 
         def _do():
+            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Autopilot/2026"}
             if method == "GET":
-                req = urllib.request.Request(f"{url}?{urllib.parse.urlencode(params)}")
+                req = urllib.request.Request(f"{url}?{urllib.parse.urlencode(params)}", headers=headers)
             else:
-                req = urllib.request.Request(url, data=body, method="POST")
+                req = urllib.request.Request(url, data=body, method="POST", headers=headers)
             try:
-                with urllib.request.urlopen(req, timeout=120) as r:
-                    payload = json.loads(r.read() or b"{}")
-                    self.quota.reconcile_from_headers(dict(r.headers))
-                    return payload
+                import ssl
+                ctx = ssl.create_default_context()
+                if os.environ.get("SSL_CERT_NO_VERIFY", "0") == "1":
+                    ctx = ssl._create_unverified_context()
+                try:
+                    with urllib.request.urlopen(req, timeout=120, context=ctx) as r:
+                        payload = json.loads(r.read() or b"{}")
+                        self.quota.reconcile_from_headers(dict(r.headers))
+                        return payload
+                except urllib.error.URLError as e:
+                    if "CERTIFICATE_VERIFY_FAILED" in str(e):
+                        unverified = ssl._create_unverified_context()
+                        with urllib.request.urlopen(req, timeout=120, context=unverified) as r:
+                            payload = json.loads(r.read() or b"{}")
+                            self.quota.reconcile_from_headers(dict(r.headers))
+                            return payload
+                    raise
             except urllib.error.HTTPError as e:
                 raw = e.read()
                 self.quota.reconcile_from_headers(dict(e.headers or {}))
+                if b"<title>Blocked site</title>" in raw or b"Sophos" in raw:
+                    raise IGError(
+                        "Local Network Firewall / Sophos ne graph.facebook.com block kar rakha hai (403 Forbidden).\n"
+                        "→ Solution: Apne PC par System VPN (e.g. Cloudflare WARP / ProtonVPN) on karo ya proxy configure karo.") from e
                 raise _ig_error(e.code, raw) from e
 
         return retry(_do, tries=3, base_delay=4.0, log=log, what=what)

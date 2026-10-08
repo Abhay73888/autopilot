@@ -52,6 +52,34 @@ log = Logbook("publish_all")
 PUBLISHABLE_STATUSES = ("rendered", "validated", "approved", "published")
 
 
+# Series name aliases to support user-friendly names (e.g. LEONARDO -> SERIES_8)
+SERIES_ALIASES = {
+    "1": "SERIES_1",
+    "KAAL": "SERIES_1",
+    "KAALREKHA": "SERIES_1",
+    "KAAL-REKHA": "SERIES_1",
+    "2": "SERIES_2",
+    "ROMANCE": "SERIES_2",
+    "JAB_PYAAR": "SERIES_2",
+    "JABPYAAR": "SERIES_2",
+    "3": "SERIES_3",
+    "CHINTU": "SERIES_3",
+    "4": "SERIES_4",
+    "RIDDLES": "SERIES_4",
+    "DIMAG": "SERIES_4",
+    "5": "SERIES_5",
+    "ASHWATTHAMA": "SERIES_5",
+    "6": "SERIES_6",
+    "OBSERVER": "SERIES_6",
+    "7": "SERIES_7",
+    "ROBLOX": "SERIES_7",
+    "8": "SERIES_8",
+    "LEONARDO": "SERIES_8",
+    "SOLO": "SOLO_LEVELING_RAGNAROK",
+    "SOLO_LEVELING": "SOLO_LEVELING_RAGNAROK",
+}
+
+
 def get_pending_videos(db: DB, series_filter: str | None = None, platform: str = "youtube") -> list[dict]:
     """
     DB se sab un videos ki list nikalo jo publish hone ke liye ready hain.
@@ -63,8 +91,16 @@ def get_pending_videos(db: DB, series_filter: str | None = None, platform: str =
     series_clause = ""
     params: list = []
     if series_filter:
-        series_clause = "AND series_name = ?"
-        params.append(series_filter.upper())
+        s_raw = series_filter.strip().upper()
+        s_alias = (
+            SERIES_ALIASES.get(s_raw.replace("-", "").replace("_", "").replace("SERIES", "").strip())
+            or SERIES_ALIASES.get(s_raw)
+            or s_raw
+        )
+        series_clause = (
+            "AND (UPPER(series_name) = ? OR UPPER(series_name) = ? OR UPPER(series_name) LIKE ? OR UPPER(title) LIKE ?)"
+        )
+        params.extend([s_raw, s_alias.upper(), f"%{s_raw}%", f"%{s_raw}%"])
 
     if platform == "youtube":
         placeholders = ",".join("?" * 3)

@@ -1748,7 +1748,11 @@ AUTOPILOT introduces direct CLI and multi-platform publishing capabilities for *
   - **3-Step Meta Protocol**: Media Container Initialization (`POST /{ig_user_id}/media`) $\rightarrow$ Polling loop until status is `FINISHED` $\rightarrow$ Media Publication (`POST /{ig_user_id}/media_publish`).
   - **Reels Constraints**: Hard limit of duration $\le 90$s strictly validated before upload, 9:16 vertical ratio (1080x1920), H.264 video + AAC audio codecs.
   - **Public Video Hosting Engine (`core/hosting.py`)**: Automatically uploads video files to GitHub Releases / Cloudflare R2 to provide Meta ingest servers with high-speed HTTPS public endpoints.
-  - **High Engagement & Comments Policy**: Posts transformative first comment / comment bait for algorithmic community engagement, keeping the comments section 100% active.
+* **Production Account Linkage & Verification**:
+  - **Connected Account**: `@whop28032005` (Instagram Creator/Business Account).
+  - **Meta Business Account ID**: `17841476670990694` (linked via Facebook Page `Autopilot Media` [ID: `1203341672873654`]).
+  - **60-Day Extended Token Authentication**: Long-lived user & page access token active until December 7, 2026 (`IG_LONG_LIVED_TOKEN`).
+  - **Enterprise SSL & Firewall Resilience**: Automatic detection and graceful fallback for SSL inspection / corporate firewalls (Sophos / zScaler) ensuring zero unhandled exceptions.
 
 ---
 

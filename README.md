@@ -1729,6 +1729,29 @@ AUTOPILOT autonomously generated, rendered, validated, and published the next ep
 
 ---
 
+## 📸 Instagram Reels Publishing Automation Engine (Meta Graph API v21.0)
+
+AUTOPILOT introduces direct CLI and multi-platform publishing capabilities for **Instagram Professional Reels (Business & Creator Accounts)** conforming strictly to Meta Graph API v21.0 protocols:
+
+* **Dedicated CLI Engine (`publish_instagram.py`)**:
+  - `python publish_instagram.py --list`: Formats and lists all rendered, validated, and approved vertical videos ready for Instagram Reel publication.
+  - `python publish_instagram.py --ids <id>`: Dispatches targeted publication of specific video DB records.
+  - `python publish_instagram.py --series <SERIES>`: Publishes all eligible episodes of a specified franchise.
+  - `python publish_instagram.py --dry-run`: Runs comprehensive end-to-end simulation (caption generation, hashtag formatting, duration checks, public video URL verification) with zero API quota consumption.
+  - `python publish_instagram.py --info`: Queries and displays connected Instagram Business Account profile and follower metrics.
+  - `python publish_instagram.py --limit-check`: Reconciles local usage against Meta's native 24-hour content publishing limit.
+* **Unified Multi-Platform Pipeline (`publish_all.py`)**:
+  - `--platform youtube`: Publishes pending videos to YouTube Shorts (default behavior).
+  - `--platform instagram`: Publishes eligible pending videos to Instagram Reels.
+  - `--platform both`: Automatically publishes cross-platform to both YouTube Shorts and Instagram Reels in a single command.
+* **Core Technical & Policy Compliance**:
+  - **3-Step Meta Protocol**: Media Container Initialization (`POST /{ig_user_id}/media`) $\rightarrow$ Polling loop until status is `FINISHED` $\rightarrow$ Media Publication (`POST /{ig_user_id}/media_publish`).
+  - **Reels Constraints**: Hard limit of duration $\le 90$s strictly validated before upload, 9:16 vertical ratio (1080x1920), H.264 video + AAC audio codecs.
+  - **Public Video Hosting Engine (`core/hosting.py`)**: Automatically uploads video files to GitHub Releases / Cloudflare R2 to provide Meta ingest servers with high-speed HTTPS public endpoints.
+  - **High Engagement & Comments Policy**: Posts transformative first comment / comment bait for algorithmic community engagement, keeping the comments section 100% active.
+
+---
+
 ## 📜 License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for complete details.

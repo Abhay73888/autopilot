@@ -86,7 +86,10 @@ def main():
         "publish_batch5.py",
         "generate_and_publish_next_all_series_batch6.py",
         "republish_kaalrekha_ep21.py",
-        "next_ep.py"
+        "next_ep.py",
+        "publish_instagram.py",
+        "publish_all.py",
+        "doctor.py"
     ], check=False)
     
     commit_proc = subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True, text=True)

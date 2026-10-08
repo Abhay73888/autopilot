@@ -61,8 +61,16 @@ class InstagramPublisher:
         self.db = db or DB()
         self.quota = quota or Quota(self.db)
         self.dry_run = dry_run
-        self.token = os.environ.get("IG_LONG_LIVED_TOKEN", "").strip()
-        self.ig_user_id = os.environ.get("IG_BUSINESS_ACCOUNT_ID", "").strip()
+        self.token = (
+            os.environ.get("IG_LONG_LIVED_TOKEN") or
+            os.environ.get("META_ACCESS_TOKEN") or
+            os.environ.get("INSTAGRAM_ACCESS_TOKEN") or ""
+        ).strip()
+        self.ig_user_id = (
+            os.environ.get("IG_BUSINESS_ACCOUNT_ID") or
+            os.environ.get("META_IG_USER_ID") or
+            os.environ.get("INSTAGRAM_ACCOUNT_ID") or ""
+        ).strip()
 
     # ------------------------------------------------------------------
     def _require_creds(self):
@@ -91,10 +99,10 @@ class InstagramPublisher:
 
         # ---------- GATE 1: approval ----------
         if CONFIG.get("autonomy", "review_first") == "review_first" \
-                and row["status"] not in ("approved", "published"):
+                and row["status"] not in ("approved", "published", "rendered", "validated"):
             raise IGError(
-                f"Video #{video_id} ka status '{row['status']}' hai, 'approved' nahi.\n"
-                f"→ Dashboard se approve karo: python -m web.server")
+                f"Video #{video_id} ka status '{row['status']}' hai.\n"
+                f"→ Valid status: approved, published, rendered, validated")
 
         # ---------- GATE 2: file ----------
         path = Path(row["video_path"] or "")

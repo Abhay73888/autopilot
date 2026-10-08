@@ -142,6 +142,9 @@ def _github_release(p: Path) -> str:
     """
     token = os.environ.get("GITHUB_TOKEN", "").strip()
     repo = os.environ.get("GITHUB_REPO", "").strip()
+    if repo.endswith(".git"):
+        repo = repo[:-4].strip()
+    repo = repo.strip("/")
     tag = os.environ.get("GITHUB_RELEASE_TAG", "videos").strip()
 
     if not token or not repo:

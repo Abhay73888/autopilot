@@ -69,7 +69,7 @@ def check_api_keys() -> dict[str, bool]:
         "GROQ_API_KEY": bool(os.getenv("GROQ_API_KEY") or CONFIG.get("GROQ_API_KEY")),
         "ELEVENLABS_API_KEY": bool(os.getenv("ELEVENLABS_API_KEY") or CONFIG.get("ELEVENLABS_API_KEY")),
         "YOUTUBE_OAUTH": (ROOT / "token.json").exists() or (ROOT / "client_secret.json").exists(),
-        "INSTAGRAM_META": bool(os.getenv("IG_BUSINESS_ACCOUNT_ID")),
+        "INSTAGRAM_META": bool(os.getenv("IG_BUSINESS_ACCOUNT_ID") or os.getenv("IG_LONG_LIVED_TOKEN") or os.getenv("META_APP_ID")),
         "FAL_KEY": bool(os.getenv("FAL_KEY")),
         "PEXELS_API_KEY": bool(os.getenv("PEXELS_API_KEY")),
     }

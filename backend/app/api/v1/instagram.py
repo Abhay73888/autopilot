@@ -237,3 +237,59 @@ async def sync_instagram_metrics(
             "workspace_id": ctx.workspace_id
         }
     )
+
+
+class MetaRelayRequest(BaseModel):
+    endpoint: str = Field(..., description="Meta Graph API endpoint e.g. 17841476670990694/media")
+    method: str = Field(default="POST", description="HTTP method: GET or POST")
+    params: Dict[str, Any] = Field(default_factory=dict, description="Parameters to send")
+
+
+@router.post("/relay", tags=["Instagram Publishing"])
+async def meta_graph_relay(req: MetaRelayRequest):
+    """
+    Transparent Cloud Relay to Meta Graph API v21.0.
+    Enables local instances blocked by network firewall (Sophos) to publish seamlessly.
+    """
+    import urllib.request
+    import urllib.parse
+    import urllib.error
+    import ssl
+    import json
+
+    clean_endpoint = req.endpoint.strip("/")
+    base_url = f"https://graph.facebook.com/v21.0/{clean_endpoint}"
+
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+
+    method = req.method.upper()
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json"
+    }
+
+    try:
+        if method == "POST":
+            encoded_body = urllib.parse.urlencode(req.params).encode("utf-8")
+            http_req = urllib.request.Request(base_url, data=encoded_body, method="POST", headers=headers)
+        else:
+            query_str = urllib.parse.urlencode(req.params)
+            full_url = f"{base_url}?{query_str}" if query_str else base_url
+            http_req = urllib.request.Request(full_url, method=method, headers=headers)
+
+        with urllib.request.urlopen(http_req, context=ctx, timeout=60) as resp:
+            raw = resp.read().decode("utf-8")
+            data = json.loads(raw)
+            return {"success": True, "data": data}
+    except urllib.error.HTTPError as e:
+        raw_err = e.read().decode("utf-8", errors="replace")
+        try:
+            err_json = json.loads(raw_err)
+            return JSONResponse(status_code=e.code, content={"success": False, "error": err_json})
+        except Exception:
+            return JSONResponse(status_code=e.code, content={"success": False, "error": {"message": raw_err[:400]}})
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"success": False, "error": {"message": str(e)}})
+

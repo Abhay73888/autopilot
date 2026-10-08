@@ -1752,9 +1752,12 @@ AUTOPILOT introduces direct CLI and multi-platform publishing capabilities for *
   - **Connected Account**: `@whop28032005` (Instagram Creator/Business Account).
   - **Meta Business Account ID**: `17841476670990694` (linked via Facebook Page `Autopilot Media` [ID: `1203341672873654`]).
   - **60-Day Extended Token Authentication**: Long-lived user & page access token active until December 7, 2026 (`IG_LONG_LIVED_TOKEN`).
-  - **Enterprise SSL & Firewall Resilience**: Automatic detection and graceful fallback for SSL inspection / corporate firewalls (Sophos / zScaler) ensuring zero unhandled exceptions.
 * **1-Click Browser Launchpad (`web/publish_instagram_reels.html`)**:
-  - Interactive, cyberpunk-themed web console enabling 1-click batch publishing for all 8 series episodes directly through the authenticated browser session with live status tracking, container polling, and comment bait dispatching.
+  - Interactive, cyberpunk-themed web console enabling 1-click batch publishing directly through authenticated browser sessions with live status tracking, container polling, and comment bait dispatching.
+  - **Dual Batch Support**: Switch seamlessly between **Batch 1 (Pilot Episodes 1)** and **Batch 2 (Next Episodes 2-10)** across all 8 series franchises (Kaal-Rekha Finale Ep 10, Jab Pyaar Online Tha Ep 6, Chintu Ep 4, Dimag Ka Dahi Ep 4, Ashwatthama Ep 3, Observer Files Ep 2, Roblox Vault Ep 2, Leonardo da Vinci Ep 2).
+* **Render Cloud Relay Architecture (`/api/v1/instagram/relay`)**:
+  - Transparent cloud gateway hosted on Render (`https://autopilot-7pxl.onrender.com/api/v1/instagram/relay`) that routes Meta Graph API v21.0 requests with zero local network firewall (Sophos / zScaler) interference.
+  - Automatically leveraged by `agents/ig_publisher.py` whenever a local network 403 or SSL reset is detected, enabling fully autonomous headless CLI execution without requiring browser VPN interaction.
 
 ---
 

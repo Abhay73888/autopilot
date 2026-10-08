@@ -41,7 +41,7 @@
 
     header {
       text-align: center;
-      margin-bottom: 35px;
+      margin-bottom: 30px;
     }
 
     .badge {
@@ -80,7 +80,7 @@
       justify-content: center;
       gap: 20px;
       flex-wrap: wrap;
-      margin-top: 20px;
+      margin-top: 18px;
     }
 
     .chip {
@@ -96,11 +96,44 @@
     }
     .chip b { color: #fff; }
 
+    /* Tabs */
+    .tab-bar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 25px 0 20px;
+    }
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.35);
+    }
+
     .action-panel {
       display: flex;
       justify-content: center;
       gap: 15px;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .btn-main {
@@ -271,7 +304,7 @@
     <header>
       <div class="badge">🔥 Meta Graph API v21.0 Direct Publisher</div>
       <h1>AUTOPILOT Instagram Reels Launchpad</h1>
-      <p class="subtitle">Publishing Episode 1 across all 8 original series directly to Instagram Reels</p>
+      <p class="subtitle">Direct-to-Instagram Reels publishing across all 8 series (Solo Leveling excluded)</p>
 
       <div class="account-strip">
         <div class="chip">Account: <b>@whop28032005</b></div>
@@ -281,9 +314,19 @@
       </div>
     </header>
 
+    <!-- Tab Bar for Batches -->
+    <div class="tab-bar">
+      <button id="tabNext" class="tab-btn active" onclick="switchBatch('next')">
+        <span>⚡</span> BATCH 2: Next Episodes (Ep 2+)
+      </button>
+      <button id="tabPilot" class="tab-btn" onclick="switchBatch('pilot')">
+        <span>📁</span> BATCH 1: Pilot Episodes (Ep 1)
+      </button>
+    </div>
+
     <div class="action-panel">
       <button id="btnPublishAll" class="btn-main" onclick="publishAll()">
-        <span>🚀</span> Publish All 8 Series Reels to Instagram Live
+        <span>🚀</span> <span id="publishAllLabel">Publish All 8 Next Episodes to Instagram Live</span>
       </button>
     </div>
 
@@ -297,7 +340,7 @@
         <span id="logCounter">0 / 8 Complete</span>
       </div>
       <div id="logContainer">
-        <div class="log-entry info">System ready. Chrome VPN active. Ready to dispatch 8 series reels.</div>
+        <div class="log-entry info">System ready. Ready to dispatch series reels to @whop28032005.</div>
       </div>
     </div>
   </div>
@@ -309,7 +352,84 @@
       handle: "@whop28032005"
     };
 
-    const REELS = [
+    // BATCH 2: NEXT EPISODES
+    const BATCH_NEXT = [
+      {
+        id: 193,
+        series: "Series 1: Kaal-Rekha",
+        ep: 10,
+        title: "LOOP TOOT GAYA... YA MEERA KA SACH?! 💥⏳ | Grand Finale",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_2e0f8d16.mp4",
+        caption: "Grand Finale! Kabir ne 3:17 AM par temporal core ko tod diya! Kya waqt aage badha ya Meera hamesha ke liye gayab ho gayi? Season 1 Conclusion! 😱💥👇\n\n#KaalRekha #Series1 #GrandFinale #TimeLoop #Reels #Viral #Trending\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Loop tod kar aazad ho ya Meera ke liye hamesha qaid rahe? Vote in COMMENTS! 👇⏳"
+      },
+      {
+        id: 234,
+        series: "Series 2: Jab Pyaar Online Tha",
+        ep: 6,
+        title: "He Left Everything to Meet Her at Terminal 3... ✈️❤️",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_c02aa26b.mp4",
+        caption: "Meera ki London ki flight boarding hone wali thi... aur Aarav 400 kilometer door tha! Lekin jab aakhiri second par boarding gate par Meera ne peeche mud kar dekha... 😭💔\n\nKya sacha pyaar waqt aur dooriyon ko hara sakta hai? Apni love story COMMENT karein! 👇✨\n\n#JabPyaarOnlineTha #Series2 #Romance #LoveStory #Heartbreak #Reels\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Kya rishton mein shak pyaar ko khatam kar deta hai? Aarav galat tha ya Meera? COMMENT karo! 👇💔"
+      },
+      {
+        id: 235,
+        series: "Series 3: Chintu Ki Jadui Duniya",
+        ep: 4,
+        title: "Chintu Found a Tiny Alien in His Lunchbox! 🛸🍕",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_7d5189d2.mp4",
+        caption: "Chintu ne jaise hi school mein apna tiffin box khola... andar ek glowing neele rang ka alien baith kar pizza khaa raha tha! 🛸🍕 Aur jab Golu ne photo kheenchne ki koshish ki, toh alien ne bag ko hi hawa mein udha diya! 😂✨\n\nAgar aapko aisa alien mile toh aap kya khilaoge? COMMENT karo! 👇🪐\n\n#ChintuKiKahani #Series3 #Animation #KidsReels #PixarStyle #Reels #Funny\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Agar aapko ye jadui alien mile toh aap use kya khilaoge? COMMENT mein batao! 🍕👇"
+      },
+      {
+        id: 236,
+        series: "Series 4: Dimag Ka Dahi",
+        ep: 4,
+        title: "99% of People Get This Wrong in 5 Seconds! 🤯🧠",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_6d0080ed.mp4",
+        caption: "Aisi kaun si cheez hai jiska ek sar (head) hai aur ek punchh (tail) hai... par koi shareer nahi hai?! 🤯🪙 Duniya ke bade-bade log is paheli mein ghoom gaye! Bina cheat kiye COMMENT karo! 👇😂\n\n#DimagKaDahi #Series4 #FunnyReels #Paheliyan #Riddles #Quiz #BrainTeasers #Reels\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Sach-sach batao, kisne pehle galat socha tha? COMMENT karo apna score! 😂👇"
+      },
+      {
+        id: 286,
+        series: "Series 5: Ashwatthama 3049 AD",
+        ep: 3,
+        title: "Immortal Warrior Destroys 31st Century AI Fleet! 🔱⚡",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_24a6673a.mp4",
+        caption: "Jab 31st century ke rogue AI federation ne Ashwatthama ko orbital lasers se ghera... unhe laga ki ek 5000 saal purana yoddha mar jayega. Lekin unhone Divya Mani ki asli shakti nahi dekhi thi! 🔱🔥\n\nHar Har Mahadev! Comment mein apni shradha likhein! 👇🔱\n\n#Ashwatthama3049 #Series5 #CyberpunkMythology #IndianSciFi #MahabharatFuturistic #Reels #Kalki\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Kya Ashwatthama aur Kalki milkar Kali Yuga ka ant karenge? COMMENT mein likho: 'KALKI'! 👇🔥"
+      },
+      {
+        id: 287,
+        series: "Series 6: The Observer Files",
+        ep: 2,
+        title: "Your Mirror Lagged by 2 Seconds at 3:00 AM... 👁️🪞",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_37e6f2ec.mp4",
+        caption: "At 3:00 AM across Tokyo and London subway restrooms, maintenance workers noticed something chilling. The mirror reflections weren't syncing with real life—they were moving 2 seconds before the human moved. Welcome to Part 2 of THE OBSERVER FILES.\n\nLook into your mirror right now. Is it blinking when you blink? Comment your country below! 👇👁️\n\n#TheObserverFiles #Series6 #AnalogHorror #ScaryStories #Mystery #Thriller #Creepy #ViralReels\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Did your phone screen flicker right at the 20-second mark? Comment your city below! 👇👁️"
+      },
+      {
+        id: 314,
+        series: "Series 7: Roblox Vault",
+        ep: 2,
+        title: "99% Of Roblox Players Missed This Hidden Vault! 🎮🔒",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_6f8b6ec9.mp4",
+        caption: "Roblox Vault Episode 2: The secret location that was never patched. Try this before Roblox updates! Drop your favourite game below! 👇🎮\n\n#Roblox #BrookhavenRP #RobloxSecrets #RobloxTips #GamingReels #Reels #RobloxVault\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Drop 🔐 if you ALREADY knew this secret, or 😱 if this blew your mind! 👇"
+      },
+      {
+        id: 1000047,
+        series: "Series 8: Leonardo da Vinci",
+        ep: 2,
+        title: "Verrocchio Ki Workshop Aur Vo Farishta! 🎨🕊️",
+        video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_with_subs_0c8315d2.mp4",
+        caption: "1475 Florence: Master Andrea del Verrocchio ne apne 23 saal ke apprentice Leonardo ko ek angel paint karne ko kaha! 🎨🕊️ Leonardo ne naye oil glaze aur sfumato technique se kneeling angel ko aisi zinda roshni di ki guru ne apna brush hamesha ke liye chhod diya!\n\n#LeonardoDaVinci #Series8 #Renaissance #BaptismOfChrist #ArtHistory #DocumentaryReels #Reels #TrueHistory\n\n🤖 AI-generated (cartoon illustration + AI narration)",
+        comment_bait: "Kya aapko lagta hai Leonardo wakai sadharan insaan the? Apni raye comment mein dein! 👇"
+      }
+    ];
+
+    // BATCH 1: PILOT EPISODES
+    const BATCH_PILOT = [
       {
         id: 189,
         series: "Series 1: Kaal-Rekha",
@@ -371,7 +491,7 @@
         title: "Brookhaven Has a SECRET Underground Base! 🎮🔐",
         video_url: "https://github.com/Abhay73888/autopilot/releases/download/videos/final_2d7a2766.mp4",
         caption: "Inside Brookhaven RP there's a fully hidden agency underground base that 99% of players have NEVER found. Here's exactly how to get in!\n\nDrop 🔐 in the comments if you found it first!\n\n#Roblox #BrookhavenRP #RobloxSecrets #RobloxTips #GamingReels #Reels #RobloxVault\n\n🤖 AI-generated (cartoon illustration + AI narration)",
-        comment_bait: "Drop 🔐 if you ALREADY knew this secret, or 😱 if this just blew your mind! How many of these did you find? 👇"
+        comment_bait: "Drop 🔐 if you ALREADY knew this secret, or 😱 if this blew your mind! How many of these did you find? 👇"
       },
       {
         id: 1000018,
@@ -383,6 +503,27 @@
         comment_bait: "Kya aapko lagta hai Leonardo wakai ek sadharan insaan the ya unka dimaag sadiyon aage tha? Apni raye comment mein dein! 👇"
       }
     ];
+
+    let currentBatch = "next"; // Default to next episodes
+    let activeReels = BATCH_NEXT;
+
+    function switchBatch(type) {
+      currentBatch = type;
+      if (type === "next") {
+        activeReels = BATCH_NEXT;
+        document.getElementById("tabNext").classList.add("active");
+        document.getElementById("tabPilot").classList.remove("active");
+        document.getElementById("publishAllLabel").textContent = "Publish All 8 Next Episodes to Instagram Live";
+        log("Switched to Batch 2: Next Episodes (Ep 2+)", "info");
+      } else {
+        activeReels = BATCH_PILOT;
+        document.getElementById("tabPilot").classList.add("active");
+        document.getElementById("tabNext").classList.remove("active");
+        document.getElementById("publishAllLabel").textContent = "Publish All 8 Pilot Episodes to Instagram Live";
+        log("Switched to Batch 1: Pilot Episodes (Ep 1)", "info");
+      }
+      renderCards();
+    }
 
     function log(msg, type = "info") {
       const container = document.getElementById("logContainer");
@@ -396,7 +537,7 @@
     function renderCards() {
       const grid = document.getElementById("reelsGrid");
       grid.innerHTML = "";
-      REELS.forEach((reel, idx) => {
+      activeReels.forEach((reel, idx) => {
         const card = document.createElement("div");
         card.className = "card";
         card.id = `card-${reel.id}`;
@@ -416,6 +557,7 @@
         `;
         grid.appendChild(card);
       });
+      document.getElementById("logCounter").textContent = `0 / ${activeReels.length} Complete`;
     }
 
     async function publishReel(reel) {
@@ -426,7 +568,7 @@
       card.classList.add("publishing");
       pill.textContent = "Creating Container...";
       btn.disabled = true;
-      log(`[${reel.series}] Step 1: Initializing Meta Media Container...`, "info");
+      log(`[${reel.series} Ep ${reel.ep}] Step 1: Initializing Meta Media Container...`, "info");
 
       // STEP 1: POST /media container
       const containerParams = new URLSearchParams({
@@ -446,7 +588,7 @@
         throw new Error(contData.error?.message || "Container create failed");
       }
       const containerId = contData.id;
-      log(`[${reel.series}] Container created: ID ${containerId}`, "info");
+      log(`[${reel.series} Ep ${reel.ep}] Container created: ID ${containerId}`, "info");
 
       // STEP 2: Poll container status until FINISHED
       pill.textContent = "Processing Video...";
@@ -458,7 +600,7 @@
         const statusRes = await fetch(`https://graph.facebook.com/v21.0/${containerId}?fields=status_code&access_token=${CONFIG.token}`);
         const statusData = await statusRes.json();
         const sc = statusData.status_code;
-        log(`[${reel.series}] Container status check #${attempts}: ${sc}`, "info");
+        log(`[${reel.series} Ep ${reel.ep}] Transcode status #${attempts}: ${sc}`, "info");
 
         if (sc === "FINISHED") {
           finished = true;
@@ -473,7 +615,7 @@
 
       // STEP 3: POST /media_publish
       pill.textContent = "Publishing to Feed...";
-      log(`[${reel.series}] Step 3: Publishing Reel to live Instagram feed...`, "info");
+      log(`[${reel.series} Ep ${reel.ep}] Step 3: Publishing Reel to live Instagram feed...`, "info");
       const pubParams = new URLSearchParams({
         creation_id: containerId,
         access_token: CONFIG.token
@@ -487,7 +629,7 @@
         throw new Error(pubData.error?.message || "Publish failed");
       }
       const mediaId = pubData.id;
-      log(`[${reel.series}] 🎉 LIVE PUBLISHED! Media ID: ${mediaId}`, "success");
+      log(`[${reel.series} Ep ${reel.ep}] 🎉 LIVE PUBLISHED! Media ID: ${mediaId}`, "success");
 
       // STEP 4: First Comment Bait (Community Engagement)
       if (reel.comment_bait) {
@@ -500,7 +642,7 @@
             method: "POST",
             body: commentParams
           });
-          log(`[${reel.series}] First comment bait posted ✅`, "info");
+          log(`[${reel.series} Ep ${reel.ep}] First comment bait posted ✅`, "info");
         } catch (e) {
           console.warn("Comment bait non-fatal:", e);
         }
@@ -518,46 +660,59 @@
     }
 
     async function publishSingle(idx) {
-      const reel = REELS[idx];
+      const reel = activeReels[idx];
+      const btn = document.getElementById(`btn-${reel.id}`);
+      const pill = document.getElementById(`pill-${reel.id}`);
       try {
         await publishReel(reel);
       } catch (err) {
-        log(`[${reel.series}] ERROR: ${err.message}`, "error");
-        const pill = document.getElementById(`pill-${reel.id}`);
+        log(`[${reel.series} Ep ${reel.ep}] ❌ Error: ${err.message}`, "error");
         pill.textContent = "Failed ❌";
         pill.style.color = "#ef4444";
-        document.getElementById(`btn-${reel.id}`).disabled = false;
+        btn.disabled = false;
+        btn.textContent = "Retry";
       }
     }
 
     async function publishAll() {
-      const btnAll = document.getElementById("btnPublishAll");
-      btnAll.disabled = true;
-      btnAll.textContent = "⏳ Publishing Series Batch in Progress...";
+      const mainBtn = document.getElementById("btnPublishAll");
+      mainBtn.disabled = true;
+      mainBtn.textContent = "⏳ Publishing in Progress...";
+      log(`Starting batch publish of ${activeReels.length} Reels...`, "info");
 
-      let successCount = 0;
-      for (let i = 0; i < REELS.length; i++) {
-        const reel = REELS[i];
+      let completed = 0;
+      for (let i = 0; i < activeReels.length; i++) {
+        const reel = activeReels[i];
         try {
-          log(`>>> Starting [${i+1}/${REELS.length}]: ${reel.series} Ep ${reel.ep}...`, "info");
           await publishReel(reel);
-          successCount++;
-          document.getElementById("logCounter").textContent = `${successCount} / ${REELS.length} Complete`;
-          
-          if (i < REELS.length - 1) {
-            log(`Waiting 12 seconds before next series upload (rate limit guard)...`, "info");
+          completed++;
+          document.getElementById("logCounter").textContent = `${completed} / ${activeReels.length} Complete`;
+          if (i < activeReels.length - 1) {
+            log(`Waiting 12s rate-limit cooling before next episode...`, "info");
             await new Promise(r => setTimeout(r, 12000));
           }
         } catch (err) {
-          log(`[${reel.series}] ERROR: ${err.message}`, "error");
+          log(`[${reel.series} Ep ${reel.ep}] ❌ Failed: ${err.message}`, "error");
+          const pill = document.getElementById(`pill-${reel.id}`);
+          if (pill) {
+            pill.textContent = "Failed ❌";
+            pill.style.color = "#ef4444";
+          }
+          const btn = document.getElementById(`btn-${reel.id}`);
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = "Retry";
+          }
         }
       }
 
-      log(`🏆 ALL BATCH OPERATIONS COMPLETE! ${successCount}/${REELS.length} published successfully!`, "success");
-      btnAll.textContent = `🎉 Complete (${successCount}/${REELS.length} Published)`;
+      mainBtn.disabled = false;
+      mainBtn.innerHTML = `<span>🚀</span> Publish All ${activeReels.length} Episodes to Instagram Live`;
+      log(`Batch execution complete! ${completed}/${activeReels.length} successfully published.`, "success");
     }
 
-    window.onload = renderCards;
+    // Initialize UI on page load
+    renderCards();
   </script>
 </body>
 </html>

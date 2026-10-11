@@ -1,14 +1,14 @@
 {
-  "exported_at": "2026-10-08T13:51:39.134635+00:00",
+  "exported_at": "2026-10-11T10:20:20.394786+00:00",
   "version": "1.0.0",
   "founder_admin": "admin_abhay (Abhay Maurya)",
   "tables_summary": {
-    "videos": 147,
+    "videos": 155,
     "metrics": 28,
     "experiments": 4,
     "learnings": 0,
-    "quota_usage": 2444,
-    "events": 5214,
+    "quota_usage": 2552,
+    "events": 5256,
     "characters": 1,
     "jobs": 105,
     "organizations": 102,
@@ -4583,6 +4583,254 @@
         "ig_media_id": null,
         "scheduled_ts": null,
         "published_ts": "2026-10-05T06:50:29+00:00",
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000057,
+        "created_ts": "1791712118.78242",
+        "updated_ts": "1791712118.78242",
+        "status": "approved",
+        "topic": "Kaal-Rekha Part 24: 3:16 AM Ka Shunya Dhamaka & The Chronos Rift",
+        "title": "3:16 AM Par Time Loop Toot Gaya! Chronos-Zero Ka Aakhiri Sach! \u23f3\u26a1 | KAAL-REKHA (Part 24) #Shorts",
+        "caption": "Theek 3:16 AM par Bandra-Worli Sea Link ke upar waqt ka pahiya ulta ghoom gaya! \u23f3\u26a1\nChronos-Zero ke cosmic roop se nikli aisi energy jisne Kabir aur Meera ko shunya ke kendra mein kheench liya!\nAur tab samne aaya wo raaz jisne Kabir ke pairon tale zameen khiska di: Chronos-Zero koi shaitan nahi, balki Kabir ka hi aane wala kal tha!\n\nKya Kabir waqt ki is zanjeer ko tod payega? Drop your theories below! \ud83d\udc47\ud83d\udd25\n\n#KaalRekha #Part24 #TimeLoop #AnimeShorts #IndianAnime #Shorts #HindiAnime #Mystery #Trending",
+        "hashtags": null,
+        "script_json": "{\"comment_bait\": \"\\ud83d\\udd25 Kya Chronos-Zero sach mein future ka Kabir hai? Apni theory comment mein zaroor batayein! \\ud83d\\udc47\\u23f3\"}",
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 42.133333,
+        "series_name": "SERIES_1",
+        "series_index": 24,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch7_series_1_ep24\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": null,
+        "yt_video_id": null,
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": null,
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000058,
+        "created_ts": "1791712532.54283",
+        "updated_ts": "1791712532.54283",
+        "status": "approved",
+        "topic": "Jab Pyaar Online Tha Episode 20: London Airport Goodbye & The Heartbeat Return",
+        "title": "Aakhiri 10 Minute! London Se Mumbai Ka Emotional Wada! \ud83c\udf27\ufe0f\u2764\ufe0f | JAB PYAAR ONLINE THA (Ep 20) #Shorts",
+        "caption": "London Heathrow Airport par aakhiri 10 minute bache the... \ud83c\udf27\ufe0f\u2764\ufe0f\nRohan ki Mumbai flight ka gate khul chuka tha aur Meera uske gale lag kar ro rahi thi!\nRohan ne apna purana headphone Meera ko pehnaya aur kaha: 'Jab bhi meri yaad aaye, ye gaana sun lena... Doori sirf shehar ki hai, dil ki nahi!'\nLekin security gate cross karte hi Rohan ne jo message bheja, usne Meera ki zindagi badal di! Agle episode ke liye comment karein! \ud83d\udc47\ud83d\udc8c\n\n#JabPyaarOnlineTha #Episode20 #LongDistanceLove #LoveStory #Shorts #RomanticShorts #ViralLove #AnimeShorts",
+        "hashtags": null,
+        "script_json": "{\"comment_bait\": \"\\u2764\\ufe0f Kya long-distance relationship sach mein successful ho sakta hai? YES ya NO comment karein! \\ud83d\\udc47\\ud83d\\udc8c\"}",
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 44.133333,
+        "series_name": "SERIES_2",
+        "series_index": 20,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch7_series_2_ep20\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": null,
+        "yt_video_id": null,
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": null,
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000059,
+        "created_ts": "1791712733.76425",
+        "updated_ts": "1791712733.76425",
+        "status": "approved",
+        "topic": "Chintu Ki Jadui Duniya Episode 18: Chocolate Cyclone Aur Cotton Candy Mountain",
+        "title": "Chocolate Cyclone Mein Fasa Baby Pegasus! Chintu Ka Gola Magic! \ud83c\udf2a\ufe0f\ud83c\udf6b\ud83e\udd84 | CHINTU (Ep 18) #Shorts",
+        "caption": "Aasman mein ghoomte hue chocolate cyclone ne Chintu, Golu aur baby Pegasus ko gher liya! \ud83c\udf2a\ufe0f\ud83c\udf6b\ud83e\udd84\nGolu cheekha: 'Chintu! Garam chocolate hume nigal jayegi!' Tabhi Chintu ne Star Key se banaya barfeela ice cream gola!\nDono ne maze se cyclone ko chammach se khana shuru kar diya! Aur aage dikha Cotton Candy Mountain! Agle episode ke liye comment karein! \ud83d\udc47\ud83e\uddc1\n\n#ChintuKiDuniya #Episode18 #KidsAnimation #3DAnimation #CartoonShorts #MagicalAdventure #Shorts",
+        "hashtags": null,
+        "script_json": "{\"comment_bait\": \"\\ud83c\\udf6b Agar chocolate cyclone aata toh aap konsi ice-cream flavour mangte? Comment karein! \\ud83d\\udc47\\ud83c\\udf66\"}",
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 40.5,
+        "series_name": "SERIES_3",
+        "series_index": 18,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch7_series_3_ep18\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": null,
+        "yt_video_id": null,
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": null,
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000060,
+        "created_ts": "1791713212.61498",
+        "updated_ts": "1791713212.61498",
+        "status": "approved",
+        "topic": "Dimag Ka Dahi Episode 18: The Darkness & Fog Riddle",
+        "title": "Wo Kya Hai Jo Jitna Zyada Ho, Utna Hi Kam Dikhta Hai? \ud83e\udde0\ud83d\udd25 | DIMAG KA DAHI (Ep 18) #Shorts",
+        "caption": "Dosto, aaj ki paheli aapke dimaag ke saare purze hila degi! \ud83e\udde0\ud83d\udd25\nAisi kaunsi cheez hai jo jitni zyada badhti hai, hume utna hi kam dikhai deta hai?\n99% log pehli baar mein galat sochte hain! 5 second mein jawab do aur comment karo! \ud83d\udc47\ud83d\udca1\n\n#DimagKaDahi #Episode18 #Paheli #RiddlesInHindi #BrainTeasers #Shorts #MindGames #IQTest #HindiPaheli",
+        "hashtags": null,
+        "script_json": "{\"comment_bait\": \"\\ud83d\\udca1 Kya aapne 5 second ke andar sahi jawab guess kiya tha? Sach-sach comment karein! \\ud83d\\udc47\\ud83e\\udde0\"}",
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 40.633333,
+        "series_name": "SERIES_4",
+        "series_index": 18,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch7_series_4_ep18\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": null,
+        "yt_video_id": null,
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": null,
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000061,
+        "created_ts": "1791713395.64784",
+        "updated_ts": "1791713395.64784",
+        "status": "approved",
+        "topic": "Ashwatthama 3049 AD Episode 15: The Alien General Standoff & Dark Energy Core",
+        "title": "Alien Mothership Ka Core Room! Ashwatthama Ka Trishul Strike! \ud83d\ude80\ud83c\udff9\u26a1 | ASHWATTHAMA 3049 AD (Ep 15) #Shorts",
+        "caption": "Mothership ke reactor core chamber mein tin-aankhon wale Alien General ne chhed di antim ladai! \ud83d\ude80\ud83c\udff9\u26a1\nChamber ki gravity zero hui aur dark scythe ne Ashwatthama ki cyber shield ko faad diya!\nLekin 5,000 saal ke tapasvi ne Surya Gayatri mantra ka aavhan kiya aur plasma spear se ship ke antimatter core ko bhed diya!\nDreadnought Earth ki taraf girne lagi! Episode 16 ke liye comment karein! \ud83d\udc47\ud83d\udd25\n\n#Ashwatthama #Part15 #SciFiIndia #Mahabharata3049 #Shorts #SpaceAction #TrendingSciFi #AnimeAction",
+        "hashtags": null,
+        "script_json": "{\"comment_bait\": \"\\u26a1 Kya Ashwatthama akele alien armada ko rok payega? Comment mein likhein 'ASHWATTHAMA'! \\ud83d\\udc47\\ud83d\\udd25\"}",
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 41.0,
+        "series_name": "SERIES_5",
+        "series_index": 15,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch7_series_5_ep15\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": null,
+        "yt_video_id": null,
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": null,
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000062,
+        "created_ts": "1791713579.12508",
+        "updated_ts": "1791713579.12508",
+        "status": "approved",
+        "topic": "The Observer Files Episode 14: Case File 014 - The Broadcast from Floor -3",
+        "title": "The Forbidden Broadcast On Floor -3... They Are Waiting! \ud83d\udc41\ufe0f\ud83d\udcfb\ud83c\udfe2 | THE OBSERVER FILES (Part 14) #Shorts",
+        "caption": "Case File 014: What was found inside the phantom basement Floor minus three. \ud83d\udc41\ufe0f\ud83c\udfe2\nAt 3:18 AM, Security Officer Daniel followed the bare footprints on wet concrete into the darkness.\nHe found an intact, operational 1980s television studio broadcasting live.\nOn the monitors was a real-time CCTV feed of his own sleeping children.\nThen the studio lights clicked on. Subscribe for Part 15! \ud83d\udc47\ud83d\udcfb\n\n#TheObserverFiles #Part14 #AnalogHorror #FoundFootage #Shorts #Creepypasta #HorrorShorts #Mystery",
+        "hashtags": null,
+        "script_json": "{\"comment_bait\": \"\\ud83d\\udc41\\ufe0f If an abandoned broadcast showed a live feed of your house, what would you do? Comment below! \\ud83d\\udc47\\ud83c\\udfe2\"}",
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 34.633333,
+        "series_name": "SERIES_6",
+        "series_index": 14,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch7_series_6_ep14\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": null,
+        "yt_video_id": null,
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": null,
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000063,
+        "created_ts": "1791713748.29617",
+        "updated_ts": "1791713748.29617",
+        "status": "approved",
+        "topic": "Roblox Vault Episode 12: The 2007 Ghost Account 'Minish'",
+        "title": "The 2007 Ghost Account 'Minish' Left This Secret Place! \ud83c\udfae\ud83d\udc7b\ud83d\udd12 | ROBLOX VAULT (Ep 12) #Shorts",
+        "caption": "Roblox Vault Episode 12: The forgotten 2007 account 'Minish' that vanished without a trace! \ud83c\udfae\ud83d\udc7b\ud83d\udd12\nMinish uploaded a 1MB test map with reversed Morse code audio buried deep in the client cache.\nWhen players joined, their avatar coordinates locked to an actual real-world location in California!\nRoblox permanently deleted the account within 2 hours. Did you know this? Comment below! \ud83d\udc47\ud83c\udfae\n\n#RobloxVault #Episode12 #RobloxShorts #RobloxMysteries #GamingShorts #RobloxSecrets #TrendingGaming",
+        "hashtags": null,
+        "script_json": "{\"comment_bait\": \"\\ud83d\\udd79\\ufe0f Do you think the 2007 Minish mystery is real or an ARG? Comment below! \\ud83d\\udc47\\ud83c\\udfae\"}",
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 33.3,
+        "series_name": "SERIES_7",
+        "series_index": 12,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch7_series_7_ep12\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": null,
+        "yt_video_id": null,
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": null,
+        "ai_disclosed": 1,
+        "notes": null,
+        "scene_pacing": "standard",
+        "user_id": "admin_abhay",
+        "workspace_id": null
+      },
+      {
+        "id": 1000064,
+        "created_ts": "1791713919.00455",
+        "updated_ts": "1791713919.00455",
+        "status": "approved",
+        "topic": "Leonardo da Vinci Episode 4: The Duke's Commission & The Hidden Melody in The Last Supper",
+        "title": "Milan Ka Shahi Darbar Aur 'The Last Supper' Ka Khaufnaak Raaz! \ud83c\udfa8\ud83c\udfdb\ufe0f\ud83d\udcdc | LEONARDO (Ep 4) #Shorts",
+        "caption": "1495 mein Milan ke Duke Ludovico Sforza ne Leonardo ko Santa Maria Church mein painting banane ka order diya! \ud83c\udfa8\ud83c\udfdb\ufe0f\ud83d\udcdc\nYe banna tha itihaas ka sabse bada masterpiece: 'The Last Supper'!\nLekin kya aapko pata hai ki table par rakhi bread aur shishyon ke haathon ke coordination mein ek 40-second ki dardnak music tune chhipi hui hai?\nAgle episode ke liye comment karein! \ud83d\udc47\ud83c\udfdb\ufe0f\n\n#LeonardoDaVinci #Episode4 #HistoryShorts #Renaissance #DocumentaryShorts #TheLastSupper #ArtHistory #Shorts",
+        "hashtags": null,
+        "script_json": "{\"comment_bait\": \"\\ud83c\\udfa8 Kya aapko pata tha ki 'The Last Supper' mein ek sangeet chhipa hua hai? Comment karein! \\ud83d\\udc47\\ud83d\\udcdc\"}",
+        "hook_type": null,
+        "voice_id": null,
+        "template_id": null,
+        "length_sec": 45.5,
+        "series_name": "SERIES_8",
+        "series_index": 4,
+        "experiment_id": null,
+        "variant": null,
+        "video_path": "C:\\Users\\ABHAY MAURAYA\\Downloads\\autopilot\\autopilot\\output\\batch7_series_8_ep4\\final_with_subs.mp4",
+        "cover_path": null,
+        "public_url": null,
+        "yt_video_id": null,
+        "ig_media_id": null,
+        "scheduled_ts": null,
+        "published_ts": null,
         "ai_disclosed": 1,
         "notes": null,
         "scene_pacing": "standard",
@@ -22227,6 +22475,762 @@
         "bucket": "ig_publishes",
         "amount": 1,
         "reason": "reel video #182"
+      },
+      {
+        "id": 2445,
+        "ts": "2026-10-11T09:26:01+00:00",
+        "bucket": "youtube_units",
+        "amount": 1,
+        "reason": "channel info"
+      },
+      {
+        "id": 2446,
+        "ts": "2026-10-11T09:42:11+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2447,
+        "ts": "2026-10-11T09:42:25+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2448,
+        "ts": "2026-10-11T09:44:22+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2449,
+        "ts": "2026-10-11T09:44:55+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2450,
+        "ts": "2026-10-11T09:45:10+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2451,
+        "ts": "2026-10-11T09:45:21+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2452,
+        "ts": "2026-10-11T09:45:33+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2453,
+        "ts": "2026-10-11T09:48:41+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2454,
+        "ts": "2026-10-11T09:48:54+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2455,
+        "ts": "2026-10-11T09:49:06+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2456,
+        "ts": "2026-10-11T09:49:16+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2457,
+        "ts": "2026-10-11T09:49:31+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2458,
+        "ts": "2026-10-11T09:49:33+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2459,
+        "ts": "2026-10-11T09:49:38+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2460,
+        "ts": "2026-10-11T09:50:26+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2461,
+        "ts": "2026-10-11T09:50:32+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2462,
+        "ts": "2026-10-11T09:50:36+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2463,
+        "ts": "2026-10-11T09:55:34+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2464,
+        "ts": "2026-10-11T09:55:37+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2465,
+        "ts": "2026-10-11T09:55:40+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2466,
+        "ts": "2026-10-11T09:55:43+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2467,
+        "ts": "2026-10-11T09:55:45+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2468,
+        "ts": "2026-10-11T09:55:48+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2469,
+        "ts": "2026-10-11T09:55:52+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2470,
+        "ts": "2026-10-11T09:55:54+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2471,
+        "ts": "2026-10-11T09:55:57+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2472,
+        "ts": "2026-10-11T09:56:01+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2473,
+        "ts": "2026-10-11T09:56:03+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2474,
+        "ts": "2026-10-11T09:56:06+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2475,
+        "ts": "2026-10-11T09:56:09+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2476,
+        "ts": "2026-10-11T09:56:11+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2477,
+        "ts": "2026-10-11T09:56:14+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2478,
+        "ts": "2026-10-11T09:58:55+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2479,
+        "ts": "2026-10-11T09:58:58+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2480,
+        "ts": "2026-10-11T09:59:02+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2481,
+        "ts": "2026-10-11T09:59:07+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2482,
+        "ts": "2026-10-11T09:59:11+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2483,
+        "ts": "2026-10-11T09:59:14+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2484,
+        "ts": "2026-10-11T09:59:52+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2485,
+        "ts": "2026-10-11T09:59:58+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2486,
+        "ts": "2026-10-11T10:00:05+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2487,
+        "ts": "2026-10-11T10:00:23+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2488,
+        "ts": "2026-10-11T10:00:26+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2489,
+        "ts": "2026-10-11T10:00:31+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2490,
+        "ts": "2026-10-11T10:01:31+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2491,
+        "ts": "2026-10-11T10:01:46+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2492,
+        "ts": "2026-10-11T10:04:00+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2493,
+        "ts": "2026-10-11T10:06:54+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2494,
+        "ts": "2026-10-11T10:06:56+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2495,
+        "ts": "2026-10-11T10:06:58+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2496,
+        "ts": "2026-10-11T10:07:02+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2497,
+        "ts": "2026-10-11T10:07:03+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2498,
+        "ts": "2026-10-11T10:07:06+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2499,
+        "ts": "2026-10-11T10:07:09+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2500,
+        "ts": "2026-10-11T10:07:10+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2501,
+        "ts": "2026-10-11T10:07:13+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2502,
+        "ts": "2026-10-11T10:07:16+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2503,
+        "ts": "2026-10-11T10:07:18+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2504,
+        "ts": "2026-10-11T10:07:20+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2505,
+        "ts": "2026-10-11T10:07:23+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2506,
+        "ts": "2026-10-11T10:07:25+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2507,
+        "ts": "2026-10-11T10:07:28+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2508,
+        "ts": "2026-10-11T10:09:57+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2509,
+        "ts": "2026-10-11T10:09:59+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2510,
+        "ts": "2026-10-11T10:10:01+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2511,
+        "ts": "2026-10-11T10:10:04+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2512,
+        "ts": "2026-10-11T10:10:05+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2513,
+        "ts": "2026-10-11T10:10:08+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2514,
+        "ts": "2026-10-11T10:10:10+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2515,
+        "ts": "2026-10-11T10:10:12+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2516,
+        "ts": "2026-10-11T10:10:14+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2517,
+        "ts": "2026-10-11T10:10:17+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2518,
+        "ts": "2026-10-11T10:10:18+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2519,
+        "ts": "2026-10-11T10:10:21+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2520,
+        "ts": "2026-10-11T10:10:24+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2521,
+        "ts": "2026-10-11T10:10:25+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2522,
+        "ts": "2026-10-11T10:10:28+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2523,
+        "ts": "2026-10-11T10:13:01+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2524,
+        "ts": "2026-10-11T10:13:02+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2525,
+        "ts": "2026-10-11T10:13:05+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2526,
+        "ts": "2026-10-11T10:13:08+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2527,
+        "ts": "2026-10-11T10:13:10+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2528,
+        "ts": "2026-10-11T10:13:12+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2529,
+        "ts": "2026-10-11T10:13:16+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2530,
+        "ts": "2026-10-11T10:13:18+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2531,
+        "ts": "2026-10-11T10:13:20+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2532,
+        "ts": "2026-10-11T10:13:22+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2533,
+        "ts": "2026-10-11T10:13:24+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2534,
+        "ts": "2026-10-11T10:13:27+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2535,
+        "ts": "2026-10-11T10:13:41+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2536,
+        "ts": "2026-10-11T10:13:42+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2537,
+        "ts": "2026-10-11T10:13:45+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2538,
+        "ts": "2026-10-11T10:15:50+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2539,
+        "ts": "2026-10-11T10:15:51+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2540,
+        "ts": "2026-10-11T10:16:11+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2541,
+        "ts": "2026-10-11T10:16:14+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2542,
+        "ts": "2026-10-11T10:16:16+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2543,
+        "ts": "2026-10-11T10:16:19+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2544,
+        "ts": "2026-10-11T10:16:22+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2545,
+        "ts": "2026-10-11T10:16:23+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2546,
+        "ts": "2026-10-11T10:16:26+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2547,
+        "ts": "2026-10-11T10:16:28+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2548,
+        "ts": "2026-10-11T10:16:30+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2549,
+        "ts": "2026-10-11T10:16:32+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2550,
+        "ts": "2026-10-11T10:16:36+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2551,
+        "ts": "2026-10-11T10:16:37+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
+      },
+      {
+        "id": 2552,
+        "ts": "2026-10-11T10:16:40+00:00",
+        "bucket": "gemini_tts_requests",
+        "amount": 1,
+        "reason": "tts:gemini"
       }
     ],
     "events": [
@@ -63941,6 +64945,342 @@
         "kind": "publish_deferred",
         "video_id": 285,
         "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 38m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5215,
+        "ts": "2026-10-08T13:51:44+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 297,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 38m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5216,
+        "ts": "2026-10-08T13:51:57+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 311,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 38m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5217,
+        "ts": "2026-10-08T13:52:11+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 322,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 38m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5218,
+        "ts": "2026-10-08T13:52:26+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 361,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 37m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5219,
+        "ts": "2026-10-08T13:52:44+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 381,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 37m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5220,
+        "ts": "2026-10-08T13:53:00+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000005,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 37m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5221,
+        "ts": "2026-10-08T13:53:17+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000012,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 37m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5222,
+        "ts": "2026-10-08T13:53:32+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000023,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 36m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5223,
+        "ts": "2026-10-08T13:53:46+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000032,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 36m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5224,
+        "ts": "2026-10-08T13:53:59+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000043,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 36m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5225,
+        "ts": "2026-10-08T13:54:13+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000052,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 36m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5226,
+        "ts": "2026-10-08T13:54:30+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 232,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 35m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5227,
+        "ts": "2026-10-08T13:54:46+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 280,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 35m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5228,
+        "ts": "2026-10-08T13:55:02+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 286,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 35m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5229,
+        "ts": "2026-10-08T13:55:16+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 298,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 35m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5230,
+        "ts": "2026-10-08T13:55:30+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 312,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 34m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5231,
+        "ts": "2026-10-08T13:55:43+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 323,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 34m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5232,
+        "ts": "2026-10-08T13:55:58+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 362,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 34m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5233,
+        "ts": "2026-10-08T13:56:14+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 382,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 34m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5234,
+        "ts": "2026-10-08T13:56:29+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000006,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 33m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5235,
+        "ts": "2026-10-08T13:56:47+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000013,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 33m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5236,
+        "ts": "2026-10-08T13:57:02+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000024,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 33m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5237,
+        "ts": "2026-10-08T13:57:16+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000033,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 33m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5238,
+        "ts": "2026-10-08T13:57:30+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000044,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 32m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5239,
+        "ts": "2026-10-08T13:57:43+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000053,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 32m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5240,
+        "ts": "2026-10-08T13:58:01+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 281,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 32m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5241,
+        "ts": "2026-10-08T13:58:17+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 287,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 32m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5242,
+        "ts": "2026-10-08T13:58:31+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 299,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 31m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5243,
+        "ts": "2026-10-08T13:58:45+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 313,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 31m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5244,
+        "ts": "2026-10-08T13:58:59+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 324,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 31m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5245,
+        "ts": "2026-10-08T13:59:13+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 363,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 31m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5246,
+        "ts": "2026-10-08T13:59:29+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 383,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 30m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5247,
+        "ts": "2026-10-08T13:59:45+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000007,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 30m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5248,
+        "ts": "2026-10-08T13:59:59+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000014,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 30m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5249,
+        "ts": "2026-10-08T14:00:13+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000025,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 30m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5250,
+        "ts": "2026-10-08T14:00:27+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000034,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 29m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5251,
+        "ts": "2026-10-08T14:00:40+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000045,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 29m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5252,
+        "ts": "2026-10-08T14:00:53+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 1000054,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 29m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5253,
+        "ts": "2026-10-08T14:01:07+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 300,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 29m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5254,
+        "ts": "2026-10-08T14:01:20+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 314,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 29m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5255,
+        "ts": "2026-10-08T14:01:35+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 325,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 28m baad. Task queue mein daal do.\"}"
+      },
+      {
+        "id": 5256,
+        "ts": "2026-10-08T14:01:50+00:00",
+        "agent": "ig",
+        "kind": "publish_deferred",
+        "video_id": 364,
+        "payload": "{\"reason\": \"'ig_publishes' budget khatam (20/20). Reset: 23h 28m baad. Task queue mein daal do.\"}"
       }
     ],
     "characters": [

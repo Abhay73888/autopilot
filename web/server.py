@@ -6494,10 +6494,10 @@ if (typeof checkNewUserTour === 'function') setTimeout(() => checkNewUserTour(fa
 # Also inject GOOGLE_CLIENT_ID from server environment into the page
 PAGE = (
     PAGE.replace("</style>", ML_STUDIO_CSS + "\n" + EDITOR_CSS + "\n" + TOUR_CSS + "\n</style>", 1)
-    .replace('<button class="tab-btn" id="tab-settings" onclick="switchNav(\'settings\')">⚙️ Settings &amp; Quota</button>',
-             '<button class="tab-btn" id="tab-settings" onclick="switchNav(\'settings\')">⚙️ Settings &amp; Quota</button>\n    <button class="tab-btn" id="tab-editor" onclick="switchNav(\'editor\')">✂️ Mini Video Editor</button>\n    <button class="tab-btn" id="tab-ml" onclick="switchNav(\'ml\')">🧠 AI Brain &amp; ML Studio</button>', 1)
-    .replace('</section>\n</div>\n\n<!-- FLOATING COPILOT ORB -->',
-             '</section>\n' + ML_STUDIO_TAB_HTML + '\n' + EDITOR_TAB_HTML + '\n' + TOUR_HTML + '\n</div>\n\n<!-- FLOATING COPILOT ORB -->', 1)
+    .replace('    <button class="tab-btn" id="tab-settings" onclick="switchNav(\'settings\')">⚙️ Settings &amp; Quota</button>',
+             '    <button class="tab-btn" id="tab-settings" onclick="switchNav(\'settings\')">⚙️ Settings &amp; Quota</button>\n    <button class="tab-btn" id="tab-editor" onclick="switchNav(\'editor\')">✂️ Mini Video Editor</button>\n    <button class="tab-btn" id="tab-ml" onclick="switchNav(\'ml\')">🧠 AI Brain &amp; ML Studio</button>', 1)
+    .replace('<!-- FLOATING COPILOT ORB -->',
+             ML_STUDIO_TAB_HTML + '\n' + EDITOR_TAB_HTML + '\n' + TOUR_HTML + '\n<!-- FLOATING COPILOT ORB -->', 1)
     .replace('</script>\n\n<!-- DISCORD CONFIGURATION MODAL -->',
              '\n' + ML_STUDIO_JS + '\n' + EDITOR_JS + '\n' + TOUR_JS + '\n</script>\n\n<!-- DISCORD CONFIGURATION MODAL -->', 1)
     # Inject real Google Client ID (safe: no special chars in a valid client ID)

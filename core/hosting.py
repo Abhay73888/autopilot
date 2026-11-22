@@ -148,11 +148,11 @@ def _github_release(p: Path) -> str:
     """
     token = os.environ.get("GITHUB_TOKEN", "").strip()
     repo = os.environ.get("GITHUB_REPO", "").strip()
-    if not token:
+    if not token and os.environ.get("AUTOPILOT_MOCK_MODE") != "true":
         try:
             import subprocess
-            p = subprocess.Popen(['git', 'credential', 'fill'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            out, _ = p.communicate(input='protocol=https\nhost=github.com\n\n')
+            proc = subprocess.Popen(['git', 'credential', 'fill'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            out, _ = proc.communicate(input='protocol=https\nhost=github.com\n\n')
             for line in out.splitlines():
                 if line.startswith('password='):
                     token = line.split('=', 1)[1].strip()

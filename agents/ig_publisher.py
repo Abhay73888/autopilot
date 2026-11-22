@@ -99,10 +99,10 @@ class InstagramPublisher:
 
         # ---------- GATE 1: approval ----------
         if CONFIG.get("autonomy", "review_first") == "review_first" \
-                and row["status"] not in ("approved", "published", "rendered", "validated"):
+                and row["status"] not in ("approved", "published"):
             raise IGError(
-                f"Video #{video_id} ka status '{row['status']}' hai.\n"
-                f"→ Valid status: approved, published, rendered, validated")
+                f"Video #{video_id} ka status '{row['status']}' hai, 'approved' nahi.\n"
+                f"→ Dashboard se approve karo: python -m web.server")
 
         # ---------- GATE 2: file ----------
         path = Path(row["video_path"] or "")

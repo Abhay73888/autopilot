@@ -92,6 +92,7 @@ def main():
         "publish_all.py",
         "doctor.py"
     ], check=False)
+    subprocess.run(["git", "add", "-A"], check=False)
     
     commit_proc = subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True, text=True)
     if "nothing to commit" in commit_proc.stdout:

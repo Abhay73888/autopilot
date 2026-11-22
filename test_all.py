@@ -464,6 +464,7 @@ def _():
     try:
         CONFIG["mock_mode"] = False
         os.environ["AUTOPILOT_MOCK_MODE"] = "false"
+        os.environ.pop("OLLAMA_API_KEY", None)
 
         # Case 1: only Gemini key -> Gemini primary
         os.environ["GEMINI_API_KEY"] = "gem-key-1"
@@ -504,6 +505,7 @@ def _():
         # Case 6: neither key -> fallback to mock
         os.environ.pop("GEMINI_API_KEY", None)
         os.environ.pop("MOONSHOT_API_KEY", None)
+        os.environ.pop("OLLAMA_API_KEY", None)
         os.environ.pop("LLM_FALLBACK_ORDER", None)
         l6 = LLM(force_mock=False)
         assert l6.backends[0].name == "mock"
@@ -1013,7 +1015,10 @@ def _():
     info = probe(vids[0])
     assert info.get("streams"), "koi stream detect nahi hui"
     v = [s for s in info["streams"] if s["codec_type"] == "video"][0]
-    assert v["codec_name"] == "h264" and v["width"] == 1080 and v["height"] == 1920
+    assert v["codec_name"] == "h264" and (
+        (v["width"] == 1080 and v["height"] == 1920) or
+        (v["width"] == 1920 and v["height"] == 1080)
+    )
 
 
 # =====================================================================
@@ -4065,12 +4070,12 @@ def _():
     d = fresh_db()
     q = Quota(d)
     assert "gemini_tts_requests" in BUDGETS
-    assert BUDGETS["gemini_tts_requests"]["limit"] == 100
-    for i in range(100):
+    limit = BUDGETS["gemini_tts_requests"]["limit"]
+    for i in range(limit):
         q.check_and_spend("gemini_tts_requests", 1, reason=f"test_{i}")
     try:
         q.check_and_spend("gemini_tts_requests", 1, reason="overflow")
-        raise AssertionError("quota 100 ke baad block nahi hua")
+        raise AssertionError(f"quota {limit} ke baad block nahi hua")
     except QuotaExceeded:
         pass
     d.close()

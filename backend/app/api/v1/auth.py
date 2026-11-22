@@ -8,10 +8,12 @@ from typing import Any, Dict
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from core.db_base import DB_ENGINE
+from core.logbook import Logbook
 from ...core.security import (
     create_access_token,
     create_refresh_token,
     decode_access_token,
+    decode_refresh_token,
     hash_password,
     verify_password,
 )
@@ -34,6 +36,7 @@ from ...schemas.common import ApiResponse
 from ..dependencies import TenantContext, get_current_tenant_context, request_meta
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+log = Logbook("auth")
 
 
 @router.post("/login", response_model=ApiResponse[SessionResponse])
@@ -77,19 +80,8 @@ async def login(req: LoginRequest, request: Request):
             )
 
         stored_hash = user.get("password_hash", "")
-        # For Abhay master account, support both admin_autopilot_2026 and personal 123456
+        # Cryptographic password verification (PBKDF2-HMAC-SHA256)
         pw_ok = verify_password(req.password, stored_hash)
-        if not pw_ok and is_abhay_alias:
-            if req.password in ("123456", "admin_autopilot_2026"):
-                pw_ok = True
-                new_hash = hash_password(req.password)
-                try:
-                    DB_ENGINE.execute_mutation(
-                        "UPDATE users SET password_hash = %s WHERE user_id = 'admin_abhay'",
-                        (new_hash,)
-                    )
-                except Exception:
-                    pass
 
         if not pw_ok:
             try:
@@ -228,7 +220,9 @@ async def signup(req: SignupRequest):
     user_id = f"usr_{uuid.uuid4().hex[:12]}"
     org_id = f"org_{user_id}"
     ws_id = f"ws_{user_id}"
-    role = "admin" if email_clean.startswith("admin") else "user"
+    # Security: All public signups receive least-privileged 'user' role.
+    # Admin roles must be granted via explicit server-side provisioning.
+    role = "user"
     pw_hash = hash_password(req.password)
     full_name = req.fullName or req.name or email_clean.split("@")[0].capitalize()
 
@@ -303,7 +297,7 @@ async def signup(req: SignupRequest):
 
 @router.post("/refresh", response_model=ApiResponse[SessionResponse])
 async def refresh_session(req: RefreshTokenRequest):
-    payload = decode_access_token(req.refreshToken)
+    payload = decode_refresh_token(req.refreshToken)
     if not payload or payload.get("type") != "refresh":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -451,10 +445,15 @@ async def delete_user_data(ctx: TenantContext = Depends(get_current_tenant_conte
     from .publish import _local_channel_store
 
     try:
-        DB_ENGINE.execute_mutation("DELETE FROM channel_credentials WHERE workspace_id = %s", (ctx.workspace_id,))
-        DB_ENGINE.execute_mutation("DELETE FROM videos WHERE workspace_id = %s", (ctx.workspace_id,))
-    except Exception:
-        pass
+        DB_ENGINE.execute_mutation("DELETE FROM channel_credentials WHERE workspace_id = %s OR user_id = %s", (ctx.workspace_id, ctx.user_id))
+        DB_ENGINE.execute_mutation("DELETE FROM platform_accounts WHERE workspace_id = %s", (ctx.workspace_id,))
+        DB_ENGINE.execute_mutation("DELETE FROM videos WHERE workspace_id = %s OR user_id = %s", (ctx.workspace_id, ctx.user_id))
+    except Exception as e:
+        log.error("User data purge query failure", error=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to purge user data due to a database error."
+        )
 
     if ctx.workspace_id in _local_channel_store:
         del _local_channel_store[ctx.workspace_id]
@@ -682,15 +681,32 @@ async def delete_account(
 
     # Delete all user tenant data
     try:
-        DB_ENGINE.execute_mutation("DELETE FROM videos WHERE workspace_id = %s", (ctx.workspace_id,))
+        DB_ENGINE.execute_mutation("DELETE FROM videos WHERE workspace_id = %s OR user_id = %s", (ctx.workspace_id, ctx.user_id))
         DB_ENGINE.execute_mutation("DELETE FROM series WHERE user_id = %s OR workspace_id = %s", (ctx.user_id, ctx.workspace_id))
         DB_ENGINE.execute_mutation("DELETE FROM episodes WHERE user_id = %s OR workspace_id = %s", (ctx.user_id, ctx.workspace_id))
-        DB_ENGINE.execute_mutation("DELETE FROM channel_credentials WHERE workspace_id = %s", (ctx.workspace_id,))
-        DB_ENGINE.execute_mutation("DELETE FROM video_jobs WHERE user_id = %s", (ctx.user_id,))
+        DB_ENGINE.execute_mutation("DELETE FROM channel_credentials WHERE workspace_id = %s OR user_id = %s", (ctx.workspace_id, ctx.user_id))
+        DB_ENGINE.execute_mutation("DELETE FROM platform_accounts WHERE workspace_id = %s", (ctx.workspace_id,))
+        DB_ENGINE.execute_mutation("DELETE FROM video_jobs WHERE user_id = %s OR workspace_id = %s", (ctx.user_id, ctx.workspace_id))
         DB_ENGINE.execute_mutation("DELETE FROM workspaces WHERE id = %s", (ctx.workspace_id,))
-        DB_ENGINE.execute_mutation("DELETE FROM users WHERE id = %s", (ctx.user_id,))
+        DB_ENGINE.execute_mutation("DELETE FROM users WHERE id = %s OR user_id = %s", (ctx.user_id, ctx.user_id))
+
+        try:
+            from ...services.platform_service import log_audit
+            log_audit(
+                actor_id=ctx.user_id,
+                action="auth.account_deleted",
+                target_type="user",
+                target_id=ctx.user_id,
+                changes={"email": ctx.email, "workspace_id": ctx.workspace_id}
+            )
+        except Exception:
+            pass
     except Exception as e:
         log.error("Account deletion query failure", error=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Account deletion failed due to a database error. Please contact support."
+        )
 
     return ApiResponse(
         success=True,

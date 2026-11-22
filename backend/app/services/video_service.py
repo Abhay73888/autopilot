@@ -259,9 +259,9 @@ class VideoService:
             v_user = vid.get("userId")
             v_ws = vid.get("workspaceId")
             if not is_admin:
-                if v_user and v_user != effective_user_id:
+                if v_ws and v_ws != workspace_id:
                     raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
-                elif not v_user and v_ws != workspace_id:
+                if effective_user_id and v_user and v_user != effective_user_id:
                     raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
             return VideoResponse(**vid)
 
@@ -278,10 +278,15 @@ class VideoService:
                 row = db.one("SELECT * FROM videos WHERE id = ? OR yt_video_id = ?", (db_id, db_id))
             
             if row:
-                video_owner = row["user_id"] or "admin_abhay"
+                row_dict = dict(row)
+                video_owner = row_dict.get("user_id") or "admin_abhay"
+                video_ws = row_dict.get("workspace_id")
                 # Check authorization
-                if not is_admin and video_owner != effective_user_id:
-                    raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
+                if not is_admin:
+                    if video_ws and video_ws != workspace_id:
+                        raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
+                    if effective_user_id and video_owner and video_owner != effective_user_id:
+                        raise TenantAccessDeniedException(f"Cross-tenant access forbidden for video '{video_id}'")
                 
                 vpath = row["video_path"]
                 cpath = row["cover_path"]

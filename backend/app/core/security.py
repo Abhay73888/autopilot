@@ -35,18 +35,44 @@ def create_refresh_token(payload: Dict[str, Any], expires_delta_seconds: int = 6
 
 
 def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
-    """Decodes and cryptographically validates a JWT token using Supabase or local fallback."""
+    """Decodes and cryptographically validates a JWT token using Supabase or local fallback. Strictly rejects refresh tokens."""
     # 1. Try Supabase JWT secret if configured
     if SUPABASE_JWT_SECRET:
         try:
-            return jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=[ALGORITHM], options={"verify_aud": False})
+            payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=[ALGORITHM], options={"verify_aud": False})
+            if payload and payload.get("type") == "refresh":
+                return None
+            return payload
         except Exception:
             pass
 
     # 2. Local JWT fallback
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+        if payload and payload.get("type") == "refresh":
+            return None
         return payload
+    except Exception:
+        return None
+
+
+def decode_refresh_token(token: str) -> Optional[Dict[str, Any]]:
+    """Decodes and cryptographically validates a JWT refresh token. Requires type=='refresh'."""
+    # 1. Try Supabase JWT secret if configured
+    if SUPABASE_JWT_SECRET:
+        try:
+            payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=[ALGORITHM], options={"verify_aud": False})
+            if payload and payload.get("type") == "refresh":
+                return payload
+        except Exception:
+            pass
+
+    # 2. Local JWT fallback
+    try:
+        payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+        if payload and payload.get("type") == "refresh":
+            return payload
+        return None
     except Exception:
         return None
 
@@ -64,7 +90,7 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain_password: str, password_hash: str) -> bool:
-    """Verifies plain password against stored salt$hash in constant time, with legacy fallback support."""
+    """Verifies plain password against stored salt$hash in constant time."""
     if not password_hash or not plain_password:
         return False
     # Standard PBKDF2 hash verification
@@ -81,13 +107,7 @@ def verify_password(plain_password: str, password_hash: str) -> bool:
             return hmac.compare_digest(actual_dk, expected_dk)
         except Exception:
             return False
-    
-    # Safe legacy fallback for legacy plaintext passwords during migration
-    admin_env_pwd = os.environ.get("ADMIN_PASSWORD", "admin_autopilot_2026")
-    if hmac.compare_digest(plain_password, password_hash) or hmac.compare_digest(plain_password, admin_env_pwd):
-        return True
     return False
-
 
 
 class SecretVault:
@@ -95,8 +115,13 @@ class SecretVault:
 
     def __init__(self, key_bytes: Optional[bytes] = None):
         if key_bytes is None:
-            # Derive 32-byte key from secret_key
-            key_bytes = hashlib.sha256(settings.secret_key.encode("utf-8")).digest()
+            # Check for dedicated VAULT_ENCRYPTION_KEY or derive domain-separated key from secret_key
+            vault_key = settings.vault_encryption_key or os.environ.get("VAULT_ENCRYPTION_KEY")
+            if vault_key:
+                key_bytes = hashlib.sha256(vault_key.encode("utf-8")).digest()
+            else:
+                # Cryptographic domain separation so vault encryption key is decoupled from JWT signing key
+                key_bytes = hashlib.sha256(f"autopilot:vault-encryption-domain:{settings.secret_key}".encode("utf-8")).digest()
         self.key = key_bytes
 
     def encrypt_secret(self, plaintext: str) -> str:
@@ -108,13 +133,21 @@ class SecretVault:
         return base64.b64encode(nonce + ciphertext).decode("utf-8")
 
     def decrypt_secret(self, encrypted_payload: str) -> str:
-        """Decrypts base64 encoded AES-GCM ciphertext."""
+        """Decrypts base64 encoded AES-GCM ciphertext with fallback for legacy key derivation."""
         from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-        aesgcm = AESGCM(self.key)
         raw = base64.b64decode(encrypted_payload.encode("utf-8"))
         nonce = raw[:12]
         ciphertext = raw[12:]
-        return aesgcm.decrypt(nonce, ciphertext, None).decode("utf-8")
+        try:
+            aesgcm = AESGCM(self.key)
+            return aesgcm.decrypt(nonce, ciphertext, None).decode("utf-8")
+        except Exception:
+            # Fallback to legacy key derivation for backward compatibility
+            legacy_key = hashlib.sha256(settings.secret_key.encode("utf-8")).digest()
+            if legacy_key != self.key:
+                aesgcm_legacy = AESGCM(legacy_key)
+                return aesgcm_legacy.decrypt(nonce, ciphertext, None).decode("utf-8")
+            raise
 
 
 vault = SecretVault()

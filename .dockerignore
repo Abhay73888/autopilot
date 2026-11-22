@@ -1,0 +1,43 @@
+# Git & CI/CD
+.git
+.github
+.agents
+.venv
+venv
+
+# Environment & Sensitive Credentials
+.env*
+token.json
+client_secret.json
+
+# Local Database Files & Backups
+*.db
+*.db-wal
+*.db-shm
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.json
+data/backup/
+data/*.backup_*
+
+# Media, Logs & Build Artifacts
+logs/
+output/
+scratch/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+node_modules/
+
+# Temporary video assets
+*.mp4
+*.mp3
+*.wav
+*.ass
+*.png
+*.jpg
+*.jpeg
+*.webp

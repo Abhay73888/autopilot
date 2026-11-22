@@ -169,17 +169,58 @@ async def health_live():
 
 @app.get("/health/ready", tags=["Health"])
 async def health_ready():
+    db_status = "connected"
+    queue_status = "ready"
+    storage_status = settings.storage_provider
+
+    try:
+        from core.db_base import DB_ENGINE
+        test_rows = DB_ENGINE.execute_query("SELECT 1 as alive")
+        if not test_rows or test_rows[0].get("alive") != 1:
+            db_status = "degraded"
+    except Exception as exc:
+        db_status = f"unhealthy: {str(exc)}"
+
+    if db_status != "connected":
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "status": "unhealthy",
+                "database": db_status,
+                "storage": storage_status,
+                "queue": queue_status
+            }
+        )
+
     return {
         "status": "ready",
-        "database": "connected",
-        "storage": settings.storage_provider,
-        "queue": "ready"
+        "database": db_status,
+        "storage": storage_status,
+        "queue": queue_status
     }
 
 
-# Startup Migration Event
+# Startup Migration & Security Event
 @app.on_event("startup")
 async def on_startup():
+    is_prod = (
+        settings.env in ("production", "prod")
+        or os.getenv("APP_ENV") in ("production", "prod")
+        or os.getenv("RENDER") == "true"
+    )
+    if is_prod:
+        default_insecure_keys = [
+            "autopilot-super-secure-production-secret-key-32chars",
+            "secret",
+            "changeme",
+            "123456"
+        ]
+        if not settings.secret_key or settings.secret_key in default_insecure_keys or len(settings.secret_key) < 32:
+            raise RuntimeError(
+                "CRITICAL SECURITY CONFIGURATION ERROR: APP_SECRET_KEY / JWT_SECRET is using an insecure default or is shorter than 32 characters in production. "
+                "Refusing to start. Please configure a unique, high-entropy APP_SECRET_KEY in production environment variables."
+            )
+
     from core.platform_schema import ensure_platform_schema
     ensure_platform_schema()
 

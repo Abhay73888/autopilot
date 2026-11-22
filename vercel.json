@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "public": false,
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "^/api/(.*)$",
+      "dest": "https://autopilot-7pxl.onrender.com/api/$1"
+    },
+    {
+      "src": "^/health/(.*)$",
+      "dest": "https://autopilot-7pxl.onrender.com/health/$1"
+    },
+    {
+      "src": "^/health$",
+      "dest": "https://autopilot-7pxl.onrender.com/health"
+    },
+    {
+      "src": "^/metrics$",
+      "dest": "https://autopilot-7pxl.onrender.com/metrics"
+    },
+    {
+      "src": "^/output/(.*)$",
+      "dest": "https://autopilot-7pxl.onrender.com/output/$1"
+    },
+    {
+      "src": "^/media/(.*)$",
+      "dest": "https://autopilot-7pxl.onrender.com/media/$1"
+    },
+    {
+      "src": "^/admin/login$",
+      "dest": "/backend/app/static/admin-login.html"
+    },
+    {
+      "src": "^/admin(/.*)?$",
+      "dest": "/backend/app/static/admin.html"
+    },
+    {
+      "src": "^/static/(.*)$",
+      "dest": "/backend/app/static/$1"
+    },
+    {
+      "src": "^/(.*\\.(?:js|css|png|jpg|jpeg|gif|svg|ico|json|woff2?|ttf|eot))$",
+      "dest": "/backend/app/static/$1"
+    },
+    {
+      "src": "^/(.*)$",
+      "dest": "/backend/app/static/index.html"
+    }
+  ]
+}

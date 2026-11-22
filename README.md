@@ -15,7 +15,7 @@
 [![Long-Form Ready](https://img.shields.io/badge/Long--Form%20Video-10%20to%2060%20Min-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](#-long-form-mode-10-to-60-minutes)
 [![FFmpeg 60fps](https://img.shields.io/badge/FFmpeg-60fps%20Compositor-22C55E?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org/)
 [![Autonomous Swarm](https://img.shields.io/badge/Autonomous%20Swarm-12%20Agents-A855F7?style=for-the-badge&logo=openai&logoColor=white)](#-12-agent-autonomous-swarm-architecture)
-[![Test Suite](https://img.shields.io/badge/Tests-389%20Passing%20(100%25)-10B981?style=for-the-badge&logo=pytest&logoColor=white)](#-testing--quality-assurance)
+[![Test Suite](https://img.shields.io/badge/Tests-471%20Passing%20(100%25)-10B981?style=for-the-badge&logo=pytest&logoColor=white)](#-testing--quality-assurance)
 [![Health Score](https://img.shields.io/badge/Health%20Score-99%2F100-success?style=for-the-badge&logo=checkmarx&logoColor=white)](#-god-mode-autonomous-audit--release-v260)
 [![Cost](https://img.shields.io/badge/Operating%20Cost-%E2%82%B90%20%2F%20mo%20(Zero--Key%20Safe)-10B981?style=for-the-badge&logo=googlepay&logoColor=white)](#-multimodal-ai--provider-failover-matrix)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge)](LICENSE)
@@ -1798,11 +1798,21 @@ A comprehensive pre-flight audit and regression test sweep confirms AUTOPILOT is
 * **Web Studio Dashboard Asset Injection (`web/server.py`)**:
   - Corrected HTML/JS template injection anchors, ensuring the **✂️ Mini Video Editor** (`#sec-editor`, `#tab-editor`) and **🧠 AI Brain & ML Studio** (`#sec-ml`, `#tab-ml`) render dynamically on the studio console.
 * **Security & Resilience Hardening**:
-  - **Hosting Shadowing Fix (`core/hosting.py`)**: Fixed variable shadowing (`proc = subprocess.Popen(...)`) in GitHub Releases uploader, and prevented real credential leakage in mock test environments.
-  - **Instagram Publisher Review Gate (`agents/ig_publisher.py`)**: Restored strict human-review policy (`review_first`), allowing only `approved` and `published` states to publish.
-* **Test Suite Verification**:
+  - **Role Escalation Elimination (`SEC-01`)**: All public signups strictly provisioned with least-privileged `user` role; admin role requires server-side authorization.
+  - **Hardcoded Password Removal (`SEC-02`)**: Removed all hardcoded constants (`123456`, `admin_autopilot_2026`) and legacy bypasses; strictly enforced PBKDF2-HMAC-SHA256.
+  - **Production Guest Auth Hardening (`SEC-03`)**: Unauthenticated requests in production receive HTTP 401 Unauthorized; dev guest scoped to `creator`.
+  - **Token Type Separation & Admin DB Check (`SEC-04`)**: Added `decode_refresh_token`; `require_admin_role` verifies live database role and block status.
+  - **Secrets Entropy & Domain Separation (`SEC-05`)**: Enforced $\ge 32$-char secret key in production; decoupled vault encryption via domain separation and `VAULT_ENCRYPTION_KEY`.
+  - **Docker Hygiene & Clean Schema (`SEC-06`)**: Added `.dockerignore` and created `data/schema_clean.sql` for clean environment bootstrapping.
+  - **Complete Data Purge (`SEC-07`)**: Cascade deletion covers `platform_accounts`, fail-closed HTTP 500 error handling, and audit logging.
+  - **5-Min Video Isolation Bug Fix (`BUG-01`)**: Fixed tenant boundary matching and `sqlite3.Row` dict parsing in `video_service.py`.
+  - **Live DB Health Check (`REL-01`)**: `/health/ready` executes live `SELECT 1 as alive` probe, returning HTTP 503 on failure.
+  - **CI Gate Enforcement (`REL-02`)**: Removed `continue-on-error: true` from GitHub Actions workflow.
+  - **Vercel Reverse Proxy Routing (`DEP-01`)**: Created `vercel.json` routing static SPA files and reverse-proxying API calls to Render.
+* **Test Suite Verification (471 Total Tests)**:
   - `test_all.py`: **371 / 371 Passed (100% Green)**.
   - `python -m unittest discover tests`: **39 / 39 Passed (100% Green)**.
+  - `python -m unittest discover backend/tests`: **61 / 61 Passed (100% Green)**.
 
 ---
 

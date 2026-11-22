@@ -2,10 +2,12 @@ r"""
 backend/app/api/dependencies.py — Security, Authentication & Multi-Tenant Context Resolution
 """
 
+import os
 from dataclasses import dataclass
 from typing import Optional
 from fastapi import Depends, Header, Request
 from core.db_base import clear_tenant_context, set_current_workspace
+from ..core.config import settings
 from ..core.exceptions import TenantAccessDeniedException, UnauthorizedException
 from ..core.logging import request_id_ctx, workspace_id_ctx
 from ..core.security import decode_access_token
@@ -30,22 +32,30 @@ async def get_current_tenant_context(
     and sets thread-local / context-var context for DB queries.
     Never trusts client-supplied user_id.
     """
-    user_id = "usr_creator_01"
-    email = "creator@autopilot.ai"
-    org_id = "org_media_group_01"
-    role = "owner"
+    is_prod = (
+        settings.env in ("production", "prod")
+        or os.getenv("APP_ENV") in ("production", "prod")
+        or os.getenv("RENDER") == "true"
+    )
 
-    if authorization:
+    if not authorization:
+        if is_prod:
+            raise UnauthorizedException("Authentication token is required for this operation")
+        user_id = "usr_creator_01"
+        email = "creator@autopilot.ai"
+        org_id = "org_media_group_01"
+        role = "creator"
+    else:
         if not authorization.startswith("Bearer "):
             raise UnauthorizedException("Authorization header must use Bearer scheme")
         token = authorization.split(" ")[1]
         payload = decode_access_token(token)
         if not payload:
             raise UnauthorizedException("Invalid or expired authentication token")
-        user_id = payload.get("sub", user_id)
-        email = payload.get("email", email)
+        user_id = payload.get("sub", "usr_guest")
+        email = payload.get("email", "guest@autopilot.ai")
         org_id = payload.get("org_id", f"org_{user_id}")
-        role = payload.get("role", role)
+        role = payload.get("role", "user")
 
     # Resolve workspace ID and verify ownership
     if x_workspace_id:
@@ -59,8 +69,9 @@ async def get_current_tenant_context(
                 raise TenantAccessDeniedException(f"Cross-tenant access forbidden for workspace '{x_workspace_id}'")
         except TenantAccessDeniedException:
             raise
-        except Exception:
-            pass
+        except Exception as e:
+            if is_prod:
+                raise TenantAccessDeniedException(f"Failed to verify workspace boundary: {str(e)}")
         ws_id = x_workspace_id
     else:
         ws_id = f"ws_{user_id}" if user_id != "usr_creator_01" else "ws_default_creator"
@@ -146,33 +157,33 @@ async def require_admin_db(
 ) -> TenantContext:
     """
     Strict DB-driven admin role authorization.
-    Re-reads users.role and users.status from the database on every request.
-    Never trusts the JWT claim alone.
+    Re-reads users.role and users.status from the database when present.
+    Enforces that non-admin callers receive 403 Forbidden.
     """
+    if ctx.role != "admin":
+        raise TenantAccessDeniedException("Administrative privileges required for this resource")
+
     from core.db_base import DB_ENGINE
     user = DB_ENGINE.get_user_by_id(ctx.user_id)
-    if not user:
-        raise UnauthorizedException("Admin account not found")
+    if user:
+        status = (user.get("status") or "active").strip().lower()
+        if status in ("blocked", "suspended"):
+            raise TenantAccessDeniedException(f"Administrative account is {status}")
 
-    status = (user.get("status") or "active").strip().lower()
-    if status in ("blocked", "suspended"):
-        raise TenantAccessDeniedException(f"Administrative account is {status}")
-
-    role = (user.get("role") or "").strip().lower()
-    if role != "admin":
-        raise TenantAccessDeniedException("Administrative privileges required for this resource")
+        role = (user.get("role") or "").strip().lower()
+        if role != "admin":
+            raise TenantAccessDeniedException("Administrative privileges required for this resource")
 
     ctx.role = "admin"
     return ctx
 
 
 async def require_admin_role(
+    request: Request,
     ctx: TenantContext = Depends(get_authenticated_tenant_context)
 ) -> TenantContext:
-    """Enforces admin authorization (role == 'admin'). Returns 403 Forbidden if not admin."""
-    if ctx.role != "admin":
-        raise TenantAccessDeniedException("Administrative privileges required for this resource")
-    return ctx
+    """Enforces admin authorization (role == 'admin'). Checks DB status on every request."""
+    return await require_admin_db(request, ctx)
 
 
 # Convenience alias for endpoints requiring authenticated tenant context
